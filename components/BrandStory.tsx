@@ -5,72 +5,73 @@ import { motion, useInView } from 'framer-motion'
 
 export default function BrandStory() {
   const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-100px' })
+  const inView = useInView(ref, { once: true, margin: '-120px' })
 
   return (
-    <section ref={ref} className="bg-white py-24 px-6">
-      <div className="mx-auto max-w-6xl">
-        {/* Main headline */}
+    <section ref={ref} className="relative overflow-hidden bg-white py-28 px-8 lg:py-36">
+      {/* Decorative oversized quote mark */}
+      <div className="pointer-events-none absolute -top-20 left-8 select-none text-[20rem] leading-none text-brand-orange/[0.04] lg:left-16">
+        &ldquo;
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-7xl">
+        {/* Manifesto block — centered */}
         <motion.div
-          className="mx-auto max-w-3xl text-center"
+          className="text-center"
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7, ease: 'easeOut' }}
+          transition={{ duration: 0.7 }}
         >
-          <h2 className="text-3xl font-bold text-brand-text lg:text-5xl">
-            Food is better shared.
+          <h2 className="mx-auto max-w-3xl text-4xl font-bold leading-[1.15] text-brand-text lg:text-6xl">
+            Food is not <span className="uppercase">purely</span> content.
+            <br />
+            <span className="italic">It is a daily habit.</span>
           </h2>
-          <p className="mt-6 text-lg leading-relaxed text-brand-cyan">
-            Every meal tells a story — where you were, who you were with, what
-            made it special. Makan is a place to capture those moments in
-            real time and share them with the people who matter most.
-          </p>
         </motion.div>
 
-        {/* Three pillars of the ethos */}
-        <div className="mt-20 grid gap-16 lg:grid-cols-3">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
-          >
-            <div className="mb-4 h-1 w-12 rounded-full bg-brand-orange" />
-            <h3 className="text-xl font-semibold text-brand-text">Real, not curated</h3>
-            <p className="mt-3 leading-relaxed text-brand-cyan">
-              Makan is about what you actually eat, not what looks best on a
-              grid. Monday morning porridge counts just as much as Friday
-              night out. We celebrate the everyday.
-            </p>
-          </motion.div>
+        <motion.p
+          className="mx-auto mt-8 max-w-2xl text-center text-lg leading-relaxed text-brand-cyan"
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          Most food apps want you to perform — plate it nicely, write a
+          caption, chase likes. We built Makan because we wanted the
+          opposite: a place where Tuesday&apos;s leftover curry belongs just
+          as much as Saturday&apos;s tasting menu.
+        </motion.p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.35, ease: 'easeOut' }}
-          >
-            <div className="mb-4 h-1 w-12 rounded-full bg-brand-orange" />
-            <h3 className="text-xl font-semibold text-brand-text">You decide what gets shared</h3>
-            <p className="mt-3 leading-relaxed text-brand-cyan">
-              Post publicly, share with friends, or keep it private — every
-              meal is yours first. Nothing leaves your phone until you say so.
-              No pressure, no algorithms pushing you to perform.
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.5, ease: 'easeOut' }}
-          >
-            <div className="mb-4 h-1 w-12 rounded-full bg-brand-orange" />
-            <h3 className="text-xl font-semibold text-brand-text">Food connects people</h3>
-            <p className="mt-3 leading-relaxed text-brand-cyan">
-              See what your friends had for lunch. Discover the spot they
-              can&apos;t stop going back to. Build streaks together and turn
-              eating into something you do as a crew — not just alone at
-              your desk.
-            </p>
-          </motion.div>
+        {/* Three pillars — equal columns */}
+        <div className="mt-16 grid gap-10 lg:grid-cols-3 lg:gap-12">
+          {[
+            {
+              title: 'No audience required',
+              body: 'You don\u2019t need followers to make posting worthwhile. Even a private log for yourself has value — a record of what you ate and when.',
+            },
+            {
+              title: 'Ordinary is the point',
+              body: 'Monday morning porridge counts just as much as Friday night out. The meals nobody photographs are the ones that tell the real story.',
+            },
+            {
+              title: 'Built to stay small',
+              body: 'Makan isn\u2019t trying to be the next big platform. It\u2019s a small space for people who eat together, even when they\u2019re apart.',
+            },
+          ].map((item, i) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: 0.3 + i * 0.1 }}
+            >
+              <div className="mb-3 h-px w-8 bg-brand-orange/50" />
+              <h3 className="text-base font-semibold text-brand-text">
+                {item.title}
+              </h3>
+              <p className="mt-2 text-[15px] leading-relaxed text-brand-cyan">
+                {item.body}
+              </p>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
