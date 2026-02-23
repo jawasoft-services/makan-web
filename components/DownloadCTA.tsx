@@ -3,10 +3,12 @@ export default function DownloadCTA() {
     <section id="download" className="bg-brand-orange py-20 px-6">
       <div className="mx-auto max-w-3xl text-center">
         <h2 className="text-3xl font-bold text-white lg:text-5xl">
-          Ready to share your next meal?
+          Your next meal is worth sharing.
         </h2>
         <p className="mt-4 text-lg text-white/80">
-          Download Makan for free on iOS and Android.
+          Join the people who document what they eat, not for clout —
+          but because food is personal, and the best things are shared
+          with friends.
         </p>
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
           <a
@@ -22,6 +24,9 @@ export default function DownloadCTA() {
             Google Play
           </a>
         </div>
+        <p className="mt-6 text-sm text-white/60">
+          Free on iOS and Android. No ads. No algorithms.
+        </p>
       </div>
     </section>
   )

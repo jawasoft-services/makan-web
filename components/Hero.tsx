@@ -51,10 +51,11 @@ export default function Hero() {
             style={{ opacity: textOpacity, y: textY }}
           >
             <h1 className="text-4xl font-bold leading-tight text-brand-text lg:text-6xl">
-              Share what<br />you eat.
+              Your meals.<br />Your moments.
             </h1>
             <p className="mt-4 max-w-md text-lg text-brand-cyan">
-              Track your meals, keep streaks alive, and discover what your friends are eating.
+              Capture meals as they happen. Share with friends or publicly,
+              or keep them just for you. Nothing is shared until you choose.
             </p>
             <motion.div
               className="mt-8"
