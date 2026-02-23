@@ -1,11 +1,17 @@
+import Hero from "@/components/Hero"
+import BrandStory from "@/components/BrandStory"
+import Features from "@/components/Features"
+import DownloadCTA from "@/components/DownloadCTA"
+import Footer from "@/components/Footer"
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-8">
-      <h1 className="text-5xl font-bold text-brand-text">Makan</h1>
-      <p className="text-lg text-brand-cyan">Share what you eat.</p>
-      <button className="rounded-full bg-brand-orange px-6 py-3 font-semibold text-white">
-        Get the App
-      </button>
+    <main>
+      <Hero />
+      <BrandStory />
+      <Features />
+      <DownloadCTA />
+      <Footer />
     </main>
-  );
+  )
 }
