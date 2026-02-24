@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Plus_Jakarta_Sans } from "next/font/google"
+import { Analytics } from "@vercel/analytics/react"
 import Navbar from "@/components/Navbar"
 import "./globals.css"
 
@@ -14,6 +15,9 @@ export const metadata: Metadata = {
   title: "Makan — Share What You Eat",
   description:
     "Track your meals, keep streaks alive, and discover what your friends are eating.",
+  alternates: {
+    canonical: "https://www.makanofficial.com",
+  },
   openGraph: {
     title: "Makan — Share What You Eat",
     description:
@@ -21,6 +25,13 @@ export const metadata: Metadata = {
     url: "https://www.makanofficial.com",
     siteName: "Makan",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Makan — Share What You Eat",
+    description:
+      "Track your meals, keep streaks alive, and discover what your friends are eating.",
+    site: "@app_makan",
   },
 }
 
@@ -34,6 +45,7 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <Navbar />
         {children}
+        <Analytics />
       </body>
     </html>
   )
