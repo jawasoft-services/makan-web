@@ -10,7 +10,7 @@ const faqs = [
   },
   {
     q: 'Who can see my meals?',
-    a: 'You decide. Every post can be set to Public (anyone on Makan), mutual friends, or Private (just you). The default is up to you.',
+    a: 'You decide. Every post can be set to Public (anyone on Makan), Friends (mutuals only), or Private (just you). The default is up to you.',
   },
   {
     q: 'What is the difference between the Public Feed and Friends Feed?',
