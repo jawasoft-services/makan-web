@@ -77,7 +77,7 @@ export default function DownloadCTA() {
             built an app around it.&rdquo;
           </p>
           <p className="mt-4 text-sm text-white/40">
-            &mdash; The Makan team, London
+            &mdash; Devon Makepeace, Founder of Makan, London
           </p>
         </motion.div>
       </div>
