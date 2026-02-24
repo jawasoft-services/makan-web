@@ -37,8 +37,8 @@ export default function Navbar() {
           className="h-6 w-auto"
         />
       </Link>
-      <a
-        href="#download"
+      <Link
+        href="/contact"
         className={`text-sm font-medium transition-all duration-300 ${
           scrolled
             ? 'rounded-full bg-brand-orange px-5 py-2 text-white'
@@ -46,7 +46,7 @@ export default function Navbar() {
         }`}
       >
         Request a Seat
-      </a>
+      </Link>
     </nav>
   )
 }
