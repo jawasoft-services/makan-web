@@ -13,7 +13,6 @@ const meals = [
   { src: '/meals/sharecard-6.jpg', alt: 'Carbonara shared on Makan by @Valesca' },
   { src: '/meals/sharecard-7.jpg', alt: 'Taco shared on Makan by @Christopher Halkas' },
   { src: '/meals/sharecard-8.jpg', alt: 'Korean BBQ cheesesteak shared on Makan by @Christopher Halkas' },
-  { src: '/meals/sharecard-9.jpg', alt: 'Pizza shared on Makan by @Ridorichard' },
 ]
 
 export default function LatestOnMakan() {

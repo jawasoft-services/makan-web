@@ -76,7 +76,7 @@ export default function Hero() {
                 transition={{ duration: 0.5, delay: 0.5, ease: 'easeOut' }}
               >
                 <a
-                  href="#download"
+                  href="/contact"
                   className="rounded-full bg-brand-orange px-7 py-3 text-base font-semibold text-white shadow-lg shadow-brand-orange/25 transition-transform hover:scale-[1.03]"
                 >
                   Request a Seat

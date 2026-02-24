@@ -60,7 +60,11 @@ export default function ContactForm() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <p className="text-5xl">&#10003;</p>
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-orange/10">
+              <svg className="h-8 w-8 text-brand-orange" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
             <h1 className="mt-4 text-3xl font-bold text-brand-text lg:text-4xl">
               You&apos;re on the list.
             </h1>
