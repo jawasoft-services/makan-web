@@ -22,13 +22,13 @@ export default function Hero() {
   const contentY = useTransform(scrollYProgress, [0, 1], [0, -80])
 
   return (
-    <section ref={containerRef} className="relative h-[200vh]">
-      <div className="sticky top-0 flex h-screen items-end overflow-hidden pb-16 lg:items-center lg:pb-0">
+    <section ref={containerRef} className="relative h-[160vh] sm:h-[200vh]">
+      <div className="sticky top-0 flex h-screen items-start overflow-hidden pt-24 sm:pt-32 lg:items-center lg:pt-0">
         {/* Soft radial gradient background */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand-bg via-white/60 to-brand-mint/30" />
 
         <motion.div
-          className="relative z-10 mx-auto w-full max-w-7xl px-8"
+          className="relative z-10 mx-auto w-full max-w-7xl px-5 sm:px-8"
           style={{ y: contentY }}
         >
           {/* Asymmetric two-column: text-heavy left, card drifts right */}
@@ -44,7 +44,7 @@ export default function Hero() {
                 <p className="text-sm font-medium uppercase tracking-widest text-brand-orange">
                   A food journal for real life
                 </p>
-                <h1 className="mt-4 text-5xl font-bold leading-[1.08] text-brand-text lg:text-7xl">
+                <h1 className="mt-4 text-3xl sm:text-5xl font-bold leading-[1.08] text-brand-text lg:text-7xl">
                   Your meals.
                   <br />
                   <span className="italic">Your moments.</span>
@@ -58,7 +58,7 @@ export default function Hero() {
               />
 
               <motion.p
-                className="mt-6 max-w-lg text-lg leading-relaxed text-brand-cyan"
+                className="mt-6 max-w-lg text-base sm:text-lg leading-relaxed text-brand-cyan"
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
@@ -70,14 +70,14 @@ export default function Hero() {
               </motion.p>
 
               <motion.div
-                className="mt-8 flex items-center gap-5"
+                className="mt-6 sm:mt-8 flex items-center gap-3 sm:gap-5"
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.5, ease: 'easeOut' }}
               >
                 <a
                   href="/contact"
-                  className="rounded-full bg-brand-orange px-7 py-3 text-base font-semibold text-white shadow-lg shadow-brand-orange/25 transition-transform hover:scale-[1.03]"
+                  className="rounded-full bg-brand-orange px-5 sm:px-7 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-white shadow-lg shadow-brand-orange/25 transition-transform hover:scale-[1.03]"
                 >
                   Request a Seat
                 </a>
@@ -87,15 +87,15 @@ export default function Hero() {
               </motion.div>
             </div>
 
-            {/* ── Right: real share card ── */}
+            {/* ── Right: real share card (hidden on mobile to avoid overlap) ── */}
             <motion.div
-              className="lg:col-span-5"
+              className="hidden sm:block lg:col-span-5"
               style={{ y: cardY, rotate: cardRotate }}
               initial={{ opacity: 0, y: 60 }}
               animate={{ opacity: 1, y: 40 }}
               transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
             >
-              <div className="relative mx-auto w-80 lg:ml-auto lg:mr-0 lg:w-[32rem]">
+              <div className="relative mx-auto w-64 sm:w-80 lg:ml-auto lg:mr-0 lg:w-[32rem]">
                 {/* Shadow behind for depth */}
                 <div className="absolute -bottom-4 -right-4 h-full w-full rounded-2xl bg-brand-orange/10" />
 
@@ -105,7 +105,7 @@ export default function Hero() {
                     alt="Pizza shared on Makan by @Ridorichard"
                     width={1600}
                     height={1600}
-                    sizes="(min-width: 1024px) 32rem, 20rem"
+                    sizes="(min-width: 1024px) 32rem, (min-width: 640px) 20rem, 16rem"
                     quality={90}
                     className="h-auto w-full"
                     priority

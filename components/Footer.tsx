@@ -15,11 +15,11 @@ const GooglePlayIcon = () => (
 
 export default function Footer() {
   return (
-    <footer className="border-t border-brand-cyan/10 bg-brand-bg px-8 py-16">
+    <footer className="border-t border-brand-cyan/10 bg-brand-bg px-5 sm:px-8 py-12 sm:py-16">
       <div className="mx-auto max-w-7xl">
 
         {/* Main grid: icon+downloads | App links | Follow links */}
-        <div className="grid grid-cols-1 gap-12 sm:grid-cols-[auto_1fr_1fr] lg:gap-20">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-[auto_1fr_1fr] sm:gap-12 lg:gap-20">
 
           {/* App icon + download buttons */}
           <div className="flex flex-col gap-6">
@@ -99,7 +99,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom: Made with love */}
-        <div className="mt-16 border-t border-brand-cyan/10 pt-8 text-center">
+        <div className="mt-10 sm:mt-16 border-t border-brand-cyan/10 pt-6 sm:pt-8 text-center">
           <p className="inline-flex items-center gap-2.5 text-sm text-brand-cyan/50">
             Made with love in{' '}
             <a

@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Plus_Jakarta_Sans } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import Navbar from "@/components/Navbar"
@@ -10,6 +10,12 @@ const jakarta = Plus_Jakarta_Sans({
   weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
 })
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+}
 
 export const metadata: Metadata = {
   title: "Makan — Share What You Eat",

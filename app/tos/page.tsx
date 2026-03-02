@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function TermsOfUse() {
   return (
     <div className="min-h-screen bg-brand-bg">
-      <main className="mx-auto max-w-3xl px-8 pt-32 pb-24">
+      <main className="mx-auto max-w-3xl px-5 sm:px-8 pt-24 sm:pt-32 pb-16 sm:pb-24">
 
         {/* Eyebrow */}
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
@@ -18,7 +18,7 @@ export default function TermsOfUse() {
         </p>
 
         {/* Title */}
-        <h1 className="mt-4 text-4xl font-bold text-brand-text">Terms of Use</h1>
+        <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-brand-text">Terms of Use</h1>
         <p className="mt-2 text-sm text-brand-cyan">Last updated: 20 September 2025</p>
 
         <div className="mt-10 space-y-10 text-[15px] leading-relaxed text-brand-text/80">

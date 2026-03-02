@@ -36,7 +36,7 @@ export default function Features() {
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section ref={ref} className="bg-brand-bg py-28 px-8 lg:py-36">
+    <section ref={ref} className="bg-brand-bg py-16 sm:py-28 px-5 sm:px-8 lg:py-36">
       <div className="mx-auto max-w-7xl">
         {/* Section header — centered */}
         <div className="text-center">
@@ -49,7 +49,7 @@ export default function Features() {
             How it works
           </motion.p>
           <motion.h2
-            className="mx-auto mt-4 max-w-2xl text-3xl font-bold text-brand-text lg:text-4xl"
+            className="mx-auto mt-4 max-w-2xl text-2xl sm:text-3xl font-bold text-brand-text lg:text-4xl"
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.1 }}
@@ -60,25 +60,25 @@ export default function Features() {
         </div>
 
         {/* Feature rows — horizontal lines, not cards */}
-        <div className="mt-16 divide-y divide-brand-cyan/10">
+        <div className="mt-10 sm:mt-16 divide-y divide-brand-cyan/10">
           {features.map((f, i) => (
             <motion.div
               key={f.number}
-              className="grid items-start gap-4 py-10 lg:grid-cols-12 lg:gap-8"
+              className="grid items-start gap-2 sm:gap-4 py-6 sm:py-10 md:grid-cols-12 md:gap-8"
               initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.15 + i * 0.1 }}
             >
               {/* Number */}
-              <p className="text-sm font-bold text-brand-orange/60 lg:col-span-1">
+              <p className="text-sm font-bold text-brand-orange/60 md:col-span-1">
                 {f.number}
               </p>
               {/* Title */}
-              <h3 className="text-xl font-semibold text-brand-text lg:col-span-3">
+              <h3 className="text-lg sm:text-xl font-semibold text-brand-text md:col-span-3">
                 {f.title}
               </h3>
               {/* Description */}
-              <p className="text-[15px] leading-relaxed text-brand-cyan lg:col-span-8">
+              <p className="text-sm sm:text-[15px] leading-relaxed text-brand-cyan md:col-span-8">
                 {f.desc}
               </p>
             </motion.div>

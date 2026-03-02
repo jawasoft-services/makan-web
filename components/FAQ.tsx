@@ -36,12 +36,12 @@ export default function FAQ() {
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section ref={ref} className="bg-white py-28 px-8 lg:py-36">
+    <section ref={ref} className="bg-white py-16 sm:py-28 px-5 sm:px-8 lg:py-36">
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-12 lg:grid-cols-12">
+        <div className="grid gap-8 sm:gap-12 md:grid-cols-12">
           {/* Left: heading */}
           <motion.div
-            className="lg:col-span-4"
+            className="md:col-span-4"
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
@@ -49,7 +49,7 @@ export default function FAQ() {
             <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
               FAQ
             </p>
-            <h2 className="mt-4 text-3xl font-bold text-brand-text lg:text-4xl">
+            <h2 className="mt-4 text-2xl sm:text-3xl font-bold text-brand-text lg:text-4xl">
               Frequently
               <br />
               <span className="italic">Asked Questions</span>
@@ -57,7 +57,7 @@ export default function FAQ() {
           </motion.div>
 
           {/* Right: accordion */}
-          <div className="lg:col-span-8">
+          <div className="md:col-span-8">
             <div className="divide-y divide-brand-cyan/10">
               {faqs.map((faq, i) => (
                 <motion.div

@@ -8,9 +8,9 @@ export default function BrandStory() {
   const inView = useInView(ref, { once: true, margin: '-120px' })
 
   return (
-    <section ref={ref} className="relative overflow-hidden bg-white py-28 px-8 lg:py-36">
+    <section ref={ref} className="relative overflow-hidden bg-white py-16 sm:py-28 px-5 sm:px-8 lg:py-36">
       {/* Decorative oversized quote mark */}
-      <div className="pointer-events-none absolute -top-20 left-8 select-none text-[20rem] leading-none text-brand-orange/[0.04] lg:left-16">
+      <div className="pointer-events-none absolute -top-20 left-4 sm:left-8 select-none text-[10rem] sm:text-[20rem] leading-none text-brand-orange/[0.04] lg:left-16">
         &ldquo;
       </div>
 
@@ -22,7 +22,7 @@ export default function BrandStory() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7 }}
         >
-          <h2 className="mx-auto max-w-3xl text-4xl font-bold leading-[1.15] text-brand-text lg:text-6xl">
+          <h2 className="mx-auto max-w-3xl text-2xl sm:text-4xl font-bold leading-[1.15] text-brand-text lg:text-6xl">
             Food is not <span className="uppercase">purely</span> content.
             <br />
             <span className="italic">It is a daily habit.</span>
@@ -30,7 +30,7 @@ export default function BrandStory() {
         </motion.div>
 
         <motion.p
-          className="mx-auto mt-8 max-w-2xl text-center text-lg leading-relaxed text-brand-cyan"
+          className="mx-auto mt-6 sm:mt-8 max-w-2xl text-center text-base sm:text-lg leading-relaxed text-brand-cyan"
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
@@ -42,7 +42,7 @@ export default function BrandStory() {
         </motion.p>
 
         {/* Three pillars — equal columns */}
-        <div className="mt-16 grid gap-10 lg:grid-cols-3 lg:gap-12">
+        <div className="mt-10 sm:mt-16 grid gap-8 md:grid-cols-3 md:gap-10 lg:gap-12">
           {[
             {
               title: 'No audience required',

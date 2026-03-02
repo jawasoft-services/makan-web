@@ -15,7 +15,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-5 transition-all duration-500 ${
+      className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 sm:px-8 py-4 sm:py-5 transition-all duration-500 ${
         scrolled
           ? 'bg-brand-bg/90 backdrop-blur-md py-3 shadow-sm'
           : 'bg-transparent'
@@ -41,7 +41,7 @@ export default function Navbar() {
         href="/contact"
         className={`text-sm font-medium transition-all duration-300 ${
           scrolled
-            ? 'rounded-full bg-brand-orange px-5 py-2 text-white'
+            ? 'rounded-full bg-brand-orange px-4 sm:px-5 py-2 text-white'
             : 'text-brand-cyan hover:text-brand-text'
         }`}
       >
