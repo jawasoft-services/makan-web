@@ -4,6 +4,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
+const TESTFLIGHT_URL = 'https://testflight.apple.com/join/mJvRBHkW'
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
 
@@ -37,16 +39,18 @@ export default function Navbar() {
           className="h-6 w-auto"
         />
       </Link>
-      <Link
-        href="/contact"
+      <a
+        href={TESTFLIGHT_URL}
+        target="_blank"
+        rel="noopener noreferrer"
         className={`text-sm font-medium transition-all duration-300 ${
           scrolled
             ? 'rounded-full bg-brand-orange px-4 sm:px-5 py-2 text-white'
             : 'text-brand-cyan hover:text-brand-text'
         }`}
       >
-        Request a Seat
-      </Link>
+        Get Early Access
+      </a>
     </nav>
   )
 }

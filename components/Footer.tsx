@@ -56,8 +56,17 @@ export default function Footer() {
               App
             </p>
             <ul className="mt-5 flex flex-col gap-3.5">
+              <li>
+                <a
+                  href="https://testflight.apple.com/join/mJvRBHkW"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-brand-cyan transition-colors hover:text-brand-text"
+                >
+                  Get Early Access
+                </a>
+              </li>
               {[
-                { label: 'Request a Seat', href: '/contact' },
                 { label: 'Privacy Policy', href: '/privacy-policy' },
                 { label: 'Terms', href: '/tos' },
               ].map(({ label, href }) => (

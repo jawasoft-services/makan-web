@@ -76,13 +76,15 @@ export default function Hero() {
                 transition={{ duration: 0.5, delay: 0.5, ease: 'easeOut' }}
               >
                 <a
-                  href="/contact"
+                  href="https://testflight.apple.com/join/mJvRBHkW"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="rounded-full bg-brand-orange px-5 sm:px-7 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-white shadow-lg shadow-brand-orange/25 transition-transform hover:scale-[1.03]"
                 >
-                  Request a Seat
+                  Get Early Access
                 </a>
                 <span className="text-sm text-brand-cyan/60">
-                  Invite-only beta
+                  Free on TestFlight
                 </span>
               </motion.div>
             </div>

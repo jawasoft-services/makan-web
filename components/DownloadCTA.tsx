@@ -55,10 +55,12 @@ export default function DownloadCTA() {
             transition={{ duration: 0.5, delay: 0.3 }}
           >
             <a
-              href="/contact"
+              href="https://testflight.apple.com/join/mJvRBHkW"
+              target="_blank"
+              rel="noopener noreferrer"
               className="rounded-full bg-brand-orange px-7 py-3 text-base font-semibold text-white transition-transform hover:scale-[1.03]"
             >
-              Request a Seat
+              Get Early Access
             </a>
           </motion.div>
         </div>
