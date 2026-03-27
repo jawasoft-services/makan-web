@@ -4,6 +4,78 @@ import { useRef } from 'react'
 import Image from 'next/image'
 import { motion, useScroll, useTransform } from 'framer-motion'
 
+const heroMeals = [
+  { src: '/meals/sharecard-1.jpg', alt: 'Chicken noodles on Makan' },
+  { src: '/meals/sharecard-2.jpg', alt: 'Sausages and couscous on Makan' },
+  { src: '/meals/sharecard-3.jpg', alt: 'Burger and fries on Makan' },
+  { src: '/meals/sharecard-4.jpg', alt: 'Schnitzel on Makan' },
+  { src: '/meals/sharecard-5.jpg', alt: 'Chicken and veg on Makan' },
+  { src: '/meals/sharecard-6.jpg', alt: 'Carbonara on Makan' },
+  { src: '/meals/sharecard-7.jpg', alt: 'Taco on Makan' },
+  { src: '/meals/sharecard-8.jpg', alt: 'Korean BBQ on Makan' },
+]
+
+const photoPositions = [
+  { x: -38, y: -30, size: 140, rotate: -6, speed: 0.7 },
+  { x: 32, y: -35, size: 120, rotate: 4, speed: 0.6 },
+  { x: -42, y: 20, size: 130, rotate: 3, speed: 0.8 },
+  { x: 36, y: 25, size: 110, rotate: -5, speed: 0.65 },
+  { x: -20, y: -42, size: 100, rotate: 2, speed: 0.75 },
+  { x: 25, y: 40, size: 115, rotate: -3, speed: 0.55 },
+  { x: -35, y: 42, size: 105, rotate: 5, speed: 0.7 },
+  { x: 40, y: -10, size: 125, rotate: -2, speed: 0.6 },
+]
+
+function CascadePhoto({
+  src,
+  alt,
+  position,
+  index,
+  scrollYProgress,
+}: {
+  src: string
+  alt: string
+  position: (typeof photoPositions)[number]
+  index: number
+  scrollYProgress: ReturnType<typeof useScroll>['scrollYProgress']
+}) {
+  const enterStart = 0.05 + index * 0.04
+  const enterEnd = enterStart + 0.15
+
+  const opacity = useTransform(scrollYProgress, [enterStart, enterEnd], [0, 0.85])
+  const scale = useTransform(scrollYProgress, [enterStart, enterEnd], [0.8, 1])
+  const y = useTransform(
+    scrollYProgress,
+    [0, 1],
+    [position.y * 2, position.y * position.speed]
+  )
+
+  return (
+    <motion.div
+      className="absolute hidden sm:block"
+      style={{
+        left: `calc(50% + ${position.x}%)`,
+        top: `calc(50% + ${position.y}%)`,
+        width: position.size,
+        height: position.size,
+        opacity,
+        scale,
+        y,
+        rotate: position.rotate,
+        transform: 'translate(-50%, -50%)',
+      }}
+    >
+      <Image
+        src={src}
+        alt={alt}
+        width={300}
+        height={300}
+        className="h-full w-full rounded-xl object-cover shadow-2xl shadow-black/50"
+      />
+    </motion.div>
+  )
+}
+
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
@@ -11,110 +83,56 @@ export default function Hero() {
     offset: ['start start', 'end start'],
   })
 
-  /* Card drifts upward and straightens as you scroll */
-  const cardY = useTransform(scrollYProgress, [0, 0.5], [40, -60])
-  const cardRotate = useTransform(scrollYProgress, [0, 0.4], [-3, 1])
-
-  /* Orange accent line grows on scroll */
-  const lineWidth = useTransform(scrollYProgress, [0, 0.3], ['0%', '100%'])
-
-  /* Parallax on the whole content block */
-  const contentY = useTransform(scrollYProgress, [0, 1], [0, -80])
+  const arrowOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0])
 
   return (
-    <section ref={containerRef} className="relative h-[160vh] sm:h-[200vh]">
-      <div className="sticky top-0 flex h-screen items-start overflow-hidden pt-24 sm:pt-32 lg:items-center lg:pt-0">
-        {/* Soft radial gradient background */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand-bg via-white/60 to-brand-mint/30" />
+    <section ref={containerRef} className="relative h-[200vh]">
+      <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
+        {heroMeals.map((meal, i) => (
+          <CascadePhoto
+            key={meal.src}
+            src={meal.src}
+            alt={meal.alt}
+            position={photoPositions[i]}
+            index={i}
+            scrollYProgress={scrollYProgress}
+          />
+        ))}
 
-        <motion.div
-          className="relative z-10 mx-auto w-full max-w-7xl px-5 sm:px-8"
-          style={{ y: contentY }}
-        >
-          {/* Asymmetric two-column: text-heavy left, card drifts right */}
-          <div className="grid items-end gap-8 lg:grid-cols-12 lg:items-center lg:gap-0">
+        <div className="relative z-10 text-center">
+          <motion.h1
+            className="text-5xl font-extrabold tracking-tight text-white sm:text-7xl lg:text-8xl"
+            style={{ letterSpacing: '-0.03em' }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+          >
+            makan
+          </motion.h1>
+          <motion.p
+            className="mt-3 text-base italic text-brand-orange sm:text-lg"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            /mah·kahn/ — to eat
+          </motion.p>
 
-            {/* ── Left: copy — visible on load ── */}
-            <div className="lg:col-span-7 lg:pr-16">
-              <motion.div
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.1, ease: 'easeOut' }}
-              >
-                <p className="text-sm font-medium uppercase tracking-widest text-brand-orange">
-                  A food journal for real life
-                </p>
-                <h1 className="mt-4 text-3xl sm:text-5xl font-bold leading-[1.08] text-brand-text lg:text-7xl">
-                  Your meals.
-                  <br />
-                  <span className="italic">Your moments.</span>
-                </h1>
-              </motion.div>
-
-              {/* Orange accent line — scroll-driven */}
-              <motion.div
-                className="mt-6 h-[3px] rounded-full bg-brand-orange"
-                style={{ width: lineWidth }}
-              />
-
-              <motion.p
-                className="mt-6 max-w-lg text-base sm:text-lg leading-relaxed text-brand-cyan"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
-              >
-                A food journal built around mutual friends. Your feed
-                shows meals only from people who are friends with you
-                back — no strangers, no algorithms. Just the people you
-                actually eat with.
-              </motion.p>
-
-              <motion.div
-                className="mt-6 sm:mt-8 flex items-center gap-3 sm:gap-5"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5, ease: 'easeOut' }}
-              >
-                <a
-                  href="/contact"
-                  className="rounded-full bg-brand-orange px-5 sm:px-7 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-white shadow-lg shadow-brand-orange/25 transition-transform hover:scale-[1.03]"
-                >
-                  Request a Seat
-                </a>
-                <span className="text-sm text-brand-cyan/60">
-                  Invite-only beta
-                </span>
-              </motion.div>
-            </div>
-
-            {/* ── Right: real share card (hidden on mobile to avoid overlap) ── */}
-            <motion.div
-              className="hidden sm:block lg:col-span-5"
-              style={{ y: cardY, rotate: cardRotate }}
-              initial={{ opacity: 0, y: 60 }}
-              animate={{ opacity: 1, y: 40 }}
-              transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+          <motion.div
+            className="mt-12 text-brand-dim"
+            style={{ opacity: arrowOpacity }}
+          >
+            <svg
+              className="mx-auto h-5 w-5 animate-bounce"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
             >
-              <div className="relative mx-auto w-64 sm:w-80 lg:ml-auto lg:mr-0 lg:w-[32rem]">
-                {/* Shadow behind for depth */}
-                <div className="absolute -bottom-4 -right-4 h-full w-full rounded-2xl bg-brand-orange/10" />
-
-                <div className="relative overflow-hidden rounded-2xl shadow-xl">
-                  <Image
-                    src="/meals/sharecard-9-hero.jpg"
-                    alt="Pizza shared on Makan by @Ridorichard"
-                    width={1600}
-                    height={1600}
-                    sizes="(min-width: 1024px) 32rem, (min-width: 640px) 20rem, 16rem"
-                    quality={90}
-                    className="h-auto w-full"
-                    priority
-                  />
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </motion.div>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7" />
+            </svg>
+          </motion.div>
+        </div>
       </div>
     </section>
   )
