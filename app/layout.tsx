@@ -7,7 +7,7 @@ import "./globals.css"
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-jakarta",
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800"],
   style: ["normal", "italic"],
 })
 
@@ -20,14 +20,14 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "Makan — Share What You Eat",
   description:
-    "Track your meals, keep streaks alive, and discover what your friends are eating.",
+    "A food journal where your friends' real meals replace algorithms and influencers.",
   alternates: {
     canonical: "https://www.makanofficial.com",
   },
   openGraph: {
     title: "Makan — Share What You Eat",
     description:
-      "Track your meals, keep streaks alive, and discover what your friends are eating.",
+      "A food journal where your friends' real meals replace algorithms and influencers.",
     url: "https://www.makanofficial.com",
     siteName: "Makan",
     type: "website",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Makan — Share What You Eat",
     description:
-      "Track your meals, keep streaks alive, and discover what your friends are eating.",
+      "A food journal where your friends' real meals replace algorithms and influencers.",
     site: "@app_makan",
   },
 }
