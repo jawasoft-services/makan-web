@@ -5,15 +5,12 @@ import Image from 'next/image'
 import { motion, useInView } from 'framer-motion'
 
 const meals = [
-  { src: '/meals/sharecard-1.jpg', alt: 'Chicken noodles shared on Makan by @Will' },
-  { src: '/meals/sharecard-2.jpg', alt: 'Sausages and couscous shared on Makan by @Mia' },
-  { src: '/meals/sharecard-3.jpg', alt: 'Burger and fries shared on Makan by @Lizzie' },
-  { src: '/meals/sharecard-4.jpg', alt: 'Schnitzel and fries shared on Makan by @Valesca' },
-  { src: '/meals/sharecard-5.jpg', alt: 'Chicken and veg shared on Makan by @Laura' },
-  { src: '/meals/sharecard-6.jpg', alt: 'Carbonara shared on Makan by @Valesca' },
-  { src: '/meals/sharecard-7.jpg', alt: 'Taco shared on Makan by @Christopher Halkas' },
-  { src: '/meals/sharecard-8.jpg', alt: 'Korean BBQ cheesesteak shared on Makan by @Christopher Halkas' },
-  { src: '/meals/sharecard-9.jpg', alt: 'Meal shared on Makan' },
+  { src: '/meals/sharecard-1.jpg', alt: 'Chicken noodles on Makan', user: '@Will', name: 'Chicken noodles' },
+  { src: '/meals/sharecard-2.jpg', alt: 'Sausages on Makan', user: '@Mia', name: 'Sausages & couscous' },
+  { src: '/meals/sharecard-3.jpg', alt: 'Burger on Makan', user: '@Lizzie', name: 'Burger and fries' },
+  { src: '/meals/sharecard-4.jpg', alt: 'Schnitzel on Makan', user: '@Valesca', name: 'Schnitzel' },
+  { src: '/meals/sharecard-5.jpg', alt: 'Chicken on Makan', user: '@Laura', name: 'Chicken and veg' },
+  { src: '/meals/sharecard-6.jpg', alt: 'Carbonara on Makan', user: '@Valesca', name: 'Carbonara' },
 ]
 
 export default function LatestOnMakan() {
@@ -21,47 +18,50 @@ export default function LatestOnMakan() {
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section ref={ref} className="bg-brand-bg py-16 sm:py-28 px-5 sm:px-8 lg:py-36">
+    <section ref={ref} className="bg-brand-bg px-5 sm:px-8 py-20 sm:py-32">
       <div className="mx-auto max-w-7xl">
-        {/* Header — centered */}
         <div className="text-center">
           <motion.h2
-            className="text-3xl sm:text-4xl font-bold text-brand-text lg:text-5xl"
+            className="text-xl font-semibold text-white sm:text-2xl"
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
           >
-            Latest{' '}
-            <span className="italic text-brand-orange">on makan</span>
+            Latest on Makan
           </motion.h2>
-
           <motion.p
-            className="mx-auto mt-4 max-w-sm text-sm sm:text-[15px] leading-relaxed text-brand-cyan"
-            initial={{ opacity: 0, y: 16 }}
+            className="mt-2 text-sm text-brand-muted"
+            initial={{ opacity: 0, y: 12 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.15 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
           >
-            Real meals from real friends — ordinary by design.
+            Meals from beta users right now.
           </motion.p>
         </div>
 
-        {/* Share card grid */}
-        <div className="mt-10 sm:mt-14 grid gap-3 sm:gap-5 grid-cols-2 md:grid-cols-3">
+        <div className="mt-10 grid gap-3 grid-cols-2 md:grid-cols-3">
           {meals.map((meal, i) => (
             <motion.div
               key={meal.src}
-              className={`overflow-hidden rounded-xl shadow-sm${i === meals.length - 1 ? ' hidden md:block' : ''}`}
+              className="group relative overflow-hidden rounded-xl border border-brand-border bg-brand-surface transition-all duration-300 hover:-translate-y-1 hover:border-brand-orange/30 hover:shadow-lg hover:shadow-brand-orange/10"
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.15 + i * 0.08 }}
             >
-              <Image
-                src={meal.src}
-                alt={meal.alt}
-                width={800}
-                height={800}
-                className="h-auto w-full"
-              />
+              <div className="relative aspect-square">
+                <Image
+                  src={meal.src}
+                  alt={meal.alt}
+                  fill
+                  className="object-cover"
+                  sizes="(min-width: 768px) 33vw, 50vw"
+                />
+                <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/70 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-3">
+                  <p className="text-xs font-medium text-white/90">{meal.name}</p>
+                  <p className="text-[10px] text-white/50">{meal.user}</p>
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>
