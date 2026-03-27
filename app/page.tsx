@@ -1,20 +1,24 @@
 import Hero from "@/components/Hero"
-import BrandStory from "@/components/BrandStory"
-import Features from "@/components/Features"
+import Manifesto from "@/components/Manifesto"
+import FeatureTabs from "@/components/FeatureTabs"
 import LatestOnMakan from "@/components/LatestOnMakan"
+import BrandPillars from "@/components/BrandPillars"
 import FAQ from "@/components/FAQ"
-import DownloadCTA from "@/components/DownloadCTA"
+import B2BTeaser from "@/components/B2BTeaser"
+import FinalCTA from "@/components/FinalCTA"
 import Footer from "@/components/Footer"
 
 export default function Home() {
   return (
     <main>
       <Hero />
-      <Features />
+      <Manifesto />
+      <FeatureTabs />
       <LatestOnMakan />
-      <BrandStory />
+      <BrandPillars />
       <FAQ />
-      <DownloadCTA />
+      <B2BTeaser />
+      <FinalCTA />
       <Footer />
     </main>
   )
