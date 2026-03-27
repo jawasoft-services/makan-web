@@ -9,11 +9,13 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
+          bg: "#050505",
+          surface: "#0f0f0f",
+          border: "#1a1a1a",
           orange: "#FF9932",
-          mint: "#D9E8E3",
-          bg: "#F1F6F4",
-          cyan: "#477681",
-          text: "#11181C",
+          text: "#FFFFFF",
+          muted: "#888888",
+          dim: "#555555",
         },
       },
       fontFamily: {
