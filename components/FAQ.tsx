@@ -36,7 +36,7 @@ export default function FAQ() {
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section ref={ref} className="bg-white py-16 sm:py-28 px-5 sm:px-8 lg:py-36">
+    <section id="faq" ref={ref} className="bg-brand-bg py-16 sm:py-28 px-5 sm:px-8 lg:py-36">
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-8 sm:gap-12 md:grid-cols-12">
           {/* Left: heading */}
@@ -46,19 +46,17 @@ export default function FAQ() {
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
           >
-            <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
-              FAQ
-            </p>
-            <h2 className="mt-4 text-2xl sm:text-3xl font-bold text-brand-text lg:text-4xl">
-              Frequently
-              <br />
-              <span className="italic">Asked Questions</span>
+            <h2 className="text-xl font-semibold text-white sm:text-2xl">
+              Questions?
             </h2>
+            <p className="mt-2 text-sm text-brand-muted">
+              The stuff people ask us.
+            </p>
           </motion.div>
 
           {/* Right: accordion */}
           <div className="md:col-span-8">
-            <div className="divide-y divide-brand-cyan/10">
+            <div className="divide-y divide-brand-border">
               {faqs.map((faq, i) => (
                 <motion.div
                   key={i}
@@ -70,11 +68,11 @@ export default function FAQ() {
                     onClick={() => setOpen(open === i ? null : i)}
                     className="flex w-full items-center gap-4 py-6 text-left transition-colors"
                   >
-                    <span className="flex-1 text-base font-semibold text-brand-text lg:text-lg">
+                    <span className="flex-1 text-base font-semibold text-white lg:text-lg">
                       {faq.q}
                     </span>
                     <span
-                      className={`shrink-0 text-brand-cyan/40 transition-transform duration-300 ${
+                      className={`shrink-0 text-brand-dim transition-transform duration-300 ${
                         open === i ? 'rotate-45' : ''
                       }`}
                     >
@@ -90,7 +88,7 @@ export default function FAQ() {
                         transition={{ duration: 0.3, ease: 'easeInOut' }}
                         className="overflow-hidden"
                       >
-                        <p className="pb-6 pr-10 text-[15px] leading-relaxed text-brand-cyan">
+                        <p className="pb-6 pr-10 text-[15px] leading-relaxed text-brand-muted">
                           {faq.a}
                         </p>
                       </motion.div>
