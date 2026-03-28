@@ -1,138 +1,196 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { motion, useScroll, useTransform } from 'framer-motion'
 
-const heroMeals = [
-  { src: '/meals/sharecard-1.jpg', alt: 'Chicken noodles on Makan' },
-  { src: '/meals/sharecard-2.jpg', alt: 'Sausages and couscous on Makan' },
-  { src: '/meals/sharecard-3.jpg', alt: 'Burger and fries on Makan' },
-  { src: '/meals/sharecard-4.jpg', alt: 'Schnitzel on Makan' },
-  { src: '/meals/sharecard-5.jpg', alt: 'Chicken and veg on Makan' },
-  { src: '/meals/sharecard-6.jpg', alt: 'Carbonara on Makan' },
-  { src: '/meals/sharecard-7.jpg', alt: 'Taco on Makan' },
-  { src: '/meals/sharecard-8.jpg', alt: 'Korean BBQ on Makan' },
+// 25 sharecards — best photos on outer columns (1 & 5), less visual in center (behind blur)
+const columns: { src: string; alt: string }[][] = [
+  // Column 1 (left edge — fully visible)
+  [
+    { src: '/meals/sharecard-12.PNG', alt: 'Smash burger on Makan' },
+    { src: '/meals/sharecard-6.jpg', alt: 'Carbonara on Makan' },
+    { src: '/meals/sharecard-10.PNG', alt: 'Thai green curry on Makan' },
+    { src: '/meals/sharecard-28.PNG', alt: 'Pizza on Makan' },
+    { src: '/meals/sharecard-8.jpg', alt: 'Korean BBQ on Makan' },
+  ],
+  // Column 2 (inner left — partially behind blur)
+  [
+    { src: '/meals/sharecard-11.PNG', alt: 'Deli sandwiches on Makan' },
+    { src: '/meals/sharecard-25.PNG', alt: 'Rice bowl on Makan' },
+    { src: '/meals/sharecard-23.PNG', alt: 'Kimchi egg rice on Makan' },
+    { src: '/meals/sharecard-34.PNG', alt: 'Noodle soup on Makan' },
+    { src: '/meals/sharecard-1.jpg', alt: 'Chicken noodles on Makan' },
+  ],
+  // Column 3 (center — fully behind blur)
+  [
+    { src: '/meals/sharecard-32.PNG', alt: 'Egg sandwich on Makan' },
+    { src: '/meals/sharecard-9.jpg', alt: 'Meal on Makan' },
+    { src: '/meals/sharecard-37.PNG', alt: 'Morning snack on Makan' },
+    { src: '/meals/sharecard-22.PNG', alt: 'Pasta dish on Makan' },
+    { src: '/meals/sharecard-18.PNG', alt: 'Fresh salad on Makan' },
+  ],
+  // Column 4 (inner right — partially behind blur)
+  [
+    { src: '/meals/sharecard-14.PNG', alt: 'Home cooked dinner on Makan' },
+    { src: '/meals/sharecard-2.jpg', alt: 'Sausages and couscous on Makan' },
+    { src: '/meals/sharecard-30.PNG', alt: 'Grilled chicken on Makan' },
+    { src: '/meals/sharecard-36.PNG', alt: 'Lunch spread on Makan' },
+    { src: '/meals/sharecard-5.jpg', alt: 'Chicken and veg on Makan' },
+  ],
+  // Column 5 (right edge — fully visible)
+  [
+    { src: '/meals/sharecard-16.PNG', alt: 'Sliced steak on Makan' },
+    { src: '/meals/sharecard-3.jpg', alt: 'Burger and fries on Makan' },
+    { src: '/meals/sharecard-20.PNG', alt: 'Brunch plate on Makan' },
+    { src: '/meals/sharecard-7.jpg', alt: 'Taco on Makan' },
+    { src: '/meals/sharecard-4.jpg', alt: 'Schnitzel on Makan' },
+  ],
 ]
 
-const photoPositions = [
-  { x: -38, y: -30, size: 140, rotate: -6, speed: 0.7 },
-  { x: 32, y: -35, size: 120, rotate: 4, speed: 0.6 },
-  { x: -42, y: 20, size: 130, rotate: 3, speed: 0.8 },
-  { x: 36, y: 25, size: 110, rotate: -5, speed: 0.65 },
-  { x: -20, y: -42, size: 100, rotate: 2, speed: 0.75 },
-  { x: 25, y: 40, size: 115, rotate: -3, speed: 0.55 },
-  { x: -35, y: 42, size: 105, rotate: 5, speed: 0.7 },
-  { x: 40, y: -10, size: 125, rotate: -2, speed: 0.6 },
-]
-
-function CascadePhoto({
-  src,
-  alt,
-  position,
-  index,
-  scrollYProgress,
-}: {
-  src: string
-  alt: string
-  position: (typeof photoPositions)[number]
-  index: number
-  scrollYProgress: ReturnType<typeof useScroll>['scrollYProgress']
-}) {
-  const enterStart = 0.05 + index * 0.04
-  const enterEnd = enterStart + 0.15
-
-  const opacity = useTransform(scrollYProgress, [enterStart, enterEnd], [0, 0.85])
-  const scale = useTransform(scrollYProgress, [enterStart, enterEnd], [0.8, 1])
-  const y = useTransform(
-    scrollYProgress,
-    [0, 1],
-    [position.y * 2, position.y * position.speed]
-  )
-
-  return (
-    <motion.div
-      className="absolute hidden sm:block"
-      style={{
-        left: `calc(50% + ${position.x}%)`,
-        top: `calc(50% + ${position.y}%)`,
-        width: position.size,
-        height: position.size,
-        opacity,
-        scale,
-        y,
-        rotate: position.rotate,
-        transform: 'translate(-50%, -50%)',
-      }}
-    >
-      <Image
-        src={src}
-        alt={alt}
-        width={300}
-        height={300}
-        className="h-full w-full rounded-xl object-cover shadow-2xl shadow-black/50"
-      />
-    </motion.div>
-  )
-}
+// Varied speeds and delays so columns feel organic
+const columnSpeeds = [28, 22, 32, 24, 30]
+const columnDelays = [0, -8, -4, -14, -2] // negative = start mid-way through
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null)
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end start'],
   })
 
-  const arrowOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0])
+  const overlayOpacity = useTransform(scrollYProgress, [0, 0.5], [0, 0.7])
+  const contentY = useTransform(scrollYProgress, [0, 0.5], [0, -60])
+  const contentScale = useTransform(scrollYProgress, [0, 0.5], [1, 0.92])
+
+  // Scroll-driven coin rotation — full 360° over the hero scroll range
+  const coinRotation = useTransform(scrollYProgress, [0, 1], [0, 720])
+  const coinRotationBack = useTransform(scrollYProgress, [0, 1], [180, 900])
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setPrefersReducedMotion(mq.matches)
+  }, [])
 
   return (
-    <section ref={containerRef} className="relative h-[200vh]">
-      <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
-        {heroMeals.map((meal, i) => (
-          <CascadePhoto
-            key={meal.src}
-            src={meal.src}
-            alt={meal.alt}
-            position={photoPositions[i]}
-            index={i}
-            scrollYProgress={scrollYProgress}
-          />
-        ))}
-
-        <div className="relative z-10 text-center">
-          <motion.h1
-            className="text-5xl font-extrabold tracking-tight text-white sm:text-7xl lg:text-8xl"
-            style={{ letterSpacing: '-0.03em' }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-          >
-            makan
-          </motion.h1>
-          <motion.p
-            className="mt-3 text-base italic text-brand-orange sm:text-lg"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            /mah·kahn/ — to eat
-          </motion.p>
-
-          <motion.div
-            className="mt-12 text-brand-dim"
-            style={{ opacity: arrowOpacity }}
-          >
-            <svg
-              className="mx-auto h-5 w-5 animate-bounce"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7" />
-            </svg>
-          </motion.div>
+    <section ref={containerRef} className="relative h-[140vh]">
+      <div className="sticky top-0 h-screen overflow-hidden">
+        {/* Waterfall grid — 5 columns of scrolling meal cards */}
+        <div className="waterfall-container absolute inset-0 grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3 px-2 sm:px-3">
+          {columns.map((col, i) => {
+            const doubled = [...col, ...col]
+            return (
+              <div
+                key={i}
+                className={`relative h-screen overflow-hidden ${
+                  i >= 3 ? 'hidden sm:block' : ''
+                }`}
+              >
+                <div
+                  className="flex flex-col gap-2 sm:gap-3"
+                  style={
+                    prefersReducedMotion
+                      ? {}
+                      : {
+                          animation: `waterfall-scroll ${columnSpeeds[i]}s linear infinite`,
+                          animationDelay: `${columnDelays[i]}s`,
+                        }
+                  }
+                >
+                  {doubled.map((card, j) => (
+                    <div key={`${card.src}-${j}`} className="shrink-0">
+                      <Image
+                        src={card.src}
+                        alt={card.alt}
+                        width={300}
+                        height={300}
+                        className="w-full aspect-square rounded-lg sm:rounded-xl object-cover"
+                        loading={j < 1 ? 'eager' : 'lazy'}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )
+          })}
         </div>
+
+        {/* Top/bottom fades — blend waterfall edges into the dark bg */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-20 bg-gradient-to-b from-brand-bg to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-28 bg-gradient-to-t from-brand-bg to-transparent" />
+
+        {/* Scroll-driven darkening */}
+        <motion.div
+          className="pointer-events-none absolute inset-0 z-10 bg-brand-bg"
+          style={{ opacity: overlayOpacity }}
+        />
+
+        {/* Center content — 3D slab floats above, text in glass panel below */}
+        <motion.div
+          className="relative z-20 flex h-full items-center justify-center px-5 pb-8 sm:pb-0"
+          style={{
+            y: prefersReducedMotion ? 0 : contentY,
+            scale: prefersReducedMotion ? 1 : contentScale,
+          }}
+        >
+          <div className="flex flex-col items-center">
+            {/* Spinning coin — two flat faces back-to-back, no 3D edge needed */}
+            <div className="relative hidden sm:block h-[120px] w-[120px]" style={{ perspective: 600 }}>
+              {/* Front face */}
+              <motion.div
+                className="absolute inset-0 overflow-hidden rounded-[22%]"
+                style={{
+                  rotateY: prefersReducedMotion ? 0 : coinRotation,
+                  backfaceVisibility: 'hidden',
+                }}
+              >
+                <Image src="/makan-icon.svg" alt="Makan" fill className="object-cover" priority />
+              </motion.div>
+              {/* Back face — pre-flipped 180° so it shows when front is hidden */}
+              <motion.div
+                className="absolute inset-0 overflow-hidden rounded-[22%]"
+                style={{
+                  rotateY: prefersReducedMotion ? 180 : coinRotationBack,
+                  backfaceVisibility: 'hidden',
+                }}
+              >
+                <Image src="/makan-icon.svg" alt="" fill className="object-cover" />
+              </motion.div>
+            </div>
+
+            {/* Glass panel with wordmark + text + CTA */}
+            <div className="mt-4 sm:mt-6 text-center rounded-3xl bg-brand-bg/65 px-4 py-4 backdrop-blur-lg max-w-[300px] sm:max-w-md sm:px-6 sm:py-6">
+              <Image
+                src="/makan-logo.png"
+                alt="makan"
+                width={600}
+                height={120}
+                className="mx-auto h-auto w-full max-w-[240px] sm:max-w-[380px] lg:max-w-[420px]"
+              />
+
+              <p className="mt-2 sm:mt-3 text-xs text-white font-medium sm:text-base">
+                A food journal shared with friends.
+              </p>
+
+              <p className="mt-1 text-[10px] italic text-white/60 sm:text-sm">
+                /mah·kahn/ — to eat
+              </p>
+
+              <div className="mt-3 sm:mt-5">
+                <Link
+                  href="/contact"
+                  className="relative inline-block rounded-full bg-brand-orange px-5 py-2.5 text-xs font-semibold text-brand-bg transition-all sm:px-7 sm:py-3 sm:text-sm hover:shadow-lg hover:shadow-brand-orange/25"
+                >
+                  <span className="pointer-events-none absolute -inset-3 rounded-full bg-brand-orange/10 blur-xl" aria-hidden />
+                  <span className="relative">Request a Seat</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   )

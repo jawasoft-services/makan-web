@@ -5,12 +5,12 @@ import Image from 'next/image'
 import { motion, useInView } from 'framer-motion'
 
 const meals = [
-  { src: '/meals/sharecard-1.jpg', alt: 'Chicken noodles on Makan', user: '@Will', name: 'Chicken noodles' },
-  { src: '/meals/sharecard-2.jpg', alt: 'Sausages on Makan', user: '@Mia', name: 'Sausages & couscous' },
-  { src: '/meals/sharecard-3.jpg', alt: 'Burger on Makan', user: '@Lizzie', name: 'Burger and fries' },
-  { src: '/meals/sharecard-4.jpg', alt: 'Schnitzel on Makan', user: '@Valesca', name: 'Schnitzel' },
-  { src: '/meals/sharecard-5.jpg', alt: 'Chicken on Makan', user: '@Laura', name: 'Chicken and veg' },
-  { src: '/meals/sharecard-6.jpg', alt: 'Carbonara on Makan', user: '@Valesca', name: 'Carbonara' },
+  { src: '/meals/sharecard-12.PNG', alt: 'Smash burger' },
+  { src: '/meals/sharecard-16.PNG', alt: 'Sliced steak' },
+  { src: '/meals/sharecard-23.PNG', alt: 'Kimchi egg rice' },
+  { src: '/meals/sharecard-28.PNG', alt: 'Pepperoni pizza' },
+  { src: '/meals/sharecard-10.PNG', alt: 'Thai green curry' },
+  { src: '/meals/sharecard-14.PNG', alt: 'Home cooked dinner' },
 ]
 
 export default function LatestOnMakan() {
@@ -18,50 +18,72 @@ export default function LatestOnMakan() {
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section ref={ref} className="bg-brand-bg px-5 sm:px-8 py-20 sm:py-32">
-      <div className="mx-auto max-w-7xl">
-        <div className="text-center">
-          <motion.h2
-            className="text-xl font-semibold text-white sm:text-2xl"
-            initial={{ opacity: 0, y: 20 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6 }}
-          >
-            Latest on Makan
-          </motion.h2>
-          <motion.p
-            className="mt-2 text-sm text-brand-muted"
-            initial={{ opacity: 0, y: 12 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            Meals from beta users right now.
-          </motion.p>
-        </div>
+    <section ref={ref} className="bg-brand-bg py-20 sm:py-32">
+      {/* Header */}
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+        >
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
+            From the beta
+          </p>
+          <h2 className="mt-3 text-2xl font-bold text-white sm:text-3xl lg:text-4xl" style={{ letterSpacing: '-0.02em' }}>
+            Posted today by real people.
+          </h2>
+          <p className="mt-3 max-w-md text-base text-brand-muted">
+            No photographers. No stylists. Just what people actually ate.
+          </p>
+        </motion.div>
+      </div>
 
-        <div className="mt-10 grid gap-3 grid-cols-2 md:grid-cols-3">
+      {/* Mobile: horizontal scroll strip — full sharecards */}
+      <div className="mt-10 lg:hidden">
+        <div className="flex gap-3 overflow-x-auto px-5 sm:px-8 scrollbar-hide">
           {meals.map((meal, i) => (
             <motion.div
               key={meal.src}
-              className="group relative overflow-hidden rounded-xl border border-brand-border bg-brand-surface transition-all duration-300 hover:-translate-y-1 hover:border-brand-orange/30 hover:shadow-lg hover:shadow-brand-orange/10"
+              className="flex-none overflow-hidden rounded-xl"
+              style={{ width: 200 }}
+              initial={{ opacity: 0, x: 24 }}
+              animate={inView ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.45, delay: 0.1 + i * 0.06 }}
+            >
+              <Image
+                src={meal.src}
+                alt={meal.alt}
+                width={600}
+                height={750}
+                className="w-full h-auto"
+                sizes="200px"
+              />
+            </motion.div>
+          ))}
+          {/* Breathing room at scroll end */}
+          <div className="flex-none w-5 sm:w-8" />
+        </div>
+      </div>
+
+      {/* Desktop: 3-column grid — full sharecards, natural aspect ratio */}
+      <div className="mx-auto mt-12 hidden max-w-7xl px-5 sm:px-8 lg:block">
+        <div className="columns-3 gap-4">
+          {meals.map((meal, i) => (
+            <motion.div
+              key={meal.src}
+              className="group mb-4 overflow-hidden rounded-xl break-inside-avoid"
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.15 + i * 0.08 }}
+              transition={{ duration: 0.5, delay: 0.1 + i * 0.08 }}
             >
-              <div className="relative aspect-square">
-                <Image
-                  src={meal.src}
-                  alt={meal.alt}
-                  fill
-                  className="object-cover"
-                  sizes="(min-width: 768px) 33vw, 50vw"
-                />
-                <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/70 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-3">
-                  <p className="text-xs font-medium text-white/90">{meal.name}</p>
-                  <p className="text-[10px] text-white/50">{meal.user}</p>
-                </div>
-              </div>
+              <Image
+                src={meal.src}
+                alt={meal.alt}
+                width={600}
+                height={750}
+                className="w-full h-auto transition-transform duration-500 group-hover:scale-[1.03]"
+                sizes="(min-width: 1024px) 33vw"
+              />
             </motion.div>
           ))}
         </div>

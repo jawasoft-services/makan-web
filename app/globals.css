@@ -16,3 +16,32 @@
     color: #FFFFFF;
   }
 }
+
+/* Hero waterfall — continuous vertical scroll of meal cards */
+@keyframes waterfall-scroll {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+/* Hide scrollbar for horizontal scroll strips */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Focus-visible styles for keyboard navigation */
+:focus-visible {
+  outline: 2px solid #FF9932;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Pause waterfall on hover for accessibility */
+.waterfall-container:hover [style*="waterfall-scroll"],
+.waterfall-container:focus-within [style*="waterfall-scroll"] {
+  animation-play-state: paused !important;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-bounce { animation: none; }
+  [style*="waterfall-scroll"] { animation: none !important; }
+}

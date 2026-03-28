@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { motion, useInView, AnimatePresence } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 
 const faqs = [
   {
@@ -13,15 +13,15 @@ const faqs = [
     a: 'You decide. Every post can be set to Public (anyone on Makan), Friends (mutuals only), or Private (just you). The default is up to you.',
   },
   {
-    q: 'What is the difference between the Public Feed and Friends Feed?',
+    q: 'What\u2019s the difference between the two feeds?',
     a: 'The Public Feed shows meals from anyone on Makan who posts publicly. The Friends Feed only shows meals from people you\u2019ve mutually added — no strangers, just your circle.',
   },
   {
-    q: 'Is it meant to look \u201Cperfect\u201D?',
+    q: 'Does it need to look perfect?',
     a: 'No. Makan is for what you actually eat, not what looks best. Microwave meals, desk lunches, and burnt toast all belong here. The point is capturing the real, not performing for an audience.',
   },
   {
-    q: 'What does \u201Creal-time\u201D mean on Makan?',
+    q: 'What does real-time mean?',
     a: 'When you post on Makan, you\u2019re posting as it happens. No scrolling back through old photos. The app is designed for in-the-moment sharing, which is what makes it feel honest.',
   },
   {
@@ -36,68 +36,84 @@ export default function FAQ() {
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section id="faq" ref={ref} className="bg-brand-bg py-16 sm:py-28 px-5 sm:px-8 lg:py-36">
-      <div className="mx-auto max-w-7xl">
-        <div className="grid gap-8 sm:gap-12 md:grid-cols-12">
-          {/* Left: heading */}
-          <motion.div
-            className="md:col-span-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6 }}
+    <section id="faq" ref={ref} className="bg-brand-bg py-20 sm:py-32 px-5 sm:px-8">
+      <div className="mx-auto max-w-4xl">
+        {/* Editorial heading — left-aligned, bold */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7 }}
+        >
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
+            FAQ
+          </p>
+          <h2
+            className="mt-4 text-3xl font-bold text-white sm:text-4xl lg:text-5xl"
+            style={{ letterSpacing: '-0.02em' }}
           >
-            <h2 className="text-xl font-semibold text-white sm:text-2xl">
-              Questions?
-            </h2>
-            <p className="mt-2 text-sm text-brand-muted">
-              The stuff people ask us.
-            </p>
-          </motion.div>
+            You&apos;re probably
+            <br />
+            wondering.
+          </h2>
+        </motion.div>
 
-          {/* Right: accordion */}
-          <div className="md:col-span-8">
-            <div className="divide-y divide-brand-border">
-              {faqs.map((faq, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={inView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.4, delay: 0.1 + i * 0.06 }}
+        {/* FAQ items — editorial numbered list */}
+        <div className="mt-12 sm:mt-16">
+          {faqs.map((faq, i) => {
+            const isOpen = open === i
+            return (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 12 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.4, delay: 0.1 + i * 0.06 }}
+                className="border-t border-brand-border last:border-b"
+              >
+                <button
+                  onClick={() => setOpen(isOpen ? null : i)}
+                  aria-expanded={isOpen}
+                  className="group flex w-full items-center gap-5 py-5 sm:py-6 text-left"
                 >
-                  <button
-                    onClick={() => setOpen(open === i ? null : i)}
-                    className="flex w-full items-center gap-4 py-6 text-left transition-colors"
-                  >
-                    <span className="flex-1 text-base font-semibold text-white lg:text-lg">
-                      {faq.q}
-                    </span>
-                    <span
-                      className={`shrink-0 text-brand-dim transition-transform duration-300 ${
-                        open === i ? 'rotate-45' : ''
-                      }`}
-                    >
-                      +
-                    </span>
-                  </button>
-                  <AnimatePresence>
-                    {open === i && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: 'easeInOut' }}
-                        className="overflow-hidden"
-                      >
-                        <p className="pb-6 pr-10 text-[15px] leading-relaxed text-brand-muted">
-                          {faq.a}
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              ))}
-            </div>
-          </div>
+                  {/* Number */}
+                  <span className={`shrink-0 text-xs font-medium tabular-nums transition-colors duration-300 ${
+                    isOpen ? 'text-brand-orange' : 'text-brand-dim group-hover:text-brand-muted'
+                  }`}>
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+
+                  {/* Question */}
+                  <span className={`flex-1 text-[15px] font-semibold transition-colors duration-300 sm:text-base ${
+                    isOpen ? 'text-white' : 'text-brand-muted group-hover:text-white'
+                  }`}>
+                    {faq.q}
+                  </span>
+
+                  {/* Indicator — orange dash that morphs */}
+                  <span className="relative flex h-5 w-5 shrink-0 items-center justify-center">
+                    <span className={`absolute h-[1.5px] w-3 rounded-full transition-all duration-300 ${
+                      isOpen ? 'bg-brand-orange' : 'bg-brand-dim group-hover:bg-brand-muted'
+                    }`} />
+                    <span className={`absolute h-[1.5px] w-3 rounded-full transition-all duration-300 ${
+                      isOpen
+                        ? 'rotate-0 bg-brand-orange opacity-0'
+                        : 'rotate-90 bg-brand-dim group-hover:bg-brand-muted'
+                    }`} />
+                  </span>
+                </button>
+
+                <div
+                  className="grid transition-[grid-template-rows] duration-300 ease-in-out"
+                  style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}
+                >
+                  <div className="overflow-hidden">
+                    <p className="pb-6 pl-[calc(0.75rem+1.25rem+0.25rem)] pr-10 text-sm leading-[1.7] text-brand-muted sm:text-[15px]">
+                      {faq.a}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )
+          })}
         </div>
       </div>
     </section>

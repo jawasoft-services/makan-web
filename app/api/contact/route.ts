@@ -21,10 +21,10 @@ async function appendToSheet(name: string, email: string) {
 
   await sheets.spreadsheets.values.append({
     spreadsheetId: sheetId,
-    range: 'Sheet1!A:C',
+    range: 'Sheet1!A:D',
     valueInputOption: 'USER_ENTERED',
     requestBody: {
-      values: [[name, email, now]],
+      values: [[now, name, email]],
     },
   })
 }

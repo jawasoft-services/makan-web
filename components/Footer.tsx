@@ -1,41 +1,116 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
-const links = [
-  { label: 'Privacy', href: '/privacy-policy', external: false },
-  { label: 'Terms', href: '/tos', external: false },
-  { label: 'Instagram', href: 'https://www.instagram.com/makanappofficial/', external: true },
-  { label: 'TikTok', href: 'https://www.tiktok.com/@makanapp', external: true },
+const appLinks = [
+  { label: 'Request a Seat', href: '/contact' },
+  { label: 'Privacy Policy', href: '/privacy-policy' },
+  { label: 'Terms', href: '/tos' },
+]
+
+const socialLinks = [
+  { label: 'Instagram', href: 'https://www.instagram.com/makanappofficial/' },
+  { label: 'X', href: 'https://x.com/app_makan' },
+  { label: 'TikTok', href: 'https://www.tiktok.com/@makanapp' },
 ]
 
 export default function Footer() {
   return (
-    <footer className="border-t border-brand-border bg-brand-bg px-5 sm:px-8 py-8">
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 sm:flex-row">
-        <p className="text-xs text-brand-dim">
-          &copy; {new Date().getFullYear()} Makan &middot; London, UK
-        </p>
-        <div className="flex gap-6">
-          {links.map((link) =>
-            link.external ? (
-              <a
-                key={link.label}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-brand-dim transition-colors hover:text-white"
-              >
-                {link.label}
-              </a>
-            ) : (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="text-xs text-brand-dim transition-colors hover:text-white"
-              >
-                {link.label}
-              </Link>
-            )
-          )}
+    <footer className="border-t border-brand-border bg-brand-bg px-5 sm:px-8 pt-12 pb-8">
+      <div className="mx-auto max-w-7xl">
+        {/* Top section — logo + link columns */}
+        <div className="flex flex-col gap-10 sm:flex-row sm:justify-between">
+          {/* Logo + download */}
+          <div className="flex flex-col gap-4">
+            <Link href="/" className="flex items-center gap-2">
+              <Image
+                src="/makan-icon.svg"
+                alt=""
+                width={36}
+                height={36}
+                className="h-9 w-9 rounded-lg"
+              />
+              <Image
+                src="/makan-wordmark.svg"
+                alt="Makan"
+                width={80}
+                height={20}
+                className="h-5 w-auto"
+              />
+            </Link>
+            <Link
+              href="/contact"
+              className="inline-flex w-fit items-center gap-2 rounded-lg border border-brand-border px-3.5 py-2 text-xs font-medium text-brand-muted transition-colors hover:border-brand-orange/40 hover:text-white"
+            >
+              Join the Waitlist
+            </Link>
+          </div>
+
+          {/* Link columns */}
+          <div className="flex gap-16 sm:gap-20">
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-brand-dim mb-3">
+                App
+              </p>
+              <ul className="space-y-2.5">
+                {appLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-brand-muted transition-colors hover:text-white"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-brand-dim mb-3">
+                Follow
+              </p>
+              <ul className="space-y-2.5">
+                {socialLinks.map((link) => (
+                  <li key={link.href}>
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-brand-muted transition-colors hover:text-white"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="mt-10 border-t border-brand-border pt-8 text-brand-dim">
+          {/* Made with love — centered */}
+          <a
+            href="https://www.google.com/maps/place/The+Hoxton+Mix/@51.5256479,-0.0885239"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mx-auto flex w-fit items-center gap-2.5 text-sm transition-colors hover:text-white"
+          >
+            Made with love in
+            <Image
+              src="/london-map.png"
+              alt="London map"
+              width={32}
+              height={32}
+              className="h-8 w-8 rounded-lg object-cover"
+            />
+            London
+          </a>
+
+          {/* Copyright */}
+          <p className="mt-5 text-center text-[11px]">
+            &copy; {new Date().getFullYear()} Makan App Ltd. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>

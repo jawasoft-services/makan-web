@@ -15,7 +15,7 @@ const config: Config = {
           orange: "#FF9932",
           text: "#FFFFFF",
           muted: "#888888",
-          dim: "#555555",
+          dim: "#767676",
         },
       },
       fontFamily: {

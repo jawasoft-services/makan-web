@@ -4,46 +4,51 @@ import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
 
-const TAB_INTERVAL = 8000
+const TAB_INTERVAL = 6000
 const PROGRESS_TICK = 50
 
-const tabs = [
+const features = [
   {
     id: 'feed',
+    number: '01',
     label: 'Feed',
     headline: 'Two feeds. Your choice.',
-    description: 'One for friends, one for everyone else.',
-    image: '/meals/sharecard-1.jpg',
+    description: 'One for friends, one for everyone else. No algorithm decides what you see.',
+    image: '/mockups/feed.png',
   },
   {
     id: 'share-cards',
+    number: '02',
     label: 'Share Cards',
     headline: 'Makan cards.',
     description:
-      'Share a meal and it goes out as a Makan card — Stories, WhatsApp, wherever.',
-    image: '/meals/sharecard-3.jpg',
+      'Share a meal and it goes out as a branded Makan card — Stories, WhatsApp, wherever.',
+    image: '/mockups/share-cards.png',
   },
   {
     id: 'explore',
+    number: '03',
     label: 'Explore & Map',
     headline: 'See where your friends ate.',
-    description: "Discover where they haven't. Friend avatars on every pin.",
-    image: '/meals/sharecard-5.jpg',
+    description: "Friend avatars on every map pin. Discover places through people you trust.",
+    image: '/mockups/explore.png',
   },
   {
     id: 'streaks',
+    number: '04',
     label: 'Streaks & Titles',
     headline: 'From Curious Eater to Local Legend.',
-    description: 'Post daily, earn titles, collect 100 badges.',
-    image: '/meals/sharecard-7.jpg',
+    description: 'Post daily, climb six tiers, collect 100 badges. No guilt, just momentum.',
+    image: '/mockups/streaks.png',
   },
   {
     id: 'journal',
+    number: '05',
     label: 'Food Journal',
     headline: 'Your food diary.',
     description:
-      "Every meal, every day, on a calendar that doesn't look like a spreadsheet.",
-    image: '/meals/sharecard-9.jpg',
+      "Every meal on a calendar. Filter by breakfast, lunch, dinner. See your month at a glance.",
+    image: '/mockups/journal.png',
   },
 ]
 
@@ -54,7 +59,6 @@ export default function FeatureTabs() {
   const inView = useInView(sectionRef, { amount: 0.3 })
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  // Refs for direct DOM mutation — avoids a re-render every 50 ms
   const progressBarRef = useRef<HTMLDivElement>(null)
   const progressValueRef = useRef(0)
 
@@ -86,101 +90,165 @@ export default function FeatureTabs() {
     }, PROGRESS_TICK)
 
     timerRef.current = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % tabs.length)
+      setActiveIndex((prev) => (prev + 1) % features.length)
       resetProgress()
     }, TAB_INTERVAL)
 
     return clearTimers
-    // Intentionally omit activeIndex: adding it would restart timers on every
-    // advance. The functional updater in setActiveIndex handles correct sequencing.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inView, isPaused])
 
-  const handleTabClick = (index: number) => {
+  const handleClick = (index: number) => {
     setActiveIndex(index)
     resetProgress()
     setIsPaused(true)
-    setTimeout(() => setIsPaused(false), 20000)
   }
 
-  const activeTab = tabs[activeIndex]
+  const active = features[activeIndex]
 
   return (
     <section ref={sectionRef} id="features" className="bg-brand-bg px-5 sm:px-8 py-20 sm:py-32">
-      <div className="mx-auto max-w-7xl">
-        <h2 className="text-center text-xl font-semibold text-white sm:text-2xl">
-          How it works
-        </h2>
+      <div className="mx-auto max-w-6xl">
 
-        <div className="mt-8 flex flex-wrap justify-center gap-2">
-          {tabs.map((tab, i) => (
-            <button
-              key={tab.id}
-              onClick={() => handleTabClick(i)}
-              className={`relative rounded-full px-4 py-2 text-xs font-medium transition-colors sm:text-sm ${
-                i === activeIndex
-                  ? 'bg-brand-orange text-brand-bg'
-                  : 'bg-brand-surface text-brand-muted hover:text-white'
-              }`}
+        {/* Desktop: side-by-side. Mobile: headline → mockup → feature list */}
+        <div className="lg:flex lg:items-center lg:gap-16">
+
+          {/* Left column (desktop) — section header + active headline + feature list */}
+          <div className="w-full lg:w-1/2">
+            {/* Section anchor — stable header above dynamic content */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6 }}
+              className="mb-10 sm:mb-12"
             >
-              {tab.label}
-              {i === activeIndex && (
-                <div className="absolute bottom-0 left-0 h-0.5 rounded-full bg-white/30 w-full overflow-hidden">
-                  <div
-                    ref={progressBarRef}
-                    className="h-full bg-brand-bg/40"
-                    style={{ width: '0%' }}
-                  />
-                </div>
-              )}
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-10 flex flex-col items-center gap-8 md:flex-row md:items-center md:gap-12 lg:gap-16">
-          <div className="flex-1 text-center md:text-left">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeTab.id}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.3 }}
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
+                Inside the app
+              </p>
+              <h2
+                className="mt-4 text-3xl font-bold text-white sm:text-4xl lg:text-5xl"
+                style={{ letterSpacing: '-0.02em' }}
               >
-                <h3 className="text-lg font-semibold text-white sm:text-xl lg:text-2xl">
-                  {activeTab.headline}
-                </h3>
-                <p className="mt-3 max-w-md text-sm leading-relaxed text-brand-muted sm:text-base">
-                  {activeTab.description}
-                </p>
-              </motion.div>
-            </AnimatePresence>
+                Five reasons to join.
+              </h2>
+            </motion.div>
+            {/* Active headline + description */}
+            <div className="min-h-[80px] sm:min-h-[100px]" role="tabpanel" id={`tabpanel-${active.id}`} aria-label={active.label}>
+              <AnimatePresence mode="popLayout">
+                <motion.div
+                  key={active.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.25 }}
+                >
+                  <h3
+                    className="text-2xl font-bold text-white sm:text-3xl lg:text-4xl"
+                    style={{ letterSpacing: '-0.02em' }}
+                  >
+                    {active.headline}
+                  </h3>
+                  <p className="mt-3 max-w-md text-sm leading-relaxed text-brand-muted sm:text-base">
+                    {active.description}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Mockup — shown here on mobile only, between headline and list */}
+            <div className="my-8 flex justify-center lg:hidden">
+              <div className="relative w-full max-w-[240px] sm:max-w-[280px]">
+                {/* Ambient glow behind mockup */}
+                <div className="absolute -inset-6 rounded-3xl bg-brand-orange/[0.04] blur-2xl" />
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={active.id}
+                    initial={{ opacity: 0, scale: 0.97 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.97 }}
+                    transition={{ duration: 0.4 }}
+                    className="relative"
+                  >
+                    <Image
+                      src={active.image}
+                      alt={active.headline}
+                      width={460}
+                      height={920}
+                      className="w-full h-auto rounded-2xl shadow-2xl shadow-black/40"
+                      sizes="280px"
+                      priority={activeIndex === 0}
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </div>
+
+            {/* Feature list */}
+            <div className="mt-2 lg:mt-8" role="tablist" aria-label="App features">
+              {features.map((feature, i) => {
+                const isActive = i === activeIndex
+                return (
+                  <button
+                    key={feature.id}
+                    role="tab"
+                    aria-selected={isActive}
+                    aria-controls={`tabpanel-${feature.id}`}
+                    onClick={() => handleClick(i)}
+                    className="group relative block w-full text-left"
+                  >
+                    <div className={`flex items-center gap-5 py-4 transition-colors duration-300 ${
+                      isActive ? 'text-white' : 'text-brand-muted hover:text-white/70'
+                    }`}>
+                      <span className={`shrink-0 text-xs font-medium tabular-nums transition-colors duration-300 ${
+                        isActive ? 'text-brand-orange' : 'text-brand-dim group-hover:text-brand-muted'
+                      }`}>
+                        {feature.number}
+                      </span>
+                      <span className="text-sm font-medium sm:text-base">
+                        {feature.label}
+                      </span>
+                    </div>
+
+                    <div className="h-px w-full bg-brand-border">
+                      {isActive && (
+                        <div
+                          ref={progressBarRef}
+                          className="h-full bg-brand-orange transition-none"
+                          style={{ width: '0%' }}
+                        />
+                      )}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
           </div>
 
-          <div className="flex-shrink-0">
-            <div className="relative mx-auto w-52 sm:w-60 lg:w-64">
-              <div className="overflow-hidden rounded-[2rem] border-2 border-brand-border bg-brand-surface shadow-2xl shadow-black/40">
-                <div className="aspect-[9/19.5] relative">
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={activeTab.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.4 }}
-                      className="absolute inset-0"
-                    >
-                      <Image
-                        src={activeTab.image}
-                        alt={activeTab.headline}
-                        fill
-                        className="object-cover"
-                        sizes="(min-width: 1024px) 256px, (min-width: 640px) 240px, 208px"
-                      />
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-              </div>
+          {/* Right column (desktop only) — mockup image */}
+          <div className="hidden lg:flex lg:w-1/2 lg:justify-center">
+            <div className="relative w-full max-w-[340px]">
+              {/* Ambient glow behind mockup */}
+              <div className="absolute -inset-8 rounded-3xl bg-brand-orange/[0.04] blur-3xl" />
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={active.id}
+                  initial={{ opacity: 0, scale: 0.97 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.97 }}
+                  transition={{ duration: 0.4 }}
+                  className="relative"
+                >
+                  <Image
+                    src={active.image}
+                    alt={active.headline}
+                    width={460}
+                    height={920}
+                    className="w-full h-auto rounded-2xl shadow-2xl shadow-black/40"
+                    sizes="340px"
+                    priority={activeIndex === 0}
+                  />
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
         </div>
