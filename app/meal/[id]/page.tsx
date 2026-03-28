@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation"
 import { Metadata } from "next"
 import { getDb } from "@/lib/firebase-admin"
-import MealDisplay from "@/components/MealDisplay"
+import Image from "next/image"
 import Footer from "@/components/Footer"
 
 export const dynamic = "force-dynamic"
@@ -82,7 +82,15 @@ export default async function MealPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-brand-bg">
       <main className="flex min-h-screen items-center justify-center px-6 pt-20 pb-12">
-        <MealDisplay imageUrl={imageUrl} title={title} />
+        <div className="w-full max-w-sm">
+          <Image
+            src={imageUrl}
+            alt={title}
+            width={1080}
+            height={1920}
+            className="w-full h-auto rounded-2xl shadow-2xl shadow-black/40"
+          />
+        </div>
       </main>
       <Footer />
     </div>
