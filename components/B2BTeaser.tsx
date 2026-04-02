@@ -28,7 +28,7 @@ export default function B2BTeaser() {
           </p>
         </div>
         <Link
-          href="/contact"
+          href="/partner"
           className="shrink-0 rounded-xl bg-brand-orange px-6 py-3 text-sm font-semibold text-brand-bg transition-all hover:brightness-110 active:scale-[0.98]"
         >
           Talk to us
