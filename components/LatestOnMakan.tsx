@@ -5,12 +5,12 @@ import Image from 'next/image'
 import { motion, useInView } from 'framer-motion'
 
 const meals = [
-  { src: '/meals/sharecard-12.PNG', alt: 'Smash burger' },
-  { src: '/meals/sharecard-16.PNG', alt: 'Sliced steak' },
-  { src: '/meals/sharecard-23.PNG', alt: 'Kimchi egg rice' },
-  { src: '/meals/sharecard-28.PNG', alt: 'Pepperoni pizza' },
-  { src: '/meals/sharecard-10.PNG', alt: 'Thai green curry' },
-  { src: '/meals/sharecard-14.PNG', alt: 'Home cooked dinner' },
+  { src: '/meals/IMG_6831.jpg', alt: 'Octopus with orange sauce' },
+  { src: '/meals/IMG_6952.jpg', alt: 'Eggs Benedict' },
+  { src: '/meals/IMG_6944.jpg', alt: 'Beijing style Peking duck' },
+  { src: '/meals/IMG_6959.jpg', alt: 'Hangover Tom Yum' },
+  { src: '/meals/IMG_6942.jpg', alt: 'Tuna tartare' },
+  { src: '/meals/IMG_6945.jpg', alt: 'Valentines brunch platter' },
 ]
 
 export default function LatestOnMakan() {
@@ -53,8 +53,8 @@ export default function LatestOnMakan() {
               <Image
                 src={meal.src}
                 alt={meal.alt}
-                width={600}
-                height={750}
+                width={1200}
+                height={1200}
                 className="w-full h-auto"
                 sizes="200px"
               />
@@ -79,8 +79,8 @@ export default function LatestOnMakan() {
               <Image
                 src={meal.src}
                 alt={meal.alt}
-                width={600}
-                height={750}
+                width={1200}
+                height={1200}
                 className="w-full h-auto transition-transform duration-500 group-hover:scale-[1.03]"
                 sizes="(min-width: 1024px) 33vw"
               />
