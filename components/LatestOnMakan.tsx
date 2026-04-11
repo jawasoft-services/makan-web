@@ -30,7 +30,7 @@ export default function LatestOnMakan() {
             From the beta
           </p>
           <h2 className="mt-3 text-2xl font-bold text-white sm:text-3xl lg:text-4xl" style={{ letterSpacing: '-0.02em' }}>
-            Posted today by real people.
+            Posted on Makan by real people.
           </h2>
           <p className="mt-3 max-w-md text-base text-brand-muted">
             No photographers. No stylists. Just what people actually ate.
