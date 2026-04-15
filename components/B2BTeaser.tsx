@@ -9,7 +9,7 @@ export default function B2BTeaser() {
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section ref={ref} className="bg-brand-surface px-5 sm:px-8 py-16 sm:py-24">
+    <section id="for-restaurants" ref={ref} className="bg-brand-surface px-5 sm:px-8 py-16 sm:py-24">
       <motion.div
         className="mx-auto flex max-w-3xl flex-col items-center gap-6 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left"
         initial={{ opacity: 0, y: 16 }}

@@ -9,6 +9,7 @@ const navLinks = [
   { label: 'Story', href: '#story' },
   { label: 'Features', href: '#features' },
   { label: 'FAQ', href: '#faq' },
+  { label: 'For Restaurants', href: '#for-restaurants' },
 ]
 
 export default function Navbar() {
