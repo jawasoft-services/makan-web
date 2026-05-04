@@ -10,7 +10,7 @@ const appLinks = [
 const socialLinks = [
   { label: 'Instagram', href: 'https://www.instagram.com/makanappofficial/' },
   { label: 'X', href: 'https://x.com/app_makan' },
-  { label: 'TikTok', href: 'https://www.tiktok.com/@makanapp' },
+  { label: 'TikTok', href: 'https://www.tiktok.com/@makan.app' },
 ]
 
 export default function Footer() {
