@@ -1,0 +1,294 @@
+<h2>Design Proposal: Makan Website Redesign</h2>
+<p class="subtitle">A dark, cinematic, air.inc-inspired redesign for the Makan beta waitlist. Review each section below.</p>
+
+<!-- VISUAL DIRECTION -->
+<div class="section">
+  <h3>Visual Direction</h3>
+  <div class="mockup">
+    <div class="mockup-header">Color & Typography System</div>
+    <div class="mockup-body" style="background: #050505; color: #fff; font-family: system-ui, sans-serif; padding: 32px;">
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+        <!-- Colors -->
+        <div>
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #666; margin-bottom: 16px;">Palette</div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <div style="text-align: center;">
+              <div style="width: 56px; height: 56px; background: #050505; border-radius: 8px; border: 1px solid #222;"></div>
+              <div style="font-size: 9px; color: #666; margin-top: 4px;">Background<br>#050505</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="width: 56px; height: 56px; background: #0f0f0f; border-radius: 8px; border: 1px solid #222;"></div>
+              <div style="font-size: 9px; color: #666; margin-top: 4px;">Surface<br>#0f0f0f</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="width: 56px; height: 56px; background: #FF9932; border-radius: 8px;"></div>
+              <div style="font-size: 9px; color: #666; margin-top: 4px;">Accent<br>#FF9932</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="width: 56px; height: 56px; background: #ffffff; border-radius: 8px;"></div>
+              <div style="font-size: 9px; color: #666; margin-top: 4px;">Primary text<br>#FFFFFF</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="width: 56px; height: 56px; background: #888888; border-radius: 8px;"></div>
+              <div style="font-size: 9px; color: #666; margin-top: 4px;">Muted<br>#888888</div>
+            </div>
+          </div>
+          <div style="margin-top: 16px; font-size: 10px; color: #555; line-height: 1.5;">
+            Near-black base. Food photos provide all the color.<br>
+            Orange accent used sparingly — CTAs, tab indicators, numbered elements only.
+          </div>
+        </div>
+
+        <!-- Typography -->
+        <div>
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #666; margin-bottom: 16px;">Typography</div>
+          <div style="margin-bottom: 12px;">
+            <div style="font-size: 32px; font-weight: 800; letter-spacing: -1px;">Plus Jakarta Sans</div>
+            <div style="color: #666; font-size: 10px; margin-top: 2px;">Hero headlines — 800 weight, tight tracking</div>
+          </div>
+          <div style="margin-bottom: 12px;">
+            <div style="font-size: 20px; font-weight: 600;">Section headings</div>
+            <div style="color: #666; font-size: 10px; margin-top: 2px;">600 weight, natural tracking</div>
+          </div>
+          <div style="margin-bottom: 12px;">
+            <div style="font-size: 14px; color: #ccc;">Body copy for descriptions and explanations</div>
+            <div style="color: #666; font-size: 10px; margin-top: 2px;">400 weight, generous line-height (1.6)</div>
+          </div>
+          <div style="margin-bottom: 12px;">
+            <div style="font-size: 14px; font-style: italic; color: #FF9932;">Italic accent for emphasis words</div>
+            <div style="color: #666; font-size: 10px; margin-top: 2px;">Air.inc-inspired — sparingly on key words</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Motion -->
+      <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #1a1a1a;">
+        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #666; margin-bottom: 12px;">Motion Philosophy</div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+          <div style="background: #0f0f0f; border-radius: 8px; padding: 16px;">
+            <div style="font-size: 12px; font-weight: 600; margin-bottom: 4px;">Scroll Reveal</div>
+            <div style="color: #666; font-size: 10px; line-height: 1.4;">Hero food photos cascade in on scroll. Framer Motion stagger animations. Elements fade-up as they enter viewport.</div>
+          </div>
+          <div style="background: #0f0f0f; border-radius: 8px; padding: 16px;">
+            <div style="font-size: 12px; font-weight: 600; margin-bottom: 4px;">Ambient Motion</div>
+            <div style="color: #666; font-size: 10px; line-height: 1.4;">Feature tabs auto-rotate on ~8s interval. No jarring scroll-jacking. Smooth crossfades between tab content.</div>
+          </div>
+          <div style="background: #0f0f0f; border-radius: 8px; padding: 16px;">
+            <div style="font-size: 12px; font-weight: 600; margin-bottom: 4px;">Micro-interactions</div>
+            <div style="color: #666; font-size: 10px; line-height: 1.4;">CTA hover glow. Meal card hover lift. FAQ accordion spring animation. Subtle, never distracting.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION BREAKDOWN -->
+<div class="section">
+  <h3>Section-by-Section Breakdown</h3>
+
+  <div class="mockup" style="margin-bottom: 16px;">
+    <div class="mockup-header">§1 — Hero: Word-First Scroll Reveal</div>
+    <div class="mockup-body" style="background: #050505; color: #fff; font-family: system-ui, sans-serif; padding: 32px; text-align: center;">
+      <div style="font-size: 10px; color: #444; margin-bottom: 24px;">[ viewport: 100vh, sticky positioning ]</div>
+      <div style="font-size: 56px; font-weight: 800; letter-spacing: -2px;">makan</div>
+      <div style="color: #FF9932; font-size: 16px; font-style: italic; margin: 8px 0 24px;">/mah·kahn/ — to eat</div>
+      <div style="color: #555; font-size: 12px; margin-bottom: 32px;">↓</div>
+      <div style="color: #444; font-size: 11px; line-height: 1.6; max-width: 400px; margin: 0 auto; border: 1px dashed #222; padding: 16px; border-radius: 8px;">
+        <strong style="color: #666;">On scroll:</strong> Real food photos (from Firebase meal gallery) cascade in from edges, building a living mosaic behind the text. Photos have slight parallax depth. The word "makan" stays centered as photos fill the frame. At full scroll, the manifesto line fades in below.
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup" style="margin-bottom: 16px;">
+    <div class="mockup-header">§2 — Manifesto</div>
+    <div class="mockup-body" style="background: #050505; color: #fff; font-family: system-ui, sans-serif; padding: 48px 32px; text-align: center;">
+      <div style="font-size: 24px; font-weight: 600; line-height: 1.4; max-width: 520px; margin: 0 auto;">A food journal where your friends' <span style="color: #FF9932; font-style: italic;">real meals</span> replace algorithms and influencers.</div>
+      <div style="color: #888; font-size: 13px; margin-top: 16px;">Start with the people you know. Discover the rest on your own terms.</div>
+      <div style="color: #666; font-size: 12px; margin-top: 12px;">No filters. No star ratings. No calorie counts.</div>
+      <div style="margin-top: 24px;">
+        <span style="background: #FF9932; color: #050505; padding: 10px 24px; border-radius: 8px; font-size: 13px; font-weight: 600;">Request a Seat</span>
+      </div>
+      <div style="color: #555; font-size: 11px; margin-top: 12px;">🌍 Available in 38 languages from day one</div>
+    </div>
+  </div>
+
+  <div class="mockup" style="margin-bottom: 16px;">
+    <div class="mockup-header">§3 — Feature Tabs (Auto-Rotating)</div>
+    <div class="mockup-body" style="background: #050505; color: #fff; font-family: system-ui, sans-serif; padding: 32px;">
+      <div style="text-align: center; font-size: 20px; font-weight: 600; margin-bottom: 24px;">How it works</div>
+
+      <!-- Tabs -->
+      <div style="display: flex; gap: 4px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap;">
+        <div style="background: #FF9932; color: #050505; padding: 8px 14px; border-radius: 24px; font-size: 11px; font-weight: 600;">Feed</div>
+        <div style="background: #1a1a1a; color: #888; padding: 8px 14px; border-radius: 24px; font-size: 11px;">Share Cards</div>
+        <div style="background: #1a1a1a; color: #888; padding: 8px 14px; border-radius: 24px; font-size: 11px;">Explore & Map</div>
+        <div style="background: #1a1a1a; color: #888; padding: 8px 14px; border-radius: 24px; font-size: 11px;">Streaks & Titles</div>
+        <div style="background: #1a1a1a; color: #888; padding: 8px 14px; border-radius: 24px; font-size: 11px;">Food Journal</div>
+      </div>
+
+      <!-- Content area -->
+      <div style="display: flex; gap: 24px; align-items: center;">
+        <div style="flex: 1;">
+          <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Two feeds. Your choice.</div>
+          <div style="color: #888; font-size: 12px; line-height: 1.6;">Friends feed for comfort — breakfast, lunch, dinner from people you actually know. Public feed for adventure — discover meals, restaurants, and food lovers across the Makan community.</div>
+        </div>
+        <div style="flex: 0 0 180px; height: 320px; background: #0f0f0f; border-radius: 28px; border: 2px solid #1a1a1a; display: flex; align-items: center; justify-content: center;">
+          <div style="color: #333; font-size: 10px; text-align: center;">[ App screen recording<br>auto-plays here ]<br><br>~8s per tab<br>crossfade transition</div>
+        </div>
+      </div>
+
+      <!-- Tab content previews -->
+      <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #111;">
+        <div style="font-size: 10px; color: #444; margin-bottom: 12px;">TAB CONTENT COPY:</div>
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; font-size: 9px;">
+          <div style="background: #0f0f0f; padding: 10px; border-radius: 6px;">
+            <div style="color: #FF9932; font-weight: 600;">Feed</div>
+            <div style="color: #666; margin-top: 4px;">"Two feeds. Friends for comfort, Public for adventure."</div>
+          </div>
+          <div style="background: #0f0f0f; padding: 10px; border-radius: 6px;">
+            <div style="color: #FF9932; font-weight: 600;">Share Cards</div>
+            <div style="color: #666; margin-top: 4px;">"Every share is a postcard for Makan. Branded cards for Stories, WhatsApp, anywhere."</div>
+          </div>
+          <div style="background: #0f0f0f; padding: 10px; border-radius: 6px;">
+            <div style="color: #FF9932; font-weight: 600;">Explore & Map</div>
+            <div style="color: #666; margin-top: 4px;">"See where your friends ate. Discover where they haven't. Friend avatars on every pin."</div>
+          </div>
+          <div style="background: #0f0f0f; padding: 10px; border-radius: 6px;">
+            <div style="color: #FF9932; font-weight: 600;">Streaks & Titles</div>
+            <div style="color: #666; margin-top: 4px;">"Post daily, earn titles, collect 100 badges. From Curious Eater to Local Legend."</div>
+          </div>
+          <div style="background: #0f0f0f; padding: 10px; border-radius: 6px;">
+            <div style="color: #FF9932; font-weight: 600;">Food Journal</div>
+            <div style="color: #666; margin-top: 4px;">"Your food diary. Every meal, every day, on a calendar you'll actually love looking at."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup" style="margin-bottom: 16px;">
+    <div class="mockup-header">§4 — Latest on Makan (Live Meals from Firebase)</div>
+    <div class="mockup-body" style="background: #050505; color: #fff; font-family: system-ui, sans-serif; padding: 32px; text-align: center;">
+      <div style="font-size: 20px; font-weight: 600; margin-bottom: 8px;">Latest on Makan</div>
+      <div style="color: #888; font-size: 12px; margin-bottom: 24px;">Real meals from real beta users. Updated live.</div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+        <div style="background: #1a1a1a; border-radius: 12px; height: 100px; display: flex; align-items: flex-end; padding: 10px;">
+          <div style="font-size: 9px; color: #666;">@user · Pad Thai · 🔥</div>
+        </div>
+        <div style="background: #1a1a1a; border-radius: 12px; height: 100px; display: flex; align-items: flex-end; padding: 10px;">
+          <div style="font-size: 9px; color: #666;">@user · Homemade pasta · 😍</div>
+        </div>
+        <div style="background: #1a1a1a; border-radius: 12px; height: 100px; display: flex; align-items: flex-end; padding: 10px;">
+          <div style="font-size: 9px; color: #666;">@user · Sunday roast · 🤤</div>
+        </div>
+        <div style="background: #1a1a1a; border-radius: 12px; height: 100px; display: flex; align-items: flex-end; padding: 10px;">
+          <div style="font-size: 9px; color: #666;">@user · Ramen · ❤️</div>
+        </div>
+        <div style="background: #1a1a1a; border-radius: 12px; height: 100px; display: flex; align-items: flex-end; padding: 10px;">
+          <div style="font-size: 9px; color: #666;">@user · Tacos · 🔥</div>
+        </div>
+        <div style="background: #1a1a1a; border-radius: 12px; height: 100px; display: flex; align-items: flex-end; padding: 10px;">
+          <div style="font-size: 9px; color: #666;">@user · Curry rice · 😋</div>
+        </div>
+      </div>
+      <div style="color: #555; font-size: 10px; margin-top: 16px; font-style: italic;">Hover to see meal details. Existing Firebase integration retained.</div>
+    </div>
+  </div>
+
+  <div class="mockup" style="margin-bottom: 16px;">
+    <div class="mockup-header">§5 — Brand Pillars (Revised)</div>
+    <div class="mockup-body" style="background: #050505; color: #fff; font-family: system-ui, sans-serif; padding: 48px 32px;">
+      <div style="text-align: center; font-size: 20px; font-weight: 600; margin-bottom: 32px;">What we believe</div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+        <div style="text-align: center; padding: 24px; background: #0a0a0a; border-radius: 12px; border: 1px solid #111;">
+          <div style="color: #FF9932; font-size: 28px; font-weight: 700; margin-bottom: 12px;">01</div>
+          <div style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">No audience required</div>
+          <div style="color: #888; font-size: 12px; line-height: 1.5;">Your meal doesn't need likes to be worth sharing. Post for you and your people.</div>
+        </div>
+        <div style="text-align: center; padding: 24px; background: #0a0a0a; border-radius: 12px; border: 1px solid #111;">
+          <div style="color: #FF9932; font-size: 28px; font-weight: 700; margin-bottom: 12px;">02</div>
+          <div style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">Ordinary is the point</div>
+          <div style="color: #888; font-size: 12px; line-height: 1.5;">The best food stories aren't from restaurants. They're from your kitchen at 11pm.</div>
+        </div>
+        <div style="text-align: center; padding: 24px; background: #0a0a0a; border-radius: 12px; border: 1px solid #111;">
+          <div style="color: #FF9932; font-size: 28px; font-weight: 700; margin-bottom: 12px;">03</div>
+          <div style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">Discovery without algorithms</div>
+          <div style="color: #888; font-size: 12px; line-height: 1.5;">Find new food through friends' real meals and an explore map — not a feed decided by machines.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+    <div class="mockup">
+      <div class="mockup-header">§6 — FAQ (Two-column)</div>
+      <div class="mockup-body" style="background: #050505; color: #fff; font-family: system-ui, sans-serif; padding: 32px; font-size: 11px;">
+        <div style="display: flex; gap: 32px;">
+          <div style="flex: 0 0 120px;">
+            <div style="font-size: 18px; font-weight: 600;">Questions?</div>
+          </div>
+          <div style="flex: 1;">
+            <div style="padding: 10px 0; border-bottom: 1px solid #151515;">What is Makan? <span style="float: right; color: #555;">+</span></div>
+            <div style="padding: 10px 0; border-bottom: 1px solid #151515;">Is it free? <span style="float: right; color: #555;">+</span></div>
+            <div style="padding: 10px 0; border-bottom: 1px solid #151515;">When does it launch? <span style="float: right; color: #555;">+</span></div>
+            <div style="padding: 10px 0; border-bottom: 1px solid #151515;">Do I need to post every day? <span style="float: right; color: #555;">+</span></div>
+            <div style="padding: 10px 0; border-bottom: 1px solid #151515;">What's a Share Card? <span style="float: right; color: #555;">+</span></div>
+            <div style="padding: 10px 0;">What about my privacy? <span style="float: right; color: #555;">+</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mockup">
+      <div class="mockup-header">§7 — B2B Teaser</div>
+      <div class="mockup-body" style="background: #0a0808; color: #fff; font-family: system-ui, sans-serif; padding: 32px; text-align: center;">
+        <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Own a restaurant?</div>
+        <div style="color: #888; font-size: 12px; line-height: 1.6; margin-bottom: 20px; max-width: 320px; margin-left: auto; margin-right: auto;">We're building something that shows you which customers are <span style="color: #FF9932;">one visit away</span> from becoming regulars.</div>
+        <div style="border: 1px solid #FF9932; color: #FF9932; padding: 8px 20px; border-radius: 8px; font-size: 12px; display: inline-block;">Tell me more →</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup" style="margin-top: 16px;">
+    <div class="mockup-header">§8 — Final CTA + Footer</div>
+    <div class="mockup-body" style="background: #050505; color: #fff; font-family: system-ui, sans-serif; padding: 48px 32px; text-align: center;">
+      <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px;">Join the table.</div>
+      <div style="color: #888; font-size: 13px; margin-bottom: 24px;">We're letting people in slowly. Request your seat.</div>
+      <div style="background: #FF9932; color: #050505; padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 600; display: inline-block;">Request a Seat</div>
+      <div style="color: #555; font-size: 12px; margin-top: 20px; font-style: italic; max-width: 400px; margin-left: auto; margin-right: auto;">"I built this because I missed knowing what my friends were eating for dinner." — Devon</div>
+      <div style="margin-top: 40px; padding-top: 24px; border-top: 1px solid #111; display: flex; justify-content: space-between; font-size: 10px; color: #555;">
+        <div>© 2025 Makan · Made with love in London</div>
+        <div style="display: flex; gap: 16px;">
+          <span>Privacy</span><span>Terms</span><span>Instagram</span><span>TikTok</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- APPROVAL -->
+<div style="margin-top: 32px;">
+  <h3>Ready to proceed?</h3>
+  <p class="subtitle">This is the full design direction. If approved, I'll write the formal spec document and then create the implementation plan.</p>
+</div>
+
+<div class="options">
+  <div class="option" data-choice="approved" onclick="toggleSelect(this)">
+    <div class="letter">✓</div>
+    <div class="content">
+      <h3>Design approved — write the spec</h3>
+      <p>I'm happy with the direction. Lock it in and move to implementation planning.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="revisions" onclick="toggleSelect(this)">
+    <div class="letter">✎</div>
+    <div class="content">
+      <h3>Needs revisions</h3>
+      <p>I have feedback on specific sections. I'll explain in the terminal.</p>
+    </div>
+  </div>
+</div>

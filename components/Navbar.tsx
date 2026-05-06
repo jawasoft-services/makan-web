@@ -86,7 +86,7 @@ export default function Navbar() {
             href="/contact"
             className="rounded-full bg-brand-orange px-5 py-2 text-sm font-semibold text-brand-bg transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
           >
-            Request a Seat
+            Save My Seat
           </Link>
         </div>
 
@@ -96,7 +96,7 @@ export default function Navbar() {
             href="/contact"
             className="rounded-full bg-brand-orange px-4 py-2 text-sm font-semibold text-brand-bg"
           >
-            Request a Seat
+            Save My Seat
           </Link>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}

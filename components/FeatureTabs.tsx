@@ -37,8 +37,8 @@ const features = [
     id: 'streaks',
     number: '04',
     label: 'Streaks & Titles',
-    headline: 'From Curious Eater to Local Legend.',
-    description: 'Post daily, climb six tiers, collect 100 badges. No guilt, just momentum.',
+    headline: 'Six titles, 100 badges, one habit.',
+    description: 'Post a meal a day to keep your streak. Six foodie titles to climb, 100 badges to collect.',
     image: '/mockups/streaks.png',
   },
   {
@@ -129,7 +129,7 @@ export default function FeatureTabs() {
                 className="mt-4 text-3xl font-bold text-white sm:text-4xl lg:text-5xl"
                 style={{ letterSpacing: '-0.02em' }}
               >
-                Five reasons to join.
+                What you actually do here.
               </h2>
             </motion.div>
             {/* Active headline + description */}

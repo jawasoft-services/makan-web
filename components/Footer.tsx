@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 const appLinks = [
-  { label: 'Request a Seat', href: '/contact' },
+  { label: 'Save My Seat', href: '/contact' },
   { label: 'Privacy Policy', href: '/privacy-policy' },
   { label: 'Terms', href: '/tos' },
 ]

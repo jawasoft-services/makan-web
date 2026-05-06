@@ -31,7 +31,7 @@ export default function B2BTeaser() {
           href="/partner"
           className="shrink-0 rounded-xl bg-brand-orange px-6 py-3 text-sm font-semibold text-brand-bg transition-all hover:brightness-110 active:scale-[0.98]"
         >
-          Talk to us
+          Claim your restaurant
         </Link>
       </motion.div>
     </section>

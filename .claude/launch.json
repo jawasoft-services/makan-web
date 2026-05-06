@@ -1,0 +1,16 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dev",
+      "runtimeExecutable": "/Users/devonmakepeace/.nvm/versions/node/v24.12.0/bin/node",
+      "runtimeArgs": ["./node_modules/.bin/next", "dev"],
+      "env": {
+        "NEXT_PRIVATE_LOCAL_WEBPACK": "1",
+        "PATH": "/Users/devonmakepeace/.nvm/versions/node/v24.12.0/bin:/usr/local/bin:/usr/bin:/bin"
+      },
+      "port": 3000,
+      "autoPort": true
+    }
+  ]
+}

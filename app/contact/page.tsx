@@ -3,7 +3,7 @@ import Footer from '@/components/Footer'
 import ContactForm from './ContactForm'
 
 export const metadata: Metadata = {
-  title: 'Request a Seat — Makan',
+  title: 'Save My Seat — Makan',
   description:
     'Join the Makan invite-only beta. Leave your details and we\u2019ll be in touch.',
 }

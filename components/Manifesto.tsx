@@ -30,7 +30,7 @@ export default function Manifesto() {
         >
           The food diary that remembers what you&apos;d otherwise forget.
           <br className="hidden sm:inline" />
-          {' '}Tag the place. Add a friend. It stays in your calendar. Forever.
+          {' '}Snap dinner, tag the spot, save it forever.
         </motion.p>
       </div>
     </section>

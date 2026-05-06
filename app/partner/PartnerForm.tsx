@@ -128,7 +128,7 @@ export default function PartnerForm() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
-                Partner with Makan
+                Claim your restaurant on Makan
               </motion.h1>
 
               <motion.p
@@ -137,8 +137,8 @@ export default function PartnerForm() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                Tell us about your restaurant and we&apos;ll
-                show you what we&apos;re building.
+                Free for the life of your venue as a Durham Launch Partner.
+                We&apos;re opening 20 partnerships. Tell us about yours.
               </motion.p>
             </div>
 

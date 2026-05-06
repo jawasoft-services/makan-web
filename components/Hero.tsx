@@ -211,7 +211,7 @@ export default function Hero() {
                   className="relative inline-block rounded-full bg-brand-orange px-5 py-2.5 text-xs font-semibold text-brand-bg transition-all sm:px-7 sm:py-3 sm:text-sm hover:shadow-lg hover:shadow-brand-orange/25"
                 >
                   <span className="pointer-events-none absolute -inset-3 rounded-full bg-brand-orange/10 blur-xl" aria-hidden />
-                  <span className="relative">Request a Seat</span>
+                  <span className="relative">Save My Seat</span>
                 </Link>
               </div>
             </div>

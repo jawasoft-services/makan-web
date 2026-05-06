@@ -3,9 +3,9 @@ import Footer from '@/components/Footer'
 import PartnerForm from './PartnerForm'
 
 export const metadata: Metadata = {
-  title: 'Partner with Makan — For Restaurants',
+  title: 'Claim your restaurant — Makan',
   description:
-    'Own a restaurant? Learn how Makan can work for your business. Tell us about your restaurant and we\u2019ll be in touch.',
+    'Claim your restaurant on Makan. Free for the life of your venue as a Durham Launch Partner. We’re opening 20 partnerships.',
 }
 
 export default function PartnerPage() {

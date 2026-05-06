@@ -6,8 +6,8 @@ import { motion, useInView } from 'framer-motion'
 const beliefs = [
   {
     number: '01',
-    title: 'No audience required',
-    copy: "Your meal doesn't need likes to be worth sharing.",
+    title: 'Post for yourself first',
+    copy: "Your meal isn't a performance. Friends will see it. Strangers won't.",
   },
   {
     number: '02',

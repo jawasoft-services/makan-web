@@ -27,7 +27,7 @@ export default function FinalCTA() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          We&apos;re letting people in slowly. Request your seat.
+          We&apos;re letting people in slowly. Save your seat.
         </motion.p>
 
         <motion.div
@@ -41,7 +41,7 @@ export default function FinalCTA() {
             className="relative inline-block rounded-full bg-brand-orange px-8 py-3.5 text-sm font-semibold text-brand-bg transition-all hover:shadow-lg hover:shadow-brand-orange/25"
           >
             <span className="pointer-events-none absolute -inset-4 rounded-full bg-brand-orange/10 blur-xl" aria-hidden />
-            <span className="relative">Request a Seat</span>
+            <span className="relative">Save My Seat</span>
           </Link>
         </motion.div>
 
