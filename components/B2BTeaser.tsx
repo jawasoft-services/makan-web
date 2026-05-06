@@ -21,10 +21,10 @@ export default function B2BTeaser() {
             For restaurants
           </p>
           <h2 className="text-xl font-bold text-white sm:text-2xl">
-            Own a restaurant?
+            Memory is the moat.
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-brand-muted sm:text-base">
-            We&apos;re building something for you too.
+            Yelp tells you what customers said once. Makan tells you what they remember.
           </p>
         </div>
         <Link

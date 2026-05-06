@@ -18,9 +18,8 @@ export default function Manifesto() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
         >
-          Your friends&apos;{' '}
-          <em className="not-italic text-brand-orange">real meals</em>
-          {' '}replace algorithms and influencers.
+          Every meal you ate this year{' '}
+          <em className="not-italic text-brand-orange">— kept.</em>
         </motion.h2>
 
         <motion.p
@@ -29,9 +28,9 @@ export default function Manifesto() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.25 }}
         >
-          No filters. No star ratings. No calorie counts.
+          The food diary that remembers what you&apos;d otherwise forget.
           <br className="hidden sm:inline" />
-          {' '}Just what you actually ate today.
+          {' '}Tag the place. Add a friend. It stays in your calendar. Forever.
         </motion.p>
       </div>
     </section>

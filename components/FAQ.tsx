@@ -6,27 +6,27 @@ import { motion, useInView } from 'framer-motion'
 const faqs = [
   {
     q: 'What is Makan?',
-    a: 'Makan is a food journal you share with friends. Snap what you eat, when you eat it. Share publicly, with friends, or keep it private. No reviews, no ratings — just real meals from real life.',
+    a: 'A food diary you keep with friends. Snap a photo of your meal, tag the place if it matters, and it stays in your calendar forever.',
+  },
+  {
+    q: 'What does “makan” mean?',
+    a: 'In Indonesian, it means eat. Devon — our founder — is Indonesian, so naming the app Makan made sense.',
+  },
+  {
+    q: 'What’s the difference between a like and a crave?',
+    a: 'A like is a thumbs-up between friends. A crave saves the meal to a wishlist of things you want to try — mostly used when a friend posts something that makes you instantly hungry.',
   },
   {
     q: 'Who can see my meals?',
-    a: 'You decide. Every post can be set to Public (anyone on Makan), Friends (mutuals only), or Private (just you). The default is up to you.',
-  },
-  {
-    q: 'What\u2019s the difference between the two feeds?',
-    a: 'The Public Feed shows meals from anyone on Makan who posts publicly. The Friends Feed only shows meals from people you\u2019ve mutually added — no strangers, just your circle.',
-  },
-  {
-    q: 'Does it need to look perfect?',
-    a: 'No. Makan is for what you actually eat, not what looks best. Microwave meals, desk lunches, and burnt toast all belong here. The point is capturing the real, not performing for an audience.',
-  },
-  {
-    q: 'What does real-time mean?',
-    a: 'When you post on Makan, you\u2019re posting as it happens. No scrolling back through old photos. The app is designed for in-the-moment sharing, which is what makes it feel honest.',
+    a: 'You decide. Every post can be set to Public (anyone on Makan), Friends (mutuals only), or Private (just you).',
   },
   {
     q: 'Is there calorie counting?',
-    a: 'No. Makan is not a diet app or a nutrition tracker. It\u2019s a place to document and share what you eat with the people you care about. That\u2019s it.',
+    a: 'No. No macros, no nutrition data, no scoring your dinner. Just photos of what you eat.',
+  },
+  {
+    q: 'Is there a streak?',
+    a: 'Yes. Post a meal a day to keep it. People get oddly attached.',
   },
 ]
 

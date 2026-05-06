@@ -18,7 +18,7 @@ export default function FinalCTA() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
         >
-          Join the table.
+          Share what you eat.
         </motion.h2>
 
         <motion.p
@@ -58,7 +58,7 @@ export default function FinalCTA() {
             it.&rdquo;
           </p>
           <p className="mt-4 text-xs text-brand-muted">
-            — Devon Makepeace, Founder of Makan, London
+            — Devon Makepeace, Founder, London (via Jakarta)
           </p>
         </motion.div>
       </div>

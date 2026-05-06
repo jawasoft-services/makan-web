@@ -198,11 +198,11 @@ export default function Hero() {
               />
 
               <p className="mt-2 sm:mt-3 text-xs text-white font-medium sm:text-base">
-                A food journal shared with friends.
+                Share what you eat. A food diary, with friends.
               </p>
 
               <p className="mt-1 text-[10px] italic text-white/60 sm:text-sm">
-                /mah·kahn/ — to eat
+                /mah·kahn/ — Indonesian for &ldquo;to eat&rdquo;
               </p>
 
               <div className="mt-3 sm:mt-5">
