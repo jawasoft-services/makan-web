@@ -18,8 +18,8 @@ export default function Manifesto() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
         >
-          Every meal you ate this year{' '}
-          <em className="not-italic text-brand-orange">— kept.</em>
+          You remember who was there.{' '}
+          <em className="not-italic text-brand-orange">Not what you ate.</em>
         </motion.h2>
 
         <motion.p
