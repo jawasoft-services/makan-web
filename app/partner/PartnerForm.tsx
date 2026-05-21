@@ -39,6 +39,11 @@ export default function PartnerForm() {
 
     setStatus('loading')
 
+    // Honeypot: read the hidden 'website' field — bots auto-fill it.
+    const honeypot = String(
+      new FormData(e.currentTarget as HTMLFormElement).get('website') ?? '',
+    )
+
     try {
       const res = await fetch('/api/partner', {
         method: 'POST',
@@ -49,6 +54,7 @@ export default function PartnerForm() {
           restaurant: restaurant.trim(),
           city: city.trim(),
           message: message.trim(),
+          website: honeypot,
         }),
       })
 
@@ -219,6 +225,16 @@ export default function PartnerForm() {
                   className="w-full rounded-xl border border-brand-border bg-brand-surface px-4 py-3 text-sm text-white placeholder:text-brand-dim outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-surface resize-none"
                 />
               </div>
+
+              {/* Honeypot — hidden from real users; naive bots auto-fill it. */}
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                style={{ position: 'absolute', left: '-9999px', width: 0, height: 0, opacity: 0 }}
+              />
 
               <div className="pt-2">
                 <button

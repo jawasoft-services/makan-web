@@ -28,7 +28,12 @@ async function getMeal(id: string): Promise<MealData | null> {
     if (!db) return null
     const doc = await db.collection("meals").doc(id).get()
     if (!doc.exists) return null
-    return { id: doc.id, ...doc.data() } as MealData
+    const meal = { id: doc.id, ...doc.data() } as MealData
+    // Fail closed: only return meals explicitly marked public.
+    // Any missing/null/false isPublic is treated as private and yields null,
+    // so both generateMetadata and the page inherit the same gate.
+    if (meal.isPublic !== true) return null
+    return meal
   } catch {
     return null
   }
@@ -68,7 +73,8 @@ export default async function MealPage({ params }: PageProps) {
   const { id } = await params
   const meal = await getMeal(id)
 
-  if (!meal || meal.isPublic === false) {
+  // Privacy gate is centralized in getMeal (returns null for non-public).
+  if (!meal) {
     redirect("/")
   }
 

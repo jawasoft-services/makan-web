@@ -1,5 +1,25 @@
 import type { NextConfig } from "next";
 
+// Security response headers applied to every route.
+// Conservative subset — zero breakage risk. A nonce-based script-src CSP is a
+// follow-up (needs nonce wiring through Next's inline runtime + Vercel Analytics).
+const securityHeaders = [
+  // Clickjacking protection (legacy header for older browsers).
+  { key: "X-Frame-Options", value: "DENY" },
+  // Block MIME-type sniffing.
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  // Limit referrer leakage on cross-origin navigation.
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  // Force HTTPS for 1 year + apply to subdomains. No `preload` so we can
+  // roll back without going through the preload-list removal process.
+  { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
+  // Deny powerful browser APIs we don't use.
+  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()" },
+  // Modern clickjacking protection. Full CSP (script-src/style-src) is deferred —
+  // see TODO above; ship the part with zero compatibility risk first.
+  { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+];
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
@@ -8,6 +28,14 @@ const nextConfig: NextConfig = {
         hostname: "firebasestorage.googleapis.com",
       },
     ],
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: securityHeaders,
+      },
+    ];
   },
 };
 

@@ -28,11 +28,20 @@ export default function ContactForm() {
 
     setStatus('loading')
 
+    // Honeypot: read the hidden 'website' field — bots auto-fill it.
+    const honeypot = String(
+      new FormData(e.currentTarget as HTMLFormElement).get('website') ?? '',
+    )
+
     try {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim(), email: email.trim() }),
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          website: honeypot,
+        }),
       })
 
       if (!res.ok) {
@@ -166,6 +175,16 @@ export default function ContactForm() {
                   className="w-full rounded-xl border border-brand-border bg-brand-surface px-4 py-3 text-sm text-white placeholder:text-brand-dim outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-surface"
                 />
               </div>
+
+              {/* Honeypot — hidden from real users; naive bots auto-fill it. */}
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                style={{ position: 'absolute', left: '-9999px', width: 0, height: 0, opacity: 0 }}
+              />
 
               <div className="pt-2">
                 <button
