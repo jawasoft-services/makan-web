@@ -15,11 +15,10 @@ const meals = [
 ]
 
 interface LatestOnMakanProps {
-  userCount: number
   mealCount: number
 }
 
-export default function LatestOnMakan({ userCount, mealCount }: LatestOnMakanProps) {
+export default function LatestOnMakan({ mealCount }: LatestOnMakanProps) {
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
@@ -36,7 +35,6 @@ export default function LatestOnMakan({ userCount, mealCount }: LatestOnMakanPro
             From the beta
           </p>
           <h2 className="mt-3 text-2xl font-bold text-white sm:text-3xl lg:text-4xl" style={{ letterSpacing: '-0.02em' }}>
-            <StatTicker value={userCount} inView={inView} /> people in the beta.{' '}
             <StatTicker value={mealCount} inView={inView} /> meals and counting.
           </h2>
         </motion.div>

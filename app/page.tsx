@@ -8,9 +8,10 @@ import B2BTeaser from "@/components/B2BTeaser"
 import FinalCTA from "@/components/FinalCTA"
 import Footer from "@/components/Footer"
 
-// Regenerate the static homepage once per day — refreshes the live stats
-// without hammering Firestore on every visit.
-export const revalidate = 86400
+// Regenerate the static homepage once per hour — keeps the live meal count
+// fresh enough to feel "alive" between visits, with trivial Firestore cost
+// (~24 aggregation reads/day regardless of traffic).
+export const revalidate = 3600
 
 export default function Home() {
   return (
