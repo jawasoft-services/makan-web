@@ -10,6 +10,7 @@ import {
   FIELD_MAX,
   ALLOWED_ORIGINS,
 } from "@/lib/api-validation"
+import { getSheetsAuth } from "@/lib/sheets-auth"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -17,14 +18,7 @@ async function appendToSheet(name: string, email: string) {
   const sheetId = process.env.GOOGLE_SHEET_ID
   if (!sheetId) return
 
-  const auth = new google.auth.GoogleAuth({
-    credentials: {
-      client_email: process.env.FIREBASE_CLIENT_EMAIL,
-      private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-    },
-    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-  })
-
+  const auth = getSheetsAuth()
   const sheets = google.sheets({ version: "v4", auth })
   const now = new Date().toISOString()
 
