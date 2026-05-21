@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import Image from 'next/image'
 import { motion, useInView } from 'framer-motion'
+import StatTicker from './StatTicker'
 
 const meals = [
   { src: '/meals/IMG_6831.jpg', alt: 'Octopus with orange sauce' },
@@ -13,7 +14,12 @@ const meals = [
   { src: '/meals/IMG_6945.jpg', alt: 'Valentines brunch platter' },
 ]
 
-export default function LatestOnMakan() {
+interface LatestOnMakanProps {
+  userCount: number
+  mealCount: number
+}
+
+export default function LatestOnMakan({ userCount, mealCount }: LatestOnMakanProps) {
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
@@ -30,7 +36,8 @@ export default function LatestOnMakan() {
             From the beta
           </p>
           <h2 className="mt-3 text-2xl font-bold text-white sm:text-3xl lg:text-4xl" style={{ letterSpacing: '-0.02em' }}>
-            From 160 people in our beta. 581 meals this month.
+            <StatTicker value={userCount} inView={inView} /> people in the beta.{' '}
+            <StatTicker value={mealCount} inView={inView} /> meals and counting.
           </h2>
         </motion.div>
       </div>
