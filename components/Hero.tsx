@@ -199,11 +199,13 @@ export default function Hero() {
 
               {/* The hook — loss aversion. Cold-acquisition only (per product brief). */}
               <h1
-                className="mt-4 text-2xl font-bold leading-[1.1] text-white sm:mt-5 sm:text-4xl"
+                className="mt-4 text-center text-2xl font-bold leading-[1.1] text-white sm:mt-5 sm:text-4xl"
                 style={{ letterSpacing: '-0.025em' }}
               >
-                You&apos;ll forget today&apos;s best meal by Friday.{' '}
-                <span className="text-brand-orange">Makan won&apos;t.</span>
+                You&apos;ll forget today&apos;s best meal by Friday.
+                <span className="mt-2 block text-brand-orange">
+                  Makan won&apos;t.
+                </span>
               </h1>
 
               <p className="mt-3 text-xs text-white/80 sm:text-base">
