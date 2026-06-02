@@ -25,7 +25,7 @@ export default function MemoryTest() {
   const current = done ? null : QUESTIONS[step]
 
   // Button copy escalates gently — the user keeps admitting they forget.
-  const buttonCopy = ['I forget', 'Still nothing', 'No idea, honestly']
+  const buttonCopy = ['I forgot', 'Still nothing', 'No idea, honestly']
 
   return (
     <section
@@ -87,7 +87,7 @@ export default function MemoryTest() {
             whileTap={{ scale: 0.97 }}
             className="mt-10 rounded-full border border-brand-border px-6 py-3 text-sm font-medium text-brand-muted transition-colors hover:border-brand-orange/40 hover:text-white"
           >
-            {buttonCopy[step] ?? 'I forget'}
+            {buttonCopy[step] ?? 'I forgot'}
           </motion.button>
         )}
 
