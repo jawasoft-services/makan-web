@@ -1,8 +1,7 @@
 import Hero from "@/components/Hero"
 import MemoryTest from "@/components/MemoryTest"
 import Manifesto from "@/components/Manifesto"
-import FeatureTabs from "@/components/FeatureTabs"
-import Refusals from "@/components/Refusals"
+import AppShowcase from "@/components/AppShowcase"
 import LatestOnMakanSection from "@/components/LatestOnMakanSection"
 import FounderStory from "@/components/FounderStory"
 import B2BTeaser from "@/components/B2BTeaser"
@@ -24,8 +23,7 @@ export default function Home() {
       <Hero />
       <MemoryTest />
       <Manifesto />
-      <FeatureTabs />
-      <Refusals />
+      <AppShowcase />
       <LatestOnMakanSection />
       <FounderStory />
       <B2BTeaser />
