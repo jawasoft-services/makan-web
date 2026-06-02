@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
+import Link from 'next/link'
 import { motion, useInView } from 'framer-motion'
 
 export default function Manifesto() {
@@ -32,6 +33,20 @@ export default function Manifesto() {
           <br className="hidden sm:inline" />
           {' '}Snap dinner, tag the spot, save it forever.
         </motion.p>
+
+        <motion.div
+          className="mt-10 flex justify-center sm:mt-12"
+          initial={{ opacity: 0, y: 10 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.45 }}
+        >
+          <Link
+            href="/manifesto"
+            className="text-sm font-medium text-brand-orange underline-offset-4 transition-opacity hover:underline hover:opacity-90"
+          >
+            Read the full manifesto →
+          </Link>
+        </motion.div>
       </div>
     </section>
   )

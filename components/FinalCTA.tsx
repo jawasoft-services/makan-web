@@ -4,6 +4,8 @@ import { useRef } from 'react'
 import Link from 'next/link'
 import { motion, useInView } from 'framer-motion'
 
+const EASE_OUT = [0.23, 1, 0.32, 1] as const
+
 export default function FinalCTA() {
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
@@ -12,55 +14,49 @@ export default function FinalCTA() {
     <section ref={ref} className="bg-brand-bg px-5 sm:px-8 py-24 sm:py-36">
       <div className="mx-auto max-w-2xl text-center">
         <motion.h2
-          className="text-3xl font-bold text-white sm:text-4xl lg:text-5xl"
-          style={{ letterSpacing: '-0.02em' }}
+          className="text-4xl font-bold leading-[1.05] text-white sm:text-6xl"
+          style={{ letterSpacing: '-0.03em' }}
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.7, ease: EASE_OUT }}
         >
-          Share what you eat.
+          The beta&apos;s open.
         </motion.h2>
 
         <motion.p
-          className="mt-4 text-sm text-brand-muted sm:text-base"
+          className="mx-auto mt-5 max-w-md text-base text-brand-muted sm:text-lg"
           initial={{ opacity: 0, y: 16 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.1 }}
+          transition={{ duration: 0.5, delay: 0.1, ease: EASE_OUT }}
         >
-          We&apos;re letting people in slowly. Save your seat.
+          Drop your email. The link lands in your inbox in seconds, and
+          you&apos;re in the app a minute later.
         </motion.p>
 
         <motion.div
-          className="mt-8"
+          className="mt-9"
           initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          transition={{ duration: 0.5, delay: 0.2, ease: EASE_OUT }}
         >
           <Link
             href="/contact"
-            className="relative inline-block rounded-full bg-brand-orange px-8 py-3.5 text-sm font-semibold text-brand-bg transition-all hover:shadow-lg hover:shadow-brand-orange/25"
+            className="relative inline-block rounded-full bg-brand-orange px-9 py-4 text-base font-semibold text-brand-bg transition-all hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
           >
             <span className="pointer-events-none absolute -inset-4 rounded-full bg-brand-orange/10 blur-xl" aria-hidden />
-            <span className="relative">Save My Seat</span>
+            <span className="relative">Get early access</span>
           </Link>
         </motion.div>
 
-        <motion.div
-          className="mx-auto mt-16 max-w-xl border-t border-brand-border pt-10"
+        <motion.p
+          className="mt-5 text-xs text-brand-dim"
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          transition={{ duration: 0.6, delay: 0.35, ease: EASE_OUT }}
         >
-          <p className="text-sm italic leading-relaxed text-brand-dim sm:text-base">
-            &ldquo;Makan started as a Snapchat story shared between our closest
-            friends. Over six years and thousands of meals later, we realised
-            we&apos;d built a habit worth keeping — so we built an app around
-            it.&rdquo;
-          </p>
-          <p className="mt-4 text-xs text-brand-muted">
-            — Devon Makepeace, Founder, London (via Jakarta)
-          </p>
-        </motion.div>
+          iPhone, via TestFlight. Android, you&apos;re next — leave your email
+          and we&apos;ll tell you the day it&apos;s ready.
+        </motion.p>
       </div>
     </section>
   )

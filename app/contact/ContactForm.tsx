@@ -75,12 +75,13 @@ export default function ContactForm() {
               </svg>
             </div>
             <h1 className="mt-5 text-2xl font-bold text-white sm:text-3xl">
-              You&apos;re on the list.
+              Check your inbox.
             </h1>
             <p className="mt-3 text-sm leading-relaxed text-brand-muted sm:text-base">
-              We&apos;ll reach out when a seat opens up.
+              Your TestFlight link is on its way — it should land in the next
+              minute.
               <br />
-              Keep an eye on your inbox.
+              Tap it on your iPhone and you&apos;re in.
             </p>
             <Link
               href="/"
@@ -120,7 +121,7 @@ export default function ContactForm() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
-                Save My Seat
+                Get early access
               </motion.h1>
 
               <motion.p
@@ -129,8 +130,8 @@ export default function ContactForm() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                We open seats slowly. Leave your details
-                and we&apos;ll be in touch.
+                The beta&apos;s open. Drop your email and the TestFlight link
+                lands in your inbox in seconds.
               </motion.p>
             </div>
 
@@ -201,7 +202,7 @@ export default function ContactForm() {
                       Sending...
                     </span>
                   ) : (
-                    'Save my seat'
+                    'Send me the link'
                   )}
                 </button>
               </div>

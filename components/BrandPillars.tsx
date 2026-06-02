@@ -6,18 +6,18 @@ import { motion, useInView } from 'framer-motion'
 const beliefs = [
   {
     number: '01',
-    title: 'Post for yourself first',
-    copy: "Your meal isn't a performance. Friends will see it. Strangers won't.",
+    title: 'Not a performance',
+    copy: "Your meal isn't content. Friends will see it. Strangers won't, unless you say otherwise.",
   },
   {
     number: '02',
-    title: 'Ordinary is the point',
-    copy: "The best food stories come from your kitchen at 11pm.",
+    title: 'The meal that mattered',
+    copy: "Maybe a dinner you made at 11pm last Tuesday. Maybe a small restaurant nobody else seems to know about. The meal that mattered always beats the meal that trended.",
   },
   {
     number: '03',
-    title: 'No algorithm required',
-    copy: "Find places through what your friends actually ate.",
+    title: 'Friends, not strangers',
+    copy: "Find places through what your friends actually ate. No 4.6 averages from people you've never met.",
   },
 ]
 

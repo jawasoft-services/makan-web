@@ -187,32 +187,40 @@ export default function Hero() {
               </motion.div>
             </div>
 
-            {/* Glass panel with wordmark + text + CTA */}
-            <div className="mt-4 sm:mt-6 text-center rounded-3xl bg-brand-bg/65 px-4 py-4 backdrop-blur-lg max-w-[300px] sm:max-w-md sm:px-6 sm:py-6">
+            {/* Glass panel with wordmark + loss hook + CTA */}
+            <div className="mt-4 sm:mt-6 text-center rounded-3xl bg-brand-bg/70 px-5 py-5 backdrop-blur-lg max-w-[320px] sm:max-w-lg sm:px-8 sm:py-7">
               <Image
                 src="/makan-logo.png"
                 alt="makan"
                 width={600}
                 height={120}
-                className="mx-auto h-auto w-full max-w-[240px] sm:max-w-[380px] lg:max-w-[420px]"
+                className="mx-auto h-auto w-full max-w-[160px] sm:max-w-[220px]"
               />
 
-              <p className="mt-2 sm:mt-3 text-xs text-white font-medium sm:text-base">
-                Share what you eat. A food diary, with friends.
+              {/* The hook — loss aversion. Cold-acquisition only (per product brief). */}
+              <h1
+                className="mt-4 text-2xl font-bold leading-[1.1] text-white sm:mt-5 sm:text-4xl"
+                style={{ letterSpacing: '-0.025em' }}
+              >
+                You&apos;ll forget today&apos;s best meal by Friday.{' '}
+                <span className="text-brand-orange">Makan won&apos;t.</span>
+              </h1>
+
+              <p className="mt-3 text-xs text-white/80 sm:text-base">
+                The food diary you keep with friends.
               </p>
 
-              <p className="mt-1 text-[10px] italic text-white/60 sm:text-sm">
-                /mah·kahn/ — Indonesian for &ldquo;to eat&rdquo;
-              </p>
-
-              <div className="mt-3 sm:mt-5">
+              <div className="mt-5 sm:mt-6">
                 <Link
                   href="/contact"
-                  className="relative inline-block rounded-full bg-brand-orange px-5 py-2.5 text-xs font-semibold text-brand-bg transition-all sm:px-7 sm:py-3 sm:text-sm hover:shadow-lg hover:shadow-brand-orange/25"
+                  className="relative inline-block rounded-full bg-brand-orange px-6 py-3 text-sm font-semibold text-brand-bg transition-all sm:px-8 sm:py-3.5 sm:text-base hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
                 >
                   <span className="pointer-events-none absolute -inset-3 rounded-full bg-brand-orange/10 blur-xl" aria-hidden />
-                  <span className="relative">Save My Seat</span>
+                  <span className="relative">Get early access</span>
                 </Link>
+                <p className="mt-2.5 text-[11px] text-white/55 sm:text-xs">
+                  The beta&apos;s open. Link lands in your inbox in seconds.
+                </p>
               </div>
             </div>
           </div>

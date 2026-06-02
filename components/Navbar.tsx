@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 
 const navLinks = [
-  { label: 'Story', href: '#story' },
+  { label: 'Manifesto', href: '/manifesto' },
   { label: 'Features', href: '#features' },
   { label: 'FAQ', href: '#faq' },
   { label: 'For Restaurants', href: '#for-restaurants' },
@@ -73,20 +73,35 @@ export default function Navbar() {
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={pathname === '/' ? link.href : `/${link.href}`}
-              className="text-sm text-brand-muted transition-colors hover:text-white"
-            >
-              {link.label}
-            </a>
-          ))}
+          {navLinks.map((link) => {
+            // Route links (start with "/") use Next.js Link; hash links use <a>
+            // and resolve to /#hash when not on the homepage.
+            if (link.href.startsWith('/')) {
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-sm text-brand-muted transition-colors hover:text-white"
+                >
+                  {link.label}
+                </Link>
+              )
+            }
+            return (
+              <a
+                key={link.href}
+                href={pathname === '/' ? link.href : `/${link.href}`}
+                className="text-sm text-brand-muted transition-colors hover:text-white"
+              >
+                {link.label}
+              </a>
+            )
+          })}
           <Link
             href="/contact"
             className="rounded-full bg-brand-orange px-5 py-2 text-sm font-semibold text-brand-bg transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
           >
-            Save My Seat
+            Get early access
           </Link>
         </div>
 
@@ -96,7 +111,7 @@ export default function Navbar() {
             href="/contact"
             className="rounded-full bg-brand-orange px-4 py-2 text-sm font-semibold text-brand-bg"
           >
-            Save My Seat
+            Get early access
           </Link>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -129,16 +144,31 @@ export default function Navbar() {
         }`}
       >
         <div className="flex flex-col gap-1 px-5 pb-6 pt-2">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={pathname === '/' ? link.href : `/${link.href}`}
-              onClick={() => setMobileOpen(false)}
-              className="rounded-lg px-3 py-3 text-sm text-brand-muted transition-colors hover:bg-brand-surface hover:text-white"
-            >
-              {link.label}
-            </a>
-          ))}
+          {navLinks.map((link) => {
+            const linkClassName = "rounded-lg px-3 py-3 text-sm text-brand-muted transition-colors hover:bg-brand-surface hover:text-white"
+            if (link.href.startsWith('/')) {
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  className={linkClassName}
+                >
+                  {link.label}
+                </Link>
+              )
+            }
+            return (
+              <a
+                key={link.href}
+                href={pathname === '/' ? link.href : `/${link.href}`}
+                onClick={() => setMobileOpen(false)}
+                className={linkClassName}
+              >
+                {link.label}
+              </a>
+            )
+          })}
         </div>
       </div>
     </nav>

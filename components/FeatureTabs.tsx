@@ -12,42 +12,45 @@ const features = [
     id: 'feed',
     number: '01',
     label: 'Feed',
-    headline: 'Two feeds. Your choice.',
-    description: 'One for friends, one for everyone else. No algorithm decides what you see.',
+    headline: 'Your friends, in order.',
+    description:
+      'Your home feed is your friends, in the order their meals happened. Nothing jumps to the top just because it has more likes.',
     image: '/mockups/feed.png',
   },
   {
     id: 'share-cards',
     number: '02',
     label: 'Share Cards',
-    headline: 'Makan cards.',
+    headline: 'Made to share.',
     description:
-      'Share a meal and it goes out as a branded Makan card — Stories, WhatsApp, wherever.',
+      'Send a meal as a Makan card — Stories, WhatsApp, wherever you want it to land.',
     image: '/mockups/share-cards.png',
   },
   {
     id: 'explore',
     number: '03',
     label: 'Explore & Map',
-    headline: 'See where your friends ate.',
-    description: "Friend avatars on every map pin. Discover places through people you trust.",
+    headline: 'Places your friends actually ate.',
+    description:
+      "Friend avatars on every map pin. Find places through what the people you trust actually ordered.",
     image: '/mockups/explore.png',
   },
   {
     id: 'streaks',
     number: '04',
-    label: 'Streaks & Titles',
-    headline: 'Six titles, 100 badges, one habit.',
-    description: 'Post a meal a day to keep your streak. Six foodie titles to climb, 100 badges to collect.',
+    label: 'Streaks',
+    headline: 'A meal a day. People get oddly attached.',
+    description:
+      'Post a meal a day to keep your streak. Miss one and it ends — no insurance, no make-ups.',
     image: '/mockups/streaks.png',
   },
   {
     id: 'journal',
     number: '05',
     label: 'Food Journal',
-    headline: 'Your food diary.',
+    headline: 'The record of what you ate.',
     description:
-      "Every meal on a calendar. Filter by breakfast, lunch, dinner. See your month at a glance.",
+      "Every meal you've ever posted, on a calendar. Filter by breakfast, lunch, dinner. See your month at a glance.",
     image: '/mockups/journal.png',
   },
 ]
@@ -129,7 +132,7 @@ export default function FeatureTabs() {
                 className="mt-4 text-3xl font-bold text-white sm:text-4xl lg:text-5xl"
                 style={{ letterSpacing: '-0.02em' }}
               >
-                What you actually do here.
+                What you do here.
               </h2>
             </motion.div>
             {/* Active headline + description */}
