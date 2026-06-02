@@ -11,8 +11,8 @@ const EASE_OUT = [0.23, 1, 0.32, 1] as const
 // because that's the whole reason Makan exists. Lands on relief, fast.
 const QUESTIONS = [
   'What did you eat last Saturday?',
-  'Three Tuesdays ago — lunch. Anything?',
-  'The best thing you ate this month. Where were you?',
+  'What did you have for lunch three Tuesdays ago?',
+  'What was the best thing you ate this month?',
 ]
 
 export default function MemoryTest() {
