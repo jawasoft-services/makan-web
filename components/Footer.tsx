@@ -111,6 +111,15 @@ export default function Footer() {
           <p className="mt-5 text-center text-[11px]">
             &copy; {new Date().getFullYear()} Makan App Ltd. All rights reserved.
           </p>
+
+          {/* Statutory trading disclosure (Companies Act 2006 / 2015 Regs, reg. 25).
+              TODO: replace [COMPANY NUMBER] with the real Companies House number
+              before merging to production. */}
+          <p className="mt-2 text-center text-[11px] leading-relaxed">
+            MAKAN APP LTD is a company registered in England and Wales, company
+            no. [COMPANY NUMBER]. Registered office: 86–90 Paul Street, London
+            EC2A 4NE, United Kingdom.
+          </p>
         </div>
       </div>
     </footer>

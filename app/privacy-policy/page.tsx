@@ -85,12 +85,23 @@ export default function PrivacyPolicy() {
                 <ul className="mt-2 list-disc pl-5 space-y-1">
                   <li>Device and app information required to operate the Services, such as device type, operating system, and app version</li>
                   <li>Usage and analytics events (for example, which screens are opened and which features are used), collected to understand and improve the Services</li>
-                  <li>Approximate location derived from your IP address (we do not collect precise GPS location)</li>
+                  <li>Approximate location derived from your IP address, used for aggregate analytics</li>
                   <li>Security, abuse-prevention, and diagnostic logs used to protect users and the Services</li>
                 </ul>
               </div>
               <div>
-                <h3 className="font-medium text-brand-text">2.4 Waitlist and enquiry data (Site)</h3>
+                <h3 className="font-medium text-brand-text">2.4 Location data (App)</h3>
+                <p className="mt-2">
+                  With your permission, the App accesses your device&apos;s location to show you
+                  nearby places and calculate distances to restaurants. You can grant or revoke this
+                  permission at any time in your device settings. If you decline, location-based
+                  discovery features are limited, but the rest of the App works normally. We use your
+                  location to provide these features at the time you use them and do not build a
+                  history of your movements.
+                </p>
+              </div>
+              <div>
+                <h3 className="font-medium text-brand-text">2.5 Waitlist and enquiry data (Site)</h3>
                 <p className="mt-2">
                   If you join the early-access waitlist or contact us through the Site, we process the
                   name and email address you submit, and a timestamp, so we can send you a beta
@@ -115,6 +126,7 @@ export default function PrivacyPolicy() {
                 <li>Provide core App functionality, including saving meals and displaying feeds according to your selected audience settings</li>
                 <li>Operate the friend graph, including friend requests and mutual friendships</li>
                 <li>Synchronise content across your devices</li>
+                <li>Show nearby places and calculate distances, using your device location where you have granted permission</li>
                 <li>Operate the waitlist and send beta invitations</li>
                 <li>Maintain security, prevent abuse, and protect the integrity of the Services</li>
                 <li>Respond to support enquiries</li>

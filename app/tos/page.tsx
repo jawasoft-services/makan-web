@@ -174,6 +174,7 @@ export default function TermsOfUse() {
               </p>
               <ul className="list-disc pl-5 space-y-1">
                 <li>These Terms are between you and MAKAN APP LTD only, not with Apple. Apple is not responsible for the App or its content.</li>
+                <li>Your licence to use the App is a non-transferable licence to use it on any Apple-branded products that you own or control, as permitted by the Usage Rules in the Apple Media Services Terms and Conditions.</li>
                 <li>Apple has no obligation to provide maintenance or support for the App.</li>
                 <li>In the event the App fails to conform to any applicable warranty, you may notify Apple, and Apple may refund the purchase price (if any). To the maximum extent permitted by law, Apple has no other warranty obligation with respect to the App.</li>
                 <li>Apple is not responsible for addressing any claims relating to the App, including product-liability, legal or regulatory, or consumer-protection claims.</li>
