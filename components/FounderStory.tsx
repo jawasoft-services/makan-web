@@ -55,7 +55,7 @@ export default function FounderStory() {
           animate={inView ? { opacity: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.35, ease: EASE_OUT }}
         >
-          — Devon Makepeace, Founder · London (via Jakarta)
+          — Devon Makepeace, Founder
         </motion.p>
       </div>
     </section>
