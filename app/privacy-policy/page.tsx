@@ -232,10 +232,17 @@ export default function PrivacyPolicy() {
             <h2 className="text-lg font-semibold text-brand-text">7. Cookies and Similar Technologies</h2>
             <div className="mt-4 space-y-3">
               <p>
-                The Site uses privacy-friendly, aggregate analytics that do not rely on advertising
-                cookies. The App uses device identifiers as part of Firebase Analytics to measure
-                usage. We do not use these technologies for advertising or cross-app tracking. Where
-                applicable law requires consent for non-essential analytics, we will request it.
+                The Site uses Vercel Web Analytics, which is privacy-friendly and cookieless: it
+                identifies visits using a hash that resets daily and cannot track you across days or
+                across other websites. It stores no information on your device and collects no
+                personal identifiers, so it does not require a consent banner.
+              </p>
+              <p>
+                The App uses Firebase Analytics, which relies on device identifiers to measure how
+                features are used. Because this stores and accesses information on your device, we ask
+                for your consent within the App before enabling non-essential analytics, and you can
+                change your choice at any time in the App&apos;s settings. We never use these
+                technologies for advertising or cross-app tracking.
               </p>
             </div>
           </section>
@@ -344,10 +351,16 @@ export default function PrivacyPolicy() {
             <h2 className="text-lg font-semibold text-brand-text">12. Children</h2>
             <div className="mt-4 space-y-3">
               <p>
-                The App is not intended for children under the age of 13, and you must be at least 13
-                to create an account. Where required, we design our Services with the UK Age
-                Appropriate Design Code in mind.
+                You must be at least 13 to create an account. Because a service like ours may be
+                accessed by people under 18, we follow the UK Age Appropriate Design Code (the
+                Children&apos;s Code). In practice this means:
               </p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Privacy-protective defaults — new posts default to friends-only, not public</li>
+                <li>Location access is off by default and only used, with permission, at the moment you use a location feature</li>
+                <li>We collect the minimum data needed and do not profile users or use data for targeted advertising</li>
+                <li>We do not use manipulative design or nudges to push you to share more than you intend</li>
+              </ul>
               <p>
                 If we become aware that personal data has been collected from a child under 13, we
                 will take steps to delete that data. If you believe a child has provided us with

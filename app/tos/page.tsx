@@ -244,11 +244,15 @@ export default function TermsOfUse() {
             <h2 className="text-lg font-semibold text-brand-text">13. Indemnity</h2>
             <div className="mt-4 space-y-3">
               <p>
-                You agree to indemnify and hold harmless MAKAN APP LTD from any claims, losses, or
-                expenses (including reasonable legal fees) arising from your breach of these Terms,
-                your misuse of the Services, or content you upload, to the extent permitted by law.
-                This clause does not apply to consumers except to the extent permitted by applicable
-                law.
+                If you use the Services other than as a consumer (for example, on behalf of a
+                business), you agree to indemnify and hold harmless MAKAN APP LTD from claims, losses,
+                or expenses (including reasonable legal fees) arising from your breach of these Terms,
+                your misuse of the Services, or content you upload.
+              </p>
+              <p>
+                If you are a consumer, this indemnity does not apply to you. Nothing in these Terms
+                requires you to bear costs beyond those for which you are responsible under applicable
+                consumer law, and any term that would do so does not apply.
               </p>
             </div>
           </section>
