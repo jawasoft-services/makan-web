@@ -54,7 +54,7 @@ function PhoneFrame({ screen }: { screen: Screen }) {
     <div className="relative mx-auto w-full max-w-[280px]">
       {/* Ambient glow */}
       <div className="absolute -inset-8 rounded-[3rem] bg-brand-orange/[0.05] blur-3xl" />
-      <div className="relative aspect-[1290/2796] overflow-hidden rounded-[2.2rem] border border-brand-border bg-brand-surface shadow-2xl shadow-black/50">
+      <div className="relative aspect-[1206/2622] overflow-hidden rounded-[2.2rem] border border-brand-border bg-brand-surface shadow-2xl shadow-black/50">
         {screen.src ? (
           <Image
             src={screen.src}
