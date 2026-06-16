@@ -180,8 +180,6 @@ export function ReviewArticle({ review }: { review: Review }) {
             Visited{" "}
             {visit.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
           </time>
-          {" · "}
-          <span aria-label={`Rated ${review.rating} out of 5 on this visit`}>{review.rating}/5</span>
         </p>
       </header>
       {review.blocks.map((b, i) => (

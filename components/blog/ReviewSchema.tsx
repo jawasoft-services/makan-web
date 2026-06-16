@@ -29,12 +29,6 @@ export function ReviewSchema({ review }: { review: Review }) {
       url,
       datePublished: review.datePublished,
       author: { "@id": `${BASE}/#devon` },
-      reviewRating: {
-        "@type": "Rating",
-        ratingValue: review.rating,
-        bestRating: 5,
-        worstRating: 1,
-      },
       itemReviewed: { "@id": `${url}#restaurant` },
     },
     {

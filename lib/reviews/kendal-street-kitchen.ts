@@ -10,7 +10,6 @@ export const kendalStreetKitchen: Review = {
   datePublished: "2026-06-16",
   dateModified: "2026-06-16",
   visitDate: "2026-06-15",
-  rating: 4.5,
   author: {
     name: "Devon Makepeace",
     role: "Founder, Makan",

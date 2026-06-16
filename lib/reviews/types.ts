@@ -71,8 +71,6 @@ export interface Review {
   datePublished: string
   dateModified: string
   visitDate: string
-  /** Single-visit rating out of 5 (kept distinct from any aggregate site rating). */
-  rating: number
   author: { name: string; role: string; url: string }
   restaurant: Restaurant
   quickFacts: QuickFact[]
