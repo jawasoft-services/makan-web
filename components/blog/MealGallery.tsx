@@ -92,17 +92,7 @@ export function MealGallery({ meals }: { meals: MealEmbed[] }) {
               height={1400}
               className="max-h-[80vh] w-auto rounded-xl object-contain"
             />
-            <figcaption className="mt-3 text-center text-sm text-white/80">
-              {active.caption}
-              {active.mealId ? (
-                <>
-                  {" · "}
-                  <a href={`/meal/${active.mealId}`} className="text-brand-orange underline">
-                    view on Makan
-                  </a>
-                </>
-              ) : null}
-            </figcaption>
+            <figcaption className="mt-3 text-center text-sm text-white/80">{active.caption}</figcaption>
           </figure>
         </div>
       )}

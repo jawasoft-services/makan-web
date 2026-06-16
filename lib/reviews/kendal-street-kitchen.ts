@@ -64,19 +64,16 @@ export const kendalStreetKitchen: Review = {
       caption: "Harissa prawns to start, the standout.",
       alt: "Harissa prawns in a terracotta dish with grilled sourdough and lemon at Kendal Street Kitchen",
       photo: "/blog/kendal-street-kitchen/harissa-prawns.jpg",
-      mealId: "MJqi8b1bfUPmIgWK3r6o",
     },
     {
       caption: "Carbonara, mushroom risotto and truffle fries.",
       alt: "Carbonara, mushroom risotto and truffle fries on a wooden table at Kendal Street Kitchen",
       photo: "/blog/kendal-street-kitchen/carbonara-risotto.jpg",
-      mealId: "QES4G3MP15KcrCBvfpT0",
     },
     {
       caption: "The £8 Kendal's tiramisu, enough for two.",
       alt: "Kendal's tiramisu dusted with cocoa in a glass at Kendal Street Kitchen",
       photo: "/blog/kendal-street-kitchen/tiramisu.jpg",
-      mealId: "tDUcMEpBwpKV78D2DLYY",
     },
   ],
   faq: [
