@@ -1,7 +1,7 @@
-import Image from "next/image"
 import Link from "next/link"
 import type { ReactNode } from "react"
 import type { Block, Review } from "@/lib/reviews/types"
+import { MealGallery } from "./MealGallery"
 
 // Minimal inline renderer: supports [text](url) links and **bold** inside body strings.
 function renderInline(text: string): ReactNode[] {
@@ -87,51 +87,6 @@ function BillTable({ review }: { review: Review }) {
   )
 }
 
-function Meals({ review }: { review: Review }) {
-  const hasPhotos = review.meals.some((m) => m.photo)
-  return (
-    <div className="my-8 rounded-2xl border border-brand-border bg-brand-surface p-5">
-      <p className="mb-4 text-sm font-semibold text-white">The three I logged on Makan that night</p>
-      {hasPhotos ? (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          {review.meals.map((m, i) => {
-            const figure = (
-              <figure className="m-0 overflow-hidden rounded-xl border border-brand-border">
-                {m.photo ? (
-                  <Image
-                    src={m.photo}
-                    alt={m.alt}
-                    width={500}
-                    height={500}
-                    className="h-44 w-full object-cover"
-                  />
-                ) : null}
-                <figcaption className="px-3 py-2 text-xs text-brand-muted">{m.caption}</figcaption>
-              </figure>
-            )
-            return m.mealId ? (
-              <Link key={i} href={`/meal/${m.mealId}`} className="block">
-                {figure}
-              </Link>
-            ) : (
-              <div key={i}>{figure}</div>
-            )
-          })}
-        </div>
-      ) : (
-        <ul className="space-y-2 text-[15px] text-brand-text/85">
-          {review.meals.map((m, i) => (
-            <li key={i} className="flex gap-2">
-              <span className="text-brand-orange">·</span>
-              {m.caption}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  )
-}
-
 function Faq({ review }: { review: Review }) {
   return (
     <section className="my-10" aria-label="Frequently asked questions">
@@ -196,7 +151,7 @@ function BlockView({ block, review }: { block: Block; review: Review }) {
     case "bill":
       return <BillTable review={review} />
     case "meals":
-      return <Meals review={review} />
+      return <MealGallery meals={review.meals} />
     case "faq":
       return <Faq review={review} />
     case "cta":
