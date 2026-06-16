@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 
 /* ─────────────────────────────────────────────────────────────────────────
    Controls where the business-card QR ( makanofficial.com/app ) sends people.
@@ -27,11 +27,11 @@ export default function AppLanding() {
   const live = CONFIG.status === "live"
   const url = live ? CONFIG.appStoreUrl : CONFIG.testFlightUrl
   const hasUrl = Boolean(url) && url !== "TESTFLIGHT_URL_HERE"
-  const [opening, setOpening] = useState(false)
 
   useEffect(() => {
+    // On iOS, hand straight off to TestFlight / the App Store.
+    // Everyone else (and iOS, if the redirect is slow) uses the button below.
     if (hasUrl && isIOS()) {
-      setOpening(true)
       window.location.href = url
     }
   }, [hasUrl, url])
@@ -84,12 +84,6 @@ export default function AppLanding() {
         </a>
       ) : (
         <p className="text-sm font-medium text-brand-dim">Opening soon.</p>
-      )}
-
-      {opening && (
-        <p className="mt-5 text-sm text-brand-dim" role="status">
-          Opening {live ? "the App Store" : "TestFlight"}…
-        </p>
       )}
 
       {!live && hasUrl && (
