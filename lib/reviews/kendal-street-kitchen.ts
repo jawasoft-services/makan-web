@@ -4,9 +4,9 @@ export const kendalStreetKitchen: Review = {
   slug: "kendal-street-kitchen",
   title: "Kendal Street Kitchen Review: What to Order & the Real Bill",
   h1: "Kendal Street Kitchen review: the Connaught Village spot I'm making my regular",
-  dek: "Dinner for two in Connaught Village — what we ate, the £82.13 bill in full, and whether it's worth it.",
+  dek: "Dinner for two in Connaught Village: what we ate, the £82.13 bill in full, and whether it's worth it.",
   metaDescription:
-    "A first-hand review of Kendal Street Kitchen, the all-day Mediterranean restaurant in Connaught Village, London W2 — what we ate, the £82.13 bill, and what to order.",
+    "A first-hand review of Kendal Street Kitchen, the all-day Mediterranean restaurant in Connaught Village, London W2: what we ate, the £82.13 bill, and what to order.",
   datePublished: "2026-06-16",
   dateModified: "2026-06-16",
   visitDate: "2026-06-15",
@@ -60,18 +60,33 @@ export const kendalStreetKitchen: Review = {
     covers: 2,
   },
   meals: [
-    { caption: "Harissa prawns to start — the standout.", alt: "Harissa prawns in a terracotta dish with grilled sourdough and lemon at Kendal Street Kitchen" },
-    { caption: "Carbonara, mushroom risotto and truffle fries.", alt: "Carbonara, mushroom risotto and truffle fries on a wooden table at Kendal Street Kitchen" },
-    { caption: "The £8 Kendal's tiramisu — enough for two.", alt: "Kendal's tiramisu dusted with cocoa in a glass at Kendal Street Kitchen" },
+    {
+      caption: "Harissa prawns to start, the standout.",
+      alt: "Harissa prawns in a terracotta dish with grilled sourdough and lemon at Kendal Street Kitchen",
+      photo: "/blog/kendal-street-kitchen/harissa-prawns.jpg",
+      mealId: "MJqi8b1bfUPmIgWK3r6o",
+    },
+    {
+      caption: "Carbonara, mushroom risotto and truffle fries.",
+      alt: "Carbonara, mushroom risotto and truffle fries on a wooden table at Kendal Street Kitchen",
+      photo: "/blog/kendal-street-kitchen/carbonara-risotto.jpg",
+      mealId: "QES4G3MP15KcrCBvfpT0",
+    },
+    {
+      caption: "The £8 Kendal's tiramisu, enough for two.",
+      alt: "Kendal's tiramisu dusted with cocoa in a glass at Kendal Street Kitchen",
+      photo: "/blog/kendal-street-kitchen/tiramisu.jpg",
+      mealId: "tDUcMEpBwpKV78D2DLYY",
+    },
   ],
   faq: [
     {
       q: "Where is Kendal Street Kitchen?",
-      a: "17–20 Kendal Street, Connaught Village, London W2 2AW — about a five-minute walk from Hyde Park and Marble Arch, near Marble Arch and Edgware Road stations.",
+      a: "17–20 Kendal Street, Connaught Village, London W2 2AW. It's about a five-minute walk from Hyde Park and Marble Arch, near Marble Arch and Edgware Road stations.",
     },
     {
       q: "How much is dinner at Kendal Street Kitchen?",
-      a: "Our dinner for two came to £82.13 — £73 of food and drink plus a discretionary 12.5% service charge — so roughly £41 a head with a couple of drinks. You can eat well for less.",
+      a: "Our dinner for two came to £82.13: £73 of food and drink, plus a discretionary 12.5% service charge. That's roughly £41 a head with a couple of drinks, and you can eat well for less.",
     },
     {
       q: "What should I order at Kendal Street Kitchen?",
@@ -83,11 +98,11 @@ export const kendalStreetKitchen: Review = {
     },
     {
       q: "What kind of food does Kendal Street Kitchen serve?",
-      a: "All-day modern Mediterranean with a strong Italian lean — pastas, pizzas, small plates and grills, served from breakfast through dinner.",
+      a: "All-day modern Mediterranean with a strong Italian lean: pastas, pizzas, small plates and grills, served from breakfast through dinner.",
     },
     {
       q: "Is Kendal Street Kitchen good for a date?",
-      a: "Yes — low lighting, warm service and a relaxed room make it an easy, unfussy date-night spot near Hyde Park.",
+      a: "Yes. Low lighting, warm service and a relaxed room make it an easy, unfussy date-night spot near Hyde Park.",
     },
   ],
   blocks: [
@@ -95,20 +110,20 @@ export const kendalStreetKitchen: Review = {
     {
       kind: "lead",
       text:
-        "Kendal Street Kitchen is an all-day modern Mediterranean restaurant at 17–20 Kendal Street, in Connaught Village, London W2 2AW — about a five-minute walk north of Hyde Park and Marble Arch. My girlfriend and I went for dinner to celebrate her first day at a big North American bank, and somewhere between the harissa prawns and the tiramisu I decided this was going to be our place. Here's everything: the dishes, the exact bill, and whether you should book. (Short answer: yes.)",
+        "Kendal Street Kitchen is an all-day modern Mediterranean restaurant at 17–20 Kendal Street, in Connaught Village, London W2 2AW, about a five-minute walk north of Hyde Park and Marble Arch. My girlfriend and I went for dinner to mark her first day at a big North American bank. Somewhere between the harissa prawns and the tiramisu, I decided this was going to be our place. Below is everything: the dishes, the exact bill, and whether you should book. Short answer, yes.",
     },
     { kind: "h2", text: "Where it is, and who's behind it" },
     {
       kind: "p",
       text:
-        "You'll find it tucked into Connaught Village, the quiet pocket of W2 just behind Marble Arch — about five minutes' walk from Hyde Park, so it's the obvious stop after the park or a day on Oxford Street, but far enough from the chaos to feel like a local. It runs all day, roughly 8am to 10pm.",
+        "It sits in Connaught Village, the quiet pocket of W2 just behind Marble Arch. From the door it's about five minutes' walk to Hyde Park, which makes it an easy stop after the park or a day on Oxford Street, and it's far enough off the main drag to feel like a local. It runs all day, roughly 8am to 10pm.",
     },
     {
       kind: "p",
       text:
-        "There's some pedigree here too: it's from Adam and Sam Kaye, the brothers who built Zizzi and ASK Italian (they sold both back in 2004 — so this is their pedigree, not the high-street chains). The room gives it away: low light, walnut tables, banquette sofas. It was designed to feel like a dining room rather than a restaurant, and it does.",
+        "There's some pedigree behind it. It's from Adam and Sam Kaye, the brothers who built Zizzi and ASK Italian. They sold both back in 2004, so this is their pedigree, not the high-street chains. The room gives that away: low light, walnut tables, banquette sofas. It was designed to feel like a dining room rather than a restaurant, and it does.",
     },
-    { kind: "h2", text: "What we ordered — and what to get" },
+    { kind: "h2", text: "What we ordered, and what to get" },
     {
       kind: "p",
       text:
@@ -117,51 +132,51 @@ export const kendalStreetKitchen: Review = {
     {
       kind: "p",
       text:
-        "She had the mushroom risotto and it was divine — properly earthy, none of the gluey stodge you get too often. I went for the carbonara with a side of truffle fries, both very good (the fries are dangerous). To finish we split the Kendal's tiramisu, and at £8 the size of it was almost funny — plenty for two.",
+        "She had the mushroom risotto and it was divine: properly earthy, none of the gluey stodge you get too often. I went for the carbonara with a side of truffle fries. Both were very good, and the fries are dangerous. To finish we split the Kendal's tiramisu, and at £8 the size of it was almost funny. Plenty for two.",
     },
     {
       kind: "ul",
       items: [
-        "Harissa prawns — the standout starter",
-        "Mushroom risotto — earthy, generous, properly done",
-        "Kendal's tiramisu (£8) — order one for the table",
+        "Harissa prawns: the standout starter",
+        "Mushroom risotto: earthy, generous, properly done",
+        "Kendal's tiramisu (£8): order one for the table",
       ],
     },
     { kind: "h2", text: "The bill, in full" },
     {
       kind: "p",
       text:
-        "Nobody online seems to publish what a meal here actually costs — so here's ours, to the penny. Two of us, dinner with a couple of drinks:",
+        "Nobody online seems to publish what a meal here actually costs, so here's ours, to the penny. Two of us, dinner with a couple of drinks:",
     },
     { kind: "bill" },
     {
       kind: "p",
       text:
-        "So about £41 a head with drinks and the optional service — and we walked out completely stuffed. You could eat just as well for less, too: skip the cocktail and the portions still do the rest. Five minutes from Hyde Park, it felt like fair value.",
+        "So about £41 a head with drinks and the optional service, and we walked out completely stuffed. You could eat just as well for less: skip the cocktail and the portions still do the rest. Five minutes from Hyde Park, it felt like fair value.",
     },
     { kind: "h2", text: "The service, and why it stuck" },
     {
       kind: "p",
       text:
-        "I've spent time in Bali, where the service is the warmest on earth and it ruins you for everywhere else. Walking into Kendal Street Kitchen, the manager looked after us like we were eating in his front room — checking in without hovering, genuinely glad we were there. The younger floor staff gave the place an easy, vibrant energy. That mix — real care plus a young, un-stuffy room — is exactly how you want to feel when you eat. It's the part you can't fake, and the part I'll remember.",
+        "I've spent time in Bali, where the service is the warmest on earth and it ruins you for everywhere else. Walking into Kendal Street Kitchen, the manager looked after us like we were eating in his front room, checking in without hovering, clearly glad we were there. The younger floor staff kept the room young and buzzy. Real care plus a relaxed, un-stuffy room is exactly how you want to feel when you eat. It's the bit you can't fake, and the bit I'll remember.",
     },
     { kind: "h2", text: "Is Kendal Street Kitchen worth it?" },
     {
       kind: "p",
       text:
-        "Yes — enough that I'm making it my regular. It's relaxed and a little grown-up, right for a date, a family dinner, or a reward after the park, without the W1 price tag or attitude. Order the prawns, the risotto and that tiramisu, expect around £40 a head — though you can have an excellent meal here for less — and ask for a banquette.",
+        "Yes. Enough that I'm making it my regular. It's relaxed and a little grown-up, right for a date, a family dinner, or a reward after the park, without the W1 price tag or attitude. Order the prawns, the risotto and that tiramisu, expect around £40 a head (though you can eat well here for less), and ask for a banquette.",
     },
     {
       kind: "note",
       text:
-        "One honest note: a few online reviews mention service slowing at a busy lunch, and tiramisu this generous won't be for everyone. Neither was true for us — but you should know.",
+        "One honest note: a few online reviews mention service slowing at a busy lunch, and tiramisu this generous won't be for everyone. Neither was true for us, but you should know.",
     },
     { kind: "faq" },
     { kind: "h2", text: "Why I write these" },
     {
       kind: "p",
       text:
-        "I built an app about exactly this — [Makan](/app), a food journal for remembering the meals that mattered. This whole dinner is in it: three entries, the prawns, the mains, the tiramisu, logged the night we celebrated her new job. That's the point — not reviews for strangers, just a way to remember your own meals before they blur into the rest.",
+        "I built an app about exactly this: [Makan](/app), a food journal for remembering the meals that mattered. This whole dinner is in it. Three entries, the prawns, the mains, the tiramisu, logged the night we celebrated her new job. That's the point of it. Not reviews for strangers, just a way to remember your own meals before they blur into the rest.",
     },
     { kind: "meals" },
     { kind: "cta" },
