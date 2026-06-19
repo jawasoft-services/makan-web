@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import Link from 'next/link'
 import { motion, useInView } from 'framer-motion'
+import { APP_STORE_URL } from '@/lib/links'
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as const
 
@@ -20,7 +21,7 @@ export default function FinalCTA() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, ease: EASE_OUT }}
         >
-          The beta&apos;s open.
+          Makan is live.
         </motion.h2>
 
         <motion.p
@@ -29,8 +30,8 @@ export default function FinalCTA() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.1, ease: EASE_OUT }}
         >
-          Drop your email. The link lands in your inbox in seconds, and
-          you&apos;re in the app a minute later.
+          Remember every meal. Download Makan free on the App Store and
+          start your food diary today.
         </motion.p>
 
         <motion.div
@@ -40,11 +41,11 @@ export default function FinalCTA() {
           transition={{ duration: 0.5, delay: 0.2, ease: EASE_OUT }}
         >
           <Link
-            href="/contact"
+            href={APP_STORE_URL}
             className="relative inline-block rounded-full bg-brand-orange px-9 py-4 text-base font-semibold text-brand-bg transition-all hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
           >
             <span className="pointer-events-none absolute -inset-4 rounded-full bg-brand-orange/10 blur-xl" aria-hidden />
-            <span className="relative">Get early access</span>
+            <span className="relative">Download on the App Store</span>
           </Link>
         </motion.div>
 
@@ -54,8 +55,7 @@ export default function FinalCTA() {
           animate={inView ? { opacity: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.35, ease: EASE_OUT }}
         >
-          iPhone, via TestFlight. Android, you&apos;re next — leave your email
-          and we&apos;ll tell you the day it&apos;s ready.
+          Free on iPhone. Android is coming next.
         </motion.p>
       </div>
     </section>

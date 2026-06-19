@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { APP_STORE_URL } from '@/lib/links'
 
 const appLinks = [
-  { label: 'Save My Seat', href: '/contact' },
+  { label: 'Get the app', href: APP_STORE_URL },
   { label: 'Privacy Policy', href: '/privacy-policy' },
   { label: 'Terms', href: '/tos' },
 ]
@@ -38,10 +39,10 @@ export default function Footer() {
               />
             </Link>
             <Link
-              href="/contact"
+              href={APP_STORE_URL}
               className="inline-flex w-fit items-center gap-2 rounded-lg border border-brand-border px-3.5 py-2 text-xs font-medium text-brand-muted transition-colors hover:border-brand-orange/40 hover:text-white"
             >
-              Join the Waitlist
+              Download on the App Store
             </Link>
           </div>
 

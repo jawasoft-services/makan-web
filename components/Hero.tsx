@@ -4,6 +4,7 @@ import { useRef, useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useScroll, useTransform } from 'framer-motion'
+import { APP_STORE_URL } from '@/lib/links'
 
 // 50 share cards — 10 per column. Strongest photos on outer columns (1 & 5),
 // softer ones in the center (hidden behind the blur overlay).
@@ -214,14 +215,14 @@ export default function Hero() {
 
               <div className="mt-5 sm:mt-6">
                 <Link
-                  href="/contact"
+                  href={APP_STORE_URL}
                   className="relative inline-block rounded-full bg-brand-orange px-6 py-3 text-sm font-semibold text-brand-bg transition-all sm:px-8 sm:py-3.5 sm:text-base hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
                 >
                   <span className="pointer-events-none absolute -inset-3 rounded-full bg-brand-orange/10 blur-xl" aria-hidden />
-                  <span className="relative">Get early access</span>
+                  <span className="relative">Download on the App Store</span>
                 </Link>
                 <p className="mt-2.5 text-[11px] text-white/55 sm:text-xs">
-                  The beta&apos;s open. Link lands in your inbox in seconds.
+                  Free on the App Store. Built for iPhone.
                 </p>
               </div>
             </div>

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { APP_STORE_URL } from '@/lib/links'
 
 const navLinks = [
   { label: 'Manifesto', href: '/manifesto' },
@@ -98,20 +99,20 @@ export default function Navbar() {
             )
           })}
           <Link
-            href="/contact"
+            href={APP_STORE_URL}
             className="rounded-full bg-brand-orange px-5 py-2 text-sm font-semibold text-brand-bg transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
           >
-            Get early access
+            Get the app
           </Link>
         </div>
 
         {/* Mobile: CTA + hamburger */}
         <div className="flex items-center gap-3 md:hidden">
           <Link
-            href="/contact"
+            href={APP_STORE_URL}
             className="rounded-full bg-brand-orange px-4 py-2 text-sm font-semibold text-brand-bg"
           >
-            Get early access
+            Get the app
           </Link>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}

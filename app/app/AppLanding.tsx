@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import { useEffect } from "react"
+import { APP_STORE_URL } from "@/lib/links"
 
 /* ─────────────────────────────────────────────────────────────────────────
    Controls where the business-card QR ( makanofficial.com/app ) sends people.
@@ -10,9 +11,9 @@ import { useEffect } from "react"
      • Public:     status: "live"  + appStoreUrl
    ───────────────────────────────────────────────────────────────────────── */
 const CONFIG = {
-  status: "beta" as "beta" | "live",
+  status: "live" as "beta" | "live",
   testFlightUrl: "https://testflight.apple.com/join/mJvRBHkW", // TestFlight beta (public join link)
-  appStoreUrl: "", // ← paste on public launch, then set status: "live"
+  appStoreUrl: APP_STORE_URL, // Makan v1 live on the App Store (2026-06-19)
 }
 
 function isIOS(): boolean {
