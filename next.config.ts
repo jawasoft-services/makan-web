@@ -37,6 +37,17 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // 301 the stale pre-launch URLs Google still has indexed (GSC "Not found 404",
+  // 2026-06-19) to their live equivalents — clears the 404s and preserves any
+  // link equity (e.g. from old backlinks).
+  async redirects() {
+    return [
+      { source: "/join-the-waitlist", destination: "/", permanent: true },
+      { source: "/tou", destination: "/tos", permanent: true },
+      { source: "/success", destination: "/", permanent: true },
+      { source: "/privacy", destination: "/privacy-policy", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;
