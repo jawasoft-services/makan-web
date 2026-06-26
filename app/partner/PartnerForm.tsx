@@ -143,8 +143,8 @@ export default function PartnerForm() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                Free for the life of your venue as a Durham Launch Partner.
-                We&apos;re opening 20 partnerships. Tell us about yours.
+                Get your restaurant in front of diners who remember where
+                they ate. Tell us about your venue.
               </motion.p>
             </div>
 

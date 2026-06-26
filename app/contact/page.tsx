@@ -3,9 +3,9 @@ import Footer from '@/components/Footer'
 import ContactForm from './ContactForm'
 
 export const metadata: Metadata = {
-  title: 'Get early access — Makan',
+  title: 'Contact — Makan',
   description:
-    'The Makan beta is open. Drop your email and the TestFlight link lands in your inbox in seconds.',
+    'Questions, press, or partnerships? Get in touch — or download Makan free on the App Store.',
 }
 
 export default function ContactPage() {

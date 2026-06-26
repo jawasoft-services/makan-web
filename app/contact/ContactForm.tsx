@@ -18,7 +18,7 @@ export default function ContactForm() {
     setErrorMsg('')
 
     if (!name.trim()) {
-      setErrorMsg('We need your name to save you a seat.')
+      setErrorMsg('We need your name to get back to you.')
       return
     }
     if (!EMAIL_RE.test(email.trim())) {
@@ -75,13 +75,10 @@ export default function ContactForm() {
               </svg>
             </div>
             <h1 className="mt-5 text-2xl font-bold text-white sm:text-3xl">
-              Check your inbox.
+              Got it.
             </h1>
             <p className="mt-3 text-sm leading-relaxed text-brand-muted sm:text-base">
-              Your TestFlight link is on its way — it should land in the next
-              minute.
-              <br />
-              Tap it on your iPhone and you&apos;re in.
+              Thanks for reaching out — we&apos;ll get back to you soon.
             </p>
             <Link
               href="/"
@@ -121,7 +118,7 @@ export default function ContactForm() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
-                Get early access
+                Get in touch
               </motion.h1>
 
               <motion.p
@@ -130,8 +127,8 @@ export default function ContactForm() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                The beta&apos;s open. Drop your email and the TestFlight link
-                lands in your inbox in seconds.
+                Questions, press, or partnerships? Leave your name and email
+                and we&apos;ll get back to you.
               </motion.p>
             </div>
 
@@ -202,7 +199,7 @@ export default function ContactForm() {
                       Sending...
                     </span>
                   ) : (
-                    'Send me the link'
+                    'Send'
                   )}
                 </button>
               </div>
@@ -223,7 +220,7 @@ export default function ContactForm() {
             </motion.form>
 
             <p className="mt-6 text-center text-[11px] text-brand-dim">
-              By signing up you agree to our{' '}
+              By submitting you agree to our{' '}
               <Link href="/tos" className="underline hover:text-brand-muted">
                 Terms
               </Link>{' '}

@@ -4,6 +4,7 @@ import { APP_STORE_URL } from '@/lib/links'
 
 const appLinks = [
   { label: 'Get the app', href: APP_STORE_URL },
+  { label: 'Contact', href: '/contact' },
   { label: 'Privacy Policy', href: '/privacy-policy' },
   { label: 'Terms', href: '/tos' },
 ]

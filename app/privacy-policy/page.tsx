@@ -19,14 +19,14 @@ export default function PrivacyPolicy() {
 
         {/* Title */}
         <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-brand-text">Privacy Policy</h1>
-        <p className="mt-2 text-sm text-brand-muted">Last updated: 3 June 2026</p>
+        <p className="mt-2 text-sm text-brand-muted">Last updated: 26 June 2026</p>
 
         <div className="mt-10 space-y-10 text-[15px] leading-relaxed text-brand-text/80">
 
           <p>
             MAKAN APP LTD (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;) operates the Makan mobile
-            application (the &ldquo;App&rdquo;), the website at makanofficial.com (the &ldquo;Site&rdquo;),
-            and the early-access waitlist (together, the &ldquo;Services&rdquo;). This Privacy Policy
+            application (the &ldquo;App&rdquo;) and the website at makanofficial.com (the
+            &ldquo;Site&rdquo;) (together, the &ldquo;Services&rdquo;). This Privacy Policy
             explains how we collect, use, store, and protect personal data when you use the Services.
           </p>
           <p>
@@ -101,11 +101,10 @@ export default function PrivacyPolicy() {
                 </p>
               </div>
               <div>
-                <h3 className="font-medium text-brand-text">2.5 Waitlist and enquiry data (Site)</h3>
+                <h3 className="font-medium text-brand-text">2.5 Enquiry data (Site)</h3>
                 <p className="mt-2">
-                  If you join the early-access waitlist or contact us through the Site, we process the
-                  name and email address you submit, and a timestamp, so we can send you a beta
-                  invitation (delivered via TestFlight) and respond to you.
+                  If you contact us through the Site, we process the name and email address you
+                  submit, and a timestamp, so we can respond to you.
                 </p>
               </div>
               <p>
@@ -127,7 +126,6 @@ export default function PrivacyPolicy() {
                 <li>Operate the friend graph, including friend requests and mutual friendships</li>
                 <li>Synchronise content across your devices</li>
                 <li>Show nearby places and calculate distances, using your device location where you have granted permission</li>
-                <li>Operate the waitlist and send beta invitations</li>
                 <li>Maintain security, prevent abuse, and protect the integrity of the Services</li>
                 <li>Respond to support enquiries</li>
                 <li>Understand usage and improve the reliability, performance, and design of the Services</li>
@@ -160,7 +158,7 @@ export default function PrivacyPolicy() {
               <div>
                 <h3 className="font-medium text-brand-text">4.3 Consent</h3>
                 <p className="mt-2">
-                  We rely on your consent when you join the waitlist or submit an enquiry, and for any
+                  We rely on your consent when you submit an enquiry through the Site, and for any
                   optional analytics technologies that require consent. You can withdraw consent at
                   any time by contacting us or unsubscribing.
                 </p>
@@ -208,15 +206,15 @@ export default function PrivacyPolicy() {
                 </li>
                 <li>
                   <span className="text-brand-text">Google LLC (Google Sheets)</span> — secure
-                  storage of waitlist and enquiry submissions.
+                  storage of contact-form and enquiry submissions.
                 </li>
                 <li>
                   <span className="text-brand-text">Resend</span> — delivery of transactional emails,
-                  such as your beta invitation.
+                  such as contact-form notifications.
                 </li>
                 <li>
                   <span className="text-brand-text">Apple Inc.</span> — distribution of the App
-                  through TestFlight and the App Store.
+                  through the App Store.
                 </li>
               </ul>
               <p>
@@ -300,9 +298,9 @@ export default function PrivacyPolicy() {
                 </p>
               </div>
               <div>
-                <h3 className="font-medium text-brand-text">10.3 Waitlist data</h3>
+                <h3 className="font-medium text-brand-text">10.3 Enquiry data</h3>
                 <p className="mt-2">
-                  Waitlist and enquiry data is retained until you ask us to remove it, or until it is
+                  Enquiry data is retained until you ask us to remove it, or until it is
                   no longer needed for the purpose it was submitted for.
                 </p>
               </div>

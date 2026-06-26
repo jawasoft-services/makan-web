@@ -32,7 +32,7 @@ export default function LatestOnMakan({ mealCount }: LatestOnMakanProps) {
           transition={{ duration: 0.6 }}
         >
           <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
-            From the beta
+            On Makan
           </p>
           <h2 className="mt-3 text-2xl font-bold text-white sm:text-3xl lg:text-4xl" style={{ letterSpacing: '-0.02em' }}>
             <StatTicker value={mealCount} inView={inView} /> meals and counting.

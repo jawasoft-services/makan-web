@@ -19,17 +19,16 @@ export default function TermsOfUse() {
 
         {/* Title */}
         <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-brand-text">Terms of Use</h1>
-        <p className="mt-2 text-sm text-brand-muted">Last updated: 3 June 2026</p>
+        <p className="mt-2 text-sm text-brand-muted">Last updated: 26 June 2026</p>
 
         <div className="mt-10 space-y-10 text-[15px] leading-relaxed text-brand-text/80">
 
           <p>
             MAKAN APP LTD (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;) operates the Makan mobile
-            application (the &ldquo;App&rdquo;) and related websites and waitlists (together, the
+            application (the &ldquo;App&rdquo;) and related websites (together, the
             &ldquo;Services&rdquo;). These Terms of Use (the &ldquo;Terms&rdquo;) govern your access to
-            and use of the Services. By accessing or using the App, the website, or by joining the
-            waitlist, you agree to be bound by these Terms. If you do not agree, do not use the
-            Services.
+            and use of the Services. By accessing or using the App or the website, you agree to be
+            bound by these Terms. If you do not agree, do not use the Services.
           </p>
 
           {/* 1 */}
@@ -62,17 +61,17 @@ export default function TermsOfUse() {
 
           {/* 3 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-text">3. Beta Nature of the Service</h2>
+            <h2 className="text-lg font-semibold text-brand-text">3. Service Availability and Changes</h2>
             <div className="mt-4 space-y-3">
-              <p>The App is currently provided on an early-access beta basis.</p>
               <p>
-                Features, functionality, and availability may change at any time without notice. We
-                may suspend, restrict, or terminate access to the App or any part of it during the
-                beta period.
+                Features, functionality, and availability of the Services may change at any time
+                without notice. We may add, modify, suspend, restrict, or remove features, or limit
+                or end access to the Services or any part of them.
               </p>
               <p>
-                You acknowledge that beta software may contain errors or incomplete features and that
-                use of the App during this period is at your own risk.
+                While we work to keep the Services reliable, you acknowledge that software may
+                contain errors or incomplete features and that your use of the Services is at your
+                own risk. Nothing in this section affects your statutory rights.
               </p>
             </div>
           </section>
@@ -158,7 +157,7 @@ export default function TermsOfUse() {
                 <Link href="/privacy-policy" className="text-brand-orange hover:underline">
                   Privacy Policy
                 </Link>
-                . By using the Services or joining the waitlist, you acknowledge that your personal
+                . By using the Services, you acknowledge that your personal
                 data will be processed in accordance with that policy.
               </p>
             </div>
@@ -169,8 +168,7 @@ export default function TermsOfUse() {
             <h2 className="text-lg font-semibold text-brand-text">9. Apple App Store</h2>
             <div className="mt-4 space-y-3">
               <p>
-                The following applies where you obtain the App through Apple&apos;s App Store or
-                TestFlight:
+                The following applies where you obtain the App through Apple&apos;s App Store:
               </p>
               <ul className="list-disc pl-5 space-y-1">
                 <li>These Terms are between you and MAKAN APP LTD only, not with Apple. Apple is not responsible for the App or its content.</li>

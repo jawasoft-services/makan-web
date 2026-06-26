@@ -5,7 +5,7 @@ import PartnerForm from './PartnerForm'
 export const metadata: Metadata = {
   title: 'Claim your restaurant — Makan',
   description:
-    'Claim your restaurant on Makan. Free for the life of your venue as a Durham Launch Partner. We’re opening 20 partnerships.',
+    'Claim your restaurant on Makan and connect with diners who remember where they ate.',
 }
 
 export default function PartnerPage() {

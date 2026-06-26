@@ -2,6 +2,7 @@ import Link from "next/link"
 import type { ReactNode } from "react"
 import type { Block, Review } from "@/lib/reviews/types"
 import { MealGallery } from "./MealGallery"
+import { APP_STORE_URL } from "@/lib/links"
 
 // Minimal inline renderer: supports [text](url) links and **bold** inside body strings.
 function renderInline(text: string): ReactNode[] {
@@ -108,13 +109,13 @@ function Cta() {
     <div className="my-10 rounded-2xl border-2 border-brand-orange/40 bg-brand-surface p-6 text-center">
       <p className="text-lg font-bold text-white">Remember your own meals</p>
       <p className="mx-auto mt-2 max-w-sm text-sm text-brand-muted">
-        Makan is a food journal for the meals that matter — in beta now.
+        Makan is a food journal for the meals that matter — free on the App Store.
       </p>
       <Link
-        href="/app"
+        href={APP_STORE_URL}
         className="mt-5 inline-flex h-12 items-center justify-center rounded-full bg-brand-orange px-7 text-sm font-semibold text-brand-bg transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
       >
-        Get Makan
+        Download on the App Store
       </Link>
     </div>
   )

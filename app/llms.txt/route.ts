@@ -1,4 +1,5 @@
 import { getAllReviews } from "@/lib/reviews"
+import { APP_STORE_URL } from "@/lib/links"
 
 export const dynamic = "force-static"
 
@@ -11,13 +12,13 @@ export function GET() {
   const lines = [
     "# Makan",
     "",
-    "> A social food journal — remember every meal. iOS app (in beta) and makanofficial.com.",
+    "> A social food journal — remember every meal. Free on the iOS App Store and at makanofficial.com.",
     "",
     "## Restaurant reviews",
     ...reviews.map((r) => `- [${r.restaurant.name} review](${base}/blog/${r.slug}): ${r.metaDescription}`),
     "",
     "## Product",
-    `- [Get Makan](${base}/app): Download the Makan app (TestFlight beta).`,
+    `- [Get Makan](${APP_STORE_URL}): Download Makan free on the App Store.`,
     `- [Manifesto](${base}/manifesto): Why Makan exists.`,
     "",
     "## Author",

@@ -88,11 +88,11 @@ export async function POST(request: Request) {
         from: fromAddress,
         to: toAddress,
         // Strip CR/LF (header injection) + cap length.
-        subject: sanitizeSubject(`New seat request from ${trimmedName}`),
+        subject: sanitizeSubject(`New contact form submission from ${trimmedName}`),
         // HTML-escape every user value before interpolating into HTML.
         html: `
           <div style="font-family: system-ui, sans-serif; max-width: 480px;">
-            <h2 style="margin: 0 0 16px;">New seat request</h2>
+            <h2 style="margin: 0 0 16px;">New contact form submission</h2>
             <p style="margin: 0 0 8px;"><strong>Name:</strong> ${htmlEscape(trimmedName)}</p>
             <p style="margin: 0 0 24px;"><strong>Email:</strong> ${htmlEscape(trimmedEmail)}</p>
             <hr style="border: none; border-top: 1px solid #eee;" />
