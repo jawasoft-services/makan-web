@@ -5,6 +5,7 @@ import AppShowcase from "@/components/AppShowcase"
 import LatestOnMakanSection from "@/components/LatestOnMakanSection"
 import FounderStory from "@/components/FounderStory"
 import B2BTeaser from "@/components/B2BTeaser"
+import FAQ from "@/components/FAQ"
 import FinalCTA from "@/components/FinalCTA"
 import Footer from "@/components/Footer"
 
@@ -27,6 +28,7 @@ export default function Home() {
       <LatestOnMakanSection />
       <FounderStory />
       <B2BTeaser />
+      <FAQ />
       <FinalCTA />
       <Footer />
     </main>
