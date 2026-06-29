@@ -1,5 +1,6 @@
 import { getAllReviews } from "@/lib/reviews"
 import { APP_STORE_URL } from "@/lib/links"
+import { BOILERPLATE_SHORT } from "@/lib/press"
 
 export const dynamic = "force-static"
 
@@ -16,6 +17,9 @@ export function GET() {
     "",
     "## Restaurant reviews",
     ...reviews.map((r) => `- [${r.restaurant.name} review](${base}/blog/${r.slug}): ${r.metaDescription}`),
+    "",
+    "## About",
+    `- [The Makan story](${base}/story): ${BOILERPLATE_SHORT}`,
     "",
     "## Product",
     `- [Get Makan](${APP_STORE_URL}): Download Makan free on the App Store.`,
