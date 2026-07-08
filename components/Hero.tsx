@@ -203,7 +203,8 @@ export default function Hero() {
                 className="mt-4 text-center text-2xl font-bold leading-[1.1] text-white sm:mt-5 sm:text-4xl"
                 style={{ letterSpacing: '-0.025em' }}
               >
-                Three weeks ago you ate something perfect.
+                Three weeks ago you ate something{' '}
+                <span className="perfect-shimmer">perfect.</span>
                 <span className="mt-2 block text-brand-orange">
                   Where was that again?
                 </span>
