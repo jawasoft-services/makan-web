@@ -32,9 +32,8 @@
 }
 
 @keyframes perfect-glint {
-  0%   { background-position: 130% 50%; } /* glint band off to the right (at rest) */
-  22%  { background-position: -30% 50%; } /* sweeps across the word */
-  100% { background-position: -30% 50%; } /* holds off-left, then loops back invisibly */
+  from { background-position: 160% 50%; } /* orange band enters from the right */
+  to   { background-position: -60% 50%; } /* exits left, then loops back invisibly (band off-screen at the seam) */
 }
 
 /* Base: plain white. Reduced-motion users (and no-JS/no-CSS-anim) get exactly this. */
@@ -48,21 +47,21 @@
     background-image: linear-gradient(
       100deg,
       #FFFFFF 0%,
-      #FFFFFF 42%,
-      #FFCF8F 50%,   /* warm saffron glint core */
-      #FFF4E4 54%,
-      #FFFFFF 62%,
+      #FFFFFF 38%,
+      #FFB25A 48%,   /* orange burst core */
+      #FFDCA8 52%,
+      #FFFFFF 60%,
       #FFFFFF 100%
     );
     background-size: 220% 100%;
-    background-position: 130% 50%;
+    background-position: 160% 50%;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     -webkit-text-fill-color: transparent;
     animation:
       perfect-arrive 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both,
-      perfect-glint 6s ease-in-out 1.4s infinite;
+      perfect-glint 3s linear 1.2s infinite;
   }
 }
 
