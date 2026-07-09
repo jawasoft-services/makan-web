@@ -60,6 +60,7 @@ colors: {
     muted: "#85613F",           // secondary text on cream (5.1:1)
     line: "#F3E2CD",            // hairlines on cream
     card: "#FFFFFF",            // elevated surfaces
+    night: "#050505",           // preserved dark — hero ONLY (+ dark-over-imagery)
     espresso: "#241102",        // footer ground
     "espresso-muted": "#C9A985" // footer secondary text (8.2:1)
   },
@@ -135,16 +136,15 @@ colors: {
 - [ ] **3.5** Verify: cp to preview; check top + scrolled + mobile-open states at 375px and desktop. All text/icons on the band are white; pill is white with saffron text.
 - [ ] **3.6** Commit: `git commit --only components/Navbar.tsx -m "restyle(nav): saffron band, white logo + links, inverted CTA pill"`
 
-### Task 4: Hero → saffron ground, glass panel stays
+### Task 4: Hero — PRESERVE current dark treatment (Devon, 2026-07-09)
 
-**Files:** Modify `components/Hero.tsx`
+**Files:** Modify `components/Hero.tsx` (token-rename survival only — zero visual change)
 
-- [ ] **4.1** Waterfall edge fades (lines ~144-145): `from-brand-bg` → `from-brand-orange` (both top and bottom fades).
-- [ ] **4.2** Scroll-darkening overlay (line ~149): `bg-brand-bg` → `bg-brand-orange` (scrolling now saturates to saffron, not black).
-- [ ] **4.3** Waterfall gap area: add `bg-brand-orange` to the sticky container div (line ~102) so gaps between cards show saffron.
-- [ ] **4.4** Glass panel (line ~187): keep dark — change `bg-brand-bg/70` → `bg-[#1E0E01]/75` and add `inverse-ground` class (focus rings inside flip to cream). Everything inside the panel keeps its current colours: white headline, `.perfect-shimmer`, saffron "Where was that again?" line, `text-white/80` tag, saffron CTA pill — EXCEPT the pill text: `text-brand-bg` → `text-white` (founder rule; pill sits on glass, so saffron fill + white text is correct and passes nothing-on-saffron rules).
-- [ ] **4.5** Verify: cp to preview; hero shows share cards raining over saffron, fades blend to saffron, panel dark with white/saffron type, pill saffron-fill/white-text. Scroll: overlay saturates saffron. Reduced-motion (Chrome DevTools emulation): waterfall static, "perfect." plain white.
-- [ ] **4.6** Commit: `git commit --only components/Hero.tsx -m "restyle(hero): saffron ground + fades, white pill text, glass panel kept"`
+- [ ] **4.1** The hero keeps today's look exactly. Only swap dead token classes for the preserved dark token: `from-brand-bg` → `from-brand-night` (both edge fades, lines ~144-145), `bg-brand-bg` → `bg-brand-night` (scroll overlay ~149), `bg-brand-bg/70` → `bg-brand-night/70` (glass panel ~187), `text-brand-bg` → `text-brand-night` (CTA pill label ~215).
+- [ ] **4.2** Add `inverse-ground` class to the glass panel div (~187) so focus rings inside it are cream.
+- [ ] **4.3** Verify: cp to preview; hero is pixel-identical to production (dark ground, dark fades, glass panel, dark-text saffron pill, shimmer). Note for Devon: the hero pill keeps its dark-on-saffron label per "keep existing hero" — it's now the only non-white-on-saffron pill on the site; flag once at final review, don't change unilaterally.
+- [ ] **4.4** Gate: `grep -nE "brand-(bg|surface|border|text|dim)" components/Hero.tsx` → no matches.
+- [ ] **4.5** Commit: `git commit --only components/Hero.tsx -m "restyle(hero): preserve dark hero via brand.night token"`
 
 ### Task 5: MemoryTest + Manifesto (cream relief)
 

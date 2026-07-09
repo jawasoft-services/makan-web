@@ -59,7 +59,7 @@ footer, hero glass panel) flip the ring to cream via an `inverse-ground` class.
 | Section | Surface |
 |---|---|
 | Navbar | **saffron** (scrolled + top states both saffron; mobile menu saffron) |
-| Hero | **saffron** — waterfall cards over saffron, edge fades blend to saffron (not black); dark glass panel stays (it's what lets the tagline + fine print exist inside the hero; "Where was that again?" stays saffron-on-glass); CTA pill inside the panel stays saffron-fill/white-text (it sits on glass, not on saffron) |
+| Hero | **UNCHANGED (Devon, 2026-07-09)** — keeps today's dark treatment exactly: waterfall over `#050505`, dark edge fades, dark glass panel, saffron accents, current pill. Implementation only swaps its dead token classes for a preserved `brand.night` (`#050505`) token so the rename doesn't break it. The solid saffron navbar sits on top of the dark hero — acceptable; it echoes the share cards' own saffron bars. |
 | MemoryTest | cream |
 | Manifesto | cream |
 | AppShowcase | cream |
