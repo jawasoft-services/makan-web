@@ -9,13 +9,15 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          bg: "#050505",
-          surface: "#0f0f0f",
-          border: "#1a1a1a",
-          orange: "#FF9932",
-          text: "#FFFFFF",
-          muted: "#888888",
-          dim: "#767676",
+          orange: "#FF9932",          // locked — never change
+          cream: "#FFF4E6",           // page ground
+          ink: "#2B1503",             // body text on cream (14.9:1)
+          muted: "#85613F",           // secondary text on cream (5.1:1)
+          line: "#F3E2CD",            // hairlines on cream
+          card: "#FFFFFF",            // elevated surfaces
+          night: "#050505",           // preserved dark — hero + dark-over-imagery only
+          espresso: "#241102",        // footer ground
+          "espresso-muted": "#C9A985", // footer secondary text (8.2:1)
         },
       },
       fontFamily: {

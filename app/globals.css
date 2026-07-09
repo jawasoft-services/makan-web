@@ -3,8 +3,8 @@
 
 @layer base {
   body {
-    background-color: #050505;
-    color: #FFFFFF;
+    background-color: #FFF4E6;
+    color: #2B1503;
   }
 
   html {
@@ -13,7 +13,7 @@
 
   ::selection {
     background-color: #FF993240;
-    color: #FFFFFF;
+    color: #2B1503;
   }
 }
 
@@ -70,10 +70,16 @@
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* Focus-visible styles for keyboard navigation */
+/* Focus ring: espresso ink reads on cream (14.9:1) AND on saffron (7.3:1).
+   Inverse grounds (espresso footer, hero glass) flip it to cream. */
 :focus-visible {
-  outline: 2px solid #FF9932;
+  outline: 2px solid #2B1503;
   outline-offset: 2px;
   border-radius: 4px;
+}
+.inverse-ground :focus-visible,
+.inverse-ground:focus-visible {
+  outline-color: #FFF4E6;
 }
 
 /* Pause waterfall on hover for accessibility */
