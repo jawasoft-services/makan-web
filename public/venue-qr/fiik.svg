@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="900" viewBox="0 0 640 900">
+  <rect x="1" y="1" width="638" height="898" rx="28" fill="#FAF7F2" stroke="#E7E1D8" stroke-width="2"/>
+
+  <text x="320" y="118" text-anchor="middle" font-family="Plus Jakarta Sans, system-ui, -apple-system, Segoe UI, sans-serif" font-size="52" font-weight="800" letter-spacing="-1" fill="#0B0B0B">Makan</text>
+  <rect x="288" y="140" width="64" height="4" rx="2" fill="#FF9932"/>
+  <text x="320" y="182" text-anchor="middle" font-family="Plus Jakarta Sans, system-ui, -apple-system, Segoe UI, sans-serif" font-size="19" font-weight="500" fill="#6B6B6B">Remember every meal.</text>
+
+  <text x="320" y="256" text-anchor="middle" font-family="Plus Jakarta Sans, system-ui, -apple-system, Segoe UI, sans-serif" font-size="40" font-weight="800" letter-spacing="-0.5" fill="#0B0B0B">FIIK</text>
+  <text x="320" y="292" text-anchor="middle" font-family="Plus Jakarta Sans, system-ui, -apple-system, Segoe UI, sans-serif" font-size="20" font-weight="600" letter-spacing="2" fill="#FF9932">DURHAM</text>
+
+  <rect x="130" y="330" width="380" height="380" rx="24" fill="#FFFFFF" stroke="#E7E1D8" stroke-width="2"/>
+  <svg x="150" y="350" xmlns="http://www.w3.org/2000/svg" width="340" height="340" viewBox="0 0 31 31" shape-rendering="crispEdges"><path fill="#FFFFFF" d="M0 0h31v31H0z"/><path stroke="#0B0B0B" d="M1 1.5h7m2 0h5m1 0h1m1 0h4m1 0h7M1 2.5h1m5 0h1m2 0h2m1 0h5m1 0h1m1 0h1m1 0h1m5 0h1M1 3.5h1m1 0h3m1 0h1m1 0h3m2 0h1m5 0h1m2 0h1m1 0h3m1 0h1M1 4.5h1m1 0h3m1 0h1m1 0h2m4 0h1m2 0h1m4 0h1m1 0h3m1 0h1M1 5.5h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h1m3 0h1m1 0h3m1 0h1m1 0h3m1 0h1M1 6.5h1m5 0h1m1 0h1m3 0h1m2 0h2m1 0h1m1 0h1m1 0h1m5 0h1M1 7.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M9 8.5h1m3 0h1m1 0h2M1 9.5h1m1 0h5m2 0h3m5 0h1m1 0h1m2 0h5M1 10.5h3m2 0h1m2 0h1m1 0h2m1 0h2m1 0h9m3 0h1M3 11.5h3m1 0h2m3 0h6m5 0h1M2 12.5h1m3 0h1m4 0h1m1 0h2m1 0h1m2 0h3m2 0h1m1 0h1m1 0h1M1 13.5h2m1 0h2m1 0h2m1 0h2m1 0h1m1 0h1m2 0h2m6 0h2M1 14.5h1m1 0h1m1 0h2m3 0h1m6 0h7m1 0h1m3 0h1M3 15.5h1m1 0h1m1 0h1m1 0h1m3 0h1m2 0h1m1 0h1m3 0h1m1 0h1m1 0h2M1 16.5h1m1 0h1m1 0h2m1 0h4m1 0h1m1 0h1m1 0h1m1 0h3m2 0h2m2 0h1M1 17.5h2m1 0h1m2 0h2m4 0h1m2 0h1m1 0h1m5 0h1m1 0h2M1 18.5h2m1 0h1m1 0h1m1 0h3m2 0h3m1 0h1m1 0h7m1 0h1m1 0h1M1 19.5h1m5 0h1m1 0h4m1 0h6m1 0h4m2 0h1M1 20.5h1m1 0h2m3 0h1m1 0h1m1 0h3m2 0h1m2 0h2m1 0h3m2 0h1M1 21.5h1m4 0h2m1 0h2m1 0h1m2 0h1m2 0h1m1 0h6m1 0h3M9 22.5h2m1 0h2m4 0h2m1 0h1m3 0h5M1 23.5h7m2 0h4m2 0h1m1 0h1m1 0h2m1 0h1m1 0h3M1 24.5h1m5 0h1m1 0h2m2 0h1m1 0h1m4 0h2m3 0h1m2 0h1M1 25.5h1m1 0h3m1 0h1m1 0h1m6 0h3m2 0h5m1 0h1M1 26.5h1m1 0h3m1 0h1m1 0h2m1 0h4m1 0h3m1 0h1m2 0h1m1 0h4M1 27.5h1m1 0h3m1 0h1m1 0h4m3 0h2m2 0h9M1 28.5h1m5 0h1m2 0h1m1 0h1m4 0h1m3 0h2m1 0h1m1 0h1m1 0h1M1 29.5h7m1 0h6m3 0h3m3 0h4"/></svg>
+
+
+  <text x="320" y="768" text-anchor="middle" font-family="Plus Jakarta Sans, system-ui, -apple-system, Segoe UI, sans-serif" font-size="20" font-weight="600" fill="#0B0B0B">Open your camera and point it here</text>
+  <text x="320" y="804" text-anchor="middle" font-family="Plus Jakarta Sans, system-ui, -apple-system, Segoe UI, sans-serif" font-size="17" font-weight="700" fill="#FF9932">makanofficial.com/r/fiik</text>
+  <text x="320" y="852" text-anchor="middle" font-family="Plus Jakarta Sans, system-ui, -apple-system, Segoe UI, sans-serif" font-size="14" font-weight="500" fill="#9A948B">A private food diary you share with friends</text>
+</svg>
