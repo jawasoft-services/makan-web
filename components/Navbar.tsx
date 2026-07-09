@@ -1,9 +1,10 @@
 'use client'
 
-import Link from 'next/link'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { Link } from 'next-view-transitions'
+import { Drawer } from 'vaul'
 import { APP_STORE_URL } from '@/lib/links'
 
 const navLinks = [
@@ -15,30 +16,34 @@ const navLinks = [
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const [hidden, setHidden] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const lastY = useRef(0)
   const pathname = usePathname()
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40)
+    const onScroll = () => {
+      const y = window.scrollY
+      setScrolled(y > 40)
+      // Hide when scrolling down past the fold; reveal on any upward scroll.
+      setHidden(y > 160 && y > lastY.current)
+      lastY.current = y
+    }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Close mobile menu on route change
+  // Close the drawer on route change
   useEffect(() => {
-    setMobileOpen(false)
+    setDrawerOpen(false)
   }, [pathname])
-
-  // Prevent body scroll when mobile menu is open
-  useEffect(() => {
-    document.body.style.overflow = mobileOpen ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
-  }, [mobileOpen])
 
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled || mobileOpen
+        hidden && !drawerOpen ? '-translate-y-full' : 'translate-y-0'
+      } ${
+        scrolled || drawerOpen
           ? 'bg-brand-orange/95 backdrop-blur-md shadow-sm shadow-black/10'
           : 'bg-brand-orange'
       }`}
@@ -52,7 +57,7 @@ export default function Navbar() {
               e.preventDefault()
               window.scrollTo({ top: 0, behavior: 'smooth' })
             }
-            setMobileOpen(false)
+            setDrawerOpen(false)
           }}
         >
           <Image
@@ -75,8 +80,8 @@ export default function Navbar() {
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => {
-            // Route links (start with "/") use Next.js Link; hash links use <a>
-            // and resolve to /#hash when not on the homepage.
+            // Route links (start with "/") use the view-transition Link; hash
+            // links use <a> and resolve to /#hash when not on the homepage.
             if (link.href.startsWith('/')) {
               return (
                 <Link
@@ -92,7 +97,7 @@ export default function Navbar() {
               <a
                 key={link.href}
                 href={pathname === '/' ? link.href : `/${link.href}`}
-                className="text-sm text-brand-muted transition-colors hover:text-white"
+                className="text-sm font-medium text-white/90 transition-colors hover:text-white"
               >
                 {link.label}
               </a>
@@ -106,7 +111,7 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Mobile: CTA + hamburger */}
+        {/* Mobile: CTA + drawer */}
         <div className="flex items-center gap-3 md:hidden">
           <Link
             href={APP_STORE_URL}
@@ -114,62 +119,65 @@ export default function Navbar() {
           >
             Get the app
           </Link>
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-expanded={mobileOpen}
-            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
-            className="flex h-10 w-10 items-center justify-center rounded-lg text-white"
-          >
-            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-              {mobileOpen ? (
-                <>
-                  <line x1="4" y1="4" x2="16" y2="16" />
-                  <line x1="16" y1="4" x2="4" y2="16" />
-                </>
-              ) : (
-                <>
+          <Drawer.Root open={drawerOpen} onOpenChange={setDrawerOpen}>
+            <Drawer.Trigger asChild>
+              <button
+                aria-label="Open menu"
+                className="flex h-10 w-10 items-center justify-center rounded-lg text-white"
+              >
+                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
                   <line x1="3" y1="6" x2="17" y2="6" />
                   <line x1="3" y1="10" x2="17" y2="10" />
                   <line x1="3" y1="14" x2="17" y2="14" />
-                </>
-              )}
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile dropdown */}
-      <div
-        className={`md:hidden overflow-hidden transition-[max-height] duration-300 ease-in-out ${
-          mobileOpen ? 'max-h-60' : 'max-h-0'
-        }`}
-      >
-        <div className="flex flex-col gap-1 px-5 pb-6 pt-2">
-          {navLinks.map((link) => {
-            const linkClassName = "rounded-lg px-3 py-3 text-sm font-medium text-white/90 transition-colors hover:bg-white/15 hover:text-white"
-            if (link.href.startsWith('/')) {
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={linkClassName}
-                >
-                  {link.label}
-                </Link>
-              )
-            }
-            return (
-              <a
-                key={link.href}
-                href={pathname === '/' ? link.href : `/${link.href}`}
-                onClick={() => setMobileOpen(false)}
-                className={linkClassName}
+                </svg>
+              </button>
+            </Drawer.Trigger>
+            <Drawer.Portal>
+              <Drawer.Overlay className="fixed inset-0 z-[60] bg-black/40" />
+              <Drawer.Content
+                aria-describedby={undefined}
+                className="fixed inset-x-0 bottom-0 z-[70] rounded-t-3xl bg-brand-orange px-6 pb-10 pt-3"
               >
-                {link.label}
-              </a>
-            )
-          })}
+                <Drawer.Title className="sr-only">Menu</Drawer.Title>
+                <div aria-hidden className="mx-auto mb-5 h-1.5 w-10 rounded-full bg-white/40" />
+                <div className="flex flex-col">
+                  {navLinks.map((link) => {
+                    const linkClassName =
+                      'rounded-xl px-3 py-3.5 text-lg font-semibold text-white transition-colors hover:bg-white/15'
+                    if (link.href.startsWith('/')) {
+                      return (
+                        <Link
+                          key={link.href}
+                          href={link.href}
+                          onClick={() => setDrawerOpen(false)}
+                          className={linkClassName}
+                        >
+                          {link.label}
+                        </Link>
+                      )
+                    }
+                    return (
+                      <a
+                        key={link.href}
+                        href={pathname === '/' ? link.href : `/${link.href}`}
+                        onClick={() => setDrawerOpen(false)}
+                        className={linkClassName}
+                      >
+                        {link.label}
+                      </a>
+                    )
+                  })}
+                  <Link
+                    href={APP_STORE_URL}
+                    onClick={() => setDrawerOpen(false)}
+                    className="mt-4 rounded-full bg-white px-5 py-3.5 text-center text-base font-semibold text-brand-orange"
+                  >
+                    Get the app
+                  </Link>
+                </div>
+              </Drawer.Content>
+            </Drawer.Portal>
+          </Drawer.Root>
         </div>
       </div>
     </nav>

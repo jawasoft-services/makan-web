@@ -1,7 +1,10 @@
 import type { Metadata, Viewport } from "next"
 import { Plus_Jakarta_Sans } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { ViewTransitions } from "next-view-transitions"
 import Navbar from "@/components/Navbar"
+import SmoothScroll from "@/components/motion/SmoothScroll"
+import "lenis/dist/lenis.css"
 import "./globals.css"
 
 const jakarta = Plus_Jakarta_Sans({
@@ -48,18 +51,21 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={jakarta.variable}>
-      <body className="font-sans antialiased">
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-lg focus:bg-brand-orange focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
-        >
-          Skip to content
-        </a>
-        <Navbar />
-        {children}
-        <Analytics />
-      </body>
-    </html>
+    <ViewTransitions>
+      <html lang="en" className={jakarta.variable}>
+        <body className="font-sans antialiased">
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-lg focus:bg-brand-orange focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
+          >
+            Skip to content
+          </a>
+          <Navbar />
+          {children}
+          <SmoothScroll />
+          <Analytics />
+        </body>
+      </html>
+    </ViewTransitions>
   )
 }
