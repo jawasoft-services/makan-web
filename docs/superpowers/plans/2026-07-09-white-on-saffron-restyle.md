@@ -264,3 +264,23 @@ colors: {
 ## Orphaned components (out of scope)
 
 `BrandPillars.tsx`, `FeatureTabs.tsx`, `Refusals.tsx`, `StatTicker.tsx` are imported by nothing — do NOT restyle them; a separate cleanup task exists to delete them. If Task 18.1's sweep flags matches inside these four files only, that is acceptable — note it and move on.
+
+---
+
+## Phase 2 — Motion layer (executed 2026-07-09, same branch)
+
+Approved verbally ("do it all now"); micro-interactions group explicitly vetoed ("dont do 9").
+
+| Item | Status | Where |
+|---|---|---|
+| Lenis smooth scroll (reduced-motion aware) | ✅ | `components/motion/SmoothScroll.tsx`, wired in `app/layout.tsx` |
+| View transitions (page crossfade) | ✅ | `next-view-transitions` — layout wrapper + Link in Navbar/Footer |
+| Hide-on-scroll navbar | ✅ | `components/Navbar.tsx` |
+| Vaul bottom drawer (mobile menu) | ✅ | `components/Navbar.tsx` |
+| Sticky-scroll app story (desktop) | ✅ | `components/AppShowcase.tsx` — N×100vh track, pinned phone, scroll-swapped screens, progress dots; stacked layout kept on <lg |
+| Meal snap-carousel + arrows | ✅ | `components/LatestOnMakan.tsx` (desktop; mobile strip kept) |
+| Focus-blur siblings + hover tilt | ✅ | `.meal-carousel`/`.meal-card` in `globals.css` + whileHover |
+| Lens zoom in blog lightbox | ✅ | `components/blog/MealGallery.tsx` (cursor-origin scale 1.8) |
+| Stateful buttons / ticker / marquee / FAQ motion / scroll progress | ❌ vetoed | Devon: "dont do 9" (StatTicker count-up already existed) |
+| Partner testimonials | ⏭ skipped | No real partner quotes exist — structure without content would mean fabricating; needs Devon's Cellar Door / FIIK quotes first |
+| Progressive blur photo edges | ⏭ skipped | Marginal texture; carousel blur covers the effect |
