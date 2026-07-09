@@ -99,7 +99,7 @@ export default function Hero() {
 
   return (
     <section ref={containerRef} className="relative h-[140vh]">
-      <div className="sticky top-0 h-screen overflow-hidden">
+      <div className="sticky top-0 h-screen overflow-hidden bg-brand-night">
         {/* Waterfall grid — 5 columns of scrolling meal cards */}
         <div className="waterfall-container absolute inset-0 grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3 px-2 sm:px-3">
           {columns.map((col, i) => {
