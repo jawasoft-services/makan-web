@@ -43,8 +43,8 @@ export default async function StoryPage() {
         <div className="mt-8 space-y-5 text-[15px] sm:text-base leading-[1.75] text-brand-muted">
           <p>
             I&apos;m a third culture kid. Citizens of everywhere and nowhere. Born in Jakarta, raised across Singapore
-            and Bali, now Durham. The app&apos;s even named for it: <em>makan</em> means &ldquo;to eat&rdquo; in
-            Indonesian. That everywhere-and-nowhere feeling is the root of the whole thing.
+            and Bali, now Durham. The app&apos;s even named for it: <em>makan</em>{' '}means &ldquo;to eat&rdquo;
+            in Indonesian. That everywhere-and-nowhere feeling is the root of the whole thing.
           </p>
           <p>
             When COVID hit, my closest mates were scattered across the world, all of us suddenly stuck inside the same
