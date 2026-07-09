@@ -1,5 +1,13 @@
 // Single source of truth for the homepage FAQ — rendered by components/FAQ.tsx
 // and emitted as FAQPage JSON-LD by components/FaqSchema.tsx. Edit Q&As here only.
+//
+// Questions are phrased as real search queries (People Also Ask / AI answer
+// engines), and every answer leads with a direct, extractable first sentence.
+// Product claims are verified against the app — notably: audience is a binary
+// Friends-Only (default) / Public toggle, NOT a three-state Public/Friends/
+// Private control (postMeal.tsx). Do not reintroduce a "Private (just you)"
+// posting audience, and do not claim "no algorithm" (Explore is algorithmic —
+// only the main friends feed is chronological).
 export interface FaqItem {
   q: string
   a: string
@@ -8,35 +16,39 @@ export interface FaqItem {
 export const FAQS: FaqItem[] = [
   {
     q: 'What is Makan?',
-    a: "A food diary you keep with friends. Snap a photo of your meal, tag the place if it matters, and it stays in your record. The kind that remembers what you'd otherwise forget.",
+    a: "Makan is a food diary you keep with friends. Snap a photo of your meal, tag the place if it matters, and it stays in your record — the kind that remembers what you'd otherwise forget.",
+  },
+  {
+    q: 'Is Makan free?',
+    a: 'Yes. Makan is free on the App Store, built for iPhone — no subscription, no paywall, no ads. Android is coming next.',
   },
   {
     q: 'What does “makan” mean?',
-    a: 'In Indonesian, it means eat. Devon — our founder — is Indonesian, so naming the app Makan made sense.',
+    a: "It means “eat” in Malay and Indonesian. Devon — our founder — is Indonesian, so naming a food app Makan made sense.",
   },
   {
-    q: 'Who can see my meals?',
-    a: "Only your friends, unless you say otherwise. Every post can be Public (anyone on Makan), Friends (mutuals only), or Private (just you). The default is friends.",
+    q: 'Who can see my meals? Is my food private?',
+    a: "By default, only your friends. Every meal you post is either Friends Only — the people you've added, and no one else — or Public, which anyone on Makan can see. Friends is the default, and going public is a per-meal choice that opens up as you settle in. Either way, the meal is saved in your own diary first.",
+  },
+  {
+    q: 'Does Makan count calories or track macros?',
+    a: "No. No calories, no macros, no nutrition scores, no grading your dinner. Makan is a photo diary, not a tracker — it remembers what you ate, not what it “cost” you.",
   },
   {
     q: 'Are there star ratings?',
     a: "No. A meal isn't 4.2 out of 5. The rankings we show are personal — yours, and your friends'. When a friend posts a meal, you'll see if it's their #3 of all time. That tells you more than a 4.6 average from strangers ever could.",
   },
   {
-    q: 'Can restaurants pay to be featured?',
-    a: "No. If you see a place on Makan, it's because someone you know actually ate there and remembered it.",
+    q: 'How is Makan different from Yelp or Google reviews?',
+    a: "Yelp tells you what a thousand strangers thought once. Makan shows you what the people you actually trust ate and remembered. No star averages, no anonymous reviews, and no paying to be featured — if a place shows up on Makan, it's because someone you know ate there and kept it.",
   },
   {
     q: 'Does Makan use AI?',
-    a: "No. AI has never tasted food. It can't smell, can't chew, can't remember being hungry as a kid. So it doesn't write your meals, generate your recipes, or guess what you ate from a photo.",
+    a: "No. AI has never tasted food — it can't smell, can't chew, can't remember being hungry as a kid. So it doesn't write your captions, rank your meals, or guess what you ate from a photo. That part's yours.",
   },
   {
     q: 'What’s the difference between a like and a crave?',
-    a: 'A like is a thumbs-up between friends. A crave saves the meal to a wishlist of things you want to try — mostly used when a friend posts something that makes you instantly hungry.',
-  },
-  {
-    q: 'Is there calorie counting?',
-    a: 'No. No macros, no nutrition data, no scoring your dinner. Just photos of what you eat.',
+    a: "A like is the quick “yum” you give a friend's meal. A crave is stronger — it saves that exact dish to your want-to-try list, for the moment a friend posts something and you need to eat it immediately.",
   },
   {
     q: 'Is there a streak?',
