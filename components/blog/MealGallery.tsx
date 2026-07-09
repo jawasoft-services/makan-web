@@ -2,12 +2,19 @@
 
 import Image from "next/image"
 import { useCallback, useEffect, useState } from "react"
+import { useReducedMotion } from "framer-motion"
 import type { MealEmbed } from "@/lib/reviews/types"
 
 export function MealGallery({ meals }: { meals: MealEmbed[] }) {
   const withPhotos = meals.filter((m) => m.photo)
   const [open, setOpen] = useState<number | null>(null)
-  const close = useCallback(() => setOpen(null), [])
+  // Lens zoom inside the lightbox — origin follows the cursor.
+  const [lens, setLens] = useState<{ x: number; y: number } | null>(null)
+  const prefersReducedMotion = useReducedMotion()
+  const close = useCallback(() => {
+    setOpen(null)
+    setLens(null)
+  }, [])
   const active = open !== null ? withPhotos[open] : null
 
   useEffect(() => {
@@ -85,13 +92,34 @@ export function MealGallery({ meals }: { meals: MealEmbed[] }) {
             className="m-0 flex max-h-[88vh] max-w-3xl flex-col items-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <Image
-              src={active.photo as string}
-              alt={active.alt}
-              width={1400}
-              height={1400}
-              className="max-h-[80vh] w-auto rounded-xl object-contain"
-            />
+            <div
+              className="overflow-hidden rounded-xl"
+              onMouseMove={
+                prefersReducedMotion
+                  ? undefined
+                  : (e) => {
+                      const r = e.currentTarget.getBoundingClientRect()
+                      setLens({
+                        x: ((e.clientX - r.left) / r.width) * 100,
+                        y: ((e.clientY - r.top) / r.height) * 100,
+                      })
+                    }
+              }
+              onMouseLeave={() => setLens(null)}
+            >
+              <Image
+                src={active.photo as string}
+                alt={active.alt}
+                width={1400}
+                height={1400}
+                className="max-h-[80vh] w-auto object-contain transition-transform duration-200 ease-out"
+                style={
+                  lens
+                    ? { transformOrigin: `${lens.x}% ${lens.y}%`, transform: 'scale(1.8)' }
+                    : undefined
+                }
+              />
+            </div>
             <figcaption className="mt-3 text-center text-sm text-white/80">{active.caption}</figcaption>
           </figure>
         </div>
