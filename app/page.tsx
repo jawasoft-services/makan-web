@@ -7,7 +7,7 @@ import FounderStory from "@/components/FounderStory"
 import B2BTeaser from "@/components/B2BTeaser"
 import FAQ from "@/components/FAQ"
 import FaqSchema from "@/components/FaqSchema"
-import FinalCTA from "@/components/FinalCTA"
+import FinalCTASection from "@/components/FinalCTASection"
 import Footer from "@/components/Footer"
 
 // Regenerate the static homepage once per hour — keeps the live meal count
@@ -31,7 +31,7 @@ export default function Home() {
       <B2BTeaser />
       <FaqSchema />
       <FAQ />
-      <FinalCTA />
+      <FinalCTASection />
       <Footer />
     </main>
   )

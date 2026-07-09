@@ -78,6 +78,40 @@
   }
 }
 
+/* Final CTA — "live signal" motion. All motion-gated: reduced-motion users
+   get the static composition (visible badge, plain "live.", steady button). */
+.cta-live-word { position: relative; display: inline-block; }
+.cta-live-word::after {
+  content: ''; position: absolute; inset: 0.12em -0.06em 0.14em;
+  border-radius: 0.14em; background: rgba(255, 255, 255, 0.16); z-index: -1;
+}
+.cta-ping { position: relative; }
+.cta-btn-glint {
+  position: absolute; top: 0; bottom: 0; width: 40%; left: -55%;
+  background: linear-gradient(100deg, transparent, rgba(255, 153, 50, 0.35), transparent);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .cta-live-word::after { animation: cta-live-breath 2.4s ease-in-out infinite; }
+  .cta-ping::before {
+    content: ''; position: absolute; inset: -4px; border-radius: 50%;
+    background: #fff; opacity: 0.5; animation: cta-ping-out 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+  .cta-btn-glint { animation: cta-glint 3.4s ease-in-out 1.2s infinite; }
+}
+@keyframes cta-live-breath {
+  0%, 100% { opacity: 0.15; transform: scaleX(0.96); }
+  50%      { opacity: 0.4;  transform: scaleX(1.02); }
+}
+@keyframes cta-ping-out {
+  0%   { transform: scale(0.6); opacity: 0.6; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+@keyframes cta-glint {
+  0%       { left: -55%; }
+  55%, 100% { left: 135%; }
+}
+
 /* Focus-visible styles for keyboard navigation */
 /* Focus ring: espresso ink reads on cream (14.9:1) AND on saffron (7.3:1).
    Inverse grounds (espresso footer, hero glass) flip it to cream. */
