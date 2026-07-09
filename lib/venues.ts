@@ -39,7 +39,14 @@ export interface PilotVenue {
   googlePlaceId?: string
 }
 
-const VENUES = venuesData as Record<string, PilotVenue>
+// Key the lookup off each venue's own `slug` FIELD, not the JSON object key, so
+// the page can never diverge from the printed card: the card filename + QR URL
+// and this page lookup both resolve from the same `slug` value. (A mis-cased or
+// mistyped JSON key therefore can't silently drop a live page to the generic
+// fallback — the generator warns on key≠slug for tidiness.)
+const VENUES: Record<string, PilotVenue> = Object.fromEntries(
+  (Object.values(venuesData) as PilotVenue[]).map((v) => [v.slug.trim().toLowerCase(), v]),
+)
 
 /** Resolve a slug (case-insensitive) to a pilot venue, or null if unknown. */
 export function getVenue(slug: string): PilotVenue | null {

@@ -52,15 +52,25 @@ async function card(venue) {
   const qrX = quietX + (QUIET - QR) / 2
   const qrY = quietY + (QUIET - QR) / 2
 
+  // 'Q' = ~25% recovery — a table card lives with grease, smudges and partial
+  // occlusion, where 'M' (~15%) is marginal. Slightly denser modules; print a
+  // touch larger. See the sizing note in docs/venue-qr-playbook.md.
   let qr = await QRCode.toString(url, {
     type: "svg",
     margin: 1,
     width: QR,
-    errorCorrectionLevel: "M",
+    errorCorrectionLevel: "Q",
     color: { dark: C.ink, light: C.white },
   })
   // Nest the QR <svg> at the right spot (nested <svg> honours x/y/width/height).
   qr = qr.replace("<svg ", `<svg x="${qrX}" y="${qrY}" `)
+
+  // Auto-fit the venue name: SVG <text> doesn't wrap, so shrink the font for
+  // long names instead of letting them spill past the fixed 640px card. ~15
+  // chars fit at the 40px default; beyond that scale down (floor 22px).
+  const nameFont = venue.name.length > 15
+    ? Math.max(22, Math.round((40 * 15) / venue.name.length))
+    : 40
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
   <rect x="1" y="1" width="${W - 2}" height="${H - 2}" rx="28" fill="${C.cream}" stroke="${C.border}" stroke-width="2"/>
@@ -69,7 +79,7 @@ async function card(venue) {
   <rect x="${W / 2 - 32}" y="140" width="64" height="4" rx="2" fill="${C.saffron}"/>
   <text x="${W / 2}" y="182" text-anchor="middle" font-family="${FONT}" font-size="19" font-weight="500" fill="${C.muted}">Remember every meal.</text>
 
-  <text x="${W / 2}" y="256" text-anchor="middle" font-family="${FONT}" font-size="40" font-weight="800" letter-spacing="-0.5" fill="${C.ink}">${esc(venue.name)}</text>
+  <text x="${W / 2}" y="256" text-anchor="middle" font-family="${FONT}" font-size="${nameFont}" font-weight="800" letter-spacing="-0.5" fill="${C.ink}">${esc(venue.name)}</text>
   <text x="${W / 2}" y="292" text-anchor="middle" font-family="${FONT}" font-size="20" font-weight="600" letter-spacing="2" fill="${C.saffron}">${esc(venue.city.toUpperCase())}</text>
 
   <rect x="${quietX}" y="${quietY}" width="${QUIET}" height="${QUIET}" rx="24" fill="${C.white}" stroke="${C.border}" stroke-width="2"/>
@@ -82,25 +92,41 @@ async function card(venue) {
 `
 }
 
+// Lowercase kebab-case, single hyphens only — rejects leading/trailing/double
+// hyphens that the loose `[a-z0-9-]+` would wave through onto a printed card.
+const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/
+
 async function main() {
-  const venues = Object.values(JSON.parse(readFileSync(DATA, "utf8")))
-  if (venues.length === 0) {
+  const entries = Object.entries(JSON.parse(readFileSync(DATA, "utf8")))
+  if (entries.length === 0) {
     console.error("No venues in lib/venues.data.json — nothing to generate.")
     process.exit(1)
   }
-  mkdirSync(OUT_DIR, { recursive: true })
 
-  for (const v of venues) {
-    if (!/^[a-z0-9-]+$/.test(v.slug)) {
-      console.error(`Bad slug "${v.slug}" — use lowercase kebab-case only.`)
+  // Validate the whole registry before writing anything (fail closed).
+  const seen = new Set()
+  for (const [key, v] of entries) {
+    if (!SLUG_RE.test(v.slug)) {
+      console.error(`Bad slug "${v.slug}" — lowercase kebab-case only (no leading/trailing/double hyphens).`)
       process.exit(1)
     }
+    if (seen.has(v.slug)) {
+      console.error(`Duplicate slug "${v.slug}" — each venue needs a unique slug.`)
+      process.exit(1)
+    }
+    seen.add(v.slug)
+    if (key !== v.slug) {
+      console.warn(`  ⚠ registry key "${key}" ≠ slug "${v.slug}" — the page resolves off the slug field so it still works, but keep the key identical for tidiness.`)
+    }
+  }
+
+  mkdirSync(OUT_DIR, { recursive: true })
+  for (const [, v] of entries) {
     const svg = await card(v)
-    const path = join(OUT_DIR, `${v.slug}.svg`)
-    writeFileSync(path, svg)
+    writeFileSync(join(OUT_DIR, `${v.slug}.svg`), svg)
     console.log(`  ✓ ${v.name.padEnd(14)} → public/venue-qr/${v.slug}.svg   (${SITE}/r/${v.slug})`)
   }
-  console.log(`\nGenerated ${venues.length} venue QR card(s). Open each SVG in a browser to print.`)
+  console.log(`\nGenerated ${entries.length} venue QR card(s). Open each SVG in a browser to print.`)
 }
 
 main().catch((err) => {
