@@ -141,12 +141,12 @@ export default function Hero() {
         </div>
 
         {/* Top/bottom fades — blend waterfall edges into the dark bg */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-20 bg-gradient-to-b from-brand-bg to-transparent" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-28 bg-gradient-to-t from-brand-bg to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-20 bg-gradient-to-b from-brand-night to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-28 bg-gradient-to-t from-brand-night to-transparent" />
 
         {/* Scroll-driven darkening */}
         <motion.div
-          className="pointer-events-none absolute inset-0 z-10 bg-brand-bg"
+          className="pointer-events-none absolute inset-0 z-10 bg-brand-night"
           style={{ opacity: overlayOpacity }}
         />
 
@@ -184,7 +184,7 @@ export default function Hero() {
             </div>
 
             {/* Glass panel with wordmark + loss hook + CTA */}
-            <div className="mt-4 sm:mt-6 text-center rounded-3xl bg-brand-bg/70 px-5 py-5 backdrop-blur-lg max-w-[320px] sm:max-w-lg sm:px-8 sm:py-7">
+            <div className="inverse-ground mt-4 sm:mt-6 text-center rounded-3xl bg-brand-night/70 px-5 py-5 backdrop-blur-lg max-w-[320px] sm:max-w-lg sm:px-8 sm:py-7">
               <Image
                 src="/makan-logo.png"
                 alt="makan"
@@ -212,7 +212,7 @@ export default function Hero() {
               <div className="mt-5 sm:mt-6">
                 <Link
                   href={APP_STORE_URL}
-                  className="relative inline-block rounded-full bg-brand-orange px-6 py-3 text-sm font-semibold text-brand-bg transition-all sm:px-8 sm:py-3.5 sm:text-base hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
+                  className="relative inline-block rounded-full bg-brand-orange px-6 py-3 text-sm font-semibold text-brand-night transition-all sm:px-8 sm:py-3.5 sm:text-base hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
                 >
                   <span className="pointer-events-none absolute -inset-3 rounded-full bg-brand-orange/10 blur-xl" aria-hidden />
                   <span className="relative">Download on the App Store</span>

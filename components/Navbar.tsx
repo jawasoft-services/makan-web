@@ -39,8 +39,8 @@ export default function Navbar() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled || mobileOpen
-          ? 'bg-brand-bg/90 backdrop-blur-md shadow-sm shadow-black/20'
-          : 'bg-gradient-to-b from-brand-bg/70 to-transparent backdrop-blur-[2px]'
+          ? 'bg-brand-orange/95 backdrop-blur-md shadow-sm shadow-black/10'
+          : 'bg-brand-orange'
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 sm:px-8 py-4 sm:py-5">
@@ -56,14 +56,14 @@ export default function Navbar() {
           }}
         >
           <Image
-            src="/makan-icon.svg"
+            src="/makan-icon-white.svg"
             alt=""
             width={32}
             height={32}
             className="h-8 w-8"
           />
           <Image
-            src="/makan-wordmark.svg"
+            src="/makan-wordmark-white.svg"
             alt="Makan"
             width={97}
             height={24}
@@ -82,7 +82,7 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-sm text-brand-muted transition-colors hover:text-white"
+                  className="text-sm font-medium text-white/90 transition-colors hover:text-white"
                 >
                   {link.label}
                 </Link>
@@ -100,7 +100,7 @@ export default function Navbar() {
           })}
           <Link
             href={APP_STORE_URL}
-            className="rounded-full bg-brand-orange px-5 py-2 text-sm font-semibold text-brand-bg transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
+            className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-brand-orange transition-shadow hover:shadow-lg hover:shadow-black/10"
           >
             Get the app
           </Link>
@@ -110,7 +110,7 @@ export default function Navbar() {
         <div className="flex items-center gap-3 md:hidden">
           <Link
             href={APP_STORE_URL}
-            className="rounded-full bg-brand-orange px-4 py-2 text-sm font-semibold text-brand-bg"
+            className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-brand-orange"
           >
             Get the app
           </Link>
@@ -146,7 +146,7 @@ export default function Navbar() {
       >
         <div className="flex flex-col gap-1 px-5 pb-6 pt-2">
           {navLinks.map((link) => {
-            const linkClassName = "rounded-lg px-3 py-3 text-sm text-brand-muted transition-colors hover:bg-brand-surface hover:text-white"
+            const linkClassName = "rounded-lg px-3 py-3 text-sm font-medium text-white/90 transition-colors hover:bg-white/15 hover:text-white"
             if (link.href.startsWith('/')) {
               return (
                 <Link

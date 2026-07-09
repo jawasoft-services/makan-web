@@ -12,7 +12,7 @@ export default function FinalCTA() {
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section ref={ref} className="bg-brand-bg px-5 sm:px-8 py-24 sm:py-36">
+    <section ref={ref} className="bg-brand-orange px-5 sm:px-8 py-24 sm:py-36">
       <div className="mx-auto max-w-2xl text-center">
         <motion.h2
           className="text-4xl font-bold leading-[1.05] text-white sm:text-6xl"
@@ -25,13 +25,12 @@ export default function FinalCTA() {
         </motion.h2>
 
         <motion.p
-          className="mx-auto mt-5 max-w-md text-base text-brand-muted sm:text-lg"
+          className="mx-auto mt-5 max-w-md text-xl font-semibold leading-snug text-white"
           initial={{ opacity: 0, y: 16 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.1, ease: EASE_OUT }}
         >
-          Remember every meal. Download Makan free on the App Store and
-          start your food diary today.
+          Remember every meal. Free on iPhone — Android is coming next.
         </motion.p>
 
         <motion.div
@@ -42,21 +41,13 @@ export default function FinalCTA() {
         >
           <Link
             href={APP_STORE_URL}
-            className="relative inline-block rounded-full bg-brand-orange px-9 py-4 text-base font-semibold text-brand-bg transition-all hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
+            className="relative inline-block rounded-full bg-white px-9 py-4 text-base font-semibold text-brand-orange shadow-lg shadow-black/15 transition-all hover:shadow-xl hover:shadow-black/20 active:scale-[0.98]"
           >
-            <span className="pointer-events-none absolute -inset-4 rounded-full bg-brand-orange/10 blur-xl" aria-hidden />
+            <span className="pointer-events-none absolute -inset-4 rounded-full bg-white/20 blur-xl" aria-hidden />
             <span className="relative">Download on the App Store</span>
           </Link>
         </motion.div>
 
-        <motion.p
-          className="mt-5 text-xs text-brand-dim"
-          initial={{ opacity: 0 }}
-          animate={inView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.6, delay: 0.35, ease: EASE_OUT }}
-        >
-          Free on iPhone. Android is coming next.
-        </motion.p>
       </div>
     </section>
   )
