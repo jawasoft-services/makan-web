@@ -31,15 +31,17 @@ website with the app's founder branding rule (text/icons ON saffron = white,
 | `orange` | `#FF9932` | `#FF9932` | unchanged, locked |
 | `bg` | `#050505` | `#FFF4E6` | page ground — saffron-tinted cream |
 | `ink` | — (new) | `#2B1503` | espresso body ink on cream (14.9:1) |
-| `muted` | `#888888` | `#8F6C49` | secondary text on cream |
+| `muted` | `#888888` | `#85613F` | secondary text on cream (5.1:1 — the mockup's `#8F6C49` measured 4.38:1, just under AA) |
 | `dim` | `#767676` | retire or map to `muted` | |
 | `surface` | `#0f0f0f` | `#FFFFFF` | elevated cards on cream |
 | `line` | `#1a1a1a` (`border`) | `#F3E2CD` | hairlines/dividers on cream |
 | `footer` | — (new) | `#241102` | deep espresso footer ground, white/`#C9A985` text |
 
 `globals.css`: body flips to `bg`/`ink`; `::selection` stays saffron-tinted
-(darken text to ink); **focus ring is context-aware** — saffron ring on cream
-surfaces, white ring on saffron surfaces (saffron-on-saffron is invisible).
+(darken text to ink); **focus ring is espresso ink everywhere** — ink reads on
+cream (14.9:1) AND on saffron (7.3:1); a saffron or white ring fails the 3:1
+non-text minimum on one surface or the other. Inverse grounds (espresso
+footer, hero glass panel) flip the ring to cream via an `inverse-ground` class.
 
 ## The on-saffron contract (site-wide)
 
