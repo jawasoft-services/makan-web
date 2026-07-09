@@ -55,7 +55,8 @@ export default function Navbar() {
           onClick={(e) => {
             if (pathname === '/') {
               e.preventDefault()
-              window.scrollTo({ top: 0, behavior: 'smooth' })
+              if (window.__lenis) window.__lenis.scrollTo(0)
+              else window.scrollTo({ top: 0, behavior: 'smooth' })
             }
             setDrawerOpen(false)
           }}
