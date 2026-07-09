@@ -88,7 +88,7 @@ export default function PartnerForm() {
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </div>
-            <h1 className="mt-5 text-2xl font-bold text-white sm:text-3xl">
+            <h1 className="mt-5 text-2xl font-bold text-brand-ink sm:text-3xl">
               We&apos;ll be in touch.
             </h1>
             <p className="mt-3 text-sm leading-relaxed text-brand-muted sm:text-base">
@@ -129,7 +129,7 @@ export default function PartnerForm() {
               </motion.div>
 
               <motion.h1
-                className="mt-6 text-xl font-bold text-white sm:text-2xl"
+                className="mt-6 text-xl font-bold text-brand-ink sm:text-2xl"
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
@@ -166,7 +166,7 @@ export default function PartnerForm() {
                   placeholder="Who are we speaking with?"
                   value={name}
                   onChange={(e) => { setName(e.target.value); clearError() }}
-                  className="w-full rounded-xl border border-brand-border bg-brand-surface px-4 py-3 text-sm text-white placeholder:text-brand-dim outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-surface"
+                  className="w-full rounded-xl border border-brand-line bg-brand-card px-4 py-3 text-sm text-brand-ink placeholder:text-brand-muted outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-card"
                 />
               </div>
 
@@ -180,7 +180,7 @@ export default function PartnerForm() {
                   placeholder="you@restaurant.com"
                   value={email}
                   onChange={(e) => { setEmail(e.target.value); clearError() }}
-                  className="w-full rounded-xl border border-brand-border bg-brand-surface px-4 py-3 text-sm text-white placeholder:text-brand-dim outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-surface"
+                  className="w-full rounded-xl border border-brand-line bg-brand-card px-4 py-3 text-sm text-brand-ink placeholder:text-brand-muted outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-card"
                 />
               </div>
 
@@ -194,13 +194,13 @@ export default function PartnerForm() {
                   placeholder="What's your restaurant called?"
                   value={restaurant}
                   onChange={(e) => { setRestaurant(e.target.value); clearError() }}
-                  className="w-full rounded-xl border border-brand-border bg-brand-surface px-4 py-3 text-sm text-white placeholder:text-brand-dim outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-surface"
+                  className="w-full rounded-xl border border-brand-line bg-brand-card px-4 py-3 text-sm text-brand-ink placeholder:text-brand-muted outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-card"
                 />
               </div>
 
               <div>
                 <label htmlFor="city" className="block text-xs font-medium text-brand-muted mb-1.5 ml-1">
-                  City <span className="text-brand-dim">(optional)</span>
+                  City <span className="text-brand-muted">(optional)</span>
                 </label>
                 <input
                   id="city"
@@ -208,13 +208,13 @@ export default function PartnerForm() {
                   placeholder="Where are you based?"
                   value={city}
                   onChange={(e) => { setCity(e.target.value); clearError() }}
-                  className="w-full rounded-xl border border-brand-border bg-brand-surface px-4 py-3 text-sm text-white placeholder:text-brand-dim outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-surface"
+                  className="w-full rounded-xl border border-brand-line bg-brand-card px-4 py-3 text-sm text-brand-ink placeholder:text-brand-muted outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-card"
                 />
               </div>
 
               <div>
                 <label htmlFor="message" className="block text-xs font-medium text-brand-muted mb-1.5 ml-1">
-                  Anything else? <span className="text-brand-dim">(optional)</span>
+                  Anything else? <span className="text-brand-muted">(optional)</span>
                 </label>
                 <textarea
                   id="message"
@@ -222,7 +222,7 @@ export default function PartnerForm() {
                   placeholder="Tell us what you're looking for..."
                   value={message}
                   onChange={(e) => { setMessage(e.target.value); clearError() }}
-                  className="w-full rounded-xl border border-brand-border bg-brand-surface px-4 py-3 text-sm text-white placeholder:text-brand-dim outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-surface resize-none"
+                  className="w-full rounded-xl border border-brand-line bg-brand-card px-4 py-3 text-sm text-brand-ink placeholder:text-brand-muted outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-card resize-none"
                 />
               </div>
 
@@ -240,7 +240,7 @@ export default function PartnerForm() {
                 <button
                   type="submit"
                   disabled={status === 'loading'}
-                  className="w-full rounded-xl bg-brand-orange py-3 text-sm font-semibold text-brand-bg transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="w-full rounded-xl bg-brand-orange py-3 text-sm font-semibold text-white transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {status === 'loading' ? (
                     <span className="inline-flex items-center gap-2">
@@ -271,7 +271,7 @@ export default function PartnerForm() {
               </AnimatePresence>
             </motion.form>
 
-            <p className="mt-6 text-center text-[11px] text-brand-dim">
+            <p className="mt-6 text-center text-[11px] text-brand-muted">
               By submitting you agree to our{' '}
               <Link href="/tos" className="underline hover:text-brand-muted">
                 Terms

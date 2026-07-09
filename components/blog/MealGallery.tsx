@@ -26,8 +26,8 @@ export function MealGallery({ meals }: { meals: MealEmbed[] }) {
   }, [open, close, withPhotos.length])
 
   return (
-    <div className="my-8 rounded-2xl border border-brand-border bg-brand-surface p-5">
-      <p className="mb-4 text-sm font-semibold text-white">The three I logged on Makan that night</p>
+    <div className="my-8 rounded-2xl border border-brand-line bg-brand-card p-5">
+      <p className="mb-4 text-sm font-semibold text-brand-ink">The three I logged on Makan that night</p>
 
       {withPhotos.length ? (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -37,7 +37,7 @@ export function MealGallery({ meals }: { meals: MealEmbed[] }) {
               type="button"
               onClick={() => setOpen(i)}
               aria-label={`Open photo: ${m.caption}`}
-              className="group block overflow-hidden rounded-xl border border-brand-border text-left transition-colors hover:border-brand-orange/50"
+              className="group block overflow-hidden rounded-xl border border-brand-line text-left transition-colors hover:border-brand-orange/50"
             >
               <Image
                 src={m.photo as string}
@@ -51,7 +51,7 @@ export function MealGallery({ meals }: { meals: MealEmbed[] }) {
           ))}
         </div>
       ) : (
-        <ul className="space-y-2 text-[15px] text-brand-text/85">
+        <ul className="space-y-2 text-[15px] text-brand-ink/85">
           {meals.map((m, i) => (
             <li key={i} className="flex gap-2">
               <span className="text-brand-orange">·</span>
@@ -67,7 +67,7 @@ export function MealGallery({ meals }: { meals: MealEmbed[] }) {
           aria-modal="true"
           aria-label={active.alt}
           onClick={close}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
+          className="inverse-ground fixed inset-0 z-[100] flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
         >
           <button
             type="button"

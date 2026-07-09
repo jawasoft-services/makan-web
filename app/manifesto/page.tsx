@@ -22,7 +22,7 @@ export default function ManifestoPage() {
   return (
     <>
       <Navbar />
-      <main className="bg-brand-bg min-h-screen text-white">
+      <main className="bg-brand-cream min-h-screen text-brand-ink">
         <article className="mx-auto max-w-[680px] px-5 pb-24 pt-32 sm:px-8 sm:pb-32 sm:pt-40">
 
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-orange">
@@ -30,13 +30,13 @@ export default function ManifestoPage() {
           </p>
 
           <h1
-            className="mt-6 text-[34px] font-bold leading-[1.08] tracking-[-0.025em] text-white sm:text-[52px] lg:text-[64px]"
+            className="mt-6 text-[34px] font-bold leading-[1.08] tracking-[-0.025em] text-brand-ink sm:text-[52px] lg:text-[64px]"
           >
             You&apos;ll forget today&apos;s best meal by Friday. Makan won&apos;t.
           </h1>
 
           {/* Opening — origin and founding observation */}
-          <div className="mt-14 space-y-7 text-[17px] leading-relaxed text-white/85 sm:text-lg">
+          <div className="mt-14 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
             <p>
               Makan started during COVID. I couldn&apos;t see my friends, so a
               few of us started a Snapchat story to stay in touch. We&apos;d
@@ -61,11 +61,11 @@ export default function ManifestoPage() {
           </div>
 
           {/* Apex line — pulled out as the structural peak */}
-          <p className="mt-14 text-[26px] font-semibold leading-[1.2] tracking-[-0.01em] text-white sm:text-[34px]">
+          <p className="mt-14 text-[26px] font-semibold leading-[1.2] tracking-[-0.01em] text-brand-ink sm:text-[34px]">
             Makan is the other thing. It&apos;s the record of what you ate.
           </p>
 
-          <div className="mt-10 space-y-7 text-[17px] leading-relaxed text-white/85 sm:text-lg">
+          <div className="mt-10 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
             <p>
               Your meal isn&apos;t content. Only your friends see it unless you
               say otherwise. It&apos;s a food diary, basically. The kind that
@@ -83,16 +83,16 @@ export default function ManifestoPage() {
 
           {/* Commitments — visually elevated with a saffron left rule */}
           <div className="mt-16">
-            <p className="text-[15px] text-white/70">
+            <p className="text-[15px] text-brand-ink/70">
               A few things we won&apos;t do, because they&apos;d defeat the point.
             </p>
 
             <div className="mt-8 space-y-7 border-l-2 border-brand-orange pl-5 sm:pl-7">
               <div>
-                <p className="text-white font-semibold">
+                <p className="text-brand-ink font-semibold">
                   No star ratings. No averages from strangers.
                 </p>
-                <p className="mt-2 text-white/80 text-[17px] leading-relaxed">
+                <p className="mt-2 text-brand-ink/80 text-[17px] leading-relaxed">
                   A meal isn&apos;t 4.2 out of 5. The rankings we show are
                   personal. Yours, and your friends&apos;. When a friend posts a
                   meal, you&apos;ll see if it&apos;s their #3 of all time, no
@@ -102,30 +102,30 @@ export default function ManifestoPage() {
               </div>
 
               <div>
-                <p className="text-white font-semibold">
+                <p className="text-brand-ink font-semibold">
                   Your home feed isn&apos;t sorted by what&apos;s popular.
                 </p>
-                <p className="mt-2 text-white/80 text-[17px] leading-relaxed">
+                <p className="mt-2 text-brand-ink/80 text-[17px] leading-relaxed">
                   It&apos;s your friends, in the order their meals happened.
                   Nothing jumps to the top just because it has more likes.
                 </p>
               </div>
 
               <div>
-                <p className="text-white font-semibold">
+                <p className="text-brand-ink font-semibold">
                   Restaurants can&apos;t pay to be in your feed.
                 </p>
-                <p className="mt-2 text-white/80 text-[17px] leading-relaxed">
+                <p className="mt-2 text-brand-ink/80 text-[17px] leading-relaxed">
                   If you see a place on Makan, it&apos;s because someone you
                   know actually ate there and remembered it.
                 </p>
               </div>
 
               <div>
-                <p className="text-white font-semibold">
+                <p className="text-brand-ink font-semibold">
                   Your record is yours.
                 </p>
-                <p className="mt-2 text-white/80 text-[17px] leading-relaxed">
+                <p className="mt-2 text-brand-ink/80 text-[17px] leading-relaxed">
                   We hold it for you. You can delete it whenever. If Makan ever
                   shuts down, we&apos;ll send you your record before we go.
                 </p>
@@ -135,15 +135,15 @@ export default function ManifestoPage() {
 
           {/* AI peak — separated section with its own setup */}
           <div className="mt-16">
-            <p className="text-[15px] text-white/70">
+            <p className="text-[15px] text-brand-ink/70">
               And one more, that matters more every year.
             </p>
 
-            <p className="mt-6 text-[26px] font-semibold leading-[1.2] tracking-[-0.01em] text-white sm:text-[32px]">
+            <p className="mt-6 text-[26px] font-semibold leading-[1.2] tracking-[-0.01em] text-brand-ink sm:text-[32px]">
               AI has never tasted food.
             </p>
 
-            <p className="mt-5 text-[17px] leading-relaxed text-white/85 sm:text-lg">
+            <p className="mt-5 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
               It can&apos;t smell, can&apos;t chew, can&apos;t remember being
               hungry as a kid. So it won&apos;t write your meals on Makan,
               generate your recipes, or guess what you ate from a photo. The
@@ -153,7 +153,7 @@ export default function ManifestoPage() {
           </div>
 
           {/* Gallery + closing */}
-          <div className="mt-16 space-y-7 text-[17px] leading-relaxed text-white/85 sm:text-lg">
+          <div className="mt-16 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
             <p>
               What Makan does do is help you remember how you&apos;ve eaten.
               The Tuesday night dinner. The long lunch in Lisbon that ran four
@@ -166,22 +166,22 @@ export default function ManifestoPage() {
           </div>
 
           {/* Closing peak */}
-          <p className="mt-14 text-[22px] font-semibold leading-[1.25] tracking-[-0.01em] text-white sm:text-[28px]">
+          <p className="mt-14 text-[22px] font-semibold leading-[1.25] tracking-[-0.01em] text-brand-ink sm:text-[28px]">
             You remember who was at the table. You can never remember what you
             actually ate. <span className="text-brand-orange">That&apos;s the gap Makan fills.</span>
           </p>
 
-          <p className="mt-10 text-[16px] italic leading-relaxed text-white/70">
+          <p className="mt-10 text-[16px] italic leading-relaxed text-brand-ink/70">
             If you&apos;ve ever tried to remember a meal and couldn&apos;t,
             you&apos;ll get it.
           </p>
 
           {/* Signature + back link */}
           <div className="mt-16 flex items-center justify-between border-t border-white/15 pt-8">
-            <p className="text-[15px] text-white/70">— Devon</p>
+            <p className="text-[15px] text-brand-ink/70">— Devon</p>
             <Link
               href="/"
-              className="text-[13px] text-white/60 underline-offset-4 transition-colors hover:text-brand-orange hover:underline"
+              className="text-[13px] text-brand-ink/60 underline-offset-4 transition-colors hover:text-brand-orange hover:underline"
             >
               Back to Makan →
             </Link>

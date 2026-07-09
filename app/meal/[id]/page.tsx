@@ -86,7 +86,7 @@ export default async function MealPage({ params }: PageProps) {
   if (!imageUrl) redirect("/")
 
   return (
-    <div className="min-h-screen bg-brand-bg">
+    <div className="min-h-screen bg-brand-cream">
       <main className="flex min-h-screen items-center justify-center px-6 pt-20 pb-12">
         <div className="w-full max-w-sm">
           <Image

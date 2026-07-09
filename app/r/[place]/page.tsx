@@ -66,7 +66,7 @@ export default async function VenueRedirectPage({ params }: PageProps) {
     : "Makan is a private food diary you share with friends — snap what you're eating and keep every meal, free."
 
   return (
-    <div className="flex min-h-screen flex-col bg-brand-bg">
+    <div className="flex min-h-screen flex-col bg-brand-cream">
       <main
         id="main-content"
         className="flex flex-1 flex-col items-center justify-center px-6 pb-16 pt-28 text-center"
@@ -94,7 +94,7 @@ export default async function VenueRedirectPage({ params }: PageProps) {
           </p>
         )}
 
-        <h1 className="mb-3 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+        <h1 className="mb-3 text-3xl font-extrabold tracking-tight text-brand-ink sm:text-4xl">
           {heading}
         </h1>
 
@@ -104,19 +104,19 @@ export default async function VenueRedirectPage({ params }: PageProps) {
 
         <a
           href={APP_STORE_URL}
-          className="inline-flex h-14 items-center justify-center rounded-full bg-brand-orange px-9 text-base font-semibold text-brand-bg transition-all hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
+          className="inline-flex h-14 items-center justify-center rounded-full bg-brand-orange px-9 text-base font-semibold text-white transition-all hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
         >
           Download on the App Store
         </a>
 
         <a
           href={APP_SCHEME_URL}
-          className="mt-5 text-sm font-medium text-brand-muted underline-offset-4 transition-colors hover:text-white hover:underline"
+          className="mt-5 text-sm font-medium text-brand-muted underline-offset-4 transition-colors hover:text-brand-ink hover:underline"
         >
           Already have Makan? Open the app
         </a>
 
-        <p className="mt-8 text-xs text-brand-dim">
+        <p className="mt-8 text-xs text-brand-muted">
           Free on iPhone. Android is coming next.
         </p>
       </main>

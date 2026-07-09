@@ -32,11 +32,11 @@ export default async function StoryPage() {
   const mealCount = await getMealCount()
 
   return (
-    <div className="min-h-screen bg-brand-bg">
+    <div className="min-h-screen bg-brand-cream">
       <StorySchema />
       <main id="main-content" className="mx-auto max-w-2xl px-5 sm:px-8 pt-24 sm:pt-32 pb-16 sm:pb-24">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">The Makan story</p>
-        <h1 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-bold text-white" style={{ letterSpacing: "-0.02em" }}>
+        <h1 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-bold text-brand-ink" style={{ letterSpacing: "-0.02em" }}>
           The day revolves<br />around the meal.
         </h1>
 
@@ -94,7 +94,7 @@ export default async function StoryPage() {
         </div>
 
         {/* Proof — reviews */}
-        <div className="mt-10 rounded-2xl border border-brand-border bg-brand-surface p-6">
+        <div className="mt-10 rounded-2xl border border-brand-line bg-brand-card p-6">
           <p className="text-sm leading-relaxed text-brand-muted">
             See how it&apos;s used — real first-person reviews of the places people actually remember.
           </p>
@@ -104,9 +104,9 @@ export default async function StoryPage() {
         </div>
 
         {/* Press essentials */}
-        <div className="mt-12 border-t border-brand-border pt-10">
-          <h2 className="text-xl sm:text-2xl font-bold text-white">For press</h2>
-          <p className="mt-4 text-xs font-medium uppercase tracking-[0.15em] text-brand-dim">About Makan (copy-paste)</p>
+        <div className="mt-12 border-t border-brand-line pt-10">
+          <h2 className="text-xl sm:text-2xl font-bold text-brand-ink">For press</h2>
+          <p className="mt-4 text-xs font-medium uppercase tracking-[0.15em] text-brand-muted">About Makan (copy-paste)</p>
           <p className="mt-2 text-[15px] leading-[1.75] text-brand-muted">{BOILERPLATE_LONG}</p>
 
           <p className="mt-6 text-[15px] text-brand-muted">
@@ -118,7 +118,7 @@ export default async function StoryPage() {
 
           <a
             href={APP_STORE_URL}
-            className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-brand-orange px-7 text-sm font-semibold text-brand-bg transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
+            className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-brand-orange px-7 text-sm font-semibold text-white transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
           >
             Download on the App Store
           </a>

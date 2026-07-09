@@ -3,7 +3,7 @@ import Image from "next/image"
 
 export default function NotFound() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-brand-bg px-5 sm:px-8 text-center">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-brand-cream px-5 sm:px-8 text-center">
       <Image
         src="/makan-icon.svg"
         alt="Makan"
@@ -14,7 +14,7 @@ export default function NotFound() {
       <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
         404
       </p>
-      <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-brand-text lg:text-5xl">
+      <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-brand-ink lg:text-5xl">
         Page not found
       </h1>
       <p className="mt-4 max-w-sm text-base sm:text-lg text-brand-cyan">

@@ -46,7 +46,7 @@ export default async function BlogPostPage({ params }: PageProps) {
   if (!review) notFound()
 
   return (
-    <div className="min-h-screen bg-brand-bg">
+    <div className="min-h-screen bg-brand-cream">
       <ReviewSchema review={review} />
       <ReviewArticle review={review} />
       <Footer />

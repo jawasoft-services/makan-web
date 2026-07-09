@@ -30,7 +30,7 @@ export default function AppLanding() {
   return (
     <main
       id="main-content"
-      className="flex min-h-screen flex-col items-center justify-center bg-brand-bg px-6 pb-16 pt-28 text-center"
+      className="flex min-h-screen flex-col items-center justify-center bg-brand-cream px-6 pb-16 pt-28 text-center"
     >
       <Image
         src="/makan-icon.svg"
@@ -49,7 +49,7 @@ export default function AppLanding() {
         priority
       />
 
-      <h1 className="mb-3 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+      <h1 className="mb-3 text-3xl font-extrabold tracking-tight text-brand-ink sm:text-4xl">
         Get Makan
       </h1>
 
@@ -59,7 +59,7 @@ export default function AppLanding() {
 
       <a
         href={APP_STORE_URL}
-        className="inline-flex h-14 items-center justify-center rounded-full bg-brand-orange px-9 text-base font-semibold text-brand-bg transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
+        className="inline-flex h-14 items-center justify-center rounded-full bg-brand-orange px-9 text-base font-semibold text-white transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
       >
         Download on the App Store
       </a>

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function TermsOfUse() {
   return (
-    <div className="min-h-screen bg-brand-bg">
+    <div className="min-h-screen bg-brand-cream">
       <main className="mx-auto max-w-3xl px-5 sm:px-8 pt-24 sm:pt-32 pb-16 sm:pb-24">
 
         {/* Eyebrow */}
@@ -18,10 +18,10 @@ export default function TermsOfUse() {
         </p>
 
         {/* Title */}
-        <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-brand-text">Terms of Use</h1>
+        <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-brand-ink">Terms of Use</h1>
         <p className="mt-2 text-sm text-brand-muted">Last updated: 26 June 2026</p>
 
-        <div className="mt-10 space-y-10 text-[15px] leading-relaxed text-brand-text/80">
+        <div className="mt-10 space-y-10 text-[15px] leading-relaxed text-brand-ink/80">
 
           <p>
             MAKAN APP LTD (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;) operates the Makan mobile
@@ -33,7 +33,7 @@ export default function TermsOfUse() {
 
           {/* 1 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-text">1. Who We Are</h2>
+            <h2 className="text-lg font-semibold text-brand-ink">1. Who We Are</h2>
             <div className="mt-4 space-y-2">
               <p>Company name: MAKAN APP LTD</p>
               <p>Registered address: 86–90 Paul Street, London, EC2A 4NE, United Kingdom</p>
@@ -49,7 +49,7 @@ export default function TermsOfUse() {
 
           {/* 2 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-text">2. Eligibility</h2>
+            <h2 className="text-lg font-semibold text-brand-ink">2. Eligibility</h2>
             <div className="mt-4 space-y-3">
               <p>
                 You must be at least 13 years old to use the Services. By using the Services, you
@@ -61,7 +61,7 @@ export default function TermsOfUse() {
 
           {/* 3 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-text">3. Service Availability and Changes</h2>
+            <h2 className="text-lg font-semibold text-brand-ink">3. Service Availability and Changes</h2>
             <div className="mt-4 space-y-3">
               <p>
                 Features, functionality, and availability of the Services may change at any time
@@ -78,7 +78,7 @@ export default function TermsOfUse() {
 
           {/* 4 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-text">4. Your Account</h2>
+            <h2 className="text-lg font-semibold text-brand-ink">4. Your Account</h2>
             <div className="mt-4 space-y-3">
               <p>
                 You are responsible for maintaining the confidentiality of your account and for all
@@ -90,7 +90,7 @@ export default function TermsOfUse() {
 
           {/* 5 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-text">5. Acceptable Use</h2>
+            <h2 className="text-lg font-semibold text-brand-ink">5. Acceptable Use</h2>
             <div className="mt-4 space-y-3">
               <p>You agree to use the Services only for lawful purposes. You must not:</p>
               <ul className="list-disc pl-5 space-y-1">
@@ -108,7 +108,7 @@ export default function TermsOfUse() {
 
           {/* 6 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-text">6. User Content</h2>
+            <h2 className="text-lg font-semibold text-brand-ink">6. User Content</h2>
             <div className="mt-4 space-y-3">
               <p>You retain ownership of content you upload to the App, including meal photos and captions.</p>
               <p>
@@ -128,7 +128,7 @@ export default function TermsOfUse() {
 
           {/* 7 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-text">7. Intellectual Property and Infringement</h2>
+            <h2 className="text-lg font-semibold text-brand-ink">7. Intellectual Property and Infringement</h2>
             <div className="mt-4 space-y-3">
               <p>
                 All intellectual property rights in the Services, branding, design, and underlying
@@ -150,7 +150,7 @@ export default function TermsOfUse() {
 
           {/* 8 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-text">8. Privacy</h2>
+            <h2 className="text-lg font-semibold text-brand-ink">8. Privacy</h2>
             <div className="mt-4 space-y-3">
               <p>
                 Your use of the Services is governed by our{' '}
@@ -165,7 +165,7 @@ export default function TermsOfUse() {
 
           {/* 9 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-text">9. Apple App Store</h2>
+            <h2 className="text-lg font-semibold text-brand-ink">9. Apple App Store</h2>
             <div className="mt-4 space-y-3">
               <p>
                 The following applies where you obtain the App through Apple&apos;s App Store:
@@ -186,7 +186,7 @@ export default function TermsOfUse() {
 
           {/* 10 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-text">10. Termination</h2>
+            <h2 className="text-lg font-semibold text-brand-ink">10. Termination</h2>
             <div className="mt-4 space-y-3">
               <p>
                 You may stop using the Services and delete your account at any time. We may suspend or
@@ -204,7 +204,7 @@ export default function TermsOfUse() {
 
           {/* 11 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-text">11. Disclaimers</h2>
+            <h2 className="text-lg font-semibold text-brand-ink">11. Disclaimers</h2>
             <div className="mt-4 space-y-3">
               <p>The Services are provided on an &ldquo;as is&rdquo; and &ldquo;as available&rdquo; basis.</p>
               <p>
@@ -219,7 +219,7 @@ export default function TermsOfUse() {
 
           {/* 12 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-text">12. Limitation of Liability</h2>
+            <h2 className="text-lg font-semibold text-brand-ink">12. Limitation of Liability</h2>
             <div className="mt-4 space-y-3">
               <p>
                 Nothing in these Terms limits or excludes our liability for death or personal injury
@@ -239,7 +239,7 @@ export default function TermsOfUse() {
 
           {/* 13 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-text">13. Indemnity</h2>
+            <h2 className="text-lg font-semibold text-brand-ink">13. Indemnity</h2>
             <div className="mt-4 space-y-3">
               <p>
                 If you use the Services other than as a consumer (for example, on behalf of a
@@ -257,7 +257,7 @@ export default function TermsOfUse() {
 
           {/* 14 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-text">14. Changes to the Terms</h2>
+            <h2 className="text-lg font-semibold text-brand-ink">14. Changes to the Terms</h2>
             <div className="mt-4 space-y-3">
               <p>We may update these Terms from time to time.</p>
               <p>
@@ -271,7 +271,7 @@ export default function TermsOfUse() {
 
           {/* 15 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-text">15. General</h2>
+            <h2 className="text-lg font-semibold text-brand-ink">15. General</h2>
             <div className="mt-4 space-y-3">
               <p>
                 If any provision of these Terms is found to be unenforceable, the remaining provisions
@@ -285,7 +285,7 @@ export default function TermsOfUse() {
 
           {/* 16 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-text">16. Governing Law and Jurisdiction</h2>
+            <h2 className="text-lg font-semibold text-brand-ink">16. Governing Law and Jurisdiction</h2>
             <div className="mt-4 space-y-3">
               <p>These Terms are governed by the laws of England and Wales.</p>
               <p>
@@ -299,10 +299,10 @@ export default function TermsOfUse() {
 
           {/* 17 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-text">17. Contact</h2>
+            <h2 className="text-lg font-semibold text-brand-ink">17. Contact</h2>
             <div className="mt-4 space-y-2">
               <p>If you have any questions about these Terms, you can contact us at:</p>
-              <p className="font-medium text-brand-text">MAKAN APP LTD</p>
+              <p className="font-medium text-brand-ink">MAKAN APP LTD</p>
               <p>86–90 Paul Street</p>
               <p>London, EC2A 4NE</p>
               <p>United Kingdom</p>
@@ -316,7 +316,7 @@ export default function TermsOfUse() {
           </section>
 
           {/* Back to home */}
-          <div className="pt-4 border-t border-brand-border">
+          <div className="pt-4 border-t border-brand-line">
             <Link href="/" className="text-sm text-brand-orange hover:underline">
               &larr; Back to home
             </Link>
