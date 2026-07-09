@@ -23,7 +23,7 @@ export default function LatestOnMakan({ mealCount }: LatestOnMakanProps) {
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section ref={ref} className="bg-brand-bg py-20 sm:py-32">
+    <section ref={ref} className="bg-brand-cream py-20 sm:py-32">
       {/* Header */}
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <motion.div
@@ -34,7 +34,7 @@ export default function LatestOnMakan({ mealCount }: LatestOnMakanProps) {
           <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
             On Makan
           </p>
-          <h2 className="mt-3 text-2xl font-bold text-white sm:text-3xl lg:text-4xl" style={{ letterSpacing: '-0.02em' }}>
+          <h2 className="mt-3 text-2xl font-bold text-brand-ink sm:text-3xl lg:text-4xl" style={{ letterSpacing: '-0.02em' }}>
             <StatTicker value={mealCount} inView={inView} /> meals and counting.
           </h2>
         </motion.div>

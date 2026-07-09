@@ -10,7 +10,7 @@ export default function FAQ() {
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section id="faq" ref={ref} className="bg-brand-bg py-20 sm:py-32 px-5 sm:px-8">
+    <section id="faq" ref={ref} className="bg-brand-cream py-20 sm:py-32 px-5 sm:px-8">
       <div className="mx-auto max-w-4xl">
         {/* Editorial heading — left-aligned, bold */}
         <motion.div
@@ -22,7 +22,7 @@ export default function FAQ() {
             FAQ
           </p>
           <h2
-            className="mt-4 text-3xl font-bold text-white sm:text-4xl lg:text-5xl"
+            className="mt-4 text-3xl font-bold text-brand-ink sm:text-4xl lg:text-5xl"
             style={{ letterSpacing: '-0.02em' }}
           >
             You&apos;re probably
@@ -41,7 +41,7 @@ export default function FAQ() {
                 initial={{ opacity: 0, y: 12 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.4, delay: 0.1 + i * 0.06 }}
-                className="border-t border-brand-border last:border-b"
+                className="border-t border-brand-line last:border-b"
               >
                 <button
                   onClick={() => setOpen(isOpen ? null : i)}
@@ -50,14 +50,14 @@ export default function FAQ() {
                 >
                   {/* Number */}
                   <span className={`shrink-0 text-xs font-medium tabular-nums transition-colors duration-300 ${
-                    isOpen ? 'text-brand-orange' : 'text-brand-dim group-hover:text-brand-muted'
+                    isOpen ? 'text-brand-orange' : 'text-brand-muted/60 group-hover:text-brand-muted'
                   }`}>
                     {String(i + 1).padStart(2, '0')}
                   </span>
 
                   {/* Question */}
                   <span className={`flex-1 text-[15px] font-semibold transition-colors duration-300 sm:text-base ${
-                    isOpen ? 'text-white' : 'text-brand-muted group-hover:text-white'
+                    isOpen ? 'text-brand-ink' : 'text-brand-muted group-hover:text-brand-ink'
                   }`}>
                     {faq.q}
                   </span>
@@ -65,12 +65,12 @@ export default function FAQ() {
                   {/* Indicator — orange dash that morphs */}
                   <span className="relative flex h-5 w-5 shrink-0 items-center justify-center">
                     <span className={`absolute h-[1.5px] w-3 rounded-full transition-all duration-300 ${
-                      isOpen ? 'bg-brand-orange' : 'bg-brand-dim group-hover:bg-brand-muted'
+                      isOpen ? 'bg-brand-orange' : 'bg-brand-muted/60 group-hover:bg-brand-muted'
                     }`} />
                     <span className={`absolute h-[1.5px] w-3 rounded-full transition-all duration-300 ${
                       isOpen
                         ? 'rotate-0 bg-brand-orange opacity-0'
-                        : 'rotate-90 bg-brand-dim group-hover:bg-brand-muted'
+                        : 'rotate-90 bg-brand-muted/60 group-hover:bg-brand-muted'
                     }`} />
                   </span>
                 </button>

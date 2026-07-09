@@ -12,7 +12,7 @@ export default function FounderStory() {
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section className="bg-brand-surface px-5 sm:px-8 py-20 sm:py-32">
+    <section className="bg-brand-card px-5 sm:px-8 py-20 sm:py-32">
       <div ref={ref} className="mx-auto max-w-2xl">
         <motion.p
           className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange"
@@ -24,7 +24,7 @@ export default function FounderStory() {
         </motion.p>
 
         <motion.blockquote
-          className="mt-8 text-xl font-medium leading-[1.45] text-white sm:text-2xl"
+          className="mt-8 text-xl font-medium leading-[1.45] text-brand-ink sm:text-2xl"
           style={{ letterSpacing: '-0.01em' }}
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -50,7 +50,7 @@ export default function FounderStory() {
         </motion.p>
 
         <motion.p
-          className="mt-8 text-sm text-brand-dim"
+          className="mt-8 text-sm text-brand-muted"
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.35, ease: EASE_OUT }}

@@ -30,7 +30,7 @@ export default function MemoryTest() {
   return (
     <section
       ref={ref}
-      className="relative bg-brand-bg px-5 sm:px-8 py-24 sm:py-40"
+      className="relative bg-brand-cream px-5 sm:px-8 py-24 sm:py-40"
     >
       <div className="mx-auto max-w-2xl">
         <motion.p
@@ -68,7 +68,7 @@ export default function MemoryTest() {
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.45, ease: EASE_OUT }}
-                className="text-2xl font-bold leading-[1.15] text-white sm:text-4xl"
+                className="text-2xl font-bold leading-[1.15] text-brand-ink sm:text-4xl"
                 style={{ letterSpacing: '-0.02em' }}
               >
                 {current}
@@ -85,7 +85,7 @@ export default function MemoryTest() {
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.15, ease: EASE_OUT }}
             whileTap={{ scale: 0.97 }}
-            className="mt-10 rounded-full border border-brand-border px-6 py-3 text-sm font-medium text-brand-muted transition-colors hover:border-brand-orange/40 hover:text-white"
+            className="mt-10 rounded-full border border-brand-line px-6 py-3 text-sm font-medium text-brand-muted transition-colors hover:border-brand-orange/60 hover:text-brand-ink"
           >
             {buttonCopy[step] ?? 'I forgot'}
           </motion.button>
@@ -104,7 +104,7 @@ export default function MemoryTest() {
                 Don&apos;t worry. Nobody remembers.
               </p>
               <p
-                className="mt-4 text-2xl font-bold leading-[1.2] text-white sm:text-4xl"
+                className="mt-4 text-2xl font-bold leading-[1.2] text-brand-ink sm:text-4xl"
                 style={{ letterSpacing: '-0.02em' }}
               >
                 That&apos;s the whole reason we{' '}

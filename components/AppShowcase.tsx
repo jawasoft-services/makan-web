@@ -54,7 +54,7 @@ function PhoneFrame({ screen }: { screen: Screen }) {
     <div className="relative mx-auto w-full max-w-[280px]">
       {/* Ambient glow */}
       <div className="absolute -inset-8 rounded-[3rem] bg-brand-orange/[0.05] blur-3xl" />
-      <div className="relative aspect-[1206/2622] overflow-hidden rounded-[2.2rem] border border-brand-border bg-brand-surface shadow-2xl shadow-black/50">
+      <div className="relative aspect-[1206/2622] overflow-hidden rounded-[2.2rem] border border-brand-line bg-brand-card shadow-2xl shadow-black/20">
         {screen.src ? (
           <Image
             src={screen.src}
@@ -69,10 +69,10 @@ function PhoneFrame({ screen }: { screen: Screen }) {
             <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-orange">
               {screen.label}
             </span>
-            <span className="text-xs leading-relaxed text-brand-dim">
+            <span className="text-xs leading-relaxed text-brand-muted">
               Screenshot drops in here
             </span>
-            <span className="mt-1 font-mono text-[10px] text-brand-dim/70">
+            <span className="mt-1 font-mono text-[10px] text-brand-muted/70">
               {screen.src?.replace('/app-screens/', '') ?? ''}
             </span>
           </div>
@@ -87,7 +87,7 @@ export default function AppShowcase() {
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section id="features" className="bg-brand-bg px-5 sm:px-8 py-20 sm:py-32">
+    <section id="features" className="bg-brand-cream px-5 sm:px-8 py-20 sm:py-32">
       <div ref={ref} className="mx-auto max-w-6xl">
         {/* Section header */}
         <motion.div
@@ -100,7 +100,7 @@ export default function AppShowcase() {
             Inside the app
           </p>
           <h2
-            className="mt-4 max-w-2xl text-3xl font-bold leading-[1.1] text-white sm:text-5xl"
+            className="mt-4 max-w-2xl text-3xl font-bold leading-[1.1] text-brand-ink sm:text-5xl"
             style={{ letterSpacing: '-0.025em' }}
           >
             Six years of meals. Built into every screen.
@@ -139,7 +139,7 @@ export default function AppShowcase() {
                     {screen.label}
                   </p>
                   <p
-                    className="mt-5 max-w-md text-2xl font-bold leading-[1.15] text-white sm:text-4xl"
+                    className="mt-5 max-w-md text-2xl font-bold leading-[1.15] text-brand-ink sm:text-4xl"
                     style={{ letterSpacing: '-0.02em' }}
                   >
                     {screen.caption}
@@ -152,7 +152,7 @@ export default function AppShowcase() {
 
         {/* Screen 6 — the brand statement card. No app UI. The climax. */}
         <motion.div
-          className="mt-24 overflow-hidden rounded-3xl border border-brand-border bg-brand-surface px-8 py-16 text-center sm:mt-40 sm:px-12 sm:py-24"
+          className="mt-24 overflow-hidden rounded-3xl border border-brand-line bg-brand-card px-8 py-16 text-center shadow-sm sm:mt-40 sm:px-12 sm:py-24"
           initial={{ opacity: 0, y: 24 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: EASE_OUT }}
@@ -161,7 +161,7 @@ export default function AppShowcase() {
             No ads · No algorithm · No AI
           </p>
           <h3
-            className="mx-auto mt-8 max-w-3xl text-4xl font-bold leading-[1.02] text-white sm:text-6xl lg:text-7xl"
+            className="mx-auto mt-8 max-w-3xl text-4xl font-bold leading-[1.02] text-brand-ink sm:text-6xl lg:text-7xl"
             style={{ letterSpacing: '-0.03em' }}
           >
             AI has never

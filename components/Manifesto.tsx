@@ -9,11 +9,11 @@ export default function Manifesto() {
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section ref={ref} id="story" className="bg-brand-bg px-5 sm:px-8 pt-24 pb-16 sm:pt-40 sm:pb-24">
+    <section ref={ref} id="story" className="bg-brand-cream px-5 sm:px-8 pt-24 pb-16 sm:pt-40 sm:pb-24">
       <div className="mx-auto max-w-4xl">
         {/* Audaciously large headline — this is the core value prop */}
         <motion.h2
-          className="text-center text-3xl font-bold leading-[1.15] text-white sm:text-5xl lg:text-7xl"
+          className="text-center text-3xl font-bold leading-[1.15] text-brand-ink sm:text-5xl lg:text-7xl"
           style={{ letterSpacing: '-0.025em' }}
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
