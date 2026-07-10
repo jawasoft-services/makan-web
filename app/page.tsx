@@ -9,6 +9,7 @@ import FAQ from "@/components/FAQ"
 import FaqSchema from "@/components/FaqSchema"
 import FinalCTASection from "@/components/FinalCTASection"
 import Footer from "@/components/Footer"
+import { FAQS } from "@/lib/faq"
 
 // Regenerate the static homepage once per hour — keeps the live meal count
 // fresh enough to feel "alive" between visits, with trivial Firestore cost
@@ -29,7 +30,7 @@ export default function Home() {
       <LatestOnMakanSection />
       <FounderStory />
       <B2BTeaser />
-      <FaqSchema />
+      <FaqSchema items={FAQS} />
       <FAQ />
       <FinalCTASection />
       <Footer />

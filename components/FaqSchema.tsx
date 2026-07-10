@@ -1,12 +1,18 @@
-// Server component: emits FAQPage JSON-LD from the shared FAQ data so search
-// engines and AI assistants can extract the Q&As. Mirrors StorySchema/ReviewSchema.
-import { FAQS } from "@/lib/faq"
+// Server component: emits FAQPage JSON-LD from a set of Q&As so search engines
+// and AI assistants can extract them. Mirrors StorySchema/ReviewSchema.
+// Items arrive as a prop so the homepage FAQ (lib/faq.ts) and the support FAQ
+// (lib/support.ts) each emit their own FAQPage on their own URL.
 
-export default function FaqSchema() {
+interface QandA {
+  q: string
+  a: string
+}
+
+export default function FaqSchema({ items }: { items: readonly QandA[] }) {
   const data = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: FAQS.map((f) => ({
+    mainEntity: items.map((f) => ({
       "@type": "Question",
       name: f.q,
       acceptedAnswer: { "@type": "Answer", text: f.a },
