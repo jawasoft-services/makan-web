@@ -4,6 +4,15 @@ import Image from "next/image"
 import Footer from "@/components/Footer"
 import { getPublicMeal, mealTitle } from "@/lib/meal"
 
+/*
+ * Short canonical meal link — makanofficial.com/m/<id>. This is the URL the
+ * app's share card (RM18746) encodes as a QR and the universal link opens on a
+ * meal. For installed users the universal link opens the app on the meal detail;
+ * this web page is the fallback for everyone else.
+ *
+ * Privacy: routes through getPublicMeal — a friends-only / private meal never
+ * renders here (it redirects home), same fail-closed gate as /meal/<id>.
+ */
 export const dynamic = "force-dynamic"
 
 interface PageProps {
@@ -18,17 +27,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = mealTitle(meal)
   const description = meal.caption || "Shared on Makan"
   const image = meal.shareCardUrl || meal.imageURL
+  const url = `https://www.makanofficial.com/m/${id}`
 
   return {
     title,
     description,
-    // /m/<id> is the canonical short link (the share card + universal links use
-    // it); consolidate this legacy /meal/<id> URL's SEO onto it.
-    alternates: { canonical: `https://www.makanofficial.com/m/${id}` },
+    alternates: { canonical: url },
     openGraph: {
       title,
       description,
-      url: `https://www.makanofficial.com/meal/${id}`,
+      url,
       images: image ? [{ url: image, width: 1080, height: 1920 }] : [],
       type: "article",
     },
@@ -41,11 +49,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function MealPage({ params }: PageProps) {
+export default async function ShortMealPage({ params }: PageProps) {
   const { id } = await params
   const meal = await getPublicMeal(id)
 
-  // Privacy gate is centralized in getPublicMeal (returns null for non-public).
+  // Privacy gate is centralized in getPublicMeal (null for non-public).
   if (!meal) redirect("/")
 
   const imageUrl = meal.shareCardUrl || meal.imageURL
@@ -55,19 +63,11 @@ export default async function MealPage({ params }: PageProps) {
     <div className="min-h-screen bg-brand-cream">
       <main className="flex min-h-screen items-center justify-center px-6 pt-20 pb-12">
         <div className="w-full max-w-sm">
-          {/*
-            Declared at the size the card actually renders (the wrapper caps at
-            max-w-sm = 384px), not at the source's 1080x1920. Every public meal
-            id mints its own cache entries here and they never stop accruing, so
-            the pair wants to be as cheap as possible: 384/828 instead of
-            1080/1920. Ratio is unchanged (384/683 == 1080/1920), so this is
-            byte savings with no layout shift.
-          */}
           <Image
             src={imageUrl}
             alt={mealTitle(meal)}
-            width={384}
-            height={683}
+            width={1080}
+            height={1920}
             className="w-full h-auto rounded-2xl shadow-2xl shadow-black/40"
           />
         </div>
