@@ -11,15 +11,23 @@ import { NextResponse, type NextRequest } from "next/server"
  * deploys (*.vercel.app) pass straight through.
  */
 export function middleware(request: NextRequest) {
+  const { pathname, search } = request.nextUrl
+
+  // Universal-link verification files (apple-app-site-association, and later
+  // Android assetlinks.json) must be fetched WITHOUT a redirect on EVERY claimed
+  // host — iOS/Android do not follow redirects when verifying them. Serve
+  // /.well-known/* directly on the apex too; never 308 it to www, or apex
+  // universal links silently fail to verify (the app never opens).
+  if (pathname.startsWith("/.well-known/")) {
+    return NextResponse.next()
+  }
+
   const host = request.headers.get("host") ?? ""
   const forwardedHost = request.headers.get("x-forwarded-host") ?? ""
 
   if (host === "makanofficial.com" || forwardedHost === "makanofficial.com") {
     return NextResponse.redirect(
-      new URL(
-        `${request.nextUrl.pathname}${request.nextUrl.search}`,
-        "https://www.makanofficial.com",
-      ),
+      new URL(`${pathname}${search}`, "https://www.makanofficial.com"),
       308,
     )
   }
