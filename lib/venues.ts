@@ -19,10 +19,12 @@ import venuesData from "./venues.data.json"
  * Phase 2 auto-tag. Fill it in when known; no reprint is needed.
  *
  * ── Where to edit ──
- *   The venue DATA lives in `lib/venues.data.json` (the single source of truth
- *   this module and the QR-card generator both read, so a page and its printed
- *   card can never drift). Add a venue there + run `npm run venue-qr` to mint
- *   its landing page and print-ready card together.
+ *   The venue DATA lives in `lib/venues.data.json` — but do NOT hand-edit it.
+ *   Sign a venue with `npm run venue:add -- --name "X" --city "Y"`, which writes
+ *   the registry, mints the print-ready card, and verifies the card's QR in one
+ *   step. `lib/venues.lock.json` records every slug ever minted onto a physical
+ *   card; `npm run venue:check` (which runs on every build) refuses to let a
+ *   printed slug be repointed at a different venue. See docs/venue-qr-playbook.md.
  */
 
 export interface PilotVenue {
@@ -43,7 +45,7 @@ export interface PilotVenue {
 // the page can never diverge from the printed card: the card filename + QR URL
 // and this page lookup both resolve from the same `slug` value. (A mis-cased or
 // mistyped JSON key therefore can't silently drop a live page to the generic
-// fallback — the generator warns on key≠slug for tidiness.)
+// fallback — and `venue:check`, which runs on every build, rejects key≠slug.)
 const VENUES: Record<string, PilotVenue> = Object.fromEntries(
   (Object.values(venuesData) as PilotVenue[]).map((v) => [v.slug.trim().toLowerCase(), v]),
 )

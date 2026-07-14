@@ -4,10 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/venue-check.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "venue-qr": "node scripts/generate-venue-qr.mjs"
+    "venue-qr": "node scripts/generate-venue-qr.mjs",
+    "venue:add": "node scripts/venue-add.mjs",
+    "venue:check": "node scripts/venue-check.mjs",
+    "venue:verify": "node scripts/verify-venue-qr.mjs",
+    "venue:relabel": "node scripts/venue-relabel.mjs",
+    "venue:set-place-id": "node scripts/venue-set-place-id.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",
