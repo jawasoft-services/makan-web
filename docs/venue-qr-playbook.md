@@ -35,39 +35,40 @@ hop we don't control).
 
 ---
 
-## Step 1 — Add the venue + generate the card (~5 min)
+## Step 1 — Add the venue + generate the card (one command)
 
-1. Add one entry to [`lib/venues.data.json`](../lib/venues.data.json) — the
-   single source of truth for both the page and the card. Insert it as a new
-   **comma-separated** key inside the existing object (mind the trailing comma
-   on the line above — the file must stay valid JSON):
+```bash
+npm run venue:add -- --name "Cellar Door" --city "Durham"
+```
 
-   ```json
-   {
-     "cellar-door": { "slug": "cellar-door", "name": "Cellar Door", "city": "Durham" },
-     "fiik":        { "slug": "fiik",        "name": "FIIK",        "city": "Durham" }
-   }
-   ```
+That single command validates the venue, writes the registry, mints the
+print-ready card, and verifies the card's QR actually encodes the right URL. It
+prints the exact `git add` / `git commit` lines to run next.
 
-   - The top-level **key must equal the `slug` value** (both lowercase
-     kebab-case). The page actually resolves off the `slug` field, so a mismatch
-     still works — but the generator warns on it; keep them identical.
-   - Add `"googlePlaceId": "ChIJ..."` only when you have it (Phase 2).
+- **Slug** is derived from the name (`The Cheesy Grin` → `the-cheesy-grin`).
+  Override it when the derived one reads badly on a card: `--slug cheesy-grin`.
+- **Google Place ID** is optional in Phase 1: `--place-id ChIJ...`. It's only
+  needed for Phase-2 auto-tag, and adding it later needs **no reprint**.
 
-2. Mint the print-ready card:
-
-   ```bash
-   npm run venue-qr
-   ```
-
-   → writes `public/venue-qr/<slug>.svg` for every venue in the registry. The QR
-   encodes the **www** URL (`https://www.makanofficial.com/r/<slug>`) so a scan
-   skips the apex→www redirect. The generator **validates the whole registry
-   before writing** — it errors on a malformed JSON file, a bad slug
-   (leading/trailing/double hyphens, non-kebab), or a duplicate slug, so a bad
-   entry can't reach a printed card.
+**Do not hand-edit `lib/venues.data.json`.** The command writes it for you —
+that's the point. Hand-editing is how you get a stray trailing comma, a
+`key ≠ slug` typo, or a duplicate slug, on the one workflow that ends in a
+*physically printed* artefact. (`venue:check` will still catch all of those, but
+it's better not to make the mistake.)
 
 The `/r/<slug>` page needs no new code; it reads the registry.
+
+### What runs, and why each step is fail-closed
+
+| Command | Does | Fails when |
+|---|---|---|
+| `npm run venue:add` | the whole flow below, in order | any step below fails |
+| `npm run venue:check` | validates the registry + enforces print-safety | bad/duplicate slug, `key ≠ slug`, unparseable JSON, or a **printed slug repointed at a different venue** |
+| `npm run venue-qr` | mints `public/venue-qr/<slug>.svg` for every venue | refuses to write anything if `venue:check` would fail |
+| `npm run venue:verify` | re-encodes each card's QR and byte-compares it | a card's QR doesn't encode its own URL, or two cards share one QR |
+
+`venue:check` also runs automatically on **every build** (it's wired to
+`prebuild`), so a broken or repurposed registry can never reach a Vercel deploy.
 
 ---
 
@@ -88,6 +89,12 @@ The `/r/<slug>` page needs no new code; it reads the registry.
   checkout — run it from `~/dev/makan-web-preview` instead
   (`./node_modules/.bin/next build`). Both must be clean; the route shows as
   `ƒ /r/[place]`.
+
+  > ⚠️ Calling `next build` **directly** (as above) skips npm's `prebuild` hook,
+  > so it does **not** run `venue:check`. That's fine for a quick compile, but run
+  > `npm run venue:check` yourself before you push — on Vercel the gate *does* run
+  > (`vercel.json` pins the build command to `npm run build`), so a registry problem
+  > you skipped locally will fail the deploy instead.
 - **Renders correctly** — load `http://localhost:3119/r/<slug>` and confirm:
   - the venue **name + city** show (eyebrow),
   - **"Download on the App Store"** → `https://apps.apple.com/app/id6756131450`,
@@ -95,8 +102,15 @@ The `/r/<slug>` page needs no new code; it reads the registry.
   - an unknown slug (`/r/typo`) still renders a valid generic landing (no 404).
   - _If the page shows the generic "Remember every meal." copy instead of the
     venue name, the `slug` field is wrong/mistyped — fix the registry._
-- **The QR scans** — open `public/venue-qr/<slug>.svg` on screen and scan it with
-  a phone camera; it must land on `/r/<slug>`.
+- **The QR encodes the right URL** — `npm run venue:add` already ran
+  `npm run venue:verify` for you. It re-encodes the URL each card *should* carry
+  and byte-compares it against the minted SVG, and it fails if two cards ever
+  share the same QR. This is the check that stands between you and a **dead print
+  run**, so don't skip it if you edited anything by hand.
+- **The QR scans in the real world** — still worth doing once per venue: open
+  `public/venue-qr/<slug>.svg` on screen and scan it with a phone camera; it must
+  land on `/r/<slug>`. `venue:verify` proves the *bytes* are right; only a camera
+  proves it scans off a physical card.
 
 ---
 
@@ -111,10 +125,20 @@ git checkout main && git pull                  # branch from main explicitly
 git checkout -b feat/venue-qr-<slug>           # or feat/venue-qr-<batch> for several
 
 # stage ONLY your venue files — never `git add -A`
-git add lib/venues.data.json "public/venue-qr/<slug>.svg"
+git add lib/venues.data.json lib/venues.lock.json "public/venue-qr/<slug>.svg"
 git commit -m "feat(venue-qr): add <Name> (<City>) — /r/<slug>"
 git push -u origin feat/venue-qr-<slug>
 ```
+
+> ⚠️ **`lib/venues.lock.json` is not optional.** It is what makes the slug
+> un-repointable. Commit a card without its lock entry and that slug ships
+> *unprotected* — someone could later aim it at a different restaurant with every
+> check green, and the cards already on the tables would send diners to the wrong
+> place. `venue:check` now fails the build if a card exists with no lock entry, so
+> you'll be caught — but stage it and save yourself the round trip.
+>
+> If you hit a **merge conflict in the lock** (two venues signed on parallel
+> branches), keep **both** entries. Never resolve it by taking one side.
 
 Open a PR to `main` on `Ridorichard04/makan-web`. **Do not push straight to
 `main`** — `main` deploys to Vercel production, and that deploy is Devon's call
@@ -165,8 +189,15 @@ a browser and print, or drop it into Figma/Canva/a print shop.
 
 When universal links / AASA ship (RM18722):
 
-1. Add each venue's `googlePlaceId` (= the app's `placeProviderId`) to
-   `lib/venues.data.json`.
+1. Set each venue's `googlePlaceId` (= the app's `placeProviderId`):
+
+   ```bash
+   npm run venue:set-place-id -- --slug cellar-door --place-id ChIJ...
+   ```
+
+   (Don't hand-edit the registry. Changing a Place ID that's already locked needs
+   `--force`, because in Phase 2 the Place ID **is** the venue — repointing it
+   makes every printed card pre-tag a different restaurant.)
 2. The same `/r/<slug>` becomes a universal link that opens the composer
    **pre-tagged** to that venue — closing the auto-tag loop (only ~16% of meals
    are venue-tagged today; venue-taggers retain far better).
@@ -186,13 +217,53 @@ that slug for a different venue** (an old printed card would then point people a
 the wrong place).
 
 **A card is printed with a typo.**
-- **Name or city typo:** correct `lib/venues.data.json`, `npm run venue-qr`,
-  redeploy, reprint. Cards already out still scan and show the corrected name
-  after deploy.
-- **Slug typo (already printed):** do NOT rename the printed slug. Add a **new,
-  correct** entry, and keep the typo slug as an **alias** entry (same name/city)
-  so both the old and new cards resolve. Reprint from the corrected slug going
-  forward.
+- **Name or city typo** (same venue, wrong label):
+
+  ```bash
+  npm run venue:relabel -- --slug cellar-door --name "Cellar Door" --confirm-same-venue
+  ```
+
+  This is the *only* sanctioned way to change a minted venue's label. It updates
+  the registry and the lock together, keeps a `history[]` of what the printed
+  cards actually say, re-mints, and re-verifies. Cards already out keep scanning
+  and show the corrected name once deployed — then reprint.
+
+  `--confirm-same-venue` is required, and it is the whole point: you are stating
+  that this is the *same restaurant* with a wrong label. If it's a **different**
+  restaurant, stop — use `venue:add` with its own slug. (Editing the name by hand
+  instead will fail `venue:check`, on purpose — see below.)
+- **Slug typo (already printed):** do NOT rename the printed slug — the lock will
+  refuse it, and rightly. Add a **new, correct** entry with `venue:add`, and keep
+  the typo slug in the registry as an alias (same name/city) so both the old and
+  new cards resolve. Reprint from the corrected slug going forward.
+
+---
+
+## The lock — why you can't just rename a slug
+
+`lib/venues.lock.json` is an append-only ledger of every slug that has ever been
+minted into a card, and the venue it was minted for. `venue:check` compares the
+registry against it on every build.
+
+**The asymmetry that makes this necessary:** everything else here is recoverable
+by a deploy. A wrong page redeploys; a wrong name re-renders. But a QR card is
+*physically printed* and sitting on a table in Durham. If a printed slug is ever
+repointed at a **different** venue, every card already in the wild starts sending
+diners to the wrong restaurant — and you cannot recall them. There is no deploy
+that fixes it.
+
+So the lock enforces exactly one rule: **a minted slug may never point at a
+different venue.**
+
+- ✅ **Removing** a venue (it un-signed) — fine. The route degrades to the generic
+  landing, cards in the wild keep scanning, the slug stays permanently reserved.
+- ✅ **Relabelling** the same venue (typo fix) — fine, via `venue:relabel`, which
+  moves the lock forward with the registry.
+- ❌ **Repointing** a minted slug at a different venue — blocked, at `venue:add`,
+  at mint time, and at build time.
+
+The guard isn't trying to read your mind about which of these you meant. It exists
+so the irreversible one is **impossible to do silently**.
 
 ---
 
@@ -201,9 +272,10 @@ the wrong place).
 - **Never rename a live slug, and never point it at a different venue.** The
   cards are physically printed. Removing an entry is fine (card degrades to the
   generic landing); *renaming or repurposing* a printed slug sends people to the
-  wrong place.
+  wrong place. **This is now enforced** by `lib/venues.lock.json` + `venue:check`
+  (which runs on every build) — not just by this sentence.
 - **Slug = lowercase kebab-case, human-readable.** It's on the card in plain
-  sight (the generator enforces the character set; eyeball it for readability).
+  sight (`venue:check` enforces the character set; eyeball it for readability).
 - **Copy stays honest.** In Phase 1 the venue tag is *not* carried through
   install — the page must **not** promise auto-tagging. It just gets the right
   people onto Makan.
@@ -229,8 +301,16 @@ the wrong place).
 
 | File | Role |
 |---|---|
-| `lib/venues.data.json` | Venue registry (single source of truth) |
+| `lib/venues.data.json` | Venue registry (single source of truth). **Written by `venue:add` — don't hand-edit.** |
+| `lib/venues.lock.json` | Append-only ledger of minted (printed) slugs. **Never hand-edit.** |
 | `lib/venues.ts` | Typed helpers + the dynamic-QR contract docs |
 | `app/r/[place]/page.tsx` | The `/r/<slug>` landing page |
-| `scripts/generate-venue-qr.mjs` | Card generator (`npm run venue-qr`) |
+| `scripts/venue-lib.mjs` | Shared registry I/O, slug rules, print-safety guard |
+| `scripts/venue-add.mjs` | `npm run venue:add` — sign a venue in one command |
+| `scripts/venue-check.mjs` | `npm run venue:check` — validation + print-safety (runs on every build) |
+| `scripts/generate-venue-qr.mjs` | `npm run venue-qr` — card generator |
+| `scripts/verify-venue-qr.mjs` | `npm run venue:verify` — QR round-trip proof |
+| `scripts/venue-relabel.mjs` | `npm run venue:relabel` — the sanctioned typo fix |
+| `scripts/venue-set-place-id.mjs` | `npm run venue:set-place-id` — the Phase-2 Place ID |
 | `public/venue-qr/<slug>.svg` | Generated print-ready cards |
+| `vercel.json` | Pins the build command to `npm run build`, so the gate always runs in prod |

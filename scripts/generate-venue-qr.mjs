@@ -7,27 +7,37 @@
  * STABLE printed token; what /r/<slug> does is swappable server-side (see the
  * dynamic-QR contract in lib/venues.ts), so these cards never need reprinting.
  *
- * Run:  npm run venue-qr
+ * Run:  npm run venue-qr        (or `npm run venue:add`, which mints + verifies)
  * SVG prints crisp at any size; open in a browser and print, or drop into
- * Figma/Canva/a print shop. Add a venue to lib/venues.data.json and re-run.
+ * Figma/Canva/a print shop.
+ *
+ * Minting is the point of no return — the SVG this writes is what gets PRINTED.
+ * So it validates the registry AND enforces print-safety BEFORE writing a byte,
+ * then records each newly-minted slug in lib/venues.lock.json: the ledger of slugs
+ * that now exist on physical cards and can never be repointed at another venue.
  */
 
 import QRCode from "qrcode"
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs"
-import { fileURLToPath } from "node:url"
-import { dirname, join } from "node:path"
-
-const HERE = dirname(fileURLToPath(import.meta.url))
-const ROOT = join(HERE, "..")
-const DATA = join(ROOT, "lib", "venues.data.json")
-const OUT_DIR = join(ROOT, "public", "venue-qr")
-const SITE = "https://www.makanofficial.com"
+import { writeFileSync, mkdirSync } from "node:fs"
+import { join } from "node:path"
+import {
+  OUT_DIR,
+  SITE,
+  QR_OPTS,
+  loadRegistry,
+  loadLock,
+  saveLock,
+  validateRegistry,
+  assertNoRepurpose,
+  assertMintedCardsAreLocked,
+  lockSync,
+} from "./venue-lib.mjs"
 
 // Card geometry (portrait, ~A6 proportions). Units are SVG px; vector, so print
 // resolution is unbounded.
 const W = 640
 const H = 900
-const QR = 340
+const QR = QR_OPTS.width // one source of truth: the rendered size IS the layout size
 const QUIET = 380 // white quiet-zone box behind the QR
 const C = {
   cream: "#FAF7F2",
@@ -55,13 +65,9 @@ async function card(venue) {
   // 'Q' = ~25% recovery — a table card lives with grease, smudges and partial
   // occlusion, where 'M' (~15%) is marginal. Slightly denser modules; print a
   // touch larger. See the sizing note in docs/venue-qr-playbook.md.
-  let qr = await QRCode.toString(url, {
-    type: "svg",
-    margin: 1,
-    width: QR,
-    errorCorrectionLevel: "Q",
-    color: { dark: C.ink, light: C.white },
-  })
+  // Options live in venue-lib's QR_OPTS so verify-venue-qr.mjs re-encodes with the
+  // IDENTICAL settings — its byte-comparison only proves anything if both sides match.
+  let qr = await QRCode.toString(url, QR_OPTS)
   // Nest the QR <svg> at the right spot (nested <svg> honours x/y/width/height).
   qr = qr.replace("<svg ", `<svg x="${qrX}" y="${qrY}" `)
 
@@ -92,41 +98,61 @@ async function card(venue) {
 `
 }
 
-// Lowercase kebab-case, single hyphens only — rejects leading/trailing/double
-// hyphens that the loose `[a-z0-9-]+` would wave through onto a printed card.
-const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/
-
 async function main() {
-  const entries = Object.entries(JSON.parse(readFileSync(DATA, "utf8")))
-  if (entries.length === 0) {
+  const reg = loadRegistry()
+  const lock = loadLock()
+  const venues = Object.values(reg)
+
+  if (venues.length === 0) {
     console.error("No venues in lib/venues.data.json — nothing to generate.")
     process.exit(1)
   }
 
-  // Validate the whole registry before writing anything (fail closed).
-  const seen = new Set()
-  for (const [key, v] of entries) {
-    if (!SLUG_RE.test(v.slug)) {
-      console.error(`Bad slug "${v.slug}" — lowercase kebab-case only (no leading/trailing/double hyphens).`)
-      process.exit(1)
-    }
-    if (seen.has(v.slug)) {
-      console.error(`Duplicate slug "${v.slug}" — each venue needs a unique slug.`)
-      process.exit(1)
-    }
-    seen.add(v.slug)
-    if (key !== v.slug) {
-      console.warn(`  ⚠ registry key "${key}" ≠ slug "${v.slug}" — the page resolves off the slug field so it still works, but keep the key identical for tidiness.`)
-    }
+  // Fail CLOSED before writing a byte: minting produces the artefact that gets
+  // physically printed, so a bad or repurposed entry must never reach an SVG.
+  const errors = [
+    ...validateRegistry(reg),
+    ...assertNoRepurpose(reg, lock),
+    ...assertMintedCardsAreLocked(lock),
+  ]
+  if (errors.length > 0) {
+    console.error(`\n✖ Refusing to mint — ${errors.length} problem(s) in the registry:\n`)
+    for (const e of errors) console.error(`  ✖ ${e}\n`)
+    process.exit(1)
   }
 
   mkdirSync(OUT_DIR, { recursive: true })
-  for (const [, v] of entries) {
+  const minted = []
+  const filled = []
+
+  // Write the lock BEFORE the SVGs. If this process dies mid-loop, the worst case
+  // must be "a slug is locked but has no card" (harmless — check tolerates it), never
+  // "a card exists with no lock entry" (a silently unprotected printed slug).
+  for (const v of venues) {
+    const change = lockSync(lock, v)
+    if (change === "minted") minted.push(v.slug)
+    if (change === "filled") filled.push(v.slug)
+  }
+  if (minted.length > 0 || filled.length > 0) saveLock(lock)
+
+  for (const v of venues) {
     const svg = await card(v)
     writeFileSync(join(OUT_DIR, `${v.slug}.svg`), svg)
     console.log(`  ✓ ${v.name.padEnd(14)} → public/venue-qr/${v.slug}.svg   (${SITE}/r/${v.slug})`)
   }
-  console.log(`\nGenerated ${entries.length} venue QR card(s). Open each SVG in a browser to print.`)
+
+  if (minted.length > 0) {
+    console.log(
+      `\n  🔒 locked ${minted.length} new slug(s): ${minted.join(", ")}\n` +
+        `     These now exist on printable cards — they can never be repointed at another venue.\n` +
+        `     COMMIT lib/venues.lock.json alongside the card, or the slug ships unprotected.`,
+    )
+  }
+  if (filled.length > 0) {
+    console.log(`\n  🔒 recorded Place ID for: ${filled.join(", ")} (no reprint needed)`)
+  }
+
+  console.log(`\nGenerated ${venues.length} venue QR card(s). Run \`npm run venue:verify\` before printing.`)
 }
 
 main().catch((err) => {
