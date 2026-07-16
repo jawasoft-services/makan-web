@@ -6,11 +6,11 @@ import Footer from '@/components/Footer'
 export const metadata: Metadata = {
   title: 'Manifesto — Makan',
   description:
-    "You'll forget today's best meal by Friday. Makan won't. The food diary you keep with your friends.",
+    "It started because we couldn't eat together. Makan is the record of what you ate — the food diary you keep with your friends.",
   openGraph: {
     title: 'Makan — Manifesto',
     description:
-      "You'll forget today's best meal by Friday. Makan won't. The food diary you keep with your friends.",
+      "It started because we couldn't eat together. Makan is the record of what you ate — the food diary you keep with your friends.",
     type: 'article',
   },
 }
@@ -32,7 +32,7 @@ export default function ManifestoPage() {
           <h1
             className="mt-6 text-[34px] font-bold leading-[1.08] tracking-[-0.025em] text-brand-ink sm:text-[52px] lg:text-[64px]"
           >
-            You&apos;ll forget today&apos;s best meal by Friday. Makan won&apos;t.
+            It started because we couldn&apos;t eat together.
           </h1>
 
           {/* Opening — origin and founding observation */}
@@ -42,8 +42,7 @@ export default function ManifestoPage() {
               few of us started a Snapchat story to stay in touch. We&apos;d
               post photos of dinner, breakfast, takeout, whatever we were
               eating. It grew to over 300 people without us trying. When you
-              can&apos;t share a table, the photo of the meal kind of becomes
-              the table.
+              can&apos;t share a table, the photo of the meal becomes the table.
             </p>
             <p>
               That was six years ago. We&apos;ve sent each other thousands of
@@ -62,22 +61,21 @@ export default function ManifestoPage() {
 
           {/* Apex line — pulled out as the structural peak */}
           <p className="mt-14 text-[26px] font-semibold leading-[1.2] tracking-[-0.01em] text-brand-ink sm:text-[34px]">
-            Makan is the other thing. It&apos;s the record of what you ate.
+            Makan is the opposite. It&apos;s the record of what you ate.
           </p>
 
           <div className="mt-10 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
             <p>
               Your meal isn&apos;t content. Only your friends see it unless you
-              say otherwise. It&apos;s a food diary, basically. The kind that
-              remembers what you&apos;d otherwise forget.
+              say otherwise. It&apos;s a food diary — the kind that remembers
+              what you&apos;d otherwise forget.
             </p>
             <p>
-              Here&apos;s the thing that gets me. The meal that stays with you
-              in five years probably isn&apos;t the one everyone was queuing for
-              this week. Maybe it&apos;s a dinner you made at 11pm last Tuesday.
-              Maybe it&apos;s a small restaurant nobody else seems to know
-              about. The meal that mattered always beats the meal that trended.
-              Makan is built around that.
+              The meal that stays with you in five years probably isn&apos;t the
+              one everyone queued for this week. Maybe it&apos;s a dinner you
+              made at 11pm last Tuesday. Maybe it&apos;s a small restaurant
+              nobody else seems to know about. The meal that mattered beats the
+              meal that trended. Makan is built around that.
             </p>
           </div>
 
@@ -90,34 +88,35 @@ export default function ManifestoPage() {
             <div className="mt-8 space-y-7 border-l-2 border-brand-orange pl-5 sm:pl-7">
               <div>
                 <p className="text-brand-ink font-semibold">
-                  No star ratings. No averages from strangers.
+                  A meal isn&apos;t 4.2 out of 5.
                 </p>
                 <p className="mt-2 text-brand-ink/80 text-[17px] leading-relaxed">
-                  A meal isn&apos;t 4.2 out of 5. The rankings we show are
-                  personal. Yours, and your friends&apos;. When a friend posts a
-                  meal, you&apos;ll see if it&apos;s their #3 of all time, no
-                  matter where they ate it. That tells you more than a 4.6
-                  average from strangers ever could.
+                  No stars. No averages deciding what was good. The only ranking
+                  on Makan is your own: your meals, held up against each other,
+                  until the order is one you actually believe. Your #3 of all
+                  time might be the same dish your mum made for you as a kid.
+                  That means more than a 4.6 from people who weren&apos;t there.
                 </p>
               </div>
 
               <div>
                 <p className="text-brand-ink font-semibold">
-                  Your home feed isn&apos;t sorted by what&apos;s popular.
+                  Your feed isn&apos;t sorted by what&apos;s popular.
                 </p>
                 <p className="mt-2 text-brand-ink/80 text-[17px] leading-relaxed">
-                  It&apos;s your friends, in the order their meals happened.
-                  Nothing jumps to the top just because it has more likes.
+                  Your friends, in the order they posted. There&apos;s a public
+                  feed if you want to see past them, and it works the same way.
+                  Nothing jumps the queue for having more likes.
                 </p>
               </div>
 
               <div>
                 <p className="text-brand-ink font-semibold">
-                  Restaurants can&apos;t pay to be in your feed.
+                  Restaurants can&apos;t pay their way into your feed.
                 </p>
                 <p className="mt-2 text-brand-ink/80 text-[17px] leading-relaxed">
                   If you see a place on Makan, it&apos;s because someone you
-                  know actually ate there and remembered it.
+                  know ate there and remembered it.
                 </p>
               </div>
 
@@ -126,8 +125,7 @@ export default function ManifestoPage() {
                   Your record is yours.
                 </p>
                 <p className="mt-2 text-brand-ink/80 text-[17px] leading-relaxed">
-                  We hold it for you. You can delete it whenever. If Makan ever
-                  shuts down, we&apos;ll send you your record before we go.
+                  We hold it for you. You can delete it whenever you want.
                 </p>
               </div>
             </div>
@@ -145,10 +143,9 @@ export default function ManifestoPage() {
 
             <p className="mt-5 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
               It can&apos;t smell, can&apos;t chew, can&apos;t remember being
-              hungry as a kid. So it won&apos;t write your meals on Makan,
-              generate your recipes, or guess what you ate from a photo. The
-              point of remembering what you ate is that you tasted it. AI never
-              has.
+              hungry as a kid. So it won&apos;t write your meals, generate your
+              recipes, or guess what you ate from a photo. The point of
+              remembering what you ate is that you tasted it. AI never has.
             </p>
           </div>
 
@@ -157,11 +154,11 @@ export default function ManifestoPage() {
             <p>
               What Makan does do is help you remember how you&apos;ve eaten.
               The Tuesday night dinner. The long lunch in Lisbon that ran four
-              hours. The kebab at 2am after you got home. The first time your
-              kid cooked you something. The breakfast you ate alone the morning
+              hours. The kebab at 2am after you got home. The first time someone
+              cooked for you properly. The breakfast you ate alone the morning
               after. The meal you cooked the first night in a new flat. Every
-              meal gets saved with what was happening around it. What you ate.
-              Who was with you.
+              meal saved with what was happening around it. What you ate. Who
+              was with you.
             </p>
           </div>
 

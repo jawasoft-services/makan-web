@@ -36,7 +36,7 @@ export const FAQS: FaqItem[] = [
   },
   {
     q: 'Are there star ratings?',
-    a: "No. A meal isn't 4.2 out of 5. The rankings we show are personal — yours, and your friends'. When a friend posts a meal, you'll see if it's their #3 of all time. That tells you more than a 4.6 average from strangers ever could.",
+    a: "No. A meal isn't 4.2 out of 5. The only ranking on Makan is your own — your meals, held up against each other, until the order is one you actually believe. Your #3 of all time might be the same dish your mum made for you as a kid. That means more than a 4.6 from people who weren't there.",
   },
   {
     q: 'How is Makan different from Yelp or Google reviews?',
