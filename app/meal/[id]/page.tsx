@@ -89,11 +89,19 @@ export default async function MealPage({ params }: PageProps) {
     <div className="min-h-screen bg-brand-cream">
       <main className="flex min-h-screen items-center justify-center px-6 pt-20 pb-12">
         <div className="w-full max-w-sm">
+          {/*
+            Declared at the size the card actually renders (the wrapper caps at
+            max-w-sm = 384px), not at the source's 1080x1920. Every public meal
+            id mints its own cache entries here and they never stop accruing, so
+            the pair wants to be as cheap as possible: 384/828 instead of
+            1080/1920. Ratio is unchanged (384/683 == 1080/1920), so this is
+            byte savings with no layout shift.
+          */}
           <Image
             src={imageUrl}
             alt={title}
-            width={1080}
-            height={1920}
+            width={384}
+            height={683}
             className="w-full h-auto rounded-2xl shadow-2xl shadow-black/40"
           />
         </div>
