@@ -55,15 +55,19 @@ const screens: Screen[] = [
   },
 ]
 
+// Sized rather than `fill` + `sizes`, same trap as the meal cards: a bare-px
+// `sizes` opts into every configured width instead of narrowing the srcset. The
+// frame is capped at max-w-[280px], so a 1x/2x pair covers it. CSS still drives
+// the real box — these numbers only shape the srcset.
 function ScreenImage({ screen }: { screen: Screen }) {
   if (screen.src) {
     return (
       <Image
         src={screen.src}
         alt={`Makan — ${screen.label}`}
-        fill
-        className="object-cover"
-        sizes="300px"
+        width={280}
+        height={609}
+        className="absolute inset-0 h-full w-full object-cover"
       />
     )
   }
