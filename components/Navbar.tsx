@@ -69,9 +69,9 @@ export default function Navbar() {
             className="h-8 w-8"
           />
           <Image
-            src="/makan-wordmark-white.svg"
+            src="/makan-logo-white.svg"
             alt="Makan"
-            width={97}
+            width={104}
             height={24}
             className="h-6 w-auto"
             priority

@@ -124,7 +124,7 @@ function MealPostCard({ meal, sizes }: { meal: Meal; sizes: string }) {
       >
         <div className="flex items-center justify-between gap-2">
           {/* eslint-disable-next-line @next/next/no-img-element -- tiny inline SVG asset */}
-          <img src="/makan-wordmark-white.svg" alt="makan" style={{ height: '4cqw', width: 'auto' }} />
+          <img src="/makan-logo-white.svg" alt="makan" style={{ height: '4cqw', width: 'auto' }} />
           {meal.mealType && (
             <span
               className="flex shrink-0 items-center rounded-full bg-white font-bold text-brand-orange"

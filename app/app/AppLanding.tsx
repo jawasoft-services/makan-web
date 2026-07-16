@@ -41,10 +41,10 @@ export default function AppLanding() {
         priority
       />
       <Image
-        src="/makan-wordmark.svg"
+        src="/makan-logo-orange.svg"
         alt="Makan"
         width={200}
-        height={49}
+        height={46}
         className="mb-9 h-auto w-[190px]"
         priority
       />

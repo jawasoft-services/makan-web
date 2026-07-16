@@ -35,9 +35,9 @@ export default function Footer() {
                 className="h-9 w-9 rounded-lg"
               />
               <Image
-                src="/makan-wordmark-white.svg"
+                src="/makan-logo-white.svg"
                 alt="Makan"
-                width={80}
+                width={86}
                 height={20}
                 className="h-5 w-auto"
               />
