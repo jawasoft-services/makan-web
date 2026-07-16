@@ -22,14 +22,20 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: "Makan — Share What You Eat",
+  // Resolve every relative OG/twitter image + canonical against the www host so
+  // crawlers hit a 200 directly. Without this, Next falls back to the apex
+  // origin, which 308-redirects to www — and social unfurlers (Twitterbot,
+  // iMessage, Slack, WhatsApp, LinkedIn) don't follow redirects on image tags,
+  // so the card renders with no image.
+  metadataBase: new URL("https://www.makanofficial.com"),
+  title: "Makan — Remember every meal",
   description:
     "A food journal where your friends' real meals replace algorithms and influencers.",
   alternates: {
     canonical: "https://www.makanofficial.com",
   },
   openGraph: {
-    title: "Makan — Share What You Eat",
+    title: "Remember every meal",
     description:
       "A food journal where your friends' real meals replace algorithms and influencers.",
     url: "https://www.makanofficial.com",
@@ -38,7 +44,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Makan — Share What You Eat",
+    title: "Remember every meal",
     description:
       "A food journal where your friends' real meals replace algorithms and influencers.",
     site: "@app_makan",

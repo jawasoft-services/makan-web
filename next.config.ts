@@ -21,6 +21,13 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // The opengraph-image route reads meal thumbnails + the Plus Jakarta Sans
+  // TTFs off disk at render time. Vercel's tracer can't see the runtime
+  // `join(process.cwd(), ...)` paths, so force these assets into the route's
+  // serverless bundle (else ENOENT in prod).
+  outputFileTracingIncludes: {
+    "/opengraph-image": ["./public/og-tiles/**", "./public/fonts/*.ttf"],
+  },
   images: {
     remotePatterns: [
       {
