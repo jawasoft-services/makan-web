@@ -109,14 +109,29 @@ function PinIcon() {
  * meal-type pill → location + makanofficial.com. Typography scales with the
  * card via container-query units so one component serves both strips.
  */
-function MealPostCard({ meal, sizes }: { meal: Meal; sizes: string }) {
+function MealPostCard({ meal }: { meal: Meal }) {
   return (
     <div
       className="flex aspect-square w-full flex-col overflow-hidden bg-brand-orange"
       style={{ containerType: 'inline-size' }}
     >
       <div className="relative w-full shrink-0" style={{ aspectRatio: '1080 / 740' }}>
-        <Image src={meal.src} alt={meal.alt} fill className="object-cover" sizes={sizes} />
+        {/*
+          Deliberately sized rather than `fill` + `sizes`. Next only narrows a
+          srcset when `sizes` contains a `vw` token; a bare-px `sizes` ("360px")
+          silently falls back to *every* configured width, which is worse than
+          passing nothing. Both strips render this card at a fixed width, so the
+          declared width picks a 1x/2x pair (384w/750w) that serves the 240px
+          mobile and 360px desktop cards from the same two cache entries. CSS
+          still drives the real box — these numbers only shape the srcset.
+        */}
+        <Image
+          src={meal.src}
+          alt={meal.alt}
+          width={360}
+          height={247}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
       </div>
       <div
         className="flex min-h-0 flex-1 flex-col justify-between text-white"
@@ -217,7 +232,7 @@ export default function LatestOnMakan({ mealCount, liveMeals }: LatestOnMakanPro
               animate={inView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.45, delay: 0.1 + Math.min(i, 6) * 0.06 }}
             >
-              <MealPostCard meal={meal} sizes="240px" />
+              <MealPostCard meal={meal} />
             </motion.div>
           ))}
           {/* Breathing room at scroll end */}
@@ -242,7 +257,7 @@ export default function LatestOnMakan({ mealCount, liveMeals }: LatestOnMakanPro
               transition={{ duration: 0.5, delay: 0.1 + Math.min(i, 8) * 0.08 }}
               whileHover={{ scale: 1.02, rotate: -0.4 }}
             >
-              <MealPostCard meal={meal} sizes="360px" />
+              <MealPostCard meal={meal} />
             </motion.div>
           ))}
         </div>

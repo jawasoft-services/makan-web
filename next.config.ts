@@ -35,6 +35,19 @@ const nextConfig: NextConfig = {
         hostname: "firebasestorage.googleapis.com",
       },
     ],
+    // Vercel bills an image cache write on every optimizer MISS *and* STALE.
+    // Firebase Storage serves meal photos `Cache-Control: private, max-age=0`,
+    // and Next floors the optimizer TTL at minimumCacheTTL, so the default 4h
+    // meant every remote variant on the homepage strip was re-written six times
+    // a day forever — the bulk of the Hobby cache-write budget, burned on
+    // re-encoding identical bytes. Storage URLs are content-addressed and carry
+    // a token, so a photo behind a given URL never changes: 31 days is safe.
+    minimumCacheTTL: 2678400,
+    // Nothing renders above ~1200 CSS px, and the meal sources top out near
+    // 2048 — Next never upscales, so the 2048/3840 candidates only ever minted
+    // duplicate cache keys holding bytes identical to the 1920 entry.
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [32, 64, 128, 256, 384],
   },
   async headers() {
     return [
