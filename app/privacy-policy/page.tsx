@@ -19,7 +19,7 @@ export default function PrivacyPolicy() {
 
         {/* Title */}
         <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-brand-ink">Privacy Policy</h1>
-        <p className="mt-2 text-sm text-brand-muted">Last updated: 26 June 2026</p>
+        <p className="mt-2 text-sm text-brand-muted">Last updated: 18 July 2026</p>
 
         <div className="mt-10 space-y-10 text-[15px] leading-relaxed text-brand-ink/80">
 
@@ -128,6 +128,7 @@ export default function PrivacyPolicy() {
                 <li>Show nearby places and calculate distances, using your device location where you have granted permission</li>
                 <li>Maintain security, prevent abuse, and protect the integrity of the Services</li>
                 <li>Respond to support enquiries</li>
+                <li>Feature content you post to a public audience in our own marketing, where permitted (see section 5)</li>
                 <li>Understand usage and improve the reliability, performance, and design of the Services</li>
               </ul>
               <p>
@@ -158,9 +159,10 @@ export default function PrivacyPolicy() {
               <div>
                 <h3 className="font-medium text-brand-ink">4.3 Consent</h3>
                 <p className="mt-2">
-                  We rely on your consent when you submit an enquiry through the Site, and for any
-                  optional analytics technologies that require consent. You can withdraw consent at
-                  any time by contacting us or unsubscribing.
+                  We rely on your consent when you submit an enquiry through the Site, for any
+                  optional analytics technologies that require consent, and before we feature content
+                  that identifies you on an external platform such as our Instagram (see section 5).
+                  You can withdraw consent at any time by contacting us or unsubscribing.
                 </p>
               </div>
             </div>
@@ -181,6 +183,23 @@ export default function PrivacyPolicy() {
                 App. Copies may remain temporarily in device caches or system backups for limited
                 periods, as described in the retention section.
               </p>
+              <div>
+                <h3 className="font-medium text-brand-ink">Featuring your public content in our marketing</h3>
+                <p className="mt-2">
+                  Where you post content to a public audience, we may feature it in our own promotional
+                  materials and on our own channels, including third-party platforms such as Instagram
+                  and TikTok — for example, a curated &ldquo;Makan of the Week&rdquo;. This may include
+                  your meal photo (which may show identifiable people), your caption, and your username
+                  or display name.
+                </p>
+                <ul className="mt-2 list-disc pl-5 space-y-1">
+                  <li>Only public content. We never use content you have set to private or friends-only.</li>
+                  <li>Lawful basis. Where we feature content that identifies you on an external platform, we rely on your consent, which we ask for beforehand and which you can withdraw at any time. For promotional surfaces we operate inside the Services, we may rely on our legitimate interests in promoting Makan, balanced against your rights, and you can object at any time.</li>
+                  <li>Under-18s. We do not feature content from users we know to be under 18 in external marketing.</li>
+                  <li>Your controls. You can decline, ask us to remove featured content from channels we control, or object, by contacting support@makanofficial.com. Content already shared onward by others may remain outside our control.</li>
+                  <li>Third-party platforms. When your content appears on a third-party platform, that platform processes it under its own privacy policy.</li>
+                </ul>
+              </div>
             </div>
           </section>
 

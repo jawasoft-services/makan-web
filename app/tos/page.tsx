@@ -19,7 +19,7 @@ export default function TermsOfUse() {
 
         {/* Title */}
         <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-brand-ink">Terms of Use</h1>
-        <p className="mt-2 text-sm text-brand-muted">Last updated: 26 June 2026</p>
+        <p className="mt-2 text-sm text-brand-muted">Last updated: 18 July 2026</p>
 
         <div className="mt-10 space-y-10 text-[15px] leading-relaxed text-brand-ink/80">
 
@@ -109,20 +109,40 @@ export default function TermsOfUse() {
           {/* 6 */}
           <section>
             <h2 className="text-lg font-semibold text-brand-ink">6. User Content</h2>
-            <div className="mt-4 space-y-3">
+            <div className="mt-4 space-y-4">
               <p>You retain ownership of content you upload to the App, including meal photos and captions.</p>
               <p>
-                By uploading content, you grant us a worldwide, non-exclusive, royalty-free licence to
-                host, store, reproduce, and display that content solely for the purpose of operating
-                and providing the Services in accordance with your selected audience settings. This
-                licence ends when you delete the content or your account, except for copies retained
-                in backups for the limited periods described in our Privacy Policy.
+                By uploading content, you grant us a worldwide, non-exclusive, royalty-free,
+                sub-licensable licence to host, store, reproduce, adapt (for example, to crop or
+                resize), and display that content: (a) for the purpose of operating and providing the
+                Services in accordance with your selected audience settings; and (b) where you have
+                set the content to a public audience, to feature and promote the Services, including
+                in our own marketing materials and on our own channels and social-media accounts (such
+                as Instagram or TikTok), subject to &ldquo;Featuring your content&rdquo; below. This
+                licence ends when you delete the content or your account, except for (i) copies
+                retained in backups for the limited periods described in our Privacy Policy, and (ii)
+                promotional materials already published, which we will remove from channels we control
+                within a reasonable period on request.
               </p>
               <p>
                 You are responsible for the content you upload and confirm that you have the rights to
-                share it and that it does not infringe the rights of others or violate applicable
-                laws.
+                share it, that it does not infringe the rights of others or violate applicable laws,
+                and that any identifiable people in it have agreed to appear and to your sharing it.
               </p>
+              <div>
+                <h3 className="font-medium text-brand-ink">Featuring your content (&ldquo;Makan of the Week&rdquo; and similar)</h3>
+                <p className="mt-2">
+                  From time to time we may feature public posts in our own promotional content, such as
+                  a curated &ldquo;Makan of the Week&rdquo; selection on our social media.
+                </p>
+                <ul className="mt-2 list-disc pl-5 space-y-1">
+                  <li>We only ever use content you have set to a public audience — never private or friends-only content.</li>
+                  <li>Before we feature content that identifies you on an external platform (for example, our Instagram), we will ask you and rely on your agreement. You can decline, and you can ask us to remove it at any time by contacting support@makanofficial.com.</li>
+                  <li>We will credit you (for example, by your username) unless you ask us not to.</li>
+                  <li>We do not feature content from users we know to be under 18 in external marketing.</li>
+                  <li>Once your content is on a third-party platform, that platform&apos;s own terms also apply to how others can view and share it.</li>
+                </ul>
+              </div>
             </div>
           </section>
 
