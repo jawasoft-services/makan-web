@@ -152,7 +152,7 @@ export default function ManifestoPage() {
           {/* Gallery + closing */}
           <div className="mt-16 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
             <p>
-              What Makan does do is help you remember how you&apos;ve eaten.
+              What Makan does is help you remember how you&apos;ve eaten.
               The Tuesday night dinner. The long lunch in Lisbon that ran four
               hours. The kebab at 2am after you got home. The first time someone
               cooked for you properly. The breakfast you ate alone the morning
