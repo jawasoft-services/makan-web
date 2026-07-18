@@ -45,7 +45,7 @@ const screens: Screen[] = [
     id: 'map',
     label: 'The map',
     caption: 'See what your friends actually ordered.',
-    src: '/app-screens/map.png',
+    src: '/app-screens/map-lolas.png',
   },
   {
     id: 'detail',
