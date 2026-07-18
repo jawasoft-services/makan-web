@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import { Emphasis } from '@/components/Emphasis'
 
 export const metadata: Metadata = {
   title: 'Manifesto — Makan',
@@ -15,9 +16,13 @@ export const metadata: Metadata = {
   },
 }
 
-// The full manifesto. Long-form essay; kept as a static server component
-// so it ships as plain HTML with no client JS. Animations belong on the
-// homepage hero — this surface is for reading, not for moving.
+// The full manifesto. A server component: it ships the complete essay as plain
+// HTML (nothing is hidden behind JS). The only client code is <Emphasis>, a
+// leaf that lets a few load-bearing phrases "ignite" into saffron as the reader
+// reaches them — reduced-motion viewers and crawlers get the finished emphasis
+// statically. Read only the emphasised words and you get the manifesto in
+// miniature: eat together -> the table -> remember what you ate -> otherwise
+// forget -> mattered/trended -> tasted -> with you -> that's the gap Makan fills.
 export default function ManifestoPage() {
   return (
     <>
@@ -32,7 +37,8 @@ export default function ManifestoPage() {
           <h1
             className="mt-6 text-[34px] font-bold leading-[1.08] tracking-[-0.025em] text-brand-ink sm:text-[52px] lg:text-[64px]"
           >
-            It started because we couldn&apos;t eat together.
+            It started because we couldn&apos;t{' '}
+            <Emphasis variant="warm" trigger="load">eat&nbsp;together</Emphasis>.
           </h1>
 
           {/* Opening — origin and founding observation */}
@@ -42,7 +48,8 @@ export default function ManifestoPage() {
               few of us started a Snapchat story to stay in touch. We&apos;d
               post photos of dinner, breakfast, takeout, whatever we were
               eating. It grew to over 300 people without us trying. When you
-              can&apos;t share a table, the photo of the meal becomes the table.
+              can&apos;t share a table, the photo of the meal becomes{' '}
+              <Emphasis variant="warm">the&nbsp;table</Emphasis>.
             </p>
             <p>
               That was six years ago. We&apos;ve sent each other thousands of
@@ -55,7 +62,9 @@ export default function ManifestoPage() {
               opinions and turn them into one number out of five, and once
               you&apos;ve eaten, they ask you to do the same. A year goes by,
               you&apos;ve got a list of places you went to, and you cannot for
-              the life of you remember what you ate at any of them.
+              the life of you{' '}
+              <Emphasis variant="underline">remember what you ate</Emphasis> at
+              any of them.
             </p>
           </div>
 
@@ -68,14 +77,16 @@ export default function ManifestoPage() {
             <p>
               Your meal isn&apos;t content. Only your friends see it unless you
               say otherwise. It&apos;s a food diary — the kind that remembers
-              what you&apos;d otherwise forget.
+              what you&apos;d <Emphasis variant="warm">otherwise&nbsp;forget</Emphasis>.
             </p>
             <p>
               The meal that stays with you in five years probably isn&apos;t the
               one everyone queued for this week. Maybe it&apos;s a dinner you
               made at 11pm last Tuesday. Maybe it&apos;s a small restaurant
-              nobody else seems to know about. The meal that mattered beats the
-              meal that trended. Makan is built around that.
+              nobody else seems to know about. The meal that{' '}
+              <Emphasis variant="warm">mattered</Emphasis> beats the meal that{' '}
+              <Emphasis variant="cool">trended</Emphasis>. Makan is built around
+              that.
             </p>
           </div>
 
@@ -138,7 +149,7 @@ export default function ManifestoPage() {
             </p>
 
             <p className="mt-6 text-[26px] font-semibold leading-[1.2] tracking-[-0.01em] text-brand-ink sm:text-[32px]">
-              AI has never tasted food.
+              AI has never <Emphasis variant="warm">tasted</Emphasis> food.
             </p>
 
             <p className="mt-5 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
@@ -158,7 +169,7 @@ export default function ManifestoPage() {
               cooked for you properly. The breakfast you ate alone the morning
               after. The meal you cooked the first night in a new flat. Every
               meal saved with what was happening around it. What you ate. Who
-              was with you.
+              was <Emphasis variant="warm">with&nbsp;you</Emphasis>.
             </p>
           </div>
 

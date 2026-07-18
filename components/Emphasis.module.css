@@ -1,0 +1,55 @@
+/* Expressive emphasis for the manifesto. Three treatments, one grammar.
+   The DEFAULT (server-rendered) state is the FINISHED emphasis — so no-JS,
+   crawlers, and reduced-motion viewers all get the complete emphasised text.
+   JS only adds the `.enhance` cool pre-state and then the transition INTO it. */
+
+.emph {
+  font-weight: 800;
+}
+
+/* --- Finished (default / no-JS / reduced-motion) states --- */
+.warm {
+  color: #ff9932; /* brand-orange (locked) */
+  display: inline-block;
+}
+.underline {
+  color: #2b1503; /* brand-ink — stays legible; the saffron rule marks it */
+  background-image: linear-gradient(#ff9932, #ff9932);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 3px;
+  padding-bottom: 2px;
+}
+.cool {
+  color: #85613f; /* brand-muted — the dimmed half of the two-tone pair */
+  display: inline-block;
+}
+
+/* --- Cool pre-state + transition, only once JS enhances (motion allowed) --- */
+.enhance.warm {
+  color: #2b1503;
+  transform: translateY(3px);
+  transition: color 0.26s ease-out, transform 0.26s ease-out;
+}
+.enhance.warm.revealed {
+  color: #ff9932;
+  transform: translateY(0);
+}
+
+.enhance.underline {
+  background-size: 0% 3px;
+  transition: background-size 0.4s ease-out;
+}
+.enhance.underline.revealed {
+  background-size: 100% 3px;
+}
+
+.enhance.cool {
+  color: #2b1503;
+  transform: translateY(0);
+  transition: color 0.3s ease-out, transform 0.3s ease-out;
+}
+.enhance.cool.revealed {
+  color: #85613f;
+  transform: translateY(1px);
+}
