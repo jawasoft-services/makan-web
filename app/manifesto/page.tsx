@@ -25,7 +25,7 @@ export default function ManifestoPage() {
       <main id="main-content" className="bg-brand-cream min-h-screen text-brand-ink">
         <article className="mx-auto max-w-[680px] px-5 pb-24 pt-32 sm:px-8 sm:pb-32 sm:pt-40">
 
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-orange-ink">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-orange">
             Manifesto
           </p>
 
@@ -171,7 +171,7 @@ export default function ManifestoPage() {
           {/* Closing peak */}
           <p className="mt-14 text-[22px] font-semibold leading-[1.25] tracking-[-0.01em] text-brand-ink sm:text-[28px]">
             You remember who was at the table. You can never remember what you
-            actually ate. <span className="text-brand-orange-ink">That&apos;s the gap Makan fills.</span>
+            actually ate. <span className="text-brand-orange">That&apos;s the gap Makan fills.</span>
           </p>
 
           <p className="mt-10 text-[16px] italic leading-relaxed text-brand-ink/70">
@@ -184,7 +184,7 @@ export default function ManifestoPage() {
             <p className="text-[15px] text-brand-ink/70">— Devon</p>
             <Link
               href="/"
-              className="text-[13px] text-brand-ink/60 underline-offset-4 transition-colors hover:text-brand-orange-ink hover:underline"
+              className="text-[13px] text-brand-ink/60 underline-offset-4 transition-colors hover:text-brand-orange hover:underline"
             >
               Back to Makan →
             </Link>

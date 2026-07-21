@@ -126,7 +126,7 @@ function MealPostCard({ meal }: { meal: Meal }) {
         />
       </div>
       <div
-        className="flex min-h-0 flex-1 flex-col justify-between text-brand-night"
+        className="flex min-h-0 flex-1 flex-col justify-between text-white"
         style={{ padding: '2.6cqw 4cqw 3cqw' }}
       >
         <div className="flex items-center justify-between gap-2">
@@ -139,7 +139,7 @@ function MealPostCard({ meal }: { meal: Meal }) {
           />
           {meal.mealType && (
             <span
-              className="flex shrink-0 items-center rounded-full bg-white font-bold text-brand-orange-ink"
+              className="flex shrink-0 items-center rounded-full bg-white font-bold text-brand-orange"
               style={{ fontSize: '2.6cqw', gap: '1.2cqw', padding: '0.9cqw 2.4cqw' }}
             >
               <MealTypeIcon type={meal.mealType} />
@@ -148,14 +148,14 @@ function MealPostCard({ meal }: { meal: Meal }) {
           )}
         </div>
         {meal.username && (
-          <p className="truncate font-medium text-brand-night/75" style={{ fontSize: '2.6cqw', lineHeight: 1.2 }}>
+          <p className="truncate font-medium text-white/85" style={{ fontSize: '2.6cqw', lineHeight: 1.2 }}>
             @{meal.username}
           </p>
         )}
         <p className="truncate font-bold" style={{ fontSize: '3.8cqw', lineHeight: 1.25 }}>
           {meal.caption || meal.mealType || 'A meal on Makan'}
         </p>
-        <div className="flex items-center justify-between text-brand-night/75" style={{ fontSize: '2.4cqw', gap: '2cqw' }}>
+        <div className="flex items-center justify-between text-white/85" style={{ fontSize: '2.4cqw', gap: '2cqw' }}>
           <span className="flex min-w-0 items-center truncate" style={{ gap: '1.2cqw' }}>
             {meal.locationName && (
               <>
@@ -208,7 +208,7 @@ export default function LatestOnMakan({ mealCount, liveMeals }: LatestOnMakanPro
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
         >
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange-ink">
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
             On Makan
           </p>
           <h2 className="mt-3 text-2xl font-bold text-brand-ink sm:text-3xl lg:text-4xl" style={{ letterSpacing: '-0.02em' }}>

@@ -235,7 +235,7 @@ export default function Hero({ mealCount }: HeroProps) {
                 <div className="flex items-center justify-center gap-4">
                   <Link
                     href={APP_STORE_URL}
-                    className="relative inline-block rounded-full bg-brand-orange px-6 py-3 text-sm font-semibold text-brand-night transition-all sm:px-8 sm:py-3.5 sm:text-base hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
+                    className="relative inline-block rounded-full bg-brand-orange px-6 py-3 text-sm font-semibold text-white transition-all sm:px-8 sm:py-3.5 sm:text-base hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
                   >
                     <span className="pointer-events-none absolute -inset-3 rounded-full bg-brand-orange/10 blur-xl" aria-hidden />
                     <span className="relative">Download on the App Store</span>

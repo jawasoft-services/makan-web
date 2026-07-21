@@ -45,7 +45,7 @@ export default function SupportPage() {
         id="main-content"
         className="mx-auto max-w-2xl px-5 sm:px-8 pt-24 sm:pt-32 pb-16 sm:pb-24"
       >
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange-ink">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
           Support
         </p>
         <h1
@@ -65,7 +65,7 @@ export default function SupportPage() {
           <p className="mt-3">
             <a
               href={`mailto:${SUPPORT_EMAIL}`}
-              className="text-lg font-semibold text-brand-orange-ink hover:underline"
+              className="text-lg font-semibold text-brand-orange hover:underline"
             >
               {SUPPORT_EMAIL}
             </a>
@@ -79,7 +79,7 @@ export default function SupportPage() {
           </p>
           <p className="mt-4 text-sm leading-relaxed text-brand-muted">
             Press or partnership enquiries?{" "}
-            <Link href="/contact" className="text-brand-orange-ink hover:underline">
+            <Link href="/contact" className="text-brand-orange hover:underline">
               Get in touch here
             </Link>
             .
@@ -98,7 +98,7 @@ export default function SupportPage() {
                   {f.q}
                   <span
                     aria-hidden="true"
-                    className="shrink-0 text-xl leading-none text-brand-orange-ink transition-transform duration-200 group-open:rotate-45"
+                    className="shrink-0 text-xl leading-none text-brand-orange transition-transform duration-200 group-open:rotate-45"
                   >
                     +
                   </span>
@@ -119,18 +119,18 @@ export default function SupportPage() {
             access to your data, correct it, or ask for a portable copy, email{" "}
             <a
               href={`mailto:${SUPPORT_EMAIL}`}
-              className="text-brand-orange-ink hover:underline"
+              className="text-brand-orange hover:underline"
             >
               {SUPPORT_EMAIL}
             </a>
             .
           </p>
           <p className="mt-4 text-[15px] leading-[1.75] text-brand-muted">
-            <Link href="/privacy-policy" className="text-brand-orange-ink hover:underline">
+            <Link href="/privacy-policy" className="text-brand-orange hover:underline">
               Privacy Policy
             </Link>
             {" · "}
-            <Link href="/tos" className="text-brand-orange-ink hover:underline">
+            <Link href="/tos" className="text-brand-orange hover:underline">
               Terms of Service
             </Link>
           </p>

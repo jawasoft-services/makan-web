@@ -15,7 +15,7 @@ export default function FounderStory() {
     <section className="bg-brand-card px-5 sm:px-8 py-20 sm:py-32">
       <div ref={ref} className="mx-auto max-w-2xl">
         <motion.p
-          className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange-ink"
+          className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange"
           initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, ease: EASE_OUT }}
@@ -33,7 +33,7 @@ export default function FounderStory() {
           Makan started during COVID. I couldn&apos;t see my friends, so a few
           of us started a Snapchat story to stay in touch. It grew to over 300
           people without us trying.{' '}
-          <span className="text-brand-orange-ink">
+          <span className="text-brand-orange">
             When you can&apos;t share a table, the photo of the meal becomes the
             table.
           </span>

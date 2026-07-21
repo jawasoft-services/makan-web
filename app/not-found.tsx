@@ -11,7 +11,7 @@ export default function NotFound() {
         height={64}
         className="mb-8 rounded-2xl"
       />
-      <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange-ink">
+      <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
         404
       </p>
       <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-brand-ink lg:text-5xl">
@@ -22,7 +22,7 @@ export default function NotFound() {
       </p>
       <Link
         href="/"
-        className="mt-8 rounded-full bg-brand-orange px-7 py-3 text-base font-semibold text-brand-night shadow-lg shadow-brand-orange/25 transition-transform hover:scale-[1.03]"
+        className="mt-8 rounded-full bg-brand-orange px-7 py-3 text-base font-semibold text-white shadow-lg shadow-brand-orange/25 transition-transform hover:scale-[1.03]"
       >
         Back to Makan
       </Link>

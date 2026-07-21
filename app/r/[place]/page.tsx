@@ -90,7 +90,7 @@ export default async function VenueRedirectPage({ params }: PageProps) {
         />
 
         {venue && (
-          <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-brand-orange-ink">
+          <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-brand-orange">
             {venue.name} · {venue.city}
           </p>
         )}
@@ -105,7 +105,7 @@ export default async function VenueRedirectPage({ params }: PageProps) {
 
         <a
           href={APP_STORE_URL}
-          className="inline-flex h-14 items-center justify-center rounded-full bg-brand-orange px-9 text-base font-semibold text-brand-night transition-all hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
+          className="inline-flex h-14 items-center justify-center rounded-full bg-brand-orange px-9 text-base font-semibold text-white transition-all hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
         >
           Download on the App Store
         </a>

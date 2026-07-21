@@ -125,7 +125,7 @@ export default function FeatureTabs() {
               transition={{ duration: 0.6 }}
               className="mb-10 sm:mb-12"
             >
-              <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange-ink">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
                 Inside the app
               </p>
               <h2
@@ -203,7 +203,7 @@ export default function FeatureTabs() {
                       isActive ? 'text-white' : 'text-brand-muted hover:text-white/70'
                     }`}>
                       <span className={`shrink-0 text-xs font-medium tabular-nums transition-colors duration-300 ${
-                        isActive ? 'text-brand-orange-ink' : 'text-brand-dim group-hover:text-brand-muted'
+                        isActive ? 'text-brand-orange' : 'text-brand-dim group-hover:text-brand-muted'
                       }`}>
                         {feature.number}
                       </span>

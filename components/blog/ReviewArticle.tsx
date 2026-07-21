@@ -18,7 +18,7 @@ function renderInline(text: string): ReactNode[] {
         <Link
           key={key++}
           href={m[2]}
-          className="text-brand-orange-ink underline underline-offset-2 hover:opacity-80"
+          className="text-brand-orange underline underline-offset-2 hover:opacity-80"
         >
           {m[1]}
         </Link>,
@@ -77,10 +77,10 @@ function BillTable({ review }: { review: Review }) {
             <td className="px-4 py-2.5 text-right tabular-nums text-brand-muted">{bill.service}</td>
           </tr>
           <tr>
-            <td className="px-4 py-3 font-bold text-brand-orange-ink">
+            <td className="px-4 py-3 font-bold text-brand-orange">
               Total · {bill.covers} covers ({bill.perHead}pp)
             </td>
-            <td className="px-4 py-3 text-right font-bold tabular-nums text-brand-orange-ink">{bill.total}</td>
+            <td className="px-4 py-3 text-right font-bold tabular-nums text-brand-orange">{bill.total}</td>
           </tr>
         </tbody>
       </table>
@@ -113,7 +113,7 @@ function Cta() {
       </p>
       <Link
         href={APP_STORE_URL}
-        className="mt-5 inline-flex h-12 items-center justify-center rounded-full bg-brand-orange px-7 text-sm font-semibold text-brand-night transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
+        className="mt-5 inline-flex h-12 items-center justify-center rounded-full bg-brand-orange px-7 text-sm font-semibold text-white transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
       >
         Download on the App Store
       </Link>
@@ -135,7 +135,7 @@ function BlockView({ block, review }: { block: Block; review: Review }) {
       return <h2 className="mt-12 mb-4 text-2xl font-bold tracking-tight text-brand-ink">{block.text}</h2>
     case "ul":
       return (
-        <ul className="my-5 list-disc space-y-2 pl-5 text-[16px] leading-relaxed text-brand-ink/85 marker:text-brand-orange-ink">
+        <ul className="my-5 list-disc space-y-2 pl-5 text-[16px] leading-relaxed text-brand-ink/85 marker:text-brand-orange">
           {block.items.map((it, i) => (
             <li key={i}>{renderInline(it)}</li>
           ))}
@@ -165,14 +165,14 @@ export function ReviewArticle({ review }: { review: Review }) {
   return (
     <article className="mx-auto max-w-2xl px-5 pt-28 pb-16 sm:px-8">
       <header className="mb-8">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-brand-orange-ink">Restaurant review</p>
+        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-brand-orange">Restaurant review</p>
         <h1 className="text-3xl font-extrabold leading-[1.12] tracking-tight text-brand-ink sm:text-[2.6rem]">
           {review.h1}
         </h1>
         <p className="mt-4 text-lg text-brand-muted">{review.dek}</p>
         <p className="mt-6 text-sm text-brand-muted">
           By{" "}
-          <Link href={review.author.url} className="text-brand-orange-ink">
+          <Link href={review.author.url} className="text-brand-orange">
             {review.author.name}
           </Link>
           , {review.author.role}
