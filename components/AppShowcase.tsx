@@ -45,7 +45,7 @@ const screens: Screen[] = [
     id: 'map',
     label: 'The map',
     caption: 'See what people are actually ordering.',
-    src: '/app-screens/map-public-london-july-2026.png',
+    src: '/app-screens/map-public-central-london-july-2026.png',
   },
   {
     id: 'detail',
