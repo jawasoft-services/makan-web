@@ -44,14 +44,14 @@ const screens: Screen[] = [
   {
     id: 'map',
     label: 'The map',
-    caption: 'See what your friends actually ordered.',
-    src: '/app-screens/map-london-july-2026.png',
+    caption: 'See what people are actually ordering.',
+    src: '/app-screens/map-public-london-july-2026.png',
   },
   {
     id: 'detail',
     label: 'A meal',
     caption: 'What you ate. Who you were with. The day it happened.',
-    src: '/app-screens/meal-july-2026.png',
+    src: '/app-screens/meal-last-day-degree-july-2026.png',
   },
 ]
 
