@@ -20,7 +20,7 @@ export default function Manifesto() {
           transition={{ duration: 0.8 }}
         >
           You remember who was there.{' '}
-          <em className="not-italic text-brand-orange-ink">Not what you ate.</em>
+          <em className="not-italic text-brand-orange">Not what you ate.</em>
         </motion.h2>
 
         <motion.p
@@ -42,7 +42,7 @@ export default function Manifesto() {
         >
           <Link
             href="/manifesto"
-            className="text-sm font-medium text-brand-orange-ink underline-offset-4 transition-opacity hover:underline hover:opacity-90"
+            className="text-sm font-medium text-brand-orange underline-offset-4 transition-opacity hover:underline hover:opacity-90"
           >
             Read the full manifesto →
           </Link>

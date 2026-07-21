@@ -30,7 +30,7 @@ export default function BrandPillars() {
       <div className="mx-auto max-w-4xl">
         {/* Section heading */}
         <motion.p
-          className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange-ink"
+          className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange"
           initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
@@ -48,7 +48,7 @@ export default function BrandPillars() {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.15 + i * 0.12 }}
             >
-              <span className="shrink-0 pt-1 text-sm font-medium text-brand-orange-ink sm:text-base">
+              <span className="shrink-0 pt-1 text-sm font-medium text-brand-orange sm:text-base">
                 {belief.number}
               </span>
               <div>

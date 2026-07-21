@@ -24,20 +24,20 @@ export default function FinalCTA({ mealCount }: FinalCTAProps) {
         {/* Live signal — the launch fact is the hook. Pulsing dot = live on the
             App Store; the count is the real cumulative total, not real-time. */}
         <motion.p
-          className="mb-6 inline-flex items-center gap-2.5 rounded-full bg-black/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-night"
+          className="mb-6 inline-flex items-center gap-2.5 rounded-full bg-white/15 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white"
           initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, ease: EASE_OUT }}
         >
-          <span className="cta-ping h-2 w-2 rounded-full bg-brand-night" aria-hidden />
+          <span className="cta-ping h-2 w-2 rounded-full bg-white" aria-hidden />
           Live now
-          <span className="font-semibold text-brand-night/80 normal-case tracking-normal">
+          <span className="font-semibold text-white/85 normal-case tracking-normal">
             · <StatTicker value={mealCount} inView={inView} /> meals shared
           </span>
         </motion.p>
 
         <motion.h2
-          className="text-4xl font-bold leading-[1.05] text-brand-night sm:text-6xl"
+          className="text-4xl font-bold leading-[1.05] text-white sm:text-6xl"
           style={{ letterSpacing: '-0.03em' }}
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -47,7 +47,7 @@ export default function FinalCTA({ mealCount }: FinalCTAProps) {
         </motion.h2>
 
         <motion.p
-          className="mx-auto mt-5 max-w-md text-xl font-semibold leading-snug text-brand-night"
+          className="mx-auto mt-5 max-w-md text-xl font-semibold leading-snug text-white"
           initial={{ opacity: 0, y: 16 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.1, ease: EASE_OUT }}
@@ -63,7 +63,7 @@ export default function FinalCTA({ mealCount }: FinalCTAProps) {
         >
           <Link
             href={APP_STORE_URL}
-            className="relative inline-block overflow-hidden rounded-full bg-white px-9 py-4 text-base font-semibold text-brand-orange-ink shadow-lg shadow-black/15 transition-all hover:shadow-xl hover:shadow-black/20 active:scale-[0.98]"
+            className="relative inline-block overflow-hidden rounded-full bg-white px-9 py-4 text-base font-semibold text-brand-orange shadow-lg shadow-black/15 transition-all hover:shadow-xl hover:shadow-black/20 active:scale-[0.98]"
           >
             <span className="pointer-events-none absolute -inset-4 rounded-full bg-white/20 blur-xl" aria-hidden />
             <span className="cta-btn-glint" aria-hidden />
@@ -72,13 +72,13 @@ export default function FinalCTA({ mealCount }: FinalCTAProps) {
         </motion.div>
 
         <motion.div
-          className="mt-9 border-t border-brand-night/20 pt-8"
+          className="mt-9 border-t border-white/25 pt-8"
           initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.3, ease: EASE_OUT }}
         >
-          <p className="text-base font-semibold text-brand-night">On Android?</p>
-          <p className="mt-1 text-sm text-brand-night/80">
+          <p className="text-base font-semibold text-white">On Android?</p>
+          <p className="mt-1 text-sm text-white/85">
             It&apos;s in the works. Get one email when it launches.
           </p>
           <AndroidWaitlist />

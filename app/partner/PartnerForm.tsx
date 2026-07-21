@@ -84,7 +84,7 @@ export default function PartnerForm() {
             transition={{ duration: 0.6 }}
           >
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-orange/15">
-              <svg className="h-7 w-7 text-brand-orange-ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg className="h-7 w-7 text-brand-orange" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </div>
@@ -98,7 +98,7 @@ export default function PartnerForm() {
             </p>
             <Link
               href="/"
-              className="mt-8 inline-block text-sm font-medium text-brand-orange-ink hover:underline"
+              className="mt-8 inline-block text-sm font-medium text-brand-orange hover:underline"
             >
               &larr; Back to home
             </Link>
@@ -240,7 +240,7 @@ export default function PartnerForm() {
                 <button
                   type="submit"
                   disabled={status === 'loading'}
-                  className="w-full rounded-xl bg-brand-orange py-3 text-sm font-semibold text-brand-night transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="w-full rounded-xl bg-brand-orange py-3 text-sm font-semibold text-white transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {status === 'loading' ? (
                     <span className="inline-flex items-center gap-2">

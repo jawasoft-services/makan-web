@@ -74,7 +74,7 @@ function ScreenImage({ screen }: { screen: Screen }) {
   // Placeholder until the real screenshot lands at screen.src
   return (
     <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
-      <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-orange-ink">
+      <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-orange">
         {screen.label}
       </span>
       <span className="text-xs leading-relaxed text-brand-muted">
@@ -129,7 +129,7 @@ export default function AppShowcase() {
           transition={{ duration: 0.6, ease: EASE_OUT }}
           className="mb-16 sm:mb-24"
         >
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange-ink">
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
             Inside the app
           </p>
           <h2
@@ -178,7 +178,7 @@ export default function AppShowcase() {
                     }}
                     transition={swap}
                   >
-                    <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange-ink">
+                    <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
                       {screen.label}
                     </p>
                     <p
@@ -222,7 +222,7 @@ export default function AppShowcase() {
               </PhoneShell>
             </motion.div>
             <div className="w-full text-center">
-              <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange-ink">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
                 {screen.label}
               </p>
               <p
@@ -245,7 +245,7 @@ export default function AppShowcase() {
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.8, ease: EASE_OUT }}
         >
-          <p className="text-sm font-medium uppercase tracking-[0.25em] text-brand-orange-ink">
+          <p className="text-sm font-medium uppercase tracking-[0.25em] text-brand-orange">
             No ads · No algorithm · No AI
           </p>
           <h3
