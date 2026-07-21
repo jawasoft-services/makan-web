@@ -14,7 +14,7 @@ const EASE_OUT = [0.23, 1, 0.32, 1] as const
 
 // Each screen pairs a real app screenshot with the manifesto line it delivers.
 // `src: null` renders an intentional placeholder frame — drop a PNG at the
-// path in /public/app-screens/ to replace it (e.g. /app-screens/diary.png).
+// matching path in /public/app-screens/ to replace it.
 type Screen = {
   id: string
   label: string // orienting eyebrow — what screen is this (cold-context test)
@@ -27,31 +27,31 @@ const screens: Screen[] = [
     id: 'diary',
     label: 'The diary',
     caption: "You'll forget today's best meal by Friday. Makan won't.",
-    src: '/app-screens/diary.png',
+    src: '/app-screens/diary-july-2026.png',
   },
   {
     id: 'feed',
     label: 'Friends',
     caption: "Your friends' meals. Not strangers' reviews.",
-    src: '/app-screens/feed.png',
+    src: '/app-screens/friends-july-2026.png',
   },
   {
-    id: 'rank',
-    label: 'Your ranking',
-    caption: "A meal isn't 4.2 out of 5. It's your #3 of all time.",
-    src: '/app-screens/rank.png',
+    id: 'journey',
+    label: 'Your journey',
+    caption: 'Every place. Every streak. Every badge. Your food story, adding up.',
+    src: '/app-screens/journey-july-2026.png',
   },
   {
     id: 'map',
     label: 'The map',
-    caption: 'See what your friends actually ordered.',
-    src: '/app-screens/map-lolas.png',
+    caption: 'See what people are actually ordering.',
+    src: '/app-screens/map-public-central-london-real-july-2026.png',
   },
   {
     id: 'detail',
     label: 'A meal',
     caption: 'What you ate. Who you were with. The day it happened.',
-    src: '/app-screens/detail.png',
+    src: '/app-screens/meal-last-day-degree-july-2026.png',
   },
 ]
 
