@@ -34,7 +34,7 @@ export default function MemoryTest() {
     >
       <div className="mx-auto max-w-2xl">
         <motion.p
-          className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange"
+          className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange-ink"
           initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, ease: EASE_OUT }}
@@ -108,7 +108,7 @@ export default function MemoryTest() {
                 style={{ letterSpacing: '-0.02em' }}
               >
                 That&apos;s the whole reason we{' '}
-                <span className="text-brand-orange">built Makan.</span>
+                <span className="text-brand-orange-ink">built Makan.</span>
               </p>
             </motion.div>
           )}

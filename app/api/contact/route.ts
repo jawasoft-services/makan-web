@@ -14,7 +14,9 @@ import { getSheetsAuth } from "@/lib/sheets-auth"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-async function appendToSheet(name: string, email: string) {
+type ContactSource = "contact" | "android-waitlist"
+
+async function appendToSheet(name: string, email: string, source: ContactSource) {
   const sheetId = process.env.GOOGLE_SHEET_ID
   if (!sheetId) return
 
@@ -29,7 +31,7 @@ async function appendToSheet(name: string, email: string) {
     // (CSV/formula injection — attacker submits =IMPORTXML(...) etc.).
     valueInputOption: "RAW",
     requestBody: {
-      values: [[now, name, email]],
+      values: [[now, name, email, source]],
     },
   })
 }
@@ -37,6 +39,7 @@ async function appendToSheet(name: string, email: string) {
 interface ContactBody {
   name?: string
   email?: string
+  source?: ContactSource
   website?: string // honeypot
 }
 
@@ -59,9 +62,13 @@ export async function POST(request: Request) {
     }
 
     const { name, email } = body
+    if (body.source !== undefined && body.source !== "contact" && body.source !== "android-waitlist") {
+      return NextResponse.json({ error: "Invalid request." }, { status: 400 })
+    }
+    const source: ContactSource = body.source ?? "contact"
 
     // 4. Per-field validation + length caps.
-    if (!name?.trim() || name.length > FIELD_MAX.name) {
+    if (source === "contact" && (!name?.trim() || name.length > FIELD_MAX.name)) {
       return NextResponse.json({ error: "Name is required." }, { status: 400 })
     }
     if (
@@ -75,7 +82,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const trimmedName = name.trim()
+    const trimmedName = source === "android-waitlist" ? "Android waitlist" : name!.trim()
     const trimmedEmail = email.trim()
 
     const resend = new Resend(process.env.RESEND_API_KEY)
@@ -83,26 +90,34 @@ export async function POST(request: Request) {
     const fromAddress =
       process.env.RESEND_FROM ?? "Makan Website <onboarding@resend.dev>"
 
+    const isAndroidWaitlist = source === "android-waitlist"
+    const heading = isAndroidWaitlist
+      ? "New Android launch notification signup"
+      : "New contact form submission"
     const [emailResult] = await Promise.all([
       resend.emails.send({
         from: fromAddress,
         to: toAddress,
         // Strip CR/LF (header injection) + cap length.
-        subject: sanitizeSubject(`New contact form submission from ${trimmedName}`),
+        subject: sanitizeSubject(
+          isAndroidWaitlist
+            ? `Android launch notification: ${trimmedEmail}`
+            : `New contact form submission from ${trimmedName}`,
+        ),
         // HTML-escape every user value before interpolating into HTML.
         html: `
           <div style="font-family: system-ui, sans-serif; max-width: 480px;">
-            <h2 style="margin: 0 0 16px;">New contact form submission</h2>
-            <p style="margin: 0 0 8px;"><strong>Name:</strong> ${htmlEscape(trimmedName)}</p>
+            <h2 style="margin: 0 0 16px;">${heading}</h2>
+            ${isAndroidWaitlist ? "" : `<p style="margin: 0 0 8px;"><strong>Name:</strong> ${htmlEscape(trimmedName)}</p>`}
             <p style="margin: 0 0 24px;"><strong>Email:</strong> ${htmlEscape(trimmedEmail)}</p>
             <hr style="border: none; border-top: 1px solid #eee;" />
             <p style="margin: 16px 0 0; color: #999; font-size: 13px;">
-              Sent from makanofficial.com contact form
+              Sent from makanofficial.com · ${source}
             </p>
           </div>
         `,
       }),
-      appendToSheet(trimmedName, trimmedEmail).catch((err) => {
+      appendToSheet(trimmedName, trimmedEmail, source).catch((err) => {
         console.error("Google Sheets error:", err)
       }),
     ])

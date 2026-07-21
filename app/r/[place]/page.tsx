@@ -44,6 +44,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title,
     description,
+    alternates: { canonical: `https://www.makanofficial.com/r/${place}` },
     // Utility landing pages for QR scanners — keep them out of search.
     robots: { index: false, follow: true },
     openGraph: {
@@ -89,7 +90,7 @@ export default async function VenueRedirectPage({ params }: PageProps) {
         />
 
         {venue && (
-          <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-brand-orange">
+          <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-brand-orange-ink">
             {venue.name} · {venue.city}
           </p>
         )}
@@ -104,7 +105,7 @@ export default async function VenueRedirectPage({ params }: PageProps) {
 
         <a
           href={APP_STORE_URL}
-          className="inline-flex h-14 items-center justify-center rounded-full bg-brand-orange px-9 text-base font-semibold text-white transition-all hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
+          className="inline-flex h-14 items-center justify-center rounded-full bg-brand-orange px-9 text-base font-semibold text-brand-night transition-all hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
         >
           Download on the App Store
         </a>
@@ -117,7 +118,7 @@ export default async function VenueRedirectPage({ params }: PageProps) {
         </a>
 
         <p className="mt-8 text-xs text-brand-muted">
-          Free on iPhone. Android is coming next.
+          Free on iPhone. Android is in the works.
         </p>
       </main>
       <Footer />

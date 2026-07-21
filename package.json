@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "venue-qr": "node scripts/generate-venue-qr.mjs"
+    "venue-qr": "node scripts/generate-venue-qr.mjs",
+    "app-qr": "node scripts/generate-app-qr.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",

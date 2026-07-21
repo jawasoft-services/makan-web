@@ -31,24 +31,6 @@ export const metadata: Metadata = {
   title: "Makan — Remember every meal",
   description:
     "A food journal where your friends' real meals replace algorithms and influencers.",
-  alternates: {
-    canonical: "https://www.makanofficial.com",
-  },
-  openGraph: {
-    title: "Remember every meal",
-    description:
-      "A food journal where your friends' real meals replace algorithms and influencers.",
-    url: "https://www.makanofficial.com",
-    siteName: "Makan",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Remember every meal",
-    description:
-      "A food journal where your friends' real meals replace algorithms and influencers.",
-    site: "@app_makan",
-  },
 }
 
 export default function RootLayout({
@@ -62,14 +44,14 @@ export default function RootLayout({
         <body className="font-sans antialiased">
           <a
             href="#main-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-lg focus:bg-brand-orange focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-lg focus:bg-brand-orange focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-brand-night"
           >
             Skip to content
           </a>
           <Navbar />
           {children}
           <SmoothScroll />
-          <Analytics />
+          {process.env.VERCEL ? <Analytics /> : null}
         </body>
       </html>
     </ViewTransitions>

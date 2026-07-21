@@ -61,7 +61,7 @@ export function MealGallery({ meals }: { meals: MealEmbed[] }) {
         <ul className="space-y-2 text-[15px] text-brand-ink/85">
           {meals.map((m, i) => (
             <li key={i} className="flex gap-2">
-              <span className="text-brand-orange">·</span>
+              <span className="text-brand-orange-ink">·</span>
               {m.caption}
             </li>
           ))}

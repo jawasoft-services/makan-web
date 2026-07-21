@@ -1,19 +1,21 @@
 import { Metadata } from 'next'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
+import { createPageMetadata } from '@/lib/site-metadata'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: 'Terms of Use — Makan',
   description: 'Terms of Use for the Makan mobile application and associated services.',
-}
+  path: '/tos',
+})
 
 export default function TermsOfUse() {
   return (
     <div className="min-h-screen bg-brand-cream">
-      <main className="mx-auto max-w-3xl px-5 sm:px-8 pt-24 sm:pt-32 pb-16 sm:pb-24">
+      <main id="main-content" className="mx-auto max-w-3xl px-5 sm:px-8 pt-24 sm:pt-32 pb-16 sm:pb-24">
 
         {/* Eyebrow */}
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange-ink">
           Legal
         </p>
 
@@ -39,7 +41,7 @@ export default function TermsOfUse() {
               <p>Registered address: 86–90 Paul Street, London, EC2A 4NE, United Kingdom</p>
               <p>
                 Contact email:{' '}
-                <a href="mailto:support@makanofficial.com" className="text-brand-orange hover:underline">
+                <a href="mailto:support@makanofficial.com" className="text-brand-orange-ink hover:underline">
                   support@makanofficial.com
                 </a>
               </p>
@@ -159,7 +161,7 @@ export default function TermsOfUse() {
               <p>
                 If you believe content on the Services infringes your intellectual property rights,
                 contact us at{' '}
-                <a href="mailto:support@makanofficial.com" className="text-brand-orange hover:underline">
+                <a href="mailto:support@makanofficial.com" className="text-brand-orange-ink hover:underline">
                   support@makanofficial.com
                 </a>{' '}
                 with details of the content and your rights, and we will review and act on valid
@@ -174,7 +176,7 @@ export default function TermsOfUse() {
             <div className="mt-4 space-y-3">
               <p>
                 Your use of the Services is governed by our{' '}
-                <Link href="/privacy-policy" className="text-brand-orange hover:underline">
+                <Link href="/privacy-policy" className="text-brand-orange-ink hover:underline">
                   Privacy Policy
                 </Link>
                 . By using the Services, you acknowledge that your personal
@@ -328,7 +330,7 @@ export default function TermsOfUse() {
               <p>United Kingdom</p>
               <p>
                 Email:{' '}
-                <a href="mailto:support@makanofficial.com" className="text-brand-orange hover:underline">
+                <a href="mailto:support@makanofficial.com" className="text-brand-orange-ink hover:underline">
                   support@makanofficial.com
                 </a>
               </p>
@@ -337,7 +339,7 @@ export default function TermsOfUse() {
 
           {/* Back to home */}
           <div className="pt-4 border-t border-brand-line">
-            <Link href="/" className="text-sm text-brand-orange hover:underline">
+            <Link href="/" className="text-sm text-brand-orange-ink hover:underline">
               &larr; Back to home
             </Link>
           </div>

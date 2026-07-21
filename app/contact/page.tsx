@@ -1,12 +1,14 @@
 import { Metadata } from 'next'
 import Footer from '@/components/Footer'
 import ContactForm from './ContactForm'
+import { createPageMetadata } from '@/lib/site-metadata'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: 'Contact — Makan',
   description:
     'Questions, press, or partnerships? Get in touch — or download Makan free on the App Store.',
-}
+  path: '/contact',
+})
 
 export default function ContactPage() {
   return (

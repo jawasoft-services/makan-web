@@ -20,7 +20,7 @@ export const FAQS: FaqItem[] = [
   },
   {
     q: 'Is Makan free?',
-    a: 'Yes. Makan is free on the App Store, built for iPhone — no subscription, no paywall, no ads. Android is coming next.',
+    a: "Yes. Makan is free on the App Store, built for iPhone — no subscription, no paywall, no ads. Android is in the works, and we don't have a release date to share yet.",
   },
   {
     q: 'What does “makan” mean?',

@@ -107,7 +107,7 @@ function PinIcon() {
  * The app's "export as a post" share card, rebuilt live: square card, photo
  * on top, 340/1080 saffron bar with wordmark → @username → caption +
  * meal-type pill → location + makanofficial.com. Typography scales with the
- * card via container-query units so one component serves both strips.
+ * card via container-query units so one component serves both breakpoints.
  */
 function MealPostCard({ meal }: { meal: Meal }) {
   return (
@@ -116,33 +116,30 @@ function MealPostCard({ meal }: { meal: Meal }) {
       style={{ containerType: 'inline-size' }}
     >
       <div className="relative w-full shrink-0" style={{ aspectRatio: '1080 / 740' }}>
-        {/*
-          Deliberately sized rather than `fill` + `sizes`. Next only narrows a
-          srcset when `sizes` contains a `vw` token; a bare-px `sizes` ("360px")
-          silently falls back to *every* configured width, which is worse than
-          passing nothing. Both strips render this card at a fixed width, so the
-          declared width picks a 1x/2x pair (384w/750w) that serves the 240px
-          mobile and 360px desktop cards from the same two cache entries. CSS
-          still drives the real box — these numbers only shape the srcset.
-        */}
         <Image
           src={meal.src}
           alt={meal.alt}
           width={360}
           height={247}
+          sizes="(min-width: 1024px) 360px, 240px"
           className="absolute inset-0 h-full w-full object-cover"
         />
       </div>
       <div
-        className="flex min-h-0 flex-1 flex-col justify-between text-white"
+        className="flex min-h-0 flex-1 flex-col justify-between text-brand-night"
         style={{ padding: '2.6cqw 4cqw 3cqw' }}
       >
         <div className="flex items-center justify-between gap-2">
-          {/* eslint-disable-next-line @next/next/no-img-element -- tiny inline SVG asset */}
-          <img src="/makan-logo-white.svg" alt="makan" style={{ height: '4cqw', width: 'auto' }} />
+          <Image
+            src="/makan-logo-white.svg"
+            alt="makan"
+            width={120}
+            height={28}
+            style={{ height: '4cqw', width: 'auto' }}
+          />
           {meal.mealType && (
             <span
-              className="flex shrink-0 items-center rounded-full bg-white font-bold text-brand-orange"
+              className="flex shrink-0 items-center rounded-full bg-white font-bold text-brand-orange-ink"
               style={{ fontSize: '2.6cqw', gap: '1.2cqw', padding: '0.9cqw 2.4cqw' }}
             >
               <MealTypeIcon type={meal.mealType} />
@@ -151,14 +148,14 @@ function MealPostCard({ meal }: { meal: Meal }) {
           )}
         </div>
         {meal.username && (
-          <p className="truncate font-medium text-white/85" style={{ fontSize: '2.6cqw', lineHeight: 1.2 }}>
+          <p className="truncate font-medium text-brand-night/75" style={{ fontSize: '2.6cqw', lineHeight: 1.2 }}>
             @{meal.username}
           </p>
         )}
         <p className="truncate font-bold" style={{ fontSize: '3.8cqw', lineHeight: 1.25 }}>
           {meal.caption || meal.mealType || 'A meal on Makan'}
         </p>
-        <div className="flex items-center justify-between text-white/85" style={{ fontSize: '2.4cqw', gap: '2cqw' }}>
+        <div className="flex items-center justify-between text-brand-night/75" style={{ fontSize: '2.4cqw', gap: '2cqw' }}>
           <span className="flex min-w-0 items-center truncate" style={{ gap: '1.2cqw' }}>
             {meal.locationName && (
               <>
@@ -180,7 +177,7 @@ function ArrowButton({ dir, onClick }: { dir: 'left' | 'right'; onClick: () => v
       type="button"
       onClick={onClick}
       aria-label={dir === 'left' ? 'Scroll to previous meals' : 'Scroll to more meals'}
-      className={`absolute top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-brand-line bg-brand-card text-brand-ink shadow-lg shadow-black/10 transition-transform hover:scale-105 active:scale-95 ${
+      className={`absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-brand-line bg-brand-card text-brand-ink shadow-lg shadow-black/10 transition-transform hover:scale-105 active:scale-95 lg:flex ${
         dir === 'left' ? '-left-2' : '-right-2'
       }`}
     >
@@ -211,7 +208,7 @@ export default function LatestOnMakan({ mealCount, liveMeals }: LatestOnMakanPro
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
         >
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange-ink">
             On Makan
           </p>
           <h2 className="mt-3 text-2xl font-bold text-brand-ink sm:text-3xl lg:text-4xl" style={{ letterSpacing: '-0.02em' }}>
@@ -220,38 +217,18 @@ export default function LatestOnMakan({ mealCount, liveMeals }: LatestOnMakanPro
         </motion.div>
       </div>
 
-      {/* Mobile: horizontal scroll strip of share-card posts */}
-      <div className="mt-10 lg:hidden">
-        <div className="flex gap-3 overflow-x-auto px-5 sm:px-8 scrollbar-hide">
-          {meals.map((meal, i) => (
-            <motion.div
-              key={`${meal.src}-${i}`}
-              className="flex-none overflow-hidden rounded-xl shadow-md shadow-black/[0.07]"
-              style={{ width: 240 }}
-              initial={{ opacity: 0, x: 24 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.45, delay: 0.1 + Math.min(i, 6) * 0.06 }}
-            >
-              <MealPostCard meal={meal} />
-            </motion.div>
-          ))}
-          {/* Breathing room at scroll end */}
-          <div className="flex-none w-5 sm:w-8" />
-        </div>
-      </div>
-
-      {/* Desktop: snap carousel — hovered card stays sharp, siblings soften */}
-      <div className="relative mx-auto mt-12 hidden max-w-7xl px-5 sm:px-8 lg:block">
+      {/* One responsive carousel — avoids duplicating every card in hidden DOM. */}
+      <div className="relative mx-auto mt-10 max-w-7xl lg:mt-12">
         <ArrowButton dir="left" onClick={() => scrollByCard(-1)} />
         <ArrowButton dir="right" onClick={() => scrollByCard(1)} />
         <div
           ref={scroller}
-          className="meal-carousel flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 scrollbar-hide"
+          className="meal-carousel flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-4 sm:px-8 lg:gap-6 scrollbar-hide"
         >
           {meals.map((meal, i) => (
             <motion.div
               key={`${meal.src}-${i}`}
-              className="meal-card group flex-none w-[360px] snap-start overflow-hidden rounded-2xl shadow-lg shadow-black/[0.08]"
+              className="meal-card group w-[240px] flex-none snap-start overflow-hidden rounded-xl shadow-md shadow-black/[0.07] lg:w-[360px] lg:rounded-2xl lg:shadow-lg lg:shadow-black/[0.08]"
               initial={{ opacity: 0, x: 32 }}
               animate={inView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.1 + Math.min(i, 8) * 0.08 }}
@@ -260,6 +237,7 @@ export default function LatestOnMakan({ mealCount, liveMeals }: LatestOnMakanPro
               <MealPostCard meal={meal} />
             </motion.div>
           ))}
+          <div className="w-2 flex-none sm:w-5" aria-hidden />
         </div>
       </div>
     </section>

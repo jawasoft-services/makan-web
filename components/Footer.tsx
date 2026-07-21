@@ -6,6 +6,7 @@ const appLinks = [
   { label: 'Get the app', href: APP_STORE_URL },
   { label: 'Story', href: '/story' },
   { label: 'Reviews', href: '/blog' },
+  { label: 'For restaurants', href: '/partner' },
   { label: 'Support', href: '/support' },
   { label: 'Contact', href: '/contact' },
   { label: 'Privacy Policy', href: '/privacy-policy' },

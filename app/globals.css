@@ -83,7 +83,7 @@
 .cta-live-word { position: relative; display: inline-block; }
 .cta-live-word::after {
   content: ''; position: absolute; inset: 0.12em -0.06em 0.14em;
-  border-radius: 0.14em; background: rgba(255, 255, 255, 0.16); z-index: -1;
+  border-radius: 0.14em; background: rgba(5, 5, 5, 0.12); z-index: -1;
 }
 .cta-ping { position: relative; }
 .cta-btn-glint {
@@ -95,7 +95,7 @@
   .cta-live-word::after { animation: cta-live-breath 2.4s ease-in-out infinite; }
   .cta-ping::before {
     content: ''; position: absolute; inset: -4px; border-radius: 50%;
-    background: #fff; opacity: 0.5; animation: cta-ping-out 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+    background: #050505; opacity: 0.35; animation: cta-ping-out 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
   }
   .cta-btn-glint { animation: cta-glint 3.4s ease-in-out 1.2s infinite; }
 }

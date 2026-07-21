@@ -59,7 +59,7 @@ export default function AppLanding() {
 
       <a
         href={APP_STORE_URL}
-        className="inline-flex h-14 items-center justify-center rounded-full bg-brand-orange px-9 text-base font-semibold text-white transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
+        className="inline-flex h-14 items-center justify-center rounded-full bg-brand-orange px-9 text-base font-semibold text-brand-night transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
       >
         Download on the App Store
       </a>

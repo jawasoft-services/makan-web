@@ -10,6 +10,7 @@ const config: Config = {
       colors: {
         brand: {
           orange: "#FF9932",          // locked — never change
+          "orange-ink": "#934700",    // accessible saffron text on white/cream (6.2:1+)
           cream: "#FFF4E6",           // page ground
           ink: "#2B1503",             // body text on cream (14.9:1)
           muted: "#85613F",           // secondary text on cream (5.1:1)

@@ -5,6 +5,7 @@ import { Link } from 'next-view-transitions'
 import { motion, useInView } from 'framer-motion'
 import { APP_STORE_URL } from '@/lib/links'
 import StatTicker from './StatTicker'
+import AndroidWaitlist from './AndroidWaitlist'
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as const
 
@@ -23,20 +24,20 @@ export default function FinalCTA({ mealCount }: FinalCTAProps) {
         {/* Live signal — the launch fact is the hook. Pulsing dot = live on the
             App Store; the count is the real cumulative total, not real-time. */}
         <motion.p
-          className="mb-6 inline-flex items-center gap-2.5 rounded-full bg-white/15 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white"
+          className="mb-6 inline-flex items-center gap-2.5 rounded-full bg-black/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-night"
           initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, ease: EASE_OUT }}
         >
-          <span className="cta-ping h-2 w-2 rounded-full bg-white" aria-hidden />
+          <span className="cta-ping h-2 w-2 rounded-full bg-brand-night" aria-hidden />
           Live now
-          <span className="font-semibold text-white/85 normal-case tracking-normal">
+          <span className="font-semibold text-brand-night/80 normal-case tracking-normal">
             · <StatTicker value={mealCount} inView={inView} /> meals shared
           </span>
         </motion.p>
 
         <motion.h2
-          className="text-4xl font-bold leading-[1.05] text-white sm:text-6xl"
+          className="text-4xl font-bold leading-[1.05] text-brand-night sm:text-6xl"
           style={{ letterSpacing: '-0.03em' }}
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -46,12 +47,12 @@ export default function FinalCTA({ mealCount }: FinalCTAProps) {
         </motion.h2>
 
         <motion.p
-          className="mx-auto mt-5 max-w-md text-xl font-semibold leading-snug text-white"
+          className="mx-auto mt-5 max-w-md text-xl font-semibold leading-snug text-brand-night"
           initial={{ opacity: 0, y: 16 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.1, ease: EASE_OUT }}
         >
-          Remember every meal. Free on iPhone — Android is coming next.
+          Remember every meal. Free on iPhone.
         </motion.p>
 
         <motion.div
@@ -62,12 +63,25 @@ export default function FinalCTA({ mealCount }: FinalCTAProps) {
         >
           <Link
             href={APP_STORE_URL}
-            className="relative inline-block overflow-hidden rounded-full bg-white px-9 py-4 text-base font-semibold text-brand-orange shadow-lg shadow-black/15 transition-all hover:shadow-xl hover:shadow-black/20 active:scale-[0.98]"
+            className="relative inline-block overflow-hidden rounded-full bg-white px-9 py-4 text-base font-semibold text-brand-orange-ink shadow-lg shadow-black/15 transition-all hover:shadow-xl hover:shadow-black/20 active:scale-[0.98]"
           >
             <span className="pointer-events-none absolute -inset-4 rounded-full bg-white/20 blur-xl" aria-hidden />
             <span className="cta-btn-glint" aria-hidden />
             <span className="relative">Download on the App Store</span>
           </Link>
+        </motion.div>
+
+        <motion.div
+          className="mt-9 border-t border-brand-night/20 pt-8"
+          initial={{ opacity: 0, y: 12 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5, delay: 0.3, ease: EASE_OUT }}
+        >
+          <p className="text-base font-semibold text-brand-night">On Android?</p>
+          <p className="mt-1 text-sm text-brand-night/80">
+            It&apos;s in the works. Get one email when it launches.
+          </p>
+          <AndroidWaitlist />
         </motion.div>
       </div>
     </section>
