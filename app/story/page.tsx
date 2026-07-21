@@ -35,7 +35,7 @@ export default async function StoryPage() {
     <div className="min-h-screen bg-brand-cream">
       <StorySchema />
       <main id="main-content" className="mx-auto max-w-2xl px-5 sm:px-8 pt-24 sm:pt-32 pb-16 sm:pb-24">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">The Makan story</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange-ink">The Makan story</p>
         <h1 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-bold text-brand-ink" style={{ letterSpacing: "-0.02em" }}>
           The day revolves<br />around the meal.
         </h1>
@@ -98,7 +98,7 @@ export default async function StoryPage() {
           <p className="text-sm leading-relaxed text-brand-muted">
             See how it&apos;s used — real first-person reviews of the places people actually remember.
           </p>
-          <Link href="/blog" className="mt-3 inline-block text-sm font-semibold text-brand-orange hover:underline">
+          <Link href="/blog" className="mt-3 inline-block text-sm font-semibold text-brand-orange-ink hover:underline">
             Read the reviews →
           </Link>
         </div>
@@ -111,14 +111,14 @@ export default async function StoryPage() {
 
           <p className="mt-6 text-[15px] text-brand-muted">
             Press contact:{" "}
-            <a href={`mailto:${PRESS_EMAIL}`} className="text-brand-orange hover:underline">
+            <a href={`mailto:${PRESS_EMAIL}`} className="text-brand-orange-ink hover:underline">
               {PRESS_EMAIL}
             </a>
           </p>
 
           <a
             href={APP_STORE_URL}
-            className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-brand-orange px-7 text-sm font-semibold text-white transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
+            className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-brand-orange px-7 text-sm font-semibold text-brand-night transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
           >
             Download on the App Store
           </a>

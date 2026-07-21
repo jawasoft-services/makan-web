@@ -2,13 +2,14 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import Footer from "@/components/Footer"
 import { getAllReviews } from "@/lib/reviews"
+import { createPageMetadata } from "@/lib/site-metadata"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "The Makan blog — first-hand London restaurant reviews",
   description:
     "First-hand restaurant reviews from the founder of Makan — what we ate, what it cost, and what to order.",
-  alternates: { canonical: "https://www.makanofficial.com/blog" },
-}
+  path: "/blog",
+})
 
 export default function BlogIndexPage() {
   const reviews = getAllReviews()
@@ -16,7 +17,7 @@ export default function BlogIndexPage() {
   return (
     <div className="min-h-screen bg-brand-cream">
       <main id="main-content" className="mx-auto max-w-2xl px-5 pt-28 pb-16 sm:px-8">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-brand-orange">The Makan blog</p>
+        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-brand-orange-ink">The Makan blog</p>
         <h1 className="text-3xl font-extrabold tracking-tight text-brand-ink sm:text-4xl">Where we&apos;ve been eating</h1>
         <p className="mt-4 text-lg text-brand-muted">
           First-hand reviews of the restaurants we log on Makan — the food, the real bill, and what to order.
@@ -36,7 +37,7 @@ export default function BlogIndexPage() {
                     year: "numeric",
                   })}
                 </p>
-                <h2 className="mt-1 text-xl font-bold text-brand-ink transition-colors group-hover:text-brand-orange">
+                <h2 className="mt-1 text-xl font-bold text-brand-ink transition-colors group-hover:text-brand-orange-ink">
                   {r.restaurant.name}
                 </h2>
                 <p className="mt-1.5 text-sm text-brand-muted">{r.dek}</p>

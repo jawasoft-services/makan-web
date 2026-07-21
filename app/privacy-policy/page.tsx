@@ -1,19 +1,21 @@
 import { Metadata } from 'next'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
+import { createPageMetadata } from '@/lib/site-metadata'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: 'Privacy Policy — Makan',
   description: 'How Makan App Ltd collects, uses, and protects your personal data.',
-}
+  path: '/privacy-policy',
+})
 
 export default function PrivacyPolicy() {
   return (
     <div className="min-h-screen bg-brand-cream">
-      <main className="mx-auto max-w-3xl px-5 sm:px-8 pt-24 sm:pt-32 pb-16 sm:pb-24">
+      <main id="main-content" className="mx-auto max-w-3xl px-5 sm:px-8 pt-24 sm:pt-32 pb-16 sm:pb-24">
 
         {/* Eyebrow */}
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange-ink">
           Legal
         </p>
 
@@ -42,7 +44,7 @@ export default function PrivacyPolicy() {
               <p>Registered address: 86–90 Paul Street, London, EC2A 4NE, United Kingdom</p>
               <p>
                 Contact email:{' '}
-                <a href="mailto:support@makanofficial.com" className="text-brand-orange hover:underline">
+                <a href="mailto:support@makanofficial.com" className="text-brand-orange-ink hover:underline">
                   support@makanofficial.com
                 </a>
               </p>
@@ -350,7 +352,7 @@ export default function PrivacyPolicy() {
               <p>
                 You can delete your account at any time from within the App, which begins the deletion
                 process described above. To exercise any other right, contact us at{' '}
-                <a href="mailto:support@makanofficial.com" className="text-brand-orange hover:underline">
+                <a href="mailto:support@makanofficial.com" className="text-brand-orange-ink hover:underline">
                   support@makanofficial.com
                 </a>
                 . We may request information to verify your identity, and we handle requests within
@@ -410,7 +412,7 @@ export default function PrivacyPolicy() {
 
           {/* Back to home */}
           <div className="pt-4 border-t border-brand-line">
-            <Link href="/" className="text-sm text-brand-orange hover:underline">
+            <Link href="/" className="text-sm text-brand-orange-ink hover:underline">
               &larr; Back to home
             </Link>
           </div>

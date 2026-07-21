@@ -55,10 +55,9 @@ const screens: Screen[] = [
   },
 ]
 
-// Sized rather than `fill` + `sizes`, same trap as the meal cards: a bare-px
-// `sizes` opts into every configured width instead of narrowing the srcset. The
-// frame is capped at max-w-[280px], so a 1x/2x pair covers it. CSS still drives
-// the real box — these numbers only shape the srcset.
+// The frame is capped at 280px. A fixed `sizes` hint lets the browser choose
+// the closest density candidate (including the 320/512 widths in next.config)
+// instead of jumping from 384 straight to 640.
 function ScreenImage({ screen }: { screen: Screen }) {
   if (screen.src) {
     return (
@@ -67,6 +66,7 @@ function ScreenImage({ screen }: { screen: Screen }) {
         alt={`Makan — ${screen.label}`}
         width={280}
         height={609}
+        sizes="280px"
         className="absolute inset-0 h-full w-full object-cover"
       />
     )
@@ -74,7 +74,7 @@ function ScreenImage({ screen }: { screen: Screen }) {
   // Placeholder until the real screenshot lands at screen.src
   return (
     <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
-      <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-orange">
+      <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-orange-ink">
         {screen.label}
       </span>
       <span className="text-xs leading-relaxed text-brand-muted">
@@ -129,7 +129,7 @@ export default function AppShowcase() {
           transition={{ duration: 0.6, ease: EASE_OUT }}
           className="mb-16 sm:mb-24"
         >
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange-ink">
             Inside the app
           </p>
           <h2
@@ -178,7 +178,7 @@ export default function AppShowcase() {
                     }}
                     transition={swap}
                   >
-                    <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
+                    <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange-ink">
                       {screen.label}
                     </p>
                     <p
@@ -222,7 +222,7 @@ export default function AppShowcase() {
               </PhoneShell>
             </motion.div>
             <div className="w-full text-center">
-              <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange-ink">
                 {screen.label}
               </p>
               <p
@@ -245,7 +245,7 @@ export default function AppShowcase() {
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.8, ease: EASE_OUT }}
         >
-          <p className="text-sm font-medium uppercase tracking-[0.25em] text-brand-orange">
+          <p className="text-sm font-medium uppercase tracking-[0.25em] text-brand-orange-ink">
             No ads · No algorithm · No AI
           </p>
           <h3

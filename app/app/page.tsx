@@ -1,11 +1,12 @@
 import type { Metadata } from "next"
 import AppLanding from "./AppLanding"
+import { createPageMetadata } from "@/lib/site-metadata"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Get Makan",
   description: "Get Makan — a food journal. Remember every meal.",
-  alternates: { canonical: "https://www.makanofficial.com/app" },
-}
+  path: "/app",
+})
 
 export default function AppPage() {
   return <AppLanding />

@@ -37,5 +37,10 @@ export default function StatTicker({ value, inView, duration = 1.4 }: StatTicker
     return () => controls.stop()
   }, [inView, value, duration, prefersReducedMotion, count])
 
-  return <motion.span aria-label={value.toLocaleString()}>{rounded}</motion.span>
+  return (
+    <>
+      <span className="sr-only">{value.toLocaleString('en-GB')}</span>
+      <motion.span aria-hidden="true">{rounded}</motion.span>
+    </>
+  )
 }

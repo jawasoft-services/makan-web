@@ -17,19 +17,19 @@ export default function B2BTeaser() {
         transition={{ duration: 0.6 }}
       >
         <div>
-          <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-white/85 mb-3">
+          <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-brand-night/75 mb-3">
             For restaurants
           </p>
-          <h2 className="text-xl font-bold text-white sm:text-2xl">
+          <h2 className="text-xl font-bold text-brand-night sm:text-2xl">
             Memory is the moat.
           </h2>
-          <p className="mt-2 text-xl font-semibold leading-snug text-white sm:text-xl">
+          <p className="mt-2 text-xl font-semibold leading-snug text-brand-night sm:text-xl">
             Yelp tells you what customers said once. Makan tells you what they remember.
           </p>
         </div>
         <Link
           href="/partner"
-          className="shrink-0 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-brand-orange shadow-lg shadow-black/10 transition-all hover:shadow-xl hover:shadow-black/15 active:scale-[0.98]"
+          className="shrink-0 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-brand-orange-ink shadow-lg shadow-black/10 transition-all hover:shadow-xl hover:shadow-black/15 active:scale-[0.98]"
         >
           Claim your restaurant
         </Link>

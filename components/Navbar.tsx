@@ -33,11 +33,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Close the drawer on route change
-  useEffect(() => {
-    setDrawerOpen(false)
-  }, [pathname])
-
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
@@ -88,7 +83,7 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-sm font-medium text-white/90 transition-colors hover:text-white"
+                  className="text-sm font-medium text-brand-night transition-colors hover:text-brand-ink"
                 >
                   {link.label}
                 </Link>
@@ -98,7 +93,7 @@ export default function Navbar() {
               <a
                 key={link.href}
                 href={pathname === '/' ? link.href : `/${link.href}`}
-                className="text-sm font-medium text-white/90 transition-colors hover:text-white"
+                className="text-sm font-medium text-brand-night transition-colors hover:text-brand-ink"
               >
                 {link.label}
               </a>
@@ -106,7 +101,7 @@ export default function Navbar() {
           })}
           <Link
             href={APP_STORE_URL}
-            className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-brand-orange transition-shadow hover:shadow-lg hover:shadow-black/10"
+            className="flex h-11 items-center rounded-full bg-white px-5 text-sm font-semibold text-brand-orange-ink transition-shadow hover:shadow-lg hover:shadow-black/10"
           >
             Get the app
           </Link>
@@ -116,15 +111,17 @@ export default function Navbar() {
         <div className="flex items-center gap-3 md:hidden">
           <Link
             href={APP_STORE_URL}
-            className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-brand-orange"
+            className="flex h-11 items-center rounded-full bg-white px-4 text-sm font-semibold text-brand-orange-ink"
           >
             Get the app
           </Link>
           <Drawer.Root open={drawerOpen} onOpenChange={setDrawerOpen}>
             <Drawer.Trigger asChild>
               <button
-                aria-label="Open menu"
-                className="flex h-10 w-10 items-center justify-center rounded-lg text-white"
+                aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={drawerOpen}
+                aria-controls="mobile-navigation"
+                className="flex h-11 w-11 items-center justify-center rounded-lg text-brand-night"
               >
                 <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
                   <line x1="3" y1="6" x2="17" y2="6" />
@@ -136,15 +133,30 @@ export default function Navbar() {
             <Drawer.Portal>
               <Drawer.Overlay className="fixed inset-0 z-[60] bg-black/40" />
               <Drawer.Content
+                id="mobile-navigation"
                 aria-describedby={undefined}
                 className="fixed inset-x-0 bottom-0 z-[70] rounded-t-3xl bg-brand-orange px-6 pb-10 pt-3"
               >
                 <Drawer.Title className="sr-only">Menu</Drawer.Title>
-                <div aria-hidden className="mx-auto mb-5 h-1.5 w-10 rounded-full bg-white/40" />
+                <div className="relative mb-3 h-11">
+                  <div aria-hidden className="absolute left-1/2 top-1 -translate-x-1/2 h-1.5 w-10 rounded-full bg-brand-night/35" />
+                  <Drawer.Close asChild>
+                    <button
+                      type="button"
+                      aria-label="Close menu"
+                      className="absolute right-0 top-0 flex h-11 w-11 items-center justify-center rounded-full text-brand-night hover:bg-black/10"
+                    >
+                      <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                        <line x1="5" y1="5" x2="15" y2="15" />
+                        <line x1="15" y1="5" x2="5" y2="15" />
+                      </svg>
+                    </button>
+                  </Drawer.Close>
+                </div>
                 <div className="flex flex-col">
                   {navLinks.map((link) => {
                     const linkClassName =
-                      'rounded-xl px-3 py-3.5 text-lg font-semibold text-white transition-colors hover:bg-white/15'
+                      'rounded-xl px-3 py-3.5 text-lg font-semibold text-brand-night transition-colors hover:bg-black/10'
                     if (link.href.startsWith('/')) {
                       return (
                         <Link
@@ -171,7 +183,7 @@ export default function Navbar() {
                   <Link
                     href={APP_STORE_URL}
                     onClick={() => setDrawerOpen(false)}
-                    className="mt-4 rounded-full bg-white px-5 py-3.5 text-center text-base font-semibold text-brand-orange"
+                    className="mt-4 rounded-full bg-white px-5 py-3.5 text-center text-base font-semibold text-brand-orange-ink"
                   >
                     Get the app
                   </Link>

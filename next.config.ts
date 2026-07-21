@@ -1,8 +1,25 @@
 import type { NextConfig } from "next";
 
+const isDev = process.env.NODE_ENV === "development";
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  "script-src-attr 'none'",
+  // Framer Motion and React style props require inline styles. Script execution
+  // remains strict in production; styles cannot execute JavaScript.
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' blob: data: https://firebasestorage.googleapis.com",
+  "font-src 'self' data:",
+  "connect-src 'self' https://firebasestorage.googleapis.com",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+  "worker-src 'self' blob:",
+  "upgrade-insecure-requests",
+].join("; ");
+
 // Security response headers applied to every route.
-// Conservative subset — zero breakage risk. A nonce-based script-src CSP is a
-// follow-up (needs nonce wiring through Next's inline runtime + Vercel Analytics).
 const securityHeaders = [
   // Clickjacking protection (legacy header for older browsers).
   { key: "X-Frame-Options", value: "DENY" },
@@ -15,12 +32,16 @@ const securityHeaders = [
   { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
   // Deny powerful browser APIs we don't use.
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()" },
-  // Modern clickjacking protection. Full CSP (script-src/style-src) is deferred —
-  // see TODO above; ship the part with zero compatibility risk first.
-  { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+  // Next's static App Router output includes inline RSC bootstrap scripts.
+  // Allow those while blocking inline event handlers, eval and third-party JS.
+  // A nonce would disable static rendering/ISR and CDN caching for every page.
+  { key: "Content-Security-Policy", value: contentSecurityPolicy },
 ];
 
 const nextConfig: NextConfig = {
+  // This repository lives below a user-level lockfile; pin tracing to the
+  // actual app so Next does not infer the home directory as the build root.
+  outputFileTracingRoot: process.cwd(),
   // The opengraph-image route reads meal thumbnails + the Plus Jakarta Sans
   // TTFs off disk at render time. Vercel's tracer can't see the runtime
   // `join(process.cwd(), ...)` paths, so force these assets into the route's
@@ -47,7 +68,9 @@ const nextConfig: NextConfig = {
     // 2048 — Next never upscales, so the 2048/3840 candidates only ever minted
     // duplicate cache keys holding bytes identical to the 1920 entry.
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
-    imageSizes: [32, 64, 128, 256, 384],
+    // 320/512 close the common 256px@1.25x and 280px@1.75x gaps, avoiding a
+    // jump to 384/640 for hero cards and phone screenshots.
+    imageSizes: [32, 64, 128, 256, 320, 384, 512],
   },
   async headers() {
     return [

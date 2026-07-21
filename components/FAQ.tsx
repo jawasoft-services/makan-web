@@ -18,7 +18,7 @@ export default function FAQ() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7 }}
         >
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange-ink">
             FAQ
           </p>
           <h2
@@ -50,7 +50,7 @@ export default function FAQ() {
                 >
                   {/* Number */}
                   <span className={`shrink-0 text-xs font-medium tabular-nums transition-colors duration-300 ${
-                    isOpen ? 'text-brand-orange' : 'text-brand-muted/60 group-hover:text-brand-muted'
+                    isOpen ? 'text-brand-orange-ink' : 'text-brand-muted/60 group-hover:text-brand-muted'
                   }`}>
                     {String(i + 1).padStart(2, '0')}
                   </span>

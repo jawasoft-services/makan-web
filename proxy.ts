@@ -1,16 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server"
 
 /**
- * Canonical-host consolidation: permanently redirect the apex (non-www) host to
- * the canonical www host, preserving path + query.
- *
- * Behind Vercel's edge the public hostname arrives on `x-forwarded-host` (the
- * `host` header is the internal one), so we check both. Matching the exact apex
- * string is loop-safe — it can never match `www.makanofficial.com`. Removes the
- * www/non-www duplicate URLs GSC reported (2026-06-19); www requests and preview
- * deploys (*.vercel.app) pass straight through.
+ * Canonical-host consolidation: permanently redirect the apex (non-www) host
+ * to the canonical www host while preserving path and query.
  */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const host = request.headers.get("host") ?? ""
   const forwardedHost = request.headers.get("x-forwarded-host") ?? ""
 

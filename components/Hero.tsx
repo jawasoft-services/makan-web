@@ -6,8 +6,9 @@ import Link from 'next/link'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { APP_STORE_URL } from '@/lib/links'
 
-// 50 share cards — 10 per column. Strongest photos on outer columns (1 & 5),
-// softer ones in the center (hidden behind the blur overlay).
+// Source pool for the waterfall. Only five per visible column are rendered,
+// then repeated once for the seamless loop; mobile mounts three columns and
+// desktop mounts five, avoiding CSS-hidden image trees.
 const columns: { src: string; alt: string }[][] = [
   [
     { src: '/meals/card-01.jpg', alt: "Riverview brekkie at Riverview Kitchen \u2014 shared on Makan" },
@@ -71,13 +72,18 @@ const columns: { src: string; alt: string }[][] = [
   ],
 ]
 
-// Varied speeds and delays so columns feel organic
+// Varied speeds keep the columns feeling organic.
 const columnSpeeds = [28, 22, 32, 24, 30]
-const columnDelays = [0, -8, -4, -14, -2] // negative = start mid-way through
+const HERO_CARDS_PER_COLUMN = 5
 
-export default function Hero() {
+interface HeroProps {
+  mealCount: number
+}
+
+export default function Hero({ mealCount }: HeroProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+  const [isWide, setIsWide] = useState(false)
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -93,23 +99,35 @@ export default function Hero() {
   const coinRotationBack = useTransform(scrollYProgress, [0, 1], [180, 900])
 
   useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setPrefersReducedMotion(mq.matches)
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const wide = window.matchMedia('(min-width: 640px)')
+    const syncPreferences = () => {
+      setPrefersReducedMotion(reducedMotion.matches)
+      setIsWide(wide.matches)
+    }
+    syncPreferences()
+    reducedMotion.addEventListener('change', syncPreferences)
+    wide.addEventListener('change', syncPreferences)
+    return () => {
+      reducedMotion.removeEventListener('change', syncPreferences)
+      wide.removeEventListener('change', syncPreferences)
+    }
   }, [])
+
+  const visibleColumns = columns.slice(0, isWide ? 5 : 3)
 
   return (
     <section ref={containerRef} className="relative h-[140vh]">
       <div className="sticky top-0 h-screen overflow-hidden bg-brand-night">
         {/* Waterfall grid — 5 columns of scrolling meal cards */}
         <div className="waterfall-container absolute inset-0 grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3 px-2 sm:px-3">
-          {columns.map((col, i) => {
-            const doubled = [...col, ...col]
+          {visibleColumns.map((col, i) => {
+            const loop = col.slice(0, HERO_CARDS_PER_COLUMN)
+            const doubled = [...loop, ...loop]
             return (
               <div
                 key={i}
-                className={`relative h-screen overflow-hidden ${
-                  i >= 3 ? 'hidden sm:block' : ''
-                }`}
+                className="relative h-screen overflow-hidden"
               >
                 <div
                   className="flex flex-col gap-2 sm:gap-3"
@@ -118,7 +136,9 @@ export default function Hero() {
                       ? {}
                       : {
                           animation: `waterfall-scroll ${columnSpeeds[i]}s linear infinite`,
-                          animationDelay: `${columnDelays[i]}s`,
+                          // Settle the first viewport before this decorative
+                          // layer moves new image candidates into view.
+                          animationDelay: '6s',
                         }
                   }
                 >
@@ -126,11 +146,13 @@ export default function Hero() {
                     <div key={`${card.src}-${j}`} className="shrink-0">
                       <Image
                         src={card.src}
-                        alt={card.alt}
+                        alt={j >= loop.length ? '' : card.alt}
                         width={300}
                         height={300}
+                        sizes="(min-width: 640px) 20vw, 33vw"
                         className="w-full aspect-square rounded-lg sm:rounded-xl object-cover"
-                        loading={j < 1 ? 'eager' : 'lazy'}
+                        loading={j < loop.length ? 'eager' : 'lazy'}
+                        fetchPriority={j < 3 ? 'high' : undefined}
                       />
                     </div>
                   ))}
@@ -210,15 +232,35 @@ export default function Hero() {
               </p>
 
               <div className="mt-5 sm:mt-6">
-                <Link
-                  href={APP_STORE_URL}
-                  className="relative inline-block rounded-full bg-brand-orange px-6 py-3 text-sm font-semibold text-brand-night transition-all sm:px-8 sm:py-3.5 sm:text-base hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
-                >
-                  <span className="pointer-events-none absolute -inset-3 rounded-full bg-brand-orange/10 blur-xl" aria-hidden />
-                  <span className="relative">Download on the App Store</span>
-                </Link>
+                <div className="flex items-center justify-center gap-4">
+                  <Link
+                    href={APP_STORE_URL}
+                    className="relative inline-block rounded-full bg-brand-orange px-6 py-3 text-sm font-semibold text-brand-night transition-all sm:px-8 sm:py-3.5 sm:text-base hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
+                  >
+                    <span className="pointer-events-none absolute -inset-3 rounded-full bg-brand-orange/10 blur-xl" aria-hidden />
+                    <span className="relative">Download on the App Store</span>
+                  </Link>
+                  <Link
+                    href="/app"
+                    className="hidden items-center gap-2 rounded-2xl bg-white p-2 pr-3 text-left text-brand-ink shadow-lg shadow-black/20 lg:flex"
+                  >
+                    <Image
+                      src="/app-download-qr.svg"
+                      alt=""
+                      width={72}
+                      height={72}
+                      className="h-[72px] w-[72px] rounded-lg"
+                    />
+                    <span className="max-w-[76px] text-[11px] font-semibold leading-snug">
+                      Scan with your iPhone
+                    </span>
+                  </Link>
+                </div>
                 <p className="mt-2.5 text-[11px] text-white/55 sm:text-xs">
                   Free on the App Store. Built for iPhone.
+                </p>
+                <p className="mt-2 text-[11px] font-medium text-white/80 sm:text-xs">
+                  {new Intl.NumberFormat('en-GB').format(mealCount)} meals remembered · No ads · No algorithm
                 </p>
               </div>
             </div>

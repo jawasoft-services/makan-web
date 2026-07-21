@@ -1,20 +1,16 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Emphasis } from '@/components/Emphasis'
+import { createPageMetadata } from '@/lib/site-metadata'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: 'Manifesto — Makan',
   description:
     "It started because we couldn't eat together. Makan is the record of what you ate — the food diary you keep with your friends.",
-  openGraph: {
-    title: 'Makan — Manifesto',
-    description:
-      "It started because we couldn't eat together. Makan is the record of what you ate — the food diary you keep with your friends.",
-    type: 'article',
-  },
-}
+  path: '/manifesto',
+  type: 'article',
+})
 
 // The full manifesto. A server component: it ships the complete essay as plain
 // HTML (nothing is hidden behind JS). The only client code is <Emphasis>, a
@@ -26,11 +22,10 @@ export const metadata: Metadata = {
 export default function ManifestoPage() {
   return (
     <>
-      <Navbar />
-      <main className="bg-brand-cream min-h-screen text-brand-ink">
+      <main id="main-content" className="bg-brand-cream min-h-screen text-brand-ink">
         <article className="mx-auto max-w-[680px] px-5 pb-24 pt-32 sm:px-8 sm:pb-32 sm:pt-40">
 
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-orange">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-orange-ink">
             Manifesto
           </p>
 
@@ -176,7 +171,7 @@ export default function ManifestoPage() {
           {/* Closing peak */}
           <p className="mt-14 text-[22px] font-semibold leading-[1.25] tracking-[-0.01em] text-brand-ink sm:text-[28px]">
             You remember who was at the table. You can never remember what you
-            actually ate. <span className="text-brand-orange">That&apos;s the gap Makan fills.</span>
+            actually ate. <span className="text-brand-orange-ink">That&apos;s the gap Makan fills.</span>
           </p>
 
           <p className="mt-10 text-[16px] italic leading-relaxed text-brand-ink/70">
@@ -189,7 +184,7 @@ export default function ManifestoPage() {
             <p className="text-[15px] text-brand-ink/70">— Devon</p>
             <Link
               href="/"
-              className="text-[13px] text-brand-ink/60 underline-offset-4 transition-colors hover:text-brand-orange hover:underline"
+              className="text-[13px] text-brand-ink/60 underline-offset-4 transition-colors hover:text-brand-orange-ink hover:underline"
             >
               Back to Makan →
             </Link>

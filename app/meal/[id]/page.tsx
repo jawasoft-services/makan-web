@@ -53,6 +53,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title,
     description,
+    alternates: { canonical: `https://www.makanofficial.com/meal/${id}` },
     openGraph: {
       title,
       description,
@@ -87,7 +88,7 @@ export default async function MealPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-brand-cream">
-      <main className="flex min-h-screen items-center justify-center px-6 pt-20 pb-12">
+      <main id="main-content" className="flex min-h-screen items-center justify-center px-6 pt-20 pb-12">
         <div className="w-full max-w-sm">
           {/*
             Declared at the size the card actually renders (the wrapper caps at

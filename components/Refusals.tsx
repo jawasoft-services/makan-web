@@ -35,7 +35,7 @@ export default function Refusals() {
     <section className="bg-brand-bg px-5 sm:px-8 py-20 sm:py-32">
       <div ref={ref} className="mx-auto max-w-4xl">
         <motion.p
-          className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange"
+          className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange-ink"
           initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, ease: EASE_OUT }}
@@ -84,7 +84,7 @@ export default function Refusals() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.5, ease: EASE_OUT }}
         >
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange-ink">
             And one more, that matters more every year
           </p>
           <h2
