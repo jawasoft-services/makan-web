@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
-import Image from "next/image"
-import { APP_STORE_URL } from "@/lib/links"
+import { headers } from "next/headers"
+import { normalizePilotLocale } from "@/lib/pilot-locale"
 import { getVenue } from "@/lib/venues"
-import Footer from "@/components/Footer"
+import VenueLanding from "./VenueLanding"
 
 /*
  * Venue-QR landing page — the Phase-1 destination of the printed venue QR
@@ -22,11 +22,6 @@ import Footer from "@/components/Footer"
 // dynamic lets Phase 2 swap the behavior and lets an added venue go live on
 // deploy, matching the /meal/[id] sibling.
 export const dynamic = "force-dynamic"
-
-// The app's only URL scheme (app.json → "scheme": "makanapp"). A bare
-// makanapp:// opens the app to its home if installed; nothing custom is routed
-// yet — deferred deep-linking is Phase 2 / RM18722.
-const APP_SCHEME_URL = "makanapp://"
 
 interface PageProps {
   params: Promise<{ place: string }>
@@ -60,68 +55,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function VenueRedirectPage({ params }: PageProps) {
   const { place } = await params
   const venue = getVenue(place)
+  const acceptLanguage = (await headers()).get("accept-language")
 
-  const heading = venue ? "Remember this meal." : "Remember every meal."
-  const subcopy = venue
-    ? `You're at ${venue.name}. Makan is a private food diary you share with friends — snap what you're eating and keep every meal, free.`
-    : "Makan is a private food diary you share with friends — snap what you're eating and keep every meal, free."
-
-  return (
-    <div className="flex min-h-screen flex-col bg-brand-cream">
-      <main
-        id="main-content"
-        className="flex flex-1 flex-col items-center justify-center px-6 pb-16 pt-28 text-center"
-      >
-        <Image
-          src="/makan-icon.svg"
-          alt=""
-          width={64}
-          height={64}
-          className="mb-7 h-16 w-16"
-          priority
-        />
-        <Image
-          src="/makan-logo-orange.svg"
-          alt="Makan"
-          width={200}
-          height={46}
-          className="mb-9 h-auto w-[190px]"
-          priority
-        />
-
-        {venue && (
-          <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-brand-orange">
-            {venue.name} · {venue.city}
-          </p>
-        )}
-
-        <h1 className="mb-3 text-3xl font-extrabold tracking-tight text-brand-ink sm:text-4xl">
-          {heading}
-        </h1>
-
-        <p className="mb-9 max-w-sm text-base font-medium leading-relaxed text-brand-muted">
-          {subcopy}
-        </p>
-
-        <a
-          href={APP_STORE_URL}
-          className="inline-flex h-14 items-center justify-center rounded-full bg-brand-orange px-9 text-base font-semibold text-white transition-all hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
-        >
-          Download on the App Store
-        </a>
-
-        <a
-          href={APP_SCHEME_URL}
-          className="mt-5 text-sm font-medium text-brand-muted underline-offset-4 transition-colors hover:text-brand-ink hover:underline"
-        >
-          Already have Makan? Open the app
-        </a>
-
-        <p className="mt-8 text-xs text-brand-muted">
-          Free on iPhone. Android is in the works.
-        </p>
-      </main>
-      <Footer />
-    </div>
-  )
+  return <VenueLanding initialLocale={normalizePilotLocale(acceptLanguage)} venue={venue} />
 }
