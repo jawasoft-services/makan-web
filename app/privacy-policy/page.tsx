@@ -375,7 +375,7 @@ export default function PrivacyPolicy() {
                 Children&apos;s Code). In practice this means:
               </p>
               <ul className="list-disc pl-5 space-y-1">
-                <li>Privacy-protective defaults — new posts default to friends-only, not public</li>
+                <li>Your first post is friends-only; after that, you choose Public or Friends Only for each meal</li>
                 <li>Location access is off by default and only used, with permission, at the moment you use a location feature</li>
                 <li>We collect the minimum data needed and do not profile users or use data for targeted advertising</li>
                 <li>We do not use manipulative design or nudges to push you to share more than you intend</li>

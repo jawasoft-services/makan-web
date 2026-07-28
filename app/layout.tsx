@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.makanofficial.com"),
   title: "Makan — Remember every meal",
   description:
-    "A food journal where your friends' real meals replace algorithms and influencers.",
+    "A food journal for saving what you ate, where you ate it and who was there.",
 }
 
 export default function RootLayout({

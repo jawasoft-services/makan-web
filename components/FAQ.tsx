@@ -27,7 +27,7 @@ export default function FAQ() {
           >
             You&apos;re probably
             <br />
-            wondering.
+            {' '}wondering.
           </h2>
         </motion.div>
 

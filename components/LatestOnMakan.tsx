@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import Image from 'next/image'
 import { motion, useInView } from 'framer-motion'
 import StatTicker from './StatTicker'
+import StaticPicture from './StaticPicture'
 
 // Shape mirrors PublicMeal in lib/makan-stats.ts — redeclared here because
 // that module is `server-only` and this is a client component.
@@ -26,6 +27,7 @@ const FALLBACK_MEALS: Meal[] = [
   { src: '/meals/IMG_6942.jpg', alt: 'Tuna tartare', caption: 'Tuna tartare', locationName: '', mealType: '', username: '' },
   { src: '/meals/IMG_6945.jpg', alt: 'Valentines brunch platter', caption: 'Valentines brunch platter', locationName: '', mealType: '', username: '' },
 ]
+const FALLBACK_IMAGE_WIDTHS = [480, 720] as const
 
 interface LatestOnMakanProps {
   mealCount: number
@@ -110,20 +112,37 @@ function PinIcon() {
  * card via container-query units so one component serves both breakpoints.
  */
 function MealPostCard({ meal }: { meal: Meal }) {
+  const bundledFallback = /^\/meals\/IMG_.+\.jpg$/i.test(meal.src)
+
   return (
     <div
-      className="flex aspect-square w-full flex-col overflow-hidden bg-brand-orange"
+      className="flex aspect-square w-full flex-col overflow-hidden bg-brand-orange text-white"
       style={{ containerType: 'inline-size' }}
     >
       <div className="relative w-full shrink-0" style={{ aspectRatio: '1080 / 740' }}>
-        <Image
-          src={meal.src}
-          alt={meal.alt}
-          width={360}
-          height={247}
-          sizes="(min-width: 1024px) 360px, 240px"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
+        {bundledFallback ? (
+          <StaticPicture
+            basePath={meal.src
+              .replace('/meals/', '/static-images/v1/meals/')
+              .replace(/\.jpg$/i, '')}
+            widths={FALLBACK_IMAGE_WIDTHS}
+            alt={meal.alt}
+            width={360}
+            height={247}
+            sizes="(min-width: 1024px) 360px, 240px"
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        ) : (
+          <Image
+            src={meal.src}
+            alt={meal.alt}
+            width={360}
+            height={247}
+            sizes="(min-width: 1024px) 360px, 240px"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        )}
       </div>
       <div
         className="flex min-h-0 flex-1 flex-col justify-between text-white"
@@ -148,14 +167,14 @@ function MealPostCard({ meal }: { meal: Meal }) {
           )}
         </div>
         {meal.username && (
-          <p className="truncate font-medium text-white/85" style={{ fontSize: '2.6cqw', lineHeight: 1.2 }}>
+          <p className="truncate font-medium text-white/80" style={{ fontSize: '2.6cqw', lineHeight: 1.2 }}>
             @{meal.username}
           </p>
         )}
         <p className="truncate font-bold" style={{ fontSize: '3.8cqw', lineHeight: 1.25 }}>
           {meal.caption || meal.mealType || 'A meal on Makan'}
         </p>
-        <div className="flex items-center justify-between text-white/85" style={{ fontSize: '2.4cqw', gap: '2cqw' }}>
+        <div className="flex items-center justify-between text-white/80" style={{ fontSize: '2.4cqw', gap: '2cqw' }}>
           <span className="flex min-w-0 items-center truncate" style={{ gap: '1.2cqw' }}>
             {meal.locationName && (
               <>
@@ -212,7 +231,7 @@ export default function LatestOnMakan({ mealCount, liveMeals }: LatestOnMakanPro
             On Makan
           </p>
           <h2 className="mt-3 text-2xl font-bold text-brand-ink sm:text-3xl lg:text-4xl" style={{ letterSpacing: '-0.02em' }}>
-            <StatTicker value={mealCount} inView={inView} /> meals and counting.
+            <StatTicker value={mealCount} inView={inView} /> meals logged.
           </h2>
         </motion.div>
       </div>

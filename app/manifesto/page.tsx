@@ -70,8 +70,8 @@ export default function ManifestoPage() {
 
           <div className="mt-10 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
             <p>
-              Your meal isn&apos;t content. Only your friends see it unless you
-              say otherwise. It&apos;s a food diary — the kind that remembers
+              Your meal isn&apos;t content. Choose Public or Friends Only when
+              you post. It&apos;s a food diary — the kind that remembers
               what you&apos;d <Emphasis variant="warm">otherwise&nbsp;forget</Emphasis>.
             </p>
             <p>

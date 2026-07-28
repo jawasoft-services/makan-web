@@ -5,13 +5,14 @@ import { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { Link } from 'next-view-transitions'
 import { Drawer } from 'vaul'
+import { track } from '@vercel/analytics'
 import { APP_STORE_URL } from '@/lib/links'
 
 const navLinks = [
-  { label: 'Manifesto', href: '/manifesto' },
+  { label: 'How it works', href: '#how-it-works' },
   { label: 'Features', href: '#features' },
   { label: 'FAQ', href: '#faq' },
-  { label: 'For Restaurants', href: '#for-restaurants' },
+  { label: 'For restaurants', href: '/partner' },
 ]
 
 export default function Navbar() {
@@ -35,7 +36,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      className={`fixed top-0 left-0 right-0 z-50 text-white transition-all duration-500 ${
         hidden && !drawerOpen ? '-translate-y-full' : 'translate-y-0'
       } ${
         scrolled || drawerOpen
@@ -101,7 +102,8 @@ export default function Navbar() {
           })}
           <Link
             href={APP_STORE_URL}
-            className="flex h-11 items-center rounded-full bg-white px-5 text-sm font-semibold text-brand-orange transition-shadow hover:shadow-lg hover:shadow-black/10"
+            onClick={() => track('App Store CTA Clicked', { location: 'navigation' })}
+            className="flex h-11 items-center rounded-full bg-white px-5 text-sm font-semibold text-brand-orange-ink transition-shadow hover:shadow-lg hover:shadow-black/10"
           >
             Get the app
           </Link>
@@ -111,7 +113,8 @@ export default function Navbar() {
         <div className="flex items-center gap-3 md:hidden">
           <Link
             href={APP_STORE_URL}
-            className="flex h-11 items-center rounded-full bg-white px-4 text-sm font-semibold text-brand-orange"
+            onClick={() => track('App Store CTA Clicked', { location: 'navigation' })}
+            className="flex h-11 items-center rounded-full bg-white px-4 text-sm font-semibold text-brand-orange-ink"
           >
             Get the app
           </Link>
@@ -139,7 +142,7 @@ export default function Navbar() {
               >
                 <Drawer.Title className="sr-only">Menu</Drawer.Title>
                 <div className="relative mb-3 h-11">
-                  <div aria-hidden className="absolute left-1/2 top-1 -translate-x-1/2 h-1.5 w-10 rounded-full bg-white/40" />
+                  <div aria-hidden className="absolute left-1/2 top-1 -translate-x-1/2 h-1.5 w-10 rounded-full bg-white/50" />
                   <Drawer.Close asChild>
                     <button
                       type="button"
@@ -156,7 +159,7 @@ export default function Navbar() {
                 <div className="flex flex-col">
                   {navLinks.map((link) => {
                     const linkClassName =
-                      'rounded-xl px-3 py-3.5 text-lg font-semibold text-white transition-colors hover:bg-white/15'
+                      'rounded-xl px-3 py-3.5 text-lg font-semibold text-white/90 transition-colors hover:bg-white/15 hover:text-white'
                     if (link.href.startsWith('/')) {
                       return (
                         <Link
@@ -182,8 +185,11 @@ export default function Navbar() {
                   })}
                   <Link
                     href={APP_STORE_URL}
-                    onClick={() => setDrawerOpen(false)}
-                    className="mt-4 rounded-full bg-white px-5 py-3.5 text-center text-base font-semibold text-brand-orange"
+                    onClick={() => {
+                      track('App Store CTA Clicked', { location: 'navigation-menu' })
+                      setDrawerOpen(false)
+                    }}
+                    className="mt-4 rounded-full bg-white px-5 py-3.5 text-center text-base font-semibold text-brand-orange-ink"
                   >
                     Get the app
                   </Link>

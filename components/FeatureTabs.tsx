@@ -1,11 +1,12 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import Image from 'next/image'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
+import StaticPicture from './StaticPicture'
 
 const TAB_INTERVAL = 6000
 const PROGRESS_TICK = 50
+const MOCKUP_IMAGE_WIDTHS = [560, 800] as const
 
 const features = [
   {
@@ -172,14 +173,18 @@ export default function FeatureTabs() {
                     transition={{ duration: 0.4 }}
                     className="relative"
                   >
-                    <Image
-                      src={active.image}
+                    <StaticPicture
+                      basePath={active.image
+                        .replace('/mockups/', '/static-images/v1/mockups/')
+                        .replace(/\.png$/i, '')}
+                      widths={MOCKUP_IMAGE_WIDTHS}
                       alt={active.headline}
                       width={460}
                       height={920}
                       className="w-full h-auto rounded-2xl shadow-2xl shadow-black/40"
                       sizes="280px"
-                      priority={activeIndex === 0}
+                      loading={activeIndex === 0 ? 'eager' : 'lazy'}
+                      fetchPriority={activeIndex === 0 ? 'high' : undefined}
                     />
                   </motion.div>
                 </AnimatePresence>
@@ -241,14 +246,18 @@ export default function FeatureTabs() {
                   transition={{ duration: 0.4 }}
                   className="relative"
                 >
-                  <Image
-                    src={active.image}
+                  <StaticPicture
+                    basePath={active.image
+                      .replace('/mockups/', '/static-images/v1/mockups/')
+                      .replace(/\.png$/i, '')}
+                    widths={MOCKUP_IMAGE_WIDTHS}
                     alt={active.headline}
                     width={460}
                     height={920}
                     className="w-full h-auto rounded-2xl shadow-2xl shadow-black/40"
                     sizes="340px"
-                    priority={activeIndex === 0}
+                    loading={activeIndex === 0 ? 'eager' : 'lazy'}
+                    fetchPriority={activeIndex === 0 ? 'high' : undefined}
                   />
                 </motion.div>
               </AnimatePresence>

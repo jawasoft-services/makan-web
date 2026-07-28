@@ -50,30 +50,33 @@ const nextConfig: NextConfig = {
     "/opengraph-image": ["./public/og-tiles/**", "./public/fonts/*.ttf"],
   },
   images: {
+    // The Hobby quota is capped at 5,000 billed transformations. This site is
+    // deliberately image-heavy, so width variants from /_next/image exhausted
+    // the allowance and began erroring. Serve browser-ready variants generated
+    // at build time instead. next/image still provides layout, lazy loading and
+    // priority hints for the remaining small/dynamic images, but never calls
+    // Vercel's transformer.
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
         hostname: "firebasestorage.googleapis.com",
       },
     ],
-    // Vercel bills an image cache write on every optimizer MISS *and* STALE.
-    // Firebase Storage serves meal photos `Cache-Control: private, max-age=0`,
-    // and Next floors the optimizer TTL at minimumCacheTTL, so the default 4h
-    // meant every remote variant on the homepage strip was re-written six times
-    // a day forever — the bulk of the Hobby cache-write budget, burned on
-    // re-encoding identical bytes. Storage URLs are content-addressed and carry
-    // a token, so a photo behind a given URL never changes: 31 days is safe.
-    minimumCacheTTL: 2678400,
-    // Nothing renders above ~1200 CSS px, and the meal sources top out near
-    // 2048 — Next never upscales, so the 2048/3840 candidates only ever minted
-    // duplicate cache keys holding bytes identical to the 1920 entry.
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
-    // 320/512 close the common 256px@1.25x and 280px@1.75x gaps, avoiding a
-    // jump to 384/640 for hero cards and phone screenshots.
-    imageSizes: [32, 64, 128, 256, 320, 384, 512],
   },
   async headers() {
     return [
+      {
+        // Versioned, build-generated assets. Bump the v1 directory if their
+        // visual contents change so a year-long browser cache stays safe.
+        source: "/static-images/v1/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
       {
         source: "/:path*",
         headers: securityHeaders,
