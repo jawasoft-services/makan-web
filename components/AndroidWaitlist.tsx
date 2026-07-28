@@ -71,12 +71,12 @@ export default function AndroidWaitlist() {
             }
           }}
           placeholder="you@example.com"
-          className="h-12 min-w-0 flex-1 rounded-full border border-white/40 bg-white px-5 text-sm text-brand-ink outline-none placeholder:text-brand-muted focus-visible:ring-2 focus-visible:ring-brand-espresso focus-visible:ring-offset-2 focus-visible:ring-offset-brand-orange"
+          className="h-12 w-full min-w-0 flex-none rounded-full border border-white/40 bg-white px-5 text-sm text-brand-ink outline-none placeholder:text-brand-muted focus-visible:ring-2 focus-visible:ring-brand-espresso focus-visible:ring-offset-2 focus-visible:ring-offset-brand-orange sm:flex-1"
         />
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="h-12 rounded-full bg-brand-espresso px-6 text-sm font-semibold text-white transition-all hover:bg-brand-night disabled:cursor-wait disabled:opacity-70"
+          className="h-12 w-full rounded-full bg-brand-espresso px-6 text-sm font-semibold text-white transition-all hover:bg-brand-night disabled:cursor-wait disabled:opacity-70 sm:w-auto"
         >
           {status === 'loading' ? 'Joining…' : 'Notify me'}
         </button>

@@ -10,6 +10,7 @@ import {
   type MotionValue,
 } from 'framer-motion'
 import StaticPicture from '@/components/StaticPicture'
+import { useStaticMotionFallback } from '@/lib/useStaticMotionFallback'
 
 const steps = [
   {
@@ -83,33 +84,25 @@ function StepCopy({
   step,
   motionStyle,
   mobile = false,
-  inverse = false,
 }: {
   step: (typeof steps)[number]
   motionStyle: StepMotion
   mobile?: boolean
-  inverse?: boolean
 }) {
   return (
     <motion.article
       style={{ opacity: motionStyle.opacity, y: motionStyle.y }}
       className={
         mobile
-          ? 'absolute inset-0 overflow-hidden'
-          : `relative border-t py-6 pl-12 first:border-t-0 first:pt-1 ${
-              inverse ? 'border-white/25' : 'border-brand-line'
-            }`
+          ? 'absolute inset-0 overflow-hidden px-5 py-4'
+          : 'relative border-t border-brand-line py-5 pl-11 first:border-t-0 first:pt-1'
       }
     >
       <span
         className={
           mobile
-            ? `text-[10px] font-bold tabular-nums ${
-                inverse ? 'text-white' : 'text-brand-orange'
-              }`
-            : `absolute left-0 top-7 w-4 text-right text-xs font-bold tabular-nums ${
-                inverse ? 'text-white' : 'text-brand-orange'
-              }`
+            ? 'text-[10px] font-bold tabular-nums text-brand-orange'
+            : 'absolute left-0 top-6 w-4 text-right text-xs font-bold tabular-nums text-brand-orange'
         }
       >
         {step.number}
@@ -117,12 +110,8 @@ function StepCopy({
       <h3
         className={
           mobile
-            ? `mt-2 text-xl font-bold leading-tight ${
-                inverse ? 'text-white' : 'text-brand-ink'
-              }`
-            : `text-xl font-bold leading-tight xl:text-2xl ${
-                inverse ? 'text-white' : 'text-brand-ink'
-              }`
+            ? 'mt-1.5 text-xl font-bold leading-tight text-brand-ink'
+            : 'text-lg font-bold leading-tight text-brand-ink lg:text-xl xl:text-2xl'
         }
       >
         {step.title}
@@ -130,12 +119,8 @@ function StepCopy({
       <p
         className={
           mobile
-            ? `mt-1.5 max-w-[25rem] text-[13px] leading-[1.48] ${
-                inverse ? 'text-white/72' : 'text-brand-muted'
-              }`
-            : `mt-2 max-w-[25rem] text-sm leading-relaxed xl:text-base ${
-                inverse ? 'text-white/72' : 'text-brand-muted'
-              }`
+            ? 'mt-1.5 max-w-[25rem] text-[13px] leading-[1.48] text-brand-muted'
+            : 'mt-2 max-w-[25rem] text-sm leading-relaxed text-brand-muted xl:text-base'
         }
       >
         {step.copy}
@@ -816,7 +801,7 @@ function ReducedMotionHowItWorks() {
       className="scroll-mt-20 bg-brand-orange px-5 py-20 text-white sm:px-8 sm:py-28"
     >
       <div className="mx-auto max-w-6xl">
-        <div className="grid gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:items-center lg:gap-20">
+        <div className="grid gap-12 md:grid-cols-[0.82fr_1.18fr] md:items-center md:gap-10 lg:gap-20">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/75">
               How it works
@@ -827,19 +812,19 @@ function ReducedMotionHowItWorks() {
             >
               One photo does most of the work.
             </h2>
-            <div className="mt-10">
+            <div className="mt-8 rounded-[1.75rem] bg-brand-card p-5 text-brand-ink shadow-[0_24px_60px_rgba(92,42,0,0.18)] sm:p-6">
               {steps.map((step) => (
                 <article
                   key={step.number}
-                  className="border-t border-white/25 py-6 first:border-t-0 first:pt-0"
+                  className="border-t border-brand-line py-5 first:border-t-0 first:pt-0"
                 >
-                  <span className="text-xs font-bold tabular-nums text-white">
+                  <span className="text-xs font-bold tabular-nums text-brand-orange">
                     {step.number}
                   </span>
-                  <h3 className="mt-3 text-xl font-bold text-white">
+                  <h3 className="mt-2 text-xl font-bold text-brand-ink">
                     {step.title}
                   </h3>
-                  <p className="mt-2 max-w-md text-sm leading-relaxed text-white/72 sm:text-base">
+                  <p className="mt-2 max-w-md text-sm leading-relaxed text-brand-muted sm:text-base">
                     {step.copy}
                   </p>
                 </article>
@@ -856,6 +841,7 @@ function ReducedMotionHowItWorks() {
 export default function HowItWorks() {
   const sectionRef = useRef<HTMLElement>(null)
   const prefersReducedMotion = useReducedMotion()
+  const useStaticLayout = useStaticMotionFallback()
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start start', 'end end'],
@@ -915,7 +901,7 @@ export default function HowItWorks() {
     },
   ]
 
-  if (prefersReducedMotion) {
+  if (prefersReducedMotion || useStaticLayout) {
     return <ReducedMotionHowItWorks />
   }
 
@@ -934,28 +920,28 @@ export default function HowItWorks() {
               'radial-gradient(circle at 78% 45%, rgba(255,255,255,0.22), transparent 34%), radial-gradient(circle at 20% 85%, rgba(111,45,0,0.12), transparent 28%)',
           }}
         />
-        <div className="relative z-10 mx-auto grid h-full max-w-7xl grid-rows-[auto_minmax(0,1fr)_7.25rem] gap-y-3 px-5 pb-4 pt-[5.25rem] sm:px-8 sm:pb-6 sm:pt-24 lg:grid-cols-[0.86fr_1.14fr] lg:grid-rows-1 lg:items-center lg:gap-16 lg:py-12 xl:gap-24">
-          <div className="lg:flex lg:h-full lg:max-h-[760px] lg:flex-col lg:justify-center">
+        <div className="relative z-10 mx-auto grid h-full max-w-7xl grid-rows-[auto_minmax(0,1fr)] gap-y-3 px-5 pb-5 pt-[5.25rem] sm:px-8 sm:pb-6 sm:pt-24 md:grid-cols-[minmax(250px,0.82fr)_minmax(0,1.18fr)] md:grid-rows-1 md:items-center md:gap-8 md:py-12 lg:grid-cols-[0.86fr_1.14fr] lg:gap-16 xl:gap-24">
+          <div className="md:flex md:h-full md:max-h-[760px] md:flex-col md:justify-center">
             <div>
               <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/75 sm:text-xs">
                 How it works
               </p>
               <h2
-                className="mt-1.5 max-w-xl text-[clamp(1.65rem,6.7vw,2.7rem)] font-bold leading-[1.02] text-white sm:mt-4 sm:text-5xl lg:text-[clamp(2.8rem,4vw,4.6rem)]"
+                className="mt-1.5 max-w-xl text-[clamp(1.65rem,6.7vw,2.7rem)] font-bold leading-[1.02] text-white sm:mt-4 md:text-[clamp(2.15rem,4.8vw,3.2rem)] lg:text-[clamp(2.8rem,4vw,4.6rem)]"
                 style={{ letterSpacing: '-0.035em' }}
               >
                 One photo does most of the work.
               </h2>
             </div>
 
-            <div className="relative mt-10 hidden lg:block">
+            <div className="relative mt-6 hidden rounded-[1.75rem] bg-brand-card px-5 py-4 text-brand-ink shadow-[0_24px_70px_rgba(92,42,0,0.2)] md:block lg:mt-8 lg:px-6 lg:py-5">
               <div
                 aria-hidden
-                className="absolute bottom-6 left-6 top-2 w-px bg-white/25"
+                className="absolute bottom-9 left-10 top-7 w-px bg-brand-line"
               >
                 <motion.span
                   style={{ scaleY: lineScale }}
-                  className="block h-full w-px origin-top bg-white"
+                  className="block h-full w-px origin-top bg-brand-orange"
                 />
               </div>
               {steps.map((step, index) => (
@@ -963,27 +949,26 @@ export default function HowItWorks() {
                   key={step.number}
                   step={step}
                   motionStyle={desktopStepMotion[index]}
-                  inverse
                 />
               ))}
             </div>
           </div>
 
-          <div className="min-h-0 lg:h-full lg:max-h-[760px]">
-            <CinematicStage progress={progress} />
-          </div>
-
-          <div className="relative lg:hidden">
-            <div className="relative h-[7.15rem]">
-              {steps.map((step, index) => (
-                <StepCopy
-                  key={step.number}
-                  step={step}
-                  motionStyle={mobileStepMotion[index]}
-                  mobile
-                  inverse
-                />
-              ))}
+          <div className="relative min-h-0 md:h-full md:max-h-[760px]">
+            <div className="h-full pb-[8.6rem] md:pb-0">
+              <CinematicStage progress={progress} />
+            </div>
+            <div className="absolute inset-x-0 bottom-0 z-50 md:hidden">
+              <div className="relative h-[8.1rem] overflow-hidden rounded-[1.5rem] bg-brand-card shadow-[0_20px_55px_rgba(92,42,0,0.22)]">
+                {steps.map((step, index) => (
+                  <StepCopy
+                    key={step.number}
+                    step={step}
+                    motionStyle={mobileStepMotion[index]}
+                    mobile
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>

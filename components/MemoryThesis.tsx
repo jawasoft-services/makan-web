@@ -10,6 +10,7 @@ import {
   useTransform,
 } from 'framer-motion'
 import StaticPicture from './StaticPicture'
+import { useStaticMotionFallback } from '@/lib/useStaticMotionFallback'
 
 const MEAL_IMAGE_WIDTHS = [480, 720] as const
 const DIARY_IMAGE_WIDTHS = [560, 800] as const
@@ -150,6 +151,7 @@ function MealMemoryCard() {
 export default function MemoryThesis() {
   const sectionRef = useRef<HTMLElement>(null)
   const prefersReducedMotion = useReducedMotion()
+  const useStaticLayout = useStaticMotionFallback()
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start start', 'end end'],
@@ -306,7 +308,7 @@ export default function MemoryThesis() {
     [0.75, 0.75, 0],
   )
 
-  if (prefersReducedMotion) {
+  if (prefersReducedMotion || useStaticLayout) {
     return (
       <section
         id="why-makan"

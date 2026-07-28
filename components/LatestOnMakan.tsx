@@ -197,7 +197,7 @@ function ArrowButton({ dir, onClick }: { dir: 'left' | 'right'; onClick: () => v
       onClick={onClick}
       aria-label={dir === 'left' ? 'Scroll to previous meals' : 'Scroll to more meals'}
       className={`absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-brand-line bg-brand-card text-brand-ink shadow-lg shadow-black/10 transition-transform hover:scale-105 active:scale-95 lg:flex ${
-        dir === 'left' ? '-left-2' : '-right-2'
+        dir === 'left' ? 'left-2' : 'right-2'
       }`}
     >
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">

@@ -153,8 +153,8 @@ export default function Hero() {
                         height={300}
                         sizes="(min-width: 640px) 20vw, 33vw"
                         className="w-full aspect-square rounded-lg sm:rounded-xl object-cover"
-                        loading={j < loop.length ? 'eager' : 'lazy'}
-                        fetchPriority={j < 3 ? 'high' : undefined}
+                        loading={j < 2 ? 'eager' : 'lazy'}
+                        fetchPriority={j === 0 && i < 3 ? 'high' : undefined}
                       />
                     </div>
                   ))}
@@ -238,7 +238,7 @@ export default function Hero() {
                   <Link
                     href={APP_STORE_URL}
                     onClick={() => track('App Store CTA Clicked', { location: 'hero' })}
-                    className="relative inline-block rounded-full bg-brand-orange px-6 py-3 text-sm font-semibold text-white transition-all sm:px-8 sm:py-3.5 sm:text-base hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
+                    className="relative inline-flex min-h-11 items-center justify-center rounded-full bg-brand-orange px-6 py-3 text-sm font-semibold text-white transition-all hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98] sm:px-8 sm:py-3.5 sm:text-base"
                   >
                     <span className="pointer-events-none absolute -inset-3 rounded-full bg-brand-orange/10 blur-xl" aria-hidden />
                     <span className="relative">Start your food diary</span>
