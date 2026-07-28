@@ -105,10 +105,10 @@ function StepCopy({
         className={
           mobile
             ? `text-[10px] font-bold tabular-nums ${
-                inverse ? 'text-white' : 'text-brand-orange-ink'
+                inverse ? 'text-white' : 'text-brand-orange'
               }`
             : `absolute left-0 top-7 w-4 text-right text-xs font-bold tabular-nums ${
-                inverse ? 'text-white' : 'text-brand-orange-ink'
+                inverse ? 'text-white' : 'text-brand-orange'
               }`
         }
       >
@@ -495,13 +495,13 @@ function DiaryCloseup({
       className="absolute left-1/2 top-1/2 z-10 aspect-[4/5] h-full max-h-[640px] max-w-[94%] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[2rem] border border-black/10 bg-[#FBFBFA] text-[#1D2C3D] shadow-[0_34px_90px_rgba(67,25,0,0.3)] sm:rounded-[2.5rem]"
     >
       <div className="absolute inset-x-0 top-0 z-20 flex h-[17%] items-center justify-between border-b border-[#ECE9E4] bg-[#FBFBFA] px-[7%]">
-        <span className="grid aspect-square w-[10%] place-items-center rounded-full border border-[#F1D5B3] text-brand-orange-ink">
+        <span className="grid aspect-square w-[10%] place-items-center rounded-full border border-[#F1D5B3] text-brand-orange">
           ‹
         </span>
         <span className="text-[clamp(0.8rem,3vw,1.3rem)] font-semibold">
           May 2026
         </span>
-        <span className="grid aspect-square w-[10%] place-items-center rounded-full border border-[#F1D5B3] text-brand-orange-ink">
+        <span className="grid aspect-square w-[10%] place-items-center rounded-full border border-[#F1D5B3] text-brand-orange">
           ›
         </span>
       </div>

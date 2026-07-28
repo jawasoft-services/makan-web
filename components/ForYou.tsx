@@ -32,7 +32,7 @@ export default function ForYou() {
           transition={{ duration: 0.6 }}
         >
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange-ink">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
               Who it is for
             </p>
             <h2

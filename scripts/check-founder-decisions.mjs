@@ -38,11 +38,19 @@ for (const sourceRoot of sourceRoots) {
       const tokens = literal.split(/\s+/)
       const hasSolidSaffron = tokens.some((token) => solidSaffronTokens.has(token))
       const forbiddenText = tokens.find((token) => forbiddenTextPattern.test(token))
+      const removedOrangeInkToken = tokens.find((token) => token.includes('brand-orange-ink'))
 
       if (hasSolidSaffron && forbiddenText) {
         failures.push(
           `${relative(projectRoot, file)}:${lineNumber(source, match.index)} ` +
             `places ${forbiddenText} directly on solid saffron`,
+        )
+      }
+
+      if (removedOrangeInkToken) {
+        failures.push(
+          `${relative(projectRoot, file)}:${lineNumber(source, match.index)} ` +
+            `uses removed colour token ${removedOrangeInkToken}; use brand-orange`,
         )
       }
     }

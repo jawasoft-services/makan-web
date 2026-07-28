@@ -25,14 +25,14 @@ export default function FinalCTA({ mealCount }: FinalCTAProps) {
         {/* Live signal — the launch fact is the hook. Pulsing dot = live on the
             App Store; the count is the real cumulative total, not real-time. */}
         <motion.p
-          className="mb-6 inline-flex items-center gap-2.5 rounded-full bg-white px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-orange-ink"
+          className="mb-6 inline-flex items-center gap-2.5 rounded-full bg-white px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-orange"
           initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, ease: EASE_OUT }}
         >
           <span className="cta-ping h-2 w-2 rounded-full bg-brand-orange" aria-hidden />
           Live now
-          <span className="font-semibold text-brand-orange-ink/80 normal-case tracking-normal">
+          <span className="font-semibold text-brand-orange/80 normal-case tracking-normal">
             · <StatTicker value={mealCount} inView={inView} /> meals logged
           </span>
         </motion.p>
@@ -66,7 +66,7 @@ export default function FinalCTA({ mealCount }: FinalCTAProps) {
           <Link
             href={APP_STORE_URL}
             onClick={() => track('App Store CTA Clicked', { location: 'final' })}
-            className="relative inline-block overflow-hidden rounded-full bg-white px-9 py-4 text-base font-semibold text-brand-orange-ink shadow-lg shadow-black/15 transition-all hover:shadow-xl hover:shadow-black/20 active:scale-[0.98]"
+            className="relative inline-block overflow-hidden rounded-full bg-white px-9 py-4 text-base font-semibold text-brand-orange shadow-lg shadow-black/15 transition-all hover:shadow-xl hover:shadow-black/20 active:scale-[0.98]"
           >
             <span className="pointer-events-none absolute -inset-4 rounded-full bg-white/20 blur-xl" aria-hidden />
             <span className="cta-btn-glint" aria-hidden />

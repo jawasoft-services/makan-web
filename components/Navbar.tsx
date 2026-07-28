@@ -103,7 +103,7 @@ export default function Navbar() {
           <Link
             href={APP_STORE_URL}
             onClick={() => track('App Store CTA Clicked', { location: 'navigation' })}
-            className="flex h-11 items-center rounded-full bg-white px-5 text-sm font-semibold text-brand-orange-ink transition-shadow hover:shadow-lg hover:shadow-black/10"
+            className="flex h-11 items-center rounded-full bg-white px-5 text-sm font-semibold text-brand-orange transition-shadow hover:shadow-lg hover:shadow-black/10"
           >
             Get the app
           </Link>
@@ -114,7 +114,7 @@ export default function Navbar() {
           <Link
             href={APP_STORE_URL}
             onClick={() => track('App Store CTA Clicked', { location: 'navigation' })}
-            className="flex h-11 items-center rounded-full bg-white px-4 text-sm font-semibold text-brand-orange-ink"
+            className="flex h-11 items-center rounded-full bg-white px-4 text-sm font-semibold text-brand-orange"
           >
             Get the app
           </Link>
@@ -189,7 +189,7 @@ export default function Navbar() {
                       track('App Store CTA Clicked', { location: 'navigation-menu' })
                       setDrawerOpen(false)
                     }}
-                    className="mt-4 rounded-full bg-white px-5 py-3.5 text-center text-base font-semibold text-brand-orange-ink"
+                    className="mt-4 rounded-full bg-white px-5 py-3.5 text-center text-base font-semibold text-brand-orange"
                   >
                     Get the app
                   </Link>

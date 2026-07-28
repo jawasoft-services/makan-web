@@ -114,7 +114,7 @@ export default function AppShowcase() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, ease: EASE_OUT }}
         >
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange-ink">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
             What you get
           </p>
           <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_0.8fr] lg:items-end lg:gap-16">

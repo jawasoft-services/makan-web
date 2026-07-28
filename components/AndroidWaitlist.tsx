@@ -93,7 +93,7 @@ export default function AndroidWaitlist() {
       />
 
       <p
-        className={`mt-3 min-h-5 text-sm text-brand-muted ${status === 'error' ? 'font-semibold text-brand-orange-ink' : ''}`}
+        className={`mt-3 min-h-5 text-sm text-brand-muted ${status === 'error' ? 'font-semibold text-brand-orange' : ''}`}
         role={status === 'error' ? 'alert' : 'status'}
         aria-live="polite"
       >
