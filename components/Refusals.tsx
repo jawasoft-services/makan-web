@@ -14,16 +14,16 @@ const refusals = [
     line: "A meal isn't 4.2 out of 5. The only rankings we show are your own.",
   },
   {
-    no: 'No algorithm.',
-    line: 'Your feed is your friends, in the order their meals happened.',
+    no: 'No engagement ranking.',
+    line: 'The Friends feed is sorted by time, not by likes or craves.',
   },
   {
     no: 'No paid placements.',
     line: "Restaurants can't buy their way in. Ever.",
   },
   {
-    no: 'No strangers.',
-    line: "Your meals are for your friends, unless you say otherwise.",
+    no: 'Your audience.',
+    line: 'Choose Public or Friends Only for each meal.',
   },
 ]
 

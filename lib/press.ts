@@ -38,7 +38,7 @@ export const BOILERPLATE_SHORT =
   "Makan is a social food journal — a place to remember every meal, with the friends you eat it with."
 
 export const BOILERPLATE_LONG =
-  "Makan is a social food journal for remembering the meals that matter. Founded by Devon Makepeace and grown out of a shared Snapchat story his scattered friends kept through the pandemic, it lets you photograph what you eat, tag who you're with, and build a private diary of your life one meal at a time — with no calorie counting and no star ratings. Makan launched worldwide on the Apple App Store in June 2026."
+  "Makan is a social food journal for remembering the meals that matter. Founded by Devon Makepeace and grown out of a shared Snapchat story his scattered friends kept through the pandemic, it lets you photograph a meal, add a caption, tag a place and friends, choose Public or Friends Only, and keep it in a dated diary. Makan launched worldwide on the Apple App Store in June 2026."
 
 // Devon's own words (pre-approved by authorship).
 export const QUOTES = [

@@ -113,7 +113,7 @@ function Cta() {
       </p>
       <Link
         href={APP_STORE_URL}
-        className="mt-5 inline-flex h-12 items-center justify-center rounded-full bg-brand-orange px-7 text-sm font-semibold text-brand-night transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
+        className="mt-5 inline-flex h-12 items-center justify-center rounded-full bg-brand-orange px-7 text-sm font-semibold text-white transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
       >
         Download on the App Store
       </Link>

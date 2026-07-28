@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { track } from '@vercel/analytics'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -41,6 +42,7 @@ export default function AndroidWaitlist() {
 
       setStatus('success')
       setMessage("You're on the Android list. We'll email you once when it's ready.")
+      track('Android Waitlist Joined')
       setEmail('')
     } catch (error) {
       setStatus('error')
@@ -91,7 +93,7 @@ export default function AndroidWaitlist() {
       />
 
       <p
-        className={`mt-3 min-h-5 text-sm text-brand-night ${status === 'error' ? 'font-semibold' : ''}`}
+        className={`mt-3 min-h-5 text-sm text-brand-muted ${status === 'error' ? 'font-semibold text-brand-orange-ink' : ''}`}
         role={status === 'error' ? 'alert' : 'status'}
         aria-live="polite"
       >

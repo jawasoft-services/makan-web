@@ -1,267 +1,243 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import Image from 'next/image'
-import {
-  motion,
-  useInView,
-  useReducedMotion,
-  useScroll,
-  useMotionValueEvent,
-} from 'framer-motion'
+import type { KeyboardEvent } from 'react'
+import { AnimatePresence, motion, useInView, useReducedMotion } from 'framer-motion'
+import StaticPicture from './StaticPicture'
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as const
+const MOCKUP_IMAGE_WIDTHS = [560, 800] as const
 
-// Each screen pairs a real app screenshot with the manifesto line it delivers.
-// `src: null` renders an intentional placeholder frame — drop a PNG at the
-// path in /public/app-screens/ to replace it (e.g. /app-screens/diary.png).
 type Screen = {
   id: string
-  label: string // orienting eyebrow — what screen is this (cold-context test)
-  caption: string // the manifesto line this screen delivers
-  src: string | null
+  label: string
+  headline: string
+  copy: string
+  src: string
 }
 
 const screens: Screen[] = [
   {
     id: 'diary',
-    label: 'The diary',
-    caption: "You'll forget today's best meal by Friday. Makan won't.",
-    src: '/app-screens/diary.png',
+    label: 'Diary',
+    headline: 'Every meal, kept.',
+    copy: 'Your calendar becomes a food diary of breakfasts, late dinners and everything between them.',
+    src: '/app-mockups/01-diary.png',
   },
   {
-    id: 'feed',
+    id: 'journey',
+    label: 'Journey',
+    headline: 'See your taste become a story.',
+    copy: 'Your places, streaks and memories build into a record that is yours.',
+    src: '/app-mockups/02-journey.png',
+  },
+  {
+    id: 'friends',
     label: 'Friends',
-    caption: "Your friends' meals. Not strangers' reviews.",
-    src: '/app-screens/feed.png',
-  },
-  {
-    id: 'rank',
-    label: 'Your ranking',
-    caption: "A meal isn't 4.2 out of 5. It's your #3 of all time.",
-    src: '/app-screens/rank.png',
+    headline: 'Friends make it richer.',
+    copy: 'See real meals from people you know in the Friends feed.',
+    src: '/app-mockups/03-friends.png',
   },
   {
     id: 'map',
-    label: 'The map',
-    caption: 'See what your friends actually ordered.',
-    src: '/app-screens/map-lolas.png',
+    label: 'Map',
+    headline: 'Every place worth remembering.',
+    copy: 'Tagged places appear on your map, so the answer is still there.',
+    src: '/app-mockups/04-map.png',
   },
   {
-    id: 'detail',
-    label: 'A meal',
-    caption: 'What you ate. Who you were with. The day it happened.',
-    src: '/app-screens/detail.png',
+    id: 'details',
+    label: 'Details',
+    headline: 'The whole story of a meal.',
+    copy: 'Keep what you ate, where, when and who was there together.',
+    src: '/app-mockups/05-meal.png',
   },
 ]
 
-// The frame is capped at 280px. A fixed `sizes` hint lets the browser choose
-// the closest density candidate (including the 320/512 widths in next.config)
-// instead of jumping from 384 straight to 640.
-function ScreenImage({ screen }: { screen: Screen }) {
-  if (screen.src) {
-    return (
-      <Image
-        src={screen.src}
-        alt={`Makan — ${screen.label}`}
-        width={280}
-        height={609}
-        sizes="280px"
-        className="absolute inset-0 h-full w-full object-cover"
-      />
-    )
-  }
-  // Placeholder until the real screenshot lands at screen.src
+function DeviceMockup({ screen }: { screen: Screen }) {
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
-      <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-orange-ink">
-        {screen.label}
-      </span>
-      <span className="text-xs leading-relaxed text-brand-muted">
-        Screenshot drops in here
-      </span>
-    </div>
-  )
-}
-
-function PhoneShell({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="relative mx-auto w-full max-w-[280px]">
-      {/* Ambient glow */}
-      <div className="absolute -inset-8 rounded-[3rem] bg-brand-orange/[0.05] blur-3xl" />
-      <div className="relative aspect-[1206/2622] overflow-hidden rounded-[2.2rem] border border-brand-line bg-brand-card shadow-2xl shadow-black/20">
-        {children}
+    <div className="relative mx-auto w-full max-w-[280px] sm:max-w-[340px]">
+      <div className="absolute -inset-10 rounded-[4rem] bg-brand-orange/10 blur-3xl" aria-hidden />
+      <div className="relative aspect-[1527/2900] drop-shadow-2xl">
+        <StaticPicture
+          basePath={screen.src
+            .replace('/app-mockups/', '/static-images/v1/app-mockups/')
+            .replace(/\.png$/i, '')}
+          widths={MOCKUP_IMAGE_WIDTHS}
+          alt={`Makan ${screen.label} screen shown in an iPhone mockup`}
+          width={1527}
+          height={2900}
+          sizes="(min-width: 640px) 340px, 280px"
+          className="absolute inset-0 h-full w-full object-contain"
+          loading={screen.id === 'diary' ? 'eager' : 'lazy'}
+          fetchPriority={screen.id === 'diary' ? 'high' : undefined}
+        />
       </div>
     </div>
   )
 }
 
 export default function AppShowcase() {
-  const headerRef = useRef<HTMLDivElement>(null)
-  const headerInView = useInView(headerRef, { once: true, margin: '-80px' })
-  const mobileRef = useRef<HTMLDivElement>(null)
-  const mobileInView = useInView(mobileRef, { once: true, margin: '-80px' })
-  const prefersReducedMotion = useReducedMotion()
+  const ref = useRef<HTMLDivElement>(null)
+  const inView = useInView(ref, { once: true, margin: '-80px' })
+  const reducedMotion = useReducedMotion()
+  const [activeIndex, setActiveIndex] = useState(0)
+  const active = screens[activeIndex]
 
-  // Desktop scroll-story: the track is N viewport-heights tall; the phone is
-  // sticky inside it and the visible screen follows scroll progress.
-  const trackRef = useRef<HTMLDivElement>(null)
-  const [active, setActive] = useState(0)
-  const { scrollYProgress } = useScroll({
-    target: trackRef,
-    offset: ['start start', 'end end'],
-  })
-  useMotionValueEvent(scrollYProgress, 'change', (v) => {
-    const idx = Math.min(screens.length - 1, Math.max(0, Math.floor(v * screens.length)))
-    setActive(idx)
-  })
+  const handleTabKey = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    let next = index
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+      next = (index + 1) % screens.length
+    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+      next = (index - 1 + screens.length) % screens.length
+    } else if (event.key === 'Home') {
+      next = 0
+    } else if (event.key === 'End') {
+      next = screens.length - 1
+    } else {
+      return
+    }
 
-  const swap = { duration: prefersReducedMotion ? 0 : 0.35, ease: EASE_OUT }
+    event.preventDefault()
+    setActiveIndex(next)
+    const tabs = event.currentTarget
+      .closest('[role="tablist"]')
+      ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
+    tabs?.[next]?.focus()
+  }
 
   return (
-    <section id="features" className="bg-brand-cream py-20 sm:py-32">
-      {/* Section header */}
-      <div className="mx-auto max-w-6xl px-5 sm:px-8">
+    <section id="features" className="bg-brand-card px-5 py-20 sm:px-8 sm:py-32">
+      <div ref={ref} className="mx-auto max-w-6xl">
         <motion.div
-          ref={headerRef}
-          initial={{ opacity: 0, y: 20 }}
-          animate={headerInView ? { opacity: 1, y: 0 } : {}}
+          initial={{ opacity: 0, y: 18 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, ease: EASE_OUT }}
-          className="mb-16 sm:mb-24"
         >
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange-ink">
-            Inside the app
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange-ink">
+            What you get
           </p>
-          <h2
-            className="mt-4 max-w-2xl text-3xl font-bold leading-[1.1] text-brand-ink sm:text-5xl"
-            style={{ letterSpacing: '-0.025em' }}
-          >
-            Six years of meals. Built into every screen.
-          </h2>
+          <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_0.8fr] lg:items-end lg:gap-16">
+            <h2
+              className="max-w-2xl text-3xl font-bold leading-[1.1] text-brand-ink sm:text-5xl"
+              style={{ letterSpacing: '-0.025em' }}
+            >
+              Your whole food life, in one place.
+            </h2>
+            <p className="max-w-xl text-base leading-relaxed text-brand-muted sm:text-lg">
+              Your diary keeps the meal. The map keeps the place. Friends help
+              with whatever comes next.
+            </p>
+          </div>
         </motion.div>
-      </div>
 
-      {/* Desktop: pinned phone, scroll-driven screens */}
-      <div
-        ref={trackRef}
-        className="relative hidden lg:block"
-        style={{ height: `${screens.length * 100}vh` }}
-      >
-        <div className="sticky top-0 flex h-screen items-center">
-          <div className="mx-auto grid w-full max-w-6xl grid-cols-2 items-center gap-24 px-8">
-            <PhoneShell>
-              {screens.map((screen, i) => (
-                <motion.div
+        <div className="mt-12 overflow-hidden rounded-3xl border border-brand-line bg-brand-cream sm:mt-16 lg:grid lg:min-h-[690px] lg:grid-cols-[0.95fr_1.05fr]">
+          <motion.div
+            className="flex items-center justify-center px-6 py-12 sm:px-10 lg:py-14"
+            initial={{ opacity: 0, y: 20 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.08, ease: EASE_OUT }}
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={active.id}
+                initial={{ opacity: 0, y: reducedMotion ? 0 : 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: reducedMotion ? 0 : -10 }}
+                transition={{ duration: reducedMotion ? 0 : 0.3, ease: EASE_OUT }}
+                className="w-full"
+              >
+                <DeviceMockup screen={active} />
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
+
+          <div className="border-t border-brand-line bg-brand-card lg:border-l lg:border-t-0">
+            <div
+              role="tablist"
+              aria-label="Makan features"
+              className="flex gap-2 overflow-x-auto border-b border-brand-line px-5 py-4 scrollbar-hide lg:hidden"
+            >
+              {screens.map((screen, index) => (
+                <button
                   key={screen.id}
-                  className="absolute inset-0"
-                  initial={false}
-                  animate={{ opacity: active === i ? 1 : 0 }}
-                  transition={swap}
+                  id={`feature-tab-${screen.id}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeIndex === index}
+                  aria-controls="feature-panel"
+                  tabIndex={activeIndex === index ? 0 : -1}
+                  onClick={() => setActiveIndex(index)}
+                  onKeyDown={(event) => handleTabKey(event, index)}
+                  className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                    activeIndex === index
+                      ? 'bg-brand-orange text-white'
+                      : 'bg-brand-cream text-brand-muted hover:text-brand-ink'
+                  }`}
                 >
-                  <ScreenImage screen={screen} />
-                </motion.div>
+                  {screen.label}
+                </button>
               ))}
-            </PhoneShell>
+            </div>
 
-            {/* Captions — stacked in one grid cell, active one visible */}
-            <div>
-              <div className="grid">
-                {screens.map((screen, i) => (
-                  <motion.div
-                    key={screen.id}
-                    className={active === i ? '' : 'pointer-events-none'}
-                    style={{ gridArea: '1 / 1' }}
-                    initial={false}
-                    animate={{
-                      opacity: active === i ? 1 : 0,
-                      y: prefersReducedMotion ? 0 : active === i ? 0 : 12,
-                    }}
-                    transition={swap}
-                  >
-                    <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange-ink">
-                      {screen.label}
-                    </p>
-                    <p
-                      className="mt-5 max-w-md text-2xl font-bold leading-[1.15] text-brand-ink sm:text-4xl"
-                      style={{ letterSpacing: '-0.02em' }}
-                    >
-                      {screen.caption}
-                    </p>
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* Progress dots */}
-              <div className="mt-10 flex gap-2" aria-hidden>
-                {screens.map((screen, i) => (
+            <div className="hidden divide-y divide-brand-line lg:block" role="tablist" aria-label="Makan features">
+              {screens.map((screen, index) => (
+                <button
+                  key={screen.id}
+                  id={`feature-tab-desktop-${screen.id}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeIndex === index}
+                  aria-controls="feature-panel"
+                  tabIndex={activeIndex === index ? 0 : -1}
+                  onClick={() => setActiveIndex(index)}
+                  onKeyDown={(event) => handleTabKey(event, index)}
+                  className={`group flex w-full items-center gap-5 px-7 py-6 text-left transition-colors ${
+                    activeIndex === index ? 'bg-brand-orange/10' : 'hover:bg-brand-cream'
+                  }`}
+                >
                   <span
-                    key={screen.id}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${
-                      i === active ? 'w-8 bg-brand-orange' : 'w-1.5 bg-brand-line'
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold tabular-nums ${
+                      activeIndex === index
+                        ? 'bg-brand-orange text-white'
+                        : 'bg-brand-cream text-brand-muted'
                     }`}
-                  />
-                ))}
-              </div>
+                  >
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <span className="font-bold text-brand-ink">{screen.label}</span>
+                </button>
+              ))}
+            </div>
+
+            <div
+              id="feature-panel"
+              role="tabpanel"
+              aria-label={`${active.label} feature`}
+              className="p-6 sm:p-8 lg:border-t lg:border-brand-line lg:p-10"
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={active.id}
+                  initial={{ opacity: 0, y: reducedMotion ? 0 : 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: reducedMotion ? 0 : -8 }}
+                  transition={{ duration: reducedMotion ? 0 : 0.25, ease: EASE_OUT }}
+                >
+                  <p
+                    className="max-w-lg text-2xl font-bold leading-[1.15] text-brand-ink sm:text-3xl"
+                    style={{ letterSpacing: '-0.02em' }}
+                  >
+                    {active.headline}
+                  </p>
+                  <p className="mt-4 max-w-lg text-base leading-relaxed text-brand-muted">
+                    {active.copy}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Mobile / tablet: stacked phone + caption rows */}
-      <div ref={mobileRef} className="mx-auto max-w-6xl space-y-24 px-5 sm:px-8 lg:hidden">
-        {screens.map((screen) => (
-          <div key={screen.id} className="flex flex-col items-center gap-10">
-            <motion.div
-              className="w-full"
-              initial={{ opacity: 0, y: 28 }}
-              animate={mobileInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.7, delay: 0.05, ease: EASE_OUT }}
-            >
-              <PhoneShell>
-                <ScreenImage screen={screen} />
-              </PhoneShell>
-            </motion.div>
-            <div className="w-full text-center">
-              <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange-ink">
-                {screen.label}
-              </p>
-              <p
-                className="mx-auto mt-4 max-w-md text-2xl font-bold leading-[1.15] text-brand-ink"
-                style={{ letterSpacing: '-0.02em' }}
-              >
-                {screen.caption}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Screen 6 — the brand statement card. No app UI. The climax. */}
-      <div className="mx-auto max-w-6xl px-5 sm:px-8">
-        <motion.div
-          className="mt-24 overflow-hidden rounded-3xl border border-brand-line bg-brand-card px-8 py-16 text-center shadow-sm sm:mt-40 sm:px-12 sm:py-24"
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.8, ease: EASE_OUT }}
-        >
-          <p className="text-sm font-medium uppercase tracking-[0.25em] text-brand-orange-ink">
-            No ads · No algorithm · No AI
-          </p>
-          <h3
-            className="mx-auto mt-8 max-w-3xl text-4xl font-bold leading-[1.02] text-brand-ink sm:text-6xl lg:text-7xl"
-            style={{ letterSpacing: '-0.03em' }}
-          >
-            AI has never
-            <br />
-            tasted food.
-          </h3>
-          <p className="mx-auto mt-8 max-w-md text-base leading-relaxed text-brand-muted sm:text-lg">
-            It can&apos;t smell, can&apos;t chew, can&apos;t remember being
-            hungry as a kid. The point of remembering what you ate is that you
-            tasted it.
-          </p>
-        </motion.div>
       </div>
     </section>
   )

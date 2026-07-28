@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = venue ? `Log your meal at ${venue.name} · Makan` : "Get Makan"
   const description = venue
     ? `You're at ${venue.name}. Get Makan free and remember every meal.`
-    : "Makan is a private food diary you share with friends. Free on the App Store."
+    : "Makan is a personal food diary you can share publicly or with friends. Free on the App Store."
 
   return {
     title,
@@ -63,8 +63,8 @@ export default async function VenueRedirectPage({ params }: PageProps) {
 
   const heading = venue ? "Remember this meal." : "Remember every meal."
   const subcopy = venue
-    ? `You're at ${venue.name}. Makan is a private food diary you share with friends — snap what you're eating and keep every meal, free.`
-    : "Makan is a private food diary you share with friends — snap what you're eating and keep every meal, free."
+    ? `You're at ${venue.name}. Makan is a personal food diary — snap what you're eating, choose Public or Friends Only and keep the meal.`
+    : "Makan is a personal food diary — snap what you're eating, choose Public or Friends Only and keep the meal."
 
   return (
     <div className="flex min-h-screen flex-col bg-brand-cream">
@@ -105,7 +105,7 @@ export default async function VenueRedirectPage({ params }: PageProps) {
 
         <a
           href={APP_STORE_URL}
-          className="inline-flex h-14 items-center justify-center rounded-full bg-brand-orange px-9 text-base font-semibold text-brand-night transition-all hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
+          className="inline-flex h-14 items-center justify-center rounded-full bg-brand-orange px-9 text-base font-semibold text-white transition-all hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
         >
           Download on the App Store
         </a>

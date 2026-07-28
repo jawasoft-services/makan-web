@@ -1,22 +1,23 @@
 import type { Metadata } from "next"
 import Hero from "@/components/Hero"
-import MemoryTest from "@/components/MemoryTest"
-import Manifesto from "@/components/Manifesto"
+import MemoryThesis from "@/components/MemoryThesis"
+import HowItWorks from "@/components/HowItWorks"
+import ForYou from "@/components/ForYou"
 import AppShowcase from "@/components/AppShowcase"
 import LatestOnMakan from "@/components/LatestOnMakan"
-import FounderStory from "@/components/FounderStory"
-import B2BTeaser from "@/components/B2BTeaser"
+import WhyMakan from "@/components/WhyMakan"
 import FAQ from "@/components/FAQ"
 import FaqSchema from "@/components/FaqSchema"
 import FinalCTA from "@/components/FinalCTA"
 import Footer from "@/components/Footer"
 import SiteSchema from "@/components/SiteSchema"
+import HomepageAnalytics from "@/components/HomepageAnalytics"
 import { FAQS } from "@/lib/faq"
 import { getMealCount, getRecentPublicMeals } from "@/lib/makan-stats"
 import { createPageMetadata } from "@/lib/site-metadata"
 
 const DESCRIPTION =
-  "A food journal where your friends' real meals replace algorithms and influencers."
+  "Makan is the food diary you keep with friends. Save what you ate, where you ate it and who was there — free on iPhone."
 
 export const metadata: Metadata = createPageMetadata({
   title: "Makan — Remember every meal",
@@ -28,10 +29,8 @@ export const metadata: Metadata = createPageMetadata({
 // (~24 aggregation reads/day regardless of traffic).
 export const revalidate = 3600
 
-// The homepage is a single emotional argument that ends in a download.
-// Eight movements: hook (loss) → ache → turn (relief) → how it feels →
-// what we refuse → proof → origin → convert. Loss-framing lives only in the
-// hero/ache (cold acquisition); everything downstream is gain-coded.
+// The homepage answers the five questions a new visitor brings with them:
+// is this for me → can it help → how → what do I get → why Makan.
 export default async function Home() {
   // Fetch each live homepage data source once, then share it between proof and
   // conversion sections. Firestore failures still fall back independently.
@@ -43,13 +42,14 @@ export default async function Home() {
   return (
     <main id="main-content">
       <SiteSchema />
-      <Hero mealCount={mealCount} />
-      <MemoryTest />
-      <Manifesto />
+      <HomepageAnalytics />
+      <Hero />
+      <MemoryThesis />
+      <HowItWorks />
+      <ForYou />
       <AppShowcase />
       <LatestOnMakan mealCount={mealCount} liveMeals={liveMeals} />
-      <FounderStory />
-      <B2BTeaser />
+      <WhyMakan mealCount={mealCount} />
       <FaqSchema items={FAQS} />
       <FAQ />
       <FinalCTA mealCount={mealCount} />

@@ -7,7 +7,7 @@ const beliefs = [
   {
     number: '01',
     title: 'Not a performance',
-    copy: "Your meal isn't content. Friends will see it. Strangers won't, unless you say otherwise.",
+    copy: "Your meal isn't content. Choose Public or Friends Only when you post.",
   },
   {
     number: '02',

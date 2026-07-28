@@ -1,7 +1,7 @@
 # White on Saffron — sitewide colour redesign
 
 **Date:** 2026-07-09
-**Status:** Approved by Devon (mockup variant A · cream relief, strict white-on-saffron)
+**Status:** Approved by Devon (mockup variant A · cream relief, strict white-on-saffron); reaffirmed and locked 2026-07-23 as founder decision FD-001
 **Mockup:** https://claude.ai/code/artifact/3771b007-8dfa-410a-b57f-7be9a31c89df (tab A is the approved direction)
 
 ## What this is
