@@ -1,39 +1,52 @@
 import type { Metadata } from "next"
+import { setRequestLocale } from "next-intl/server"
 import Link from "next/link"
 import Footer from "@/components/Footer"
 import StorySchema from "@/components/story/StorySchema"
 import { getMealCount } from "@/lib/makan-stats"
 import { APP_STORE_URL } from "@/lib/links"
 import { BOILERPLATE_LONG, BOILERPLATE_SHORT, PRESS_EMAIL } from "@/lib/press"
+import { createPageMetadata } from "@/lib/site-metadata"
+import StoryIndonesian from "./StoryIndonesian"
 
 // Regenerate hourly so the live meal count stays fresh (same cadence as the homepage).
 export const revalidate = 3600
 
-export const metadata: Metadata = {
-  title: "The Makan story — how and why Makan was built",
-  description: BOILERPLATE_SHORT,
-  alternates: { canonical: "https://www.makanofficial.com/story" },
-  openGraph: {
-    title: "The Makan story",
-    description: BOILERPLATE_SHORT,
-    url: "https://www.makanofficial.com/story",
-    siteName: "Makan",
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const isIndonesian = locale === "id"
+  return createPageMetadata({
+    title: isIndonesian
+      ? "Cerita Makan — kenapa Makan dibuat"
+      : "The Makan story — how and why Makan was built",
+    description: isIndonesian
+      ? "Dari shared story saat COVID menjadi jurnal makanan sosial. Ini cerita tentang bagaimana dan kenapa Makan dibuat."
+      : BOILERPLATE_SHORT,
+    path: isIndonesian ? "/id/story" : "/story",
     type: "article",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "The Makan story",
-    description: BOILERPLATE_SHORT,
-    site: "@app_makan",
-  },
+    locale,
+  })
 }
 
-export default async function StoryPage() {
+export default async function StoryPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  setRequestLocale(locale)
   const mealCount = await getMealCount()
 
   return (
     <div className="min-h-screen bg-brand-cream">
-      <StorySchema />
+      <StorySchema locale={locale} />
+      {locale === "id" ? (
+        <StoryIndonesian mealCount={mealCount} />
+      ) : (
       <main id="main-content" className="mx-auto max-w-2xl px-5 sm:px-8 pt-24 sm:pt-32 pb-16 sm:pb-24">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">The Makan story</p>
         <h1 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-bold text-brand-ink" style={{ letterSpacing: "-0.02em" }}>
@@ -124,6 +137,7 @@ export default async function StoryPage() {
           </a>
         </div>
       </main>
+      )}
       <Footer />
     </div>
   )

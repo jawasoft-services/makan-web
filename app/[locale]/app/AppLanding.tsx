@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import { useEffect } from "react"
+import { useTranslations } from "next-intl"
 import { APP_STORE_URL } from "@/lib/links"
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -19,6 +20,7 @@ function isIOS(): boolean {
 }
 
 export default function AppLanding() {
+  const t = useTranslations("AppPage")
   useEffect(() => {
     // On iOS, hand straight off to the App Store.
     // Everyone else (and iOS, if the redirect is slow) uses the button below.
@@ -50,18 +52,18 @@ export default function AppLanding() {
       />
 
       <h1 className="mb-3 text-3xl font-extrabold tracking-tight text-brand-ink sm:text-4xl">
-        Get Makan
+        {t("title")}
       </h1>
 
       <p className="mb-9 max-w-sm text-base font-medium leading-relaxed text-brand-muted">
-        Remember every meal. Download it free on the App Store.
+        {t("body")}
       </p>
 
       <a
         href={APP_STORE_URL}
         className="inline-flex h-14 items-center justify-center rounded-full bg-brand-orange px-9 text-base font-semibold text-white transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
       >
-        Download on the App Store
+        {t("cta")}
       </a>
     </main>
   )

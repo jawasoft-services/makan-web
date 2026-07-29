@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
+import { useTranslations } from 'next-intl'
 import { AnimatePresence, motion, useInView, useReducedMotion } from 'framer-motion'
 import StaticPicture from './StaticPicture'
 
@@ -16,45 +17,7 @@ type Screen = {
   src: string
 }
 
-const screens: Screen[] = [
-  {
-    id: 'diary',
-    label: 'Diary',
-    headline: 'Every meal, kept.',
-    copy: 'Your calendar becomes a food diary of breakfasts, late dinners and everything between them.',
-    src: '/app-mockups/01-diary.png',
-  },
-  {
-    id: 'journey',
-    label: 'Journey',
-    headline: 'See your taste become a story.',
-    copy: 'Your places, streaks and memories build into a record that is yours.',
-    src: '/app-mockups/02-journey.png',
-  },
-  {
-    id: 'friends',
-    label: 'Friends',
-    headline: 'Friends make it richer.',
-    copy: 'See real meals from people you know in the Friends feed.',
-    src: '/app-mockups/03-friends.png',
-  },
-  {
-    id: 'map',
-    label: 'Map',
-    headline: 'Every place worth remembering.',
-    copy: 'Tagged places appear on your map, so the answer is still there.',
-    src: '/app-mockups/04-map.png',
-  },
-  {
-    id: 'details',
-    label: 'Details',
-    headline: 'The whole story of a meal.',
-    copy: 'Keep what you ate, where, when and who was there together.',
-    src: '/app-mockups/05-meal.png',
-  },
-]
-
-function DeviceMockup({ screen }: { screen: Screen }) {
+function DeviceMockup({ screen, alt }: { screen: Screen; alt: string }) {
   return (
     <div className="relative mx-auto w-full max-w-[280px] sm:max-w-[340px]">
       <div className="absolute -inset-10 rounded-[4rem] bg-brand-orange/10 blur-3xl" aria-hidden />
@@ -64,7 +27,7 @@ function DeviceMockup({ screen }: { screen: Screen }) {
             .replace('/app-mockups/', '/static-images/v1/app-mockups/')
             .replace(/\.png$/i, '')}
           widths={MOCKUP_IMAGE_WIDTHS}
-          alt={`Makan ${screen.label} screen shown in an iPhone mockup`}
+          alt={alt}
           width={1527}
           height={2900}
           sizes="(min-width: 640px) 340px, 280px"
@@ -78,6 +41,44 @@ function DeviceMockup({ screen }: { screen: Screen }) {
 }
 
 export default function AppShowcase() {
+  const t = useTranslations('Home.Showcase')
+  const screens: Screen[] = [
+    {
+      id: 'diary',
+      label: t('diaryLabel'),
+      headline: t('diaryTitle'),
+      copy: t('diaryBody'),
+      src: '/app-mockups/01-diary.png',
+    },
+    {
+      id: 'journey',
+      label: t('journeyLabel'),
+      headline: t('journeyTitle'),
+      copy: t('journeyBody'),
+      src: '/app-mockups/02-journey.png',
+    },
+    {
+      id: 'friends',
+      label: t('friendsLabel'),
+      headline: t('friendsTitle'),
+      copy: t('friendsBody'),
+      src: '/app-mockups/03-friends.png',
+    },
+    {
+      id: 'map',
+      label: t('mapLabel'),
+      headline: t('mapTitle'),
+      copy: t('mapBody'),
+      src: '/app-mockups/04-map.png',
+    },
+    {
+      id: 'details',
+      label: t('detailsLabel'),
+      headline: t('detailsTitle'),
+      copy: t('detailsBody'),
+      src: '/app-mockups/05-meal.png',
+    },
+  ]
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
   const reducedMotion = useReducedMotion()
@@ -115,18 +116,17 @@ export default function AppShowcase() {
           transition={{ duration: 0.6, ease: EASE_OUT }}
         >
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
-            What you get
+            {t('eyebrow')}
           </p>
           <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_0.8fr] lg:items-end lg:gap-16">
             <h2
               className="max-w-2xl text-3xl font-bold leading-[1.1] text-brand-ink sm:text-5xl"
               style={{ letterSpacing: '-0.025em' }}
             >
-              Your whole food life, in one place.
+              {t('title')}
             </h2>
             <p className="max-w-xl text-base leading-relaxed text-brand-muted sm:text-lg">
-              Your diary keeps the meal. The map keeps the place. Friends help
-              with whatever comes next.
+              {t('body')}
             </p>
           </div>
         </motion.div>
@@ -147,7 +147,10 @@ export default function AppShowcase() {
                 transition={{ duration: reducedMotion ? 0 : 0.3, ease: EASE_OUT }}
                 className="w-full"
               >
-                <DeviceMockup screen={active} />
+                <DeviceMockup
+                  screen={active}
+                  alt={t('screenAlt', { feature: active.label })}
+                />
               </motion.div>
             </AnimatePresence>
           </motion.div>
@@ -155,7 +158,7 @@ export default function AppShowcase() {
           <div className="border-t border-brand-line bg-brand-card lg:border-l lg:border-t-0">
             <div
               role="tablist"
-              aria-label="Makan features"
+              aria-label={t('tabLabel')}
               className="flex gap-2 overflow-x-auto border-b border-brand-line px-5 py-4 scrollbar-hide lg:hidden"
             >
               {screens.map((screen, index) => (
@@ -180,7 +183,7 @@ export default function AppShowcase() {
               ))}
             </div>
 
-            <div className="hidden divide-y divide-brand-line lg:block" role="tablist" aria-label="Makan features">
+            <div className="hidden divide-y divide-brand-line lg:block" role="tablist" aria-label={t('tabLabel')}>
               {screens.map((screen, index) => (
                 <button
                   key={screen.id}
@@ -213,7 +216,7 @@ export default function AppShowcase() {
             <div
               id="feature-panel"
               role="tabpanel"
-              aria-label={`${active.label} feature`}
+              aria-label={t('featureLabel', { feature: active.label })}
               className="p-6 sm:p-8 lg:border-t lg:border-brand-line lg:p-10"
             >
               <AnimatePresence mode="wait" initial={false}>

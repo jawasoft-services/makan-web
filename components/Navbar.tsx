@@ -2,18 +2,15 @@
 
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
+import { useLocale, useTranslations } from 'next-intl'
 import { usePathname } from 'next/navigation'
 import { Link } from 'next-view-transitions'
 import { Drawer } from 'vaul'
 import { track } from '@vercel/analytics'
 import { APP_STORE_URL } from '@/lib/links'
-
-const navLinks = [
-  { label: 'How it works', href: '#how-it-works' },
-  { label: 'Features', href: '#features' },
-  { label: 'FAQ', href: '#faq' },
-  { label: 'For restaurants', href: '/partner' },
-]
+import { localizePath } from '@/i18n/paths'
+import { stripLocalePrefix } from '@/i18n/availability'
+import LanguageSwitcher from './LanguageSwitcher'
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -21,6 +18,16 @@ export default function Navbar() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const lastY = useRef(0)
   const pathname = usePathname()
+  const locale = useLocale()
+  const t = useTranslations('Nav')
+  const isHome = stripLocalePrefix(pathname) === '/'
+  const homeHref = localizePath(locale, '/')
+  const navLinks = [
+    { label: t('howItWorks'), href: '#how-it-works' },
+    { label: t('features'), href: '#features' },
+    { label: t('faq'), href: '#faq' },
+    { label: t('restaurants'), href: localizePath(locale, '/partner') },
+  ]
 
   useEffect(() => {
     const onScroll = () => {
@@ -46,10 +53,10 @@ export default function Navbar() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 sm:px-8 py-4 sm:py-5">
         <Link
-          href="/"
+          href={homeHref}
           className="flex items-center gap-2"
           onClick={(e) => {
-            if (pathname === '/') {
+            if (isHome) {
               e.preventDefault()
               if (window.__lenis) window.__lenis.scrollTo(0)
               else window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -75,7 +82,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden lg:flex items-center gap-8">
           {navLinks.map((link) => {
             // Route links (start with "/") use the view-transition Link; hash
             // links use <a> and resolve to /#hash when not on the homepage.
@@ -93,35 +100,36 @@ export default function Navbar() {
             return (
               <a
                 key={link.href}
-                href={pathname === '/' ? link.href : `/${link.href}`}
+                href={isHome ? link.href : `${homeHref === '/' ? '' : homeHref}/${link.href}`}
                 className="text-sm font-medium text-white/90 transition-colors hover:text-white"
               >
                 {link.label}
               </a>
             )
           })}
+          <LanguageSwitcher />
           <Link
             href={APP_STORE_URL}
-            onClick={() => track('App Store CTA Clicked', { location: 'navigation' })}
+            onClick={() => track('App Store CTA Clicked', { location: 'navigation', locale })}
             className="flex h-11 items-center rounded-full bg-white px-5 text-sm font-semibold text-brand-orange transition-shadow hover:shadow-lg hover:shadow-black/10"
           >
-            Get the app
+            {t('getApp')}
           </Link>
         </div>
 
         {/* Mobile: CTA + drawer */}
-        <div className="flex items-center gap-3 md:hidden">
+        <div className="flex items-center gap-3 lg:hidden">
           <Link
             href={APP_STORE_URL}
-            onClick={() => track('App Store CTA Clicked', { location: 'navigation' })}
+            onClick={() => track('App Store CTA Clicked', { location: 'navigation', locale })}
             className="flex h-11 items-center rounded-full bg-white px-4 text-sm font-semibold text-brand-orange"
           >
-            Get the app
+            {t('getAppShort')}
           </Link>
           <Drawer.Root open={drawerOpen} onOpenChange={setDrawerOpen}>
             <Drawer.Trigger asChild>
               <button
-                aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
+                aria-label={drawerOpen ? t('closeMenu') : t('openMenu')}
                 aria-expanded={drawerOpen}
                 aria-controls="mobile-navigation"
                 className="flex h-11 w-11 items-center justify-center rounded-lg text-white"
@@ -140,13 +148,13 @@ export default function Navbar() {
                 aria-describedby={undefined}
                 className="fixed inset-x-0 bottom-0 z-[70] rounded-t-3xl bg-brand-orange px-6 pb-10 pt-3"
               >
-                <Drawer.Title className="sr-only">Menu</Drawer.Title>
+                <Drawer.Title className="sr-only">{t('menu')}</Drawer.Title>
                 <div className="relative mb-3 h-11">
                   <div aria-hidden className="absolute left-1/2 top-1 -translate-x-1/2 h-1.5 w-10 rounded-full bg-white/50" />
                   <Drawer.Close asChild>
                     <button
                       type="button"
-                      aria-label="Close menu"
+                      aria-label={t('closeMenu')}
                       className="absolute right-0 top-0 flex h-11 w-11 items-center justify-center rounded-full text-white hover:bg-white/15"
                     >
                       <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
@@ -175,7 +183,7 @@ export default function Navbar() {
                     return (
                       <a
                         key={link.href}
-                        href={pathname === '/' ? link.href : `/${link.href}`}
+                        href={isHome ? link.href : `${homeHref === '/' ? '' : homeHref}/${link.href}`}
                         onClick={() => setDrawerOpen(false)}
                         className={linkClassName}
                       >
@@ -183,15 +191,18 @@ export default function Navbar() {
                       </a>
                     )
                   })}
+                  <div className="mt-4">
+                    <LanguageSwitcher compact />
+                  </div>
                   <Link
                     href={APP_STORE_URL}
                     onClick={() => {
-                      track('App Store CTA Clicked', { location: 'navigation-menu' })
+                      track('App Store CTA Clicked', { location: 'navigation-menu', locale })
                       setDrawerOpen(false)
                     }}
                     className="mt-4 rounded-full bg-white px-5 py-3.5 text-center text-base font-semibold text-brand-orange"
                   >
-                    Get the app
+                    {t('getApp')}
                   </Link>
                 </div>
               </Drawer.Content>

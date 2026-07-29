@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import {
   motion,
@@ -149,6 +150,7 @@ function MealMemoryCard() {
 }
 
 export default function MemoryThesis() {
+  const t = useTranslations('Home.Memory')
   const sectionRef = useRef<HTMLElement>(null)
   const prefersReducedMotion = useReducedMotion()
   const useStaticLayout = useStaticMotionFallback()
@@ -453,7 +455,7 @@ export default function MemoryThesis() {
                 <StaticPicture
                   basePath="/static-images/v1/app-mockups/01-diary"
                   widths={DIARY_IMAGE_WIDTHS}
-                  alt="Makan diary showing a month of saved meals"
+                  alt={t('diaryAlt')}
                   width={800}
                   height={1519}
                   sizes="(min-width: 768px) 330px, 270px"
@@ -485,23 +487,22 @@ export default function MemoryThesis() {
             style={{ opacity: copyOpacity, y: copyY }}
           >
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
-              Why Makan
+              {t('eyebrow')}
             </p>
             <h2
               className="mt-3 max-w-2xl text-[clamp(2rem,4.4vw,4.6rem)] font-bold leading-[1.02]"
               style={{ letterSpacing: '-0.035em' }}
             >
-              The meals that matter deserve to be remembered.
+              {t('title')}
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-brand-espresso-muted sm:mt-6 sm:text-lg">
-              The photo usually survives. The place, the people and why it
-              mattered usually do not.
+              {t('body')}
             </p>
             <motion.p
               className="mt-3 text-lg font-bold text-white sm:mt-5 sm:text-2xl"
               style={{ opacity: closingOpacity, y: closingY }}
             >
-              Makan keeps them together.
+              {t('close')}
             </motion.p>
           </motion.div>
         </div>
@@ -512,7 +513,7 @@ export default function MemoryThesis() {
           aria-hidden
         >
           <span className="h-px w-8 bg-brand-orange" />
-          Scroll to unpack this meal
+          {t('hint')}
           <span className="h-px w-8 bg-brand-orange" />
         </motion.div>
 

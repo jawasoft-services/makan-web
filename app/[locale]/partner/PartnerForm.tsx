@@ -1,13 +1,17 @@
 'use client'
 
 import { useState } from 'react'
+import { useLocale, useTranslations } from 'next-intl'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
+import { localizePath } from '@/i18n/paths'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export default function PartnerForm() {
+  const t = useTranslations('Partner')
+  const locale = useLocale()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [restaurant, setRestaurant] = useState('')
@@ -25,15 +29,15 @@ export default function PartnerForm() {
     setErrorMsg('')
 
     if (!name.trim()) {
-      setErrorMsg('We need your name to get started.')
+      setErrorMsg(t('nameError'))
       return
     }
     if (!EMAIL_RE.test(email.trim())) {
-      setErrorMsg("That email doesn't look right — double check?")
+      setErrorMsg(t('emailError'))
       return
     }
     if (!restaurant.trim()) {
-      setErrorMsg("What's the name of your restaurant?")
+      setErrorMsg(t('restaurantError'))
       return
     }
 
@@ -60,14 +64,14 @@ export default function PartnerForm() {
 
       if (!res.ok) {
         const data = await res.json()
-        throw new Error(data.error || 'Something went wrong.')
+        throw new Error(data.error || t('genericError'))
       }
 
       setStatus('success')
     } catch (err) {
       setStatus('error')
       setErrorMsg(
-        err instanceof Error ? err.message : 'Something went wrong. Try again?',
+        err instanceof Error ? err.message : t('tryAgain'),
       )
     }
   }
@@ -89,18 +93,16 @@ export default function PartnerForm() {
               </svg>
             </div>
             <h1 className="mt-5 text-2xl font-bold text-brand-ink sm:text-3xl">
-              We&apos;ll be in touch.
+              {t('successTitle')}
             </h1>
             <p className="mt-3 text-sm leading-relaxed text-brand-muted sm:text-base">
-              Our team will reach out to talk about
-              <br />
-              how Makan can work for your restaurant.
+              {t('successBody')}
             </p>
             <Link
-              href="/"
+              href={localizePath(locale, '/')}
               className="mt-8 inline-block text-sm font-medium text-brand-orange hover:underline"
             >
-              &larr; Back to home
+              &larr; {t('back')}
             </Link>
           </motion.div>
         ) : (
@@ -134,7 +136,7 @@ export default function PartnerForm() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
-                Claim your restaurant on Makan
+                {t('title')}
               </motion.h1>
 
               <motion.p
@@ -143,8 +145,7 @@ export default function PartnerForm() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                Get your restaurant in front of diners who remember where
-                they ate. Tell us about your venue.
+                {t('body')}
               </motion.p>
             </div>
 
@@ -158,12 +159,12 @@ export default function PartnerForm() {
             >
               <div>
                 <label htmlFor="name" className="block text-xs font-medium text-brand-muted mb-1.5 ml-1">
-                  Your name
+                  {t('name')}
                 </label>
                 <input
                   id="name"
                   type="text"
-                  placeholder="Who are we speaking with?"
+                  placeholder={t('namePlaceholder')}
                   value={name}
                   onChange={(e) => { setName(e.target.value); clearError() }}
                   className="w-full rounded-xl border border-brand-line bg-brand-card px-4 py-3 text-sm text-brand-ink placeholder:text-brand-muted outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-card"
@@ -172,7 +173,7 @@ export default function PartnerForm() {
 
               <div>
                 <label htmlFor="email" className="block text-xs font-medium text-brand-muted mb-1.5 ml-1">
-                  Email
+                  {t('email')}
                 </label>
                 <input
                   id="email"
@@ -186,12 +187,12 @@ export default function PartnerForm() {
 
               <div>
                 <label htmlFor="restaurant" className="block text-xs font-medium text-brand-muted mb-1.5 ml-1">
-                  Restaurant name
+                  {t('restaurant')}
                 </label>
                 <input
                   id="restaurant"
                   type="text"
-                  placeholder="What's your restaurant called?"
+                  placeholder={t('restaurantPlaceholder')}
                   value={restaurant}
                   onChange={(e) => { setRestaurant(e.target.value); clearError() }}
                   className="w-full rounded-xl border border-brand-line bg-brand-card px-4 py-3 text-sm text-brand-ink placeholder:text-brand-muted outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-card"
@@ -200,12 +201,12 @@ export default function PartnerForm() {
 
               <div>
                 <label htmlFor="city" className="block text-xs font-medium text-brand-muted mb-1.5 ml-1">
-                  City <span className="text-brand-muted">(optional)</span>
+                  {t('city')} <span className="text-brand-muted">{t('optional')}</span>
                 </label>
                 <input
                   id="city"
                   type="text"
-                  placeholder="Where are you based?"
+                  placeholder={t('cityPlaceholder')}
                   value={city}
                   onChange={(e) => { setCity(e.target.value); clearError() }}
                   className="w-full rounded-xl border border-brand-line bg-brand-card px-4 py-3 text-sm text-brand-ink placeholder:text-brand-muted outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-card"
@@ -214,12 +215,12 @@ export default function PartnerForm() {
 
               <div>
                 <label htmlFor="message" className="block text-xs font-medium text-brand-muted mb-1.5 ml-1">
-                  Anything else? <span className="text-brand-muted">(optional)</span>
+                  {t('anythingElse')} <span className="text-brand-muted">{t('optional')}</span>
                 </label>
                 <textarea
                   id="message"
                   rows={3}
-                  placeholder="Tell us what you're looking for..."
+                  placeholder={t('messagePlaceholder')}
                   value={message}
                   onChange={(e) => { setMessage(e.target.value); clearError() }}
                   className="w-full rounded-xl border border-brand-line bg-brand-card px-4 py-3 text-sm text-brand-ink placeholder:text-brand-muted outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-card resize-none"
@@ -248,10 +249,10 @@ export default function PartnerForm() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
-                      Sending...
+                      {t('sending')}
                     </span>
                   ) : (
-                    "Let's talk"
+                    t('send')
                   )}
                 </button>
               </div>
@@ -272,13 +273,13 @@ export default function PartnerForm() {
             </motion.form>
 
             <p className="mt-6 text-center text-[11px] text-brand-muted">
-              By submitting you agree to our{' '}
+              {t('agreement')}{' '}
               <Link href="/tos" className="underline hover:text-brand-muted">
-                Terms
+                {t('terms')}
               </Link>{' '}
-              and{' '}
+              {t('and')}{' '}
               <Link href="/privacy-policy" className="underline hover:text-brand-muted">
-                Privacy Policy
+                {t('privacy')}
               </Link>
               .
             </p>

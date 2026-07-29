@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   motion,
   useReducedMotion,
@@ -12,23 +13,11 @@ import {
 import StaticPicture from '@/components/StaticPicture'
 import { useStaticMotionFallback } from '@/lib/useStaticMotionFallback'
 
-const steps = [
-  {
-    number: '01',
-    title: 'Take the photo.',
-    copy: 'Open the camera and save the meal while it is still in front of you.',
-  },
-  {
-    number: '02',
-    title: 'Add what mattered.',
-    copy: 'Tag the place and the people at the table. Write as much or as little as you want.',
-  },
-  {
-    number: '03',
-    title: 'Keep the record.',
-    copy: 'The meal stays in your diary, with the date and details attached.',
-  },
-] as const
+type Step = {
+  number: string
+  title: string
+  copy: string
+}
 
 // Each act gets a generous hold. The page keeps moving, but the story only
 // advances after enough intent has built up in the scroll.
@@ -85,7 +74,7 @@ function StepCopy({
   motionStyle,
   mobile = false,
 }: {
-  step: (typeof steps)[number]
+  step: Step
   motionStyle: StepMotion
   mobile?: boolean
 }) {
@@ -353,6 +342,8 @@ function ComposerCloseup({
   detailOpacity: MotionValue<number>
   postScale: MotionValue<number>
 }) {
+  const t = useTranslations('Home.How')
+
   return (
     <motion.article
       aria-hidden
@@ -364,7 +355,7 @@ function ComposerCloseup({
           <CloseIcon />
         </span>
         <span className="text-[clamp(0.65rem,2.4vw,1rem)] font-semibold">
-          Post a Meal
+          {t('postMeal')}
         </span>
         <span className="grid aspect-square h-full place-items-center rounded-full bg-[#2A3D54]">
           <CameraSwitchIcon />
@@ -380,7 +371,7 @@ function ComposerCloseup({
         className="absolute inset-x-[5%] top-[53%]"
       >
         <p className="text-[clamp(0.72rem,2.8vw,1.1rem)] font-bold leading-tight">
-          Her first day at the new job.
+          {t('caption')}
         </p>
         <p className="mt-[2.5%] text-[clamp(0.38rem,1.3vw,0.62rem)] font-bold uppercase tracking-[0.16em] text-[#9CA6B4]">
           Meal type
@@ -395,25 +386,25 @@ function ComposerCloseup({
           <MealGlyph>
             <MealTypeIcon type="breakfast" />
           </MealGlyph>
-          Breakfast
+          {t('breakfast')}
         </span>
         <span className="flex flex-col items-center gap-1">
           <MealGlyph>
             <MealTypeIcon type="lunch" />
           </MealGlyph>
-          Lunch
+          {t('lunch')}
         </span>
         <span className="flex flex-col items-center gap-1">
           <MealGlyph>
             <MealTypeIcon type="dinner" />
           </MealGlyph>
-          Dinner
+          {t('dinner')}
         </span>
         <span className="flex flex-col items-center gap-1 text-brand-orange">
           <MealGlyph active>
             <MealTypeIcon type="snack" />
           </MealGlyph>
-          Snack
+          {t('snack')}
         </span>
       </motion.div>
 
@@ -422,10 +413,10 @@ function ComposerCloseup({
         className="absolute inset-x-[5%] top-[75.5%] flex h-[6.5%] overflow-hidden rounded-lg border border-[#34485D] text-[clamp(0.46rem,1.7vw,0.78rem)] font-semibold"
       >
         <span className="grid w-1/2 place-items-center bg-[#2A3D54] text-[#C3CAD0]">
-          Public
+          {t('public')}
         </span>
         <span className="grid w-1/2 place-items-center bg-brand-orange text-white">
-          Friends Only
+          {t('friendsOnly')}
         </span>
       </motion.div>
 
@@ -433,7 +424,7 @@ function ComposerCloseup({
         style={{ opacity: detailOpacity }}
         className="absolute inset-x-[5%] top-[83.1%] text-[clamp(0.32rem,1.05vw,0.55rem)] text-[#9CA6B4]"
       >
-        Leaving without posting keeps this private.
+        {t('composerPrivacy')}
       </motion.div>
 
       <motion.div
@@ -454,7 +445,7 @@ function ComposerCloseup({
         style={{ scale: postScale }}
         className="absolute bottom-[2.3%] left-[5%] grid h-[6.2%] w-[90%] place-items-center rounded-full bg-brand-orange text-[clamp(0.5rem,1.9vw,0.85rem)] font-semibold text-white"
       >
-        Post Meal →
+        {t('post')} →
       </motion.div>
     </motion.article>
   )
@@ -473,6 +464,8 @@ function DiaryCloseup({
   mealScale: MotionValue<number>
   ringOpacity: MotionValue<number>
 }) {
+  const t = useTranslations('Home.How')
+
   return (
     <motion.article
       aria-hidden
@@ -484,7 +477,7 @@ function DiaryCloseup({
           ‹
         </span>
         <span className="text-[clamp(0.8rem,3vw,1.3rem)] font-semibold">
-          May 2026
+          {t('month')}
         </span>
         <span className="grid aspect-square w-[10%] place-items-center rounded-full border border-[#F1D5B3] text-brand-orange">
           ›
@@ -497,7 +490,7 @@ function DiaryCloseup({
             basePath={DIARY_BASE_PATH}
             widths={APP_SCREEN_WIDTHS}
             sizes="(max-width: 1023px) 88vw, 460px"
-            alt="The real Makan calendar"
+            alt={t('calendarAlt')}
             className="absolute inset-0 h-full w-full"
           />
 
@@ -522,13 +515,15 @@ function DiaryCloseup({
 }
 
 function MealDetailScreenContent({ sizes }: { sizes: string }) {
+  const t = useTranslations('Home.How')
+
   return (
     <>
       <StaticPicture
         basePath={DETAIL_BASE_PATH}
         widths={APP_SCREEN_WIDTHS}
         sizes={sizes}
-        alt="The Makan meal detail screen"
+        alt={t('detailAlt')}
         className="absolute inset-0 h-full w-full"
       />
 
@@ -546,23 +541,23 @@ function MealDetailScreenContent({ sizes }: { sizes: string }) {
               Devon
             </span>
             <span className="mt-1 block text-[clamp(0.42rem,1.3vw,0.6rem)] text-[#71808D]">
-              21 May 2026
+              {t('date')}
             </span>
           </span>
         </div>
 
         <p className="mt-[4%] text-[clamp(0.4rem,1.2vw,0.58rem)] font-bold uppercase tracking-[0.15em] text-[#71808D]">
-          Snack · Kendal Street Kitchen
+          {t('detail')}
         </p>
         <p className="mt-[1.5%] max-w-[92%] text-[clamp(0.92rem,3.2vw,1.45rem)] font-bold leading-[1.06] tracking-[-0.03em]">
-          Her first day at the new job.
+          {t('caption')}
         </p>
 
         <div className="mt-[4%] flex items-center gap-[2.5%] text-[clamp(0.5rem,1.6vw,0.72rem)] font-semibold text-[#71808D]">
           <span className="grid aspect-square w-[7.5%] place-items-center rounded-full bg-[#26374A] text-[0.72em] font-bold text-white">
             M
           </span>
-          with Mia
+          {t('withMia')}
         </div>
 
         <div className="mt-[5%] flex items-center gap-[8%] border-t border-[#DDE5E3] pt-[4%] text-[clamp(0.48rem,1.45vw,0.68rem)] text-[#71808D]">
@@ -603,6 +598,7 @@ function MealDetailCloseup({
 }
 
 function CinematicStage({ progress }: { progress: MotionValue<number> }) {
+  const t = useTranslations('Home.How')
   const photoOpacity = useTransform(progress, [0, 0.27, 0.37], [1, 1, 0])
   const photoScale = useTransform(
     progress,
@@ -769,7 +765,7 @@ function CinematicStage({ progress }: { progress: MotionValue<number> }) {
       >
         <DetailPill>
           <NoteIcon />
-          Her first day.
+          {t('captionShort')}
         </DetailPill>
       </motion.div>
 
@@ -795,6 +791,13 @@ function StaticMealDetailPreview() {
 }
 
 function ReducedMotionHowItWorks() {
+  const t = useTranslations('Home.How')
+  const steps: Step[] = [
+    { number: '01', title: t('step1Title'), copy: t('step1Body') },
+    { number: '02', title: t('step2Title'), copy: t('step2Body') },
+    { number: '03', title: t('step3Title'), copy: t('step3Body') },
+  ]
+
   return (
     <section
       id="how-it-works"
@@ -804,13 +807,13 @@ function ReducedMotionHowItWorks() {
         <div className="grid gap-12 md:grid-cols-[0.82fr_1.18fr] md:items-center md:gap-10 lg:gap-20">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/75">
-              How it works
+              {t('eyebrow')}
             </p>
             <h2
               className="mt-4 max-w-xl text-3xl font-bold leading-[1.06] text-white sm:text-5xl"
               style={{ letterSpacing: '-0.03em' }}
             >
-              One photo does most of the work.
+              {t('title')}
             </h2>
             <div className="mt-8 rounded-[1.75rem] bg-brand-card p-5 text-brand-ink shadow-[0_24px_60px_rgba(92,42,0,0.18)] sm:p-6">
               {steps.map((step) => (
@@ -839,6 +842,12 @@ function ReducedMotionHowItWorks() {
 }
 
 export default function HowItWorks() {
+  const t = useTranslations('Home.How')
+  const steps: Step[] = [
+    { number: '01', title: t('step1Title'), copy: t('step1Body') },
+    { number: '02', title: t('step2Title'), copy: t('step2Body') },
+    { number: '03', title: t('step3Title'), copy: t('step3Body') },
+  ]
   const sectionRef = useRef<HTMLElement>(null)
   const prefersReducedMotion = useReducedMotion()
   const useStaticLayout = useStaticMotionFallback()
@@ -924,13 +933,13 @@ export default function HowItWorks() {
           <div className="md:flex md:h-full md:max-h-[760px] md:flex-col md:justify-center">
             <div>
               <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/75 sm:text-xs">
-                How it works
+                {t('eyebrow')}
               </p>
               <h2
                 className="mt-1.5 max-w-xl text-[clamp(1.65rem,6.7vw,2.7rem)] font-bold leading-[1.02] text-white sm:mt-4 md:text-[clamp(2.15rem,4.8vw,3.2rem)] lg:text-[clamp(2.8rem,4vw,4.6rem)]"
                 style={{ letterSpacing: '-0.035em' }}
               >
-                One photo does most of the work.
+                {t('title')}
               </h2>
             </div>
 

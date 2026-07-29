@@ -1,9 +1,12 @@
 import type { Metadata } from "next"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import Link from "next/link"
 import Footer from "@/components/Footer"
 import FaqSchema from "@/components/FaqSchema"
-import { SUPPORT_EMAIL, SUPPORT_FAQS } from "@/lib/support"
+import { SUPPORT_EMAIL, SUPPORT_FAQS, SUPPORT_FAQS_ID } from "@/lib/support"
 import { COMPANY } from "@/lib/press"
+import { createPageMetadata } from "@/lib/site-metadata"
+import { localizePath } from "@/i18n/paths"
 
 // The App Store Connect "Support URL" points here. Apple's field text requires the
 // page to "lead to actual contact information (legal address, email address …) so
@@ -15,53 +18,55 @@ import { COMPANY } from "@/lib/press"
 // <details> rather than a stateful accordion. There is no render path where the
 // contact method disappears. Keep it that way — do not add 'use client' here.
 
-const DESCRIPTION =
-  "Get help with Makan — contact support, delete your account, report a problem, or make a privacy request."
-
-export const metadata: Metadata = {
-  title: "Support — Makan",
-  description: DESCRIPTION,
-  alternates: { canonical: "https://www.makanofficial.com/support" },
-  openGraph: {
-    title: "Support — Makan",
-    description: DESCRIPTION,
-    url: "https://www.makanofficial.com/support",
-    siteName: "Makan",
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "Support" })
+  return createPageMetadata({
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+    path: locale === "id" ? "/id/support" : "/support",
     type: "article",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Support — Makan",
-    description: DESCRIPTION,
-    site: "@app_makan",
-  },
+    locale,
+  })
 }
 
-export default function SupportPage() {
+export default async function SupportPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  setRequestLocale(locale)
+  const t = await getTranslations("Support")
+  const faqs = locale === "id" ? SUPPORT_FAQS_ID : SUPPORT_FAQS
+
   return (
     <div className="min-h-screen bg-brand-cream">
-      <FaqSchema items={SUPPORT_FAQS} />
+      <FaqSchema items={faqs} />
       <main
         id="main-content"
         className="mx-auto max-w-2xl px-5 sm:px-8 pt-24 sm:pt-32 pb-16 sm:pb-24"
       >
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
-          Support
+          {t("eyebrow")}
         </p>
         <h1
           className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-bold text-brand-ink"
           style={{ letterSpacing: "-0.02em" }}
         >
-          How can we help?
+          {t("title")}
         </h1>
         <p className="mt-6 text-[15px] sm:text-base leading-[1.75] text-brand-muted">
-          Something broken, a question about your account, or an idea for what Makan
-          should do next — write to us and a person will read it.
+          {t("intro")}
         </p>
 
         {/* Contact — the section Apple's field text is asking for. Static, no JS. */}
         <div className="mt-10 rounded-2xl border border-brand-line bg-brand-card p-6">
-          <h2 className="text-lg font-semibold text-brand-ink">Email us</h2>
+          <h2 className="text-lg font-semibold text-brand-ink">{t("emailUs")}</h2>
           <p className="mt-3">
             <a
               href={`mailto:${SUPPORT_EMAIL}`}
@@ -71,16 +76,15 @@ export default function SupportPage() {
             </a>
           </p>
           <p className="mt-3 text-[15px] leading-[1.75] text-brand-muted">
-            We aim to reply the same day.
+            {t("reply")}
           </p>
           <p className="mt-4 text-[15px] leading-[1.75] text-brand-muted">
-            It helps if you tell us what happened, which iPhone you have, the version
-            of iOS you&apos;re on, and the Makan version shown in Settings.
+            {t("details")}
           </p>
           <p className="mt-4 text-sm leading-relaxed text-brand-muted">
-            Press or partnership enquiries?{" "}
-            <Link href="/contact" className="text-brand-orange hover:underline">
-              Get in touch here
+            {t("press")}{" "}
+            <Link href={localizePath(locale, "/contact")} className="text-brand-orange hover:underline">
+              {t("contact")}
             </Link>
             .
           </p>
@@ -89,10 +93,10 @@ export default function SupportPage() {
         {/* Common questions — native <details>, so every answer is in the HTML. */}
         <section className="mt-12 border-t border-brand-line pt-10">
           <h2 className="text-xl sm:text-2xl font-bold text-brand-ink">
-            Common questions
+            {t("questions")}
           </h2>
           <div className="mt-6">
-            {SUPPORT_FAQS.map((f) => (
+            {faqs.map((f) => (
               <details key={f.q} className="group border-b border-brand-line py-4">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-semibold text-brand-ink [&::-webkit-details-marker]:hidden">
                   {f.q}
@@ -113,10 +117,9 @@ export default function SupportPage() {
 
         {/* Your data */}
         <section className="mt-12 border-t border-brand-line pt-10">
-          <h2 className="text-xl sm:text-2xl font-bold text-brand-ink">Your data</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-brand-ink">{t("dataTitle")}</h2>
           <p className="mt-4 text-[15px] leading-[1.75] text-brand-muted">
-            You can delete your account at any time from within the app. To request
-            access to your data, correct it, or ask for a portable copy, email{" "}
+            {t("dataBody")}{" "}
             <a
               href={`mailto:${SUPPORT_EMAIL}`}
               className="text-brand-orange hover:underline"
@@ -127,11 +130,11 @@ export default function SupportPage() {
           </p>
           <p className="mt-4 text-[15px] leading-[1.75] text-brand-muted">
             <Link href="/privacy-policy" className="text-brand-orange hover:underline">
-              Privacy Policy
+              {t("privacy")}
             </Link>
             {" · "}
             <Link href="/tos" className="text-brand-orange hover:underline">
-              Terms of Service
+              {t("terms")}
             </Link>
           </p>
         </section>
@@ -139,7 +142,7 @@ export default function SupportPage() {
         {/* Statutory trading disclosure — same wording as components/Footer.tsx
             (Companies Act 2006 / 2015 Names & Trading Disclosures Regs, reg. 25). */}
         <section className="mt-12 border-t border-brand-line pt-10">
-          <h2 className="text-xl sm:text-2xl font-bold text-brand-ink">Who we are</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-brand-ink">{t("who")}</h2>
           <p className="mt-4 text-[15px] leading-[1.75] text-brand-muted">
             {COMPANY.legalName} is a company registered in England and Wales, company
             no. {COMPANY.registration}. Registered office: 86–90 Paul Street, London

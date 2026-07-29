@@ -4,7 +4,9 @@ import { BOILERPLATE_LONG, COMPANY, FOUNDER, LAUNCH, PRESS_EMAIL, SOCIALS } from
 
 const BASE = "https://www.makanofficial.com"
 
-export default function StorySchema() {
+export default function StorySchema({ locale = "en" }: { locale?: string }) {
+  const isIndonesian = locale === "id"
+  const storyUrl = `${BASE}${isIndonesian ? "/id" : ""}/story`
   const graph = {
     "@context": "https://schema.org",
     "@graph": [
@@ -34,10 +36,13 @@ export default function StorySchema() {
       },
       {
         "@type": "AboutPage",
-        "@id": `${BASE}/story#webpage`,
-        url: `${BASE}/story`,
-        name: "The Makan story",
-        description: BOILERPLATE_LONG,
+        "@id": `${storyUrl}#webpage`,
+        url: storyUrl,
+        name: isIndonesian ? "Cerita Makan" : "The Makan story",
+        description: isIndonesian
+          ? "Cerita tentang bagaimana shared story saat COVID tumbuh menjadi Makan, jurnal makanan sosial."
+          : BOILERPLATE_LONG,
+        inLanguage: locale,
         datePublished: LAUNCH.date,
         mainEntity: { "@id": `${BASE}/#organization` },
       },
@@ -45,7 +50,12 @@ export default function StorySchema() {
         "@type": "BreadcrumbList",
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Home", item: BASE },
-          { "@type": "ListItem", position: 2, name: "Story", item: `${BASE}/story` },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: isIndonesian ? "Cerita Makan" : "Story",
+            item: storyUrl,
+          },
         ],
       },
     ],

@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { motion, useInView } from 'framer-motion'
 import StatTicker from './StatTicker'
@@ -111,7 +112,7 @@ function PinIcon() {
  * meal-type pill → location + makanofficial.com. Typography scales with the
  * card via container-query units so one component serves both breakpoints.
  */
-function MealPostCard({ meal }: { meal: Meal }) {
+function MealPostCard({ meal, fallbackLabel }: { meal: Meal; fallbackLabel: string }) {
   const bundledFallback = /^\/meals\/IMG_.+\.jpg$/i.test(meal.src)
 
   return (
@@ -172,7 +173,7 @@ function MealPostCard({ meal }: { meal: Meal }) {
           </p>
         )}
         <p className="truncate font-bold" style={{ fontSize: '3.8cqw', lineHeight: 1.25 }}>
-          {meal.caption || meal.mealType || 'A meal on Makan'}
+          {meal.caption || meal.mealType || fallbackLabel}
         </p>
         <div className="flex items-center justify-between text-white/80" style={{ fontSize: '2.4cqw', gap: '2cqw' }}>
           <span className="flex min-w-0 items-center truncate" style={{ gap: '1.2cqw' }}>
@@ -190,12 +191,20 @@ function MealPostCard({ meal }: { meal: Meal }) {
   )
 }
 
-function ArrowButton({ dir, onClick }: { dir: 'left' | 'right'; onClick: () => void }) {
+function ArrowButton({
+  dir,
+  onClick,
+  label,
+}: {
+  dir: 'left' | 'right'
+  onClick: () => void
+  label: string
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
-      aria-label={dir === 'left' ? 'Scroll to previous meals' : 'Scroll to more meals'}
+      aria-label={label}
       className={`absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-brand-line bg-brand-card text-brand-ink shadow-lg shadow-black/10 transition-transform hover:scale-105 active:scale-95 lg:flex ${
         dir === 'left' ? 'left-2' : 'right-2'
       }`}
@@ -208,6 +217,7 @@ function ArrowButton({ dir, onClick }: { dir: 'left' | 'right'; onClick: () => v
 }
 
 export default function LatestOnMakan({ mealCount, liveMeals }: LatestOnMakanProps) {
+  const t = useTranslations('Home.Latest')
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
   const scroller = useRef<HTMLDivElement>(null)
@@ -228,18 +238,18 @@ export default function LatestOnMakan({ mealCount, liveMeals }: LatestOnMakanPro
           transition={{ duration: 0.6 }}
         >
           <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
-            On Makan
+            {t('eyebrow')}
           </p>
           <h2 className="mt-3 text-2xl font-bold text-brand-ink sm:text-3xl lg:text-4xl" style={{ letterSpacing: '-0.02em' }}>
-            <StatTicker value={mealCount} inView={inView} /> meals logged.
+            <StatTicker value={mealCount} inView={inView} /> {t('count')}
           </h2>
         </motion.div>
       </div>
 
       {/* One responsive carousel — avoids duplicating every card in hidden DOM. */}
       <div className="relative mx-auto mt-10 max-w-7xl lg:mt-12">
-        <ArrowButton dir="left" onClick={() => scrollByCard(-1)} />
-        <ArrowButton dir="right" onClick={() => scrollByCard(1)} />
+        <ArrowButton dir="left" label={t('previous')} onClick={() => scrollByCard(-1)} />
+        <ArrowButton dir="right" label={t('next')} onClick={() => scrollByCard(1)} />
         <div
           ref={scroller}
           className="meal-carousel flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-4 sm:px-8 lg:gap-6 scrollbar-hide"
@@ -253,7 +263,7 @@ export default function LatestOnMakan({ mealCount, liveMeals }: LatestOnMakanPro
               transition={{ duration: 0.5, delay: 0.1 + Math.min(i, 8) * 0.08 }}
               whileHover={{ scale: 1.02, rotate: -0.4 }}
             >
-              <MealPostCard meal={meal} />
+              <MealPostCard meal={meal} fallbackLabel={t('fallbackMeal')} />
             </motion.div>
           ))}
           <div className="w-2 flex-none sm:w-5" aria-hidden />

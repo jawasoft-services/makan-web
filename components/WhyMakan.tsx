@@ -1,31 +1,23 @@
 'use client'
 
 import { useRef } from 'react'
+import { useLocale, useTranslations } from 'next-intl'
 import { motion, useInView } from 'framer-motion'
 
 interface WhyMakanProps {
   mealCount: number
 }
 
-const principles = [
-  {
-    title: 'The Friends feed stays chronological.',
-    copy: 'It is sorted by time, not by likes or craves.',
-  },
-  {
-    title: 'Public or Friends Only.',
-    copy: 'Your first post is Friends Only. After that, choose an audience for each meal; Makan remembers your last choice.',
-  },
-  {
-    title: 'The details stay with the meal.',
-    copy: 'The photo, date, meal type, caption, place and tagged friends are saved together.',
-  },
-]
-
 export default function WhyMakan({ mealCount }: WhyMakanProps) {
+  const t = useTranslations('Home.Why')
+  const locale = useLocale()
+  const principles = [1, 2, 3].map((number) => ({
+    title: t(`principle${number}Title`),
+    copy: t(`principle${number}Body`),
+  }))
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
-  const formattedMealCount = new Intl.NumberFormat('en-GB').format(mealCount)
+  const formattedMealCount = new Intl.NumberFormat(locale === 'id' ? 'id-ID' : 'en-GB').format(mealCount)
 
   return (
     <section className="bg-brand-espresso px-5 py-20 sm:px-8 sm:py-32">
@@ -38,28 +30,25 @@ export default function WhyMakan({ mealCount }: WhyMakanProps) {
         >
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
-              Why Makan
+              {t('eyebrow')}
             </p>
             <h2
               className="mt-4 text-3xl font-bold leading-[1.1] text-white sm:text-5xl"
               style={{ letterSpacing: '-0.025em' }}
             >
-              Built around the meal, not the metric.
+              {t('title')}
             </h2>
           </div>
 
           <div className="space-y-5 text-base leading-relaxed text-brand-espresso-muted sm:text-lg">
             <p>
-              Makan keeps a diary of your own meals, a chronological feed for
-              friends and a separate Public feed for discovery.
+              {t('body1')}
             </p>
             <p>
-              The app has logged {formattedMealCount} meals. Each one carries
-              the details its owner chose to add.
+              {t('body2', { count: formattedMealCount })}
             </p>
             <p className="font-medium text-white">
-              Your meal can be Public or Friends Only. That choice is made in
-              the composer, meal by meal.
+              {t('body3')}
             </p>
           </div>
         </motion.div>

@@ -7,6 +7,7 @@ interface PageMetadataOptions {
   description: string
   path?: string
   type?: "website" | "article"
+  locale?: string
 }
 
 /**
@@ -19,19 +20,41 @@ export function createPageMetadata({
   description,
   path = "",
   type = "website",
+  locale,
 }: PageMetadataOptions): Metadata {
   const url = `${SITE_URL}${path}`
+  const englishPath = path.replace(/^\/id(?=\/|$)/, "") || "/"
+  const indonesianPath =
+    englishPath === "/" ? "/id" : `/id${englishPath}`
 
   return {
+    metadataBase: new URL(SITE_URL),
     title,
     description,
-    alternates: { canonical: url },
+    alternates: {
+      canonical: url,
+      ...(locale
+        ? {
+            languages: {
+              en: `${SITE_URL}${englishPath}`,
+              id: `${SITE_URL}${indonesianPath}`,
+              "x-default": `${SITE_URL}${englishPath}`,
+            },
+          }
+        : {}),
+    },
     openGraph: {
       title,
       description,
       url,
       siteName: "Makan",
       type,
+      ...(locale
+        ? {
+            locale: locale === "id" ? "id_ID" : "en_GB",
+            alternateLocale: locale === "id" ? ["en_GB"] : ["id_ID"],
+          }
+        : {}),
     },
     twitter: {
       card: "summary_large_image",

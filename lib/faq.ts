@@ -36,8 +36,8 @@ export const FAQS: FaqItem[] = [
     a: "No. No calories, no macros, no nutrition scores, no grading your dinner. Makan is a photo diary, not a tracker — it remembers what you ate, not what it “cost” you.",
   },
   {
-    q: 'Are there star ratings?',
-    a: "You don't give meals star ratings on Makan. Eat or Yeet compares your own meals with each other and builds your personal ranking.",
+    q: 'What is Eat or Yeet?',
+    a: "Eat or Yeet puts two meals from your diary side by side and asks which you'd eat again first. Your choices build your Top 4 and a full ranking of your own meals. It's your taste, so only you get a vote.",
   },
   {
     q: 'How is Makan different from Yelp or Google reviews?',
@@ -56,3 +56,50 @@ export const FAQS: FaqItem[] = [
     a: "Yes. Post a meal a day to keep it. Miss one and it ends — no insurance, no make-ups. People get oddly attached.",
   },
 ]
+
+export const FAQS_ID: FaqItem[] = [
+  {
+    q: 'Apa itu Makan?',
+    a: 'Makan adalah jurnal makanan yang kamu isi bersama teman. Foto makananmu, tandai tempatnya kalau penting, lalu semuanya tetap tersimpan — termasuk detail yang biasanya pelan-pelan terlupakan.',
+  },
+  {
+    q: 'Apakah Makan gratis?',
+    a: 'Ya. Makan gratis di App Store dan dibuat untuk iPhone. Versi Android sedang dikerjakan, tetapi kami belum punya tanggal rilis.',
+  },
+  {
+    q: 'Apa arti kata “makan”?',
+    a: 'Artinya ya, “makan” dalam bahasa Indonesia dan Melayu. Devon, pendiri kami, orang Indonesia. Jadi nama ini terasa paling pas untuk aplikasi tentang makanan.',
+  },
+  {
+    q: 'Siapa yang bisa melihat postingan makananku?',
+    a: 'Postingan pertamamu adalah Friends Only. Setelah itu, kamu bisa memilih Public atau Friends Only setiap kali memposting. Makan mengingat pilihan audiens terakhirmu, dan kamu tetap bisa menggantinya sebelum posting. Public berarti semua orang di Makan bisa melihatnya; Friends Only hanya untuk temanmu.',
+  },
+  {
+    q: 'Apakah Makan menghitung kalori atau makro?',
+    a: 'Tidak. Tidak ada hitung kalori, makro, skor nutrisi, atau penilaian untuk makan malammu. Makan adalah jurnal foto, bukan aplikasi pelacak — yang disimpan adalah apa yang kamu makan, bukan berapa “harganya” bagi tubuhmu.',
+  },
+  {
+    q: 'Apa itu Eat or Yeet?',
+    a: 'Eat or Yeet menaruh dua makanan dari jurnalmu berdampingan, lalu menanyakan mana yang paling ingin kamu makan lagi. Pilihanmu membentuk Top 4 dan peringkat lengkap makananmu sendiri. Ini seleramu, jadi hanya kamu yang punya hak suara.',
+  },
+  {
+    q: 'Apa bedanya Makan dengan Yelp atau ulasan Google?',
+    a: 'Makan dibuat untuk postingan makanan, bukan ulasan restoran. Makan menyimpan jurnalmu sendiri, menampilkan feed Friends secara kronologis, dan punya feed Public terpisah untuk mencari inspirasi.',
+  },
+  {
+    q: 'Apakah Makan memakai AI?',
+    a: 'Tidak. AI belum pernah mencicipi makanan — tidak bisa mencium aromanya, mengunyah, atau mengingat rasanya lapar saat kecil. Jadi AI tidak menulis caption, memberi peringkat, atau menebak makananmu dari foto. Bagian itu tetap milikmu.',
+  },
+  {
+    q: 'Apa bedanya like dan crave?',
+    a: 'Like adalah reaksi cepat untuk makanan temanmu. Crave lebih serius — makanan itu masuk ke daftar yang ingin kamu coba, untuk momen ketika teman memposting sesuatu dan kamu langsung ingin ikut makan.',
+  },
+  {
+    q: 'Apakah ada streak?',
+    a: 'Ada. Posting satu makanan setiap hari untuk menjaganya. Lewat satu hari dan streak berakhir — tanpa asuransi atau kesempatan susulan. Anehnya, orang-orang cepat sayang pada streak mereka.',
+  },
+]
+
+export function getFaqs(locale: string) {
+  return locale === 'id' ? FAQS_ID : FAQS
+}

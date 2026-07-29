@@ -1,24 +1,15 @@
 'use client'
 
 import { useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import { motion, useInView } from 'framer-motion'
 
-const signals = [
-  {
-    title: 'You photograph meals.',
-    copy: 'The picture survives in your camera roll. The name of the restaurant usually does not.',
-  },
-  {
-    title: 'You ask friends where to eat.',
-    copy: 'Seeing what they actually ordered is more useful than another average from strangers.',
-  },
-  {
-    title: 'You want the memory.',
-    copy: 'No calories, macros or reason to perform for people you do not know.',
-  },
-]
-
 export default function ForYou() {
+  const t = useTranslations('Home.ForYou')
+  const signals = [1, 2, 3].map((number) => ({
+    title: t(`signal${number}Title`),
+    copy: t(`signal${number}Body`),
+  }))
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
@@ -33,19 +24,17 @@ export default function ForYou() {
         >
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
-              Who it is for
+              {t('eyebrow')}
             </p>
             <h2
               className="mt-4 text-3xl font-bold leading-[1.1] text-brand-ink sm:text-5xl"
               style={{ letterSpacing: '-0.025em' }}
             >
-              For people who keep the photo and lose the details.
+              {t('title')}
             </h2>
           </div>
           <p className="max-w-xl text-base leading-relaxed text-brand-muted sm:text-lg">
-            Makan is a personal food record that happens to be shared with
-            friends. Every meal goes into your diary, and you choose Public or
-            Friends Only when you post.
+            {t('body')}
           </p>
         </motion.div>
 

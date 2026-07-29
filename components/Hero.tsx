@@ -1,11 +1,13 @@
 'use client'
 
 import { useRef, useEffect, useState } from 'react'
+import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { track } from '@vercel/analytics'
 import { APP_STORE_URL } from '@/lib/links'
+import { localizePath } from '@/i18n/paths'
 import StaticPicture from './StaticPicture'
 
 // Source pool for the waterfall. Only five per visible column are rendered,
@@ -80,6 +82,8 @@ const HERO_CARDS_PER_COLUMN = 5
 const HERO_IMAGE_WIDTHS = [320, 640, 800] as const
 
 export default function Hero() {
+  const t = useTranslations('Home.Hero')
+  const locale = useLocale()
   const containerRef = useRef<HTMLDivElement>(null)
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
   const [isWide, setIsWide] = useState(false)
@@ -222,45 +226,45 @@ export default function Hero() {
                 className="mt-4 text-center text-2xl font-bold leading-[1.1] text-white sm:mt-5 sm:text-4xl"
                 style={{ letterSpacing: '-0.025em' }}
               >
-                Three weeks ago you ate something{' '}
-                <span className="perfect-shimmer">perfect.</span>
+                {t('lineOne')}{' '}
+                <span className="perfect-shimmer">{t('perfect')}</span>
                 <span className="mt-2 block text-brand-orange">
-                  Where was that again?
+                  {t('lineTwo')}
                 </span>
               </h1>
 
               <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-white/85 sm:text-base">
-                Save what you ate, where you ate it and who was there.
+                {t('body')}
               </p>
 
               <div className="mt-5">
                 <div className="flex items-center justify-center gap-4">
                   <Link
                     href={APP_STORE_URL}
-                    onClick={() => track('App Store CTA Clicked', { location: 'hero' })}
+                    onClick={() => track('App Store CTA Clicked', { location: 'hero', locale })}
                     className="relative inline-flex min-h-11 items-center justify-center rounded-full bg-brand-orange px-6 py-3 text-sm font-semibold text-white transition-all hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98] sm:px-8 sm:py-3.5 sm:text-base"
                   >
                     <span className="pointer-events-none absolute -inset-3 rounded-full bg-brand-orange/10 blur-xl" aria-hidden />
-                    <span className="relative">Start your food diary</span>
+                    <span className="relative">{t('cta')}</span>
                   </Link>
                   <Link
-                    href="/app"
+                    href={localizePath(locale, '/app')}
                     className="hidden items-center gap-2 rounded-2xl bg-white p-2 pr-3 text-left text-brand-ink shadow-lg shadow-black/20 lg:flex"
                   >
                     <Image
                       src="/app-download-qr.svg"
-                      alt="QR code to download Makan"
+                      alt={t('qrAlt')}
                       width={72}
                       height={72}
                       className="h-[72px] w-[72px] rounded-lg"
                     />
                     <span className="max-w-[76px] text-[11px] font-semibold leading-snug">
-                      Scan with your iPhone
+                      {t('qr')}
                     </span>
                   </Link>
                 </div>
                 <p className="mt-3 text-[13px] font-medium text-white/85">
-                  Free on iPhone
+                  {t('free')}
                 </p>
               </div>
             </div>

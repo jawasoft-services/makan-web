@@ -62,3 +62,34 @@ export const SUPPORT_FAQS: SupportFaqItem[] = [
     a: `There’s no in-app export. Email ${SUPPORT_EMAIL} to request access to, correction of, deletion of, or a portable copy of your data. Our Privacy Policy explains what we hold and why.`,
   },
 ]
+
+export const SUPPORT_FAQS_ID: SupportFaqItem[] = [
+  {
+    q: 'Bagaimana cara menghapus akun?',
+    a: `Buka Settings, scroll ke bagian paling bawah, lalu ketuk Delete Account dan konfirmasi lewat Delete My Data. Kamu akan diminta memverifikasi identitas terlebih dahulu; caranya tergantung metode masuk yang kamu gunakan. Penghapusan bersifat permanen dan tidak bisa dibatalkan: akun, postingan makanan, dan fotomu akan dihapus. Kalau verifikasi tidak berhasil, email ${SUPPORT_EMAIL} dan kami akan membantu menghapus akunmu.`,
+  },
+  {
+    q: 'Bagaimana cara mengganti username atau nama tampilan?',
+    a: `Nama tampilan bisa diganti dari tab Profile: ketuk Edit profile, ubah nama, lalu simpan. Username ditetapkan saat akun dibuat dan tidak bisa diganti di aplikasi; di layar itu tertulis USERNAME · LOCKED. Kalau username-mu bermasalah, misalnya memuat informasi pribadi, email ${SUPPORT_EMAIL}.`,
+  },
+  {
+    q: 'Saya tidak bisa masuk.',
+    a: 'Makan mendukung Sign in with Apple, Google, dan email dengan kata sandi. Masuklah dengan cara yang sama seperti saat mendaftar. Kalau memakai email dan kata sandi, ketuk Forgot Password? di layar masuk dan kami akan mengirim tautan reset.',
+  },
+  {
+    q: 'Postingan makananku tidak bisa diunggah.',
+    a: `Makan akan mencoba lagi secara otomatis saat kamu offline. Kamu akan melihat pesan “You’re offline. Posts will retry when connected.” Kalau unggahan gagal, banner menyediakan pilihan Retry dan Discard sehingga postinganmu tidak langsung hilang. Kalau tetap gagal saat koneksi bagus, email ${SUPPORT_EMAIL}.`,
+  },
+  {
+    q: 'Bagaimana cara melaporkan postingan atau memblokir seseorang?',
+    a: 'Ketuk menu tiga titik di postingan makanan. Report mengirimkannya kepada kami untuk ditinjau. Block User mencegah orang itu melihat postinganmu atau menemukanmu di Makan.',
+  },
+  {
+    q: 'Apakah Makan tersedia di Android?',
+    a: 'Belum. Saat ini Makan hanya tersedia di iPhone. Versi Android sedang dikerjakan, tetapi kami belum punya tanggal rilis.',
+  },
+  {
+    q: 'Bagaimana cara mendapatkan salinan dataku?',
+    a: `Belum ada fitur ekspor di aplikasi. Email ${SUPPORT_EMAIL} untuk meminta akses, koreksi, penghapusan, atau salinan portabel datamu. Kebijakan Privasi kami menjelaskan data apa yang disimpan dan alasannya.`,
+  },
+]

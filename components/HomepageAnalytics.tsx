@@ -1,11 +1,13 @@
 'use client'
 
 import { useEffect } from 'react'
+import { useLocale } from 'next-intl'
 import { track } from '@vercel/analytics'
 
 const sections = ['how-it-works', 'features', 'faq', 'android-waitlist']
 
 export default function HomepageAnalytics() {
+  const locale = useLocale()
   useEffect(() => {
     const seen = new Set<string>()
     const observer = new IntersectionObserver(
@@ -13,7 +15,7 @@ export default function HomepageAnalytics() {
         for (const entry of entries) {
           if (!entry.isIntersecting || seen.has(entry.target.id)) continue
           seen.add(entry.target.id)
-          track('Homepage Section Viewed', { section: entry.target.id })
+          track('Homepage Section Viewed', { section: entry.target.id, locale })
           observer.unobserve(entry.target)
         }
       },
@@ -26,7 +28,7 @@ export default function HomepageAnalytics() {
     }
 
     return () => observer.disconnect()
-  }, [])
+  }, [locale])
 
   return null
 }

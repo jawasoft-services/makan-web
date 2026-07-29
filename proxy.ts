@@ -1,4 +1,18 @@
+import createMiddleware from "next-intl/middleware"
+import { defineRouting } from "next-intl/routing"
 import { NextResponse, type NextRequest } from "next/server"
+import { isIndonesianRoute, stripLocalePrefix } from "@/i18n/availability"
+import { routing } from "@/i18n/routing"
+
+const localizedMiddleware = createMiddleware(routing)
+const englishOnlyMiddleware = createMiddleware(
+  defineRouting({
+    locales: ["en"],
+    defaultLocale: "en",
+    localePrefix: "never",
+    localeDetection: false,
+  }),
+)
 
 /**
  * Canonical-host consolidation: permanently redirect the apex (non-www) host
@@ -18,10 +32,28 @@ export function proxy(request: NextRequest) {
     )
   }
 
-  return NextResponse.next()
+  const { pathname } = request.nextUrl
+
+  // Editorial, legal, restaurant and meal pages have not been translated yet.
+  // A manually entered /id URL falls back to the canonical English route
+  // instead of presenting English content under an Indonesian URL.
+  if (pathname.startsWith("/id/") && !isIndonesianRoute(pathname)) {
+    const url = request.nextUrl.clone()
+    url.pathname = stripLocalePrefix(pathname)
+    const response = NextResponse.redirect(url, 307)
+    response.cookies.set("NEXT_LOCALE", "en", {
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: "lax",
+    })
+    return response
+  }
+
+  return isIndonesianRoute(pathname)
+    ? localizedMiddleware(request)
+    : englishOnlyMiddleware(request)
 }
 
 export const config = {
-  // Skip Next internals + static assets; redirect everything else on the apex.
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  // Skip APIs, Next internals and any request with a file extension.
+  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
 }

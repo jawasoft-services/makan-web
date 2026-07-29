@@ -1,16 +1,28 @@
 import type { Metadata } from 'next'
+import { setRequestLocale } from 'next-intl/server'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
 import { Emphasis } from '@/components/Emphasis'
 import { createPageMetadata } from '@/lib/site-metadata'
+import ManifestoIndonesian from './ManifestoIndonesian'
 
-export const metadata: Metadata = createPageMetadata({
-  title: 'Manifesto — Makan',
-  description:
-    "It started because we couldn't eat together. Makan is the record of what you ate — the food diary you keep with your friends.",
-  path: '/manifesto',
-  type: 'article',
-})
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const isIndonesian = locale === 'id'
+  return createPageMetadata({
+    title: 'Manifesto — Makan',
+    description: isIndonesian
+      ? 'Semuanya bermula karena kami tidak bisa makan bersama. Makan adalah catatan tentang apa yang kamu makan dan siapa yang ada bersamamu.'
+      : "It started because we couldn't eat together. Makan is the record of what you ate — the food diary you keep with your friends.",
+    path: isIndonesian ? '/id/manifesto' : '/manifesto',
+    type: 'article',
+    locale,
+  })
+}
 
 // The full manifesto. A server component: it ships the complete essay as plain
 // HTML (nothing is hidden behind JS). The only client code is <Emphasis>, a
@@ -19,9 +31,19 @@ export const metadata: Metadata = createPageMetadata({
 // statically. Read only the emphasised words and you get the manifesto in
 // miniature: eat together -> the table -> remember what you ate -> otherwise
 // forget -> mattered/trended -> tasted -> with you -> that's the gap Makan fills.
-export default function ManifestoPage() {
+export default async function ManifestoPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  setRequestLocale(locale)
+
   return (
     <>
+      {locale === 'id' ? (
+        <ManifestoIndonesian />
+      ) : (
       <main id="main-content" className="bg-brand-cream min-h-screen text-brand-ink">
         <article className="mx-auto max-w-[680px] px-5 pb-24 pt-32 sm:px-8 sm:pb-32 sm:pt-40">
 
@@ -191,6 +213,7 @@ export default function ManifestoPage() {
           </div>
         </article>
       </main>
+      )}
       <Footer />
     </>
   )

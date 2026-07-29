@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
+import { useLocale, useTranslations } from 'next-intl'
 import { Link } from 'next-view-transitions'
 import { motion, useInView } from 'framer-motion'
 import { track } from '@vercel/analytics'
@@ -16,6 +17,8 @@ interface FinalCTAProps {
 }
 
 export default function FinalCTA({ mealCount }: FinalCTAProps) {
+  const t = useTranslations('Home.Final')
+  const locale = useLocale()
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
@@ -31,9 +34,9 @@ export default function FinalCTA({ mealCount }: FinalCTAProps) {
           transition={{ duration: 0.5, ease: EASE_OUT }}
         >
           <span className="cta-ping h-2 w-2 rounded-full bg-brand-orange" aria-hidden />
-          Live now
+          {t('live')}
           <span className="font-semibold text-brand-orange/80 normal-case tracking-normal">
-            · <StatTicker value={mealCount} inView={inView} /> meals logged
+            · <StatTicker value={mealCount} inView={inView} /> {t('logged')}
           </span>
         </motion.p>
 
@@ -44,7 +47,7 @@ export default function FinalCTA({ mealCount }: FinalCTAProps) {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, ease: EASE_OUT }}
         >
-          Makan is <span className="cta-live-word">live.</span>
+          {t('titleBefore')} <span className="cta-live-word">{t('titleLive')}</span>
         </motion.h2>
 
         <motion.p
@@ -53,8 +56,7 @@ export default function FinalCTA({ mealCount }: FinalCTAProps) {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.1, ease: EASE_OUT }}
         >
-          Start with the next meal you do not want to lose. Free on iPhone;
-          choose Public or Friends Only.
+          {t('body')}
         </motion.p>
 
         <motion.div
@@ -65,12 +67,12 @@ export default function FinalCTA({ mealCount }: FinalCTAProps) {
         >
           <Link
             href={APP_STORE_URL}
-            onClick={() => track('App Store CTA Clicked', { location: 'final' })}
+            onClick={() => track('App Store CTA Clicked', { location: 'final', locale })}
             className="relative inline-block overflow-hidden rounded-full bg-white px-9 py-4 text-base font-semibold text-brand-orange shadow-lg shadow-black/15 transition-all hover:shadow-xl hover:shadow-black/20 active:scale-[0.98]"
           >
             <span className="pointer-events-none absolute -inset-4 rounded-full bg-white/20 blur-xl" aria-hidden />
             <span className="cta-btn-glint" aria-hidden />
-            <span className="relative">Start your food diary — free</span>
+            <span className="relative">{t('cta')}</span>
           </Link>
         </motion.div>
 
@@ -81,9 +83,9 @@ export default function FinalCTA({ mealCount }: FinalCTAProps) {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.3, ease: EASE_OUT }}
         >
-          <p className="text-base font-semibold text-brand-ink">On Android?</p>
+          <p className="text-base font-semibold text-brand-ink">{t('android')}</p>
           <p className="mt-1 text-sm text-brand-muted">
-            It&apos;s in the works. Get one email when it launches.
+            {t('androidBody')}
           </p>
           <AndroidWaitlist />
         </motion.div>
