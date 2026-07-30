@@ -1,10 +1,12 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import { motion, useInView } from 'framer-motion'
-import { FAQS } from '@/lib/faq'
+import type { FaqItem } from '@/lib/faq'
 
-export default function FAQ() {
+export default function FAQ({ items }: { items: FaqItem[] }) {
+  const t = useTranslations('Home.Faq')
   const [open, setOpen] = useState<number | null>(null)
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
@@ -25,15 +27,15 @@ export default function FAQ() {
             className="mt-4 text-3xl font-bold text-brand-ink sm:text-4xl lg:text-5xl"
             style={{ letterSpacing: '-0.02em' }}
           >
-            You&apos;re probably
+            {t('titleLine1')}
             <br />
-            wondering.
+            {' '}{t('titleLine2')}
           </h2>
         </motion.div>
 
         {/* FAQ items — editorial numbered list */}
         <div className="mt-12 sm:mt-16">
-          {FAQS.map((faq, i) => {
+          {items.map((faq, i) => {
             const isOpen = open === i
             return (
               <motion.div

@@ -48,7 +48,10 @@ export interface PublicMeal {
 }
 
 // Enough variety for several swipes without mounting hundreds of image cards.
-export const HOME_MEAL_STRIP_TARGET = 30
+// Remote Firebase photos are served directly (not through a billed Vercel
+// transformation), so keep the swipeable strip rich without making a visitor
+// download dozens of full-size originals.
+export const HOME_MEAL_STRIP_TARGET = 12
 
 // Roughly 4 in 5 cards should be tagged to a real venue (the whole pitch is
 // "remembered at <place>"), with 1 in 5 venue-less for texture. ~38% of recent

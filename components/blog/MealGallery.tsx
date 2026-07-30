@@ -1,9 +1,20 @@
 "use client"
 
-import Image from "next/image"
 import { useCallback, useEffect, useState } from "react"
 import { useReducedMotion } from "framer-motion"
 import type { MealEmbed } from "@/lib/reviews/types"
+import StaticPicture from "@/components/StaticPicture"
+
+const GALLERY_IMAGE_WIDTHS = [480, 900, 1400] as const
+
+function staticBlogPath(src: string) {
+  return src
+    .replace(
+      "/blog/kendal-street-kitchen/",
+      "/static-images/v1/blog/kendal-street-kitchen/",
+    )
+    .replace(/\.(?:jpg|jpeg|png|webp)$/i, "")
+}
 
 export function MealGallery({ meals }: { meals: MealEmbed[] }) {
   const withPhotos = meals.filter((m) => m.photo)
@@ -46,11 +57,14 @@ export function MealGallery({ meals }: { meals: MealEmbed[] }) {
               aria-label={`Open photo: ${m.caption}`}
               className="group block overflow-hidden rounded-xl border border-brand-line text-left transition-colors hover:border-brand-orange/50"
             >
-              <Image
-                src={m.photo as string}
+              <StaticPicture
+                basePath={staticBlogPath(m.photo as string)}
+                widths={GALLERY_IMAGE_WIDTHS}
                 alt={m.alt}
                 width={500}
                 height={500}
+                sizes="(min-width: 640px) 30vw, 100vw"
+                loading="lazy"
                 className="h-44 w-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
               />
               <span className="block px-3 py-2 text-xs text-brand-muted">{m.caption}</span>
@@ -107,11 +121,13 @@ export function MealGallery({ meals }: { meals: MealEmbed[] }) {
               }
               onMouseLeave={() => setLens(null)}
             >
-              <Image
-                src={active.photo as string}
+              <StaticPicture
+                basePath={staticBlogPath(active.photo as string)}
+                widths={GALLERY_IMAGE_WIDTHS}
                 alt={active.alt}
                 width={1400}
                 height={1400}
+                sizes="(min-width: 768px) 768px, 100vw"
                 className="max-h-[80vh] w-auto object-contain transition-transform duration-200 ease-out"
                 style={
                   lens
