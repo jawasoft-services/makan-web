@@ -3,6 +3,7 @@
 import Image from "next/image"
 import { useLocale, useTranslations } from "next-intl"
 import { usePathname } from "next/navigation"
+import { useEffect, useRef } from "react"
 import { track } from "@vercel/analytics"
 import { localizePath } from "@/i18n/paths"
 import { APP_STORE_URL } from "@/lib/links"
@@ -19,14 +20,17 @@ export default function VenueLanding({ venue }: VenueLandingProps) {
   const pathname = usePathname()
   const t = useTranslations("VenueLanding")
   const bareVenuePath = pathname.replace(/^\/(?:en|id)(?=\/|$)/, "") || "/"
+  const didTrackView = useRef(false)
 
-  function rememberLocale(nextLocale: "en" | "id") {
-    document.cookie = `NEXT_LOCALE=${nextLocale}; path=/; max-age=31536000; samesite=lax`
-    track("venue_landing_locale_changed", {
-      locale: nextLocale,
+  useEffect(() => {
+    if (didTrackView.current) return
+    didTrackView.current = true
+    track("venue_landing_viewed", {
+      locale,
       venue_slug: venue?.slug ?? "unknown",
+      venue_known: Boolean(venue),
     })
-  }
+  }, [locale, venue])
 
   return (
     <div className="flex min-h-screen flex-col bg-brand-cream">
@@ -45,7 +49,13 @@ export default function VenueLanding({ venue }: VenueLandingProps) {
               href={localizePath(option, bareVenuePath)}
               hrefLang={option}
               lang={option}
-              onClick={() => rememberLocale(option)}
+              onClick={() => {
+                document.cookie = `NEXT_LOCALE=${option}; path=/; max-age=31536000; samesite=lax`
+                track("venue_landing_locale_changed", {
+                  locale: option,
+                  venue_slug: venue?.slug ?? "unknown",
+                })
+              }}
               aria-current={locale === option ? "page" : undefined}
               aria-label={`${t("language")}: ${
                 option === "en" ? t("english") : t("indonesian")
