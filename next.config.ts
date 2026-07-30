@@ -45,13 +45,6 @@ const nextConfig: NextConfig = {
   // This repository lives below a user-level lockfile; pin tracing to the
   // actual app so Next does not infer the home directory as the build root.
   outputFileTracingRoot: process.cwd(),
-  // The opengraph-image route reads meal thumbnails + the Plus Jakarta Sans
-  // TTFs off disk at render time. Vercel's tracer can't see the runtime
-  // `join(process.cwd(), ...)` paths, so force these assets into the route's
-  // serverless bundle (else ENOENT in prod).
-  outputFileTracingIncludes: {
-    "/opengraph-image": ["./public/og-tiles/**", "./public/fonts/*.ttf"],
-  },
   images: {
     // The Hobby quota is capped at 5,000 billed transformations. This site is
     // deliberately image-heavy, so width variants from /_next/image exhausted
