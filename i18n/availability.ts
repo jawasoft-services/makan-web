@@ -1,7 +1,9 @@
 const INDONESIAN_ROUTES = new Set([
   "/",
   "/app",
+  "/account-deletion",
   "/contact",
+  "/data-deletion",
   "/manifesto",
   "/partner",
   "/story",

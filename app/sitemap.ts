@@ -8,7 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const localized = (
     path: string,
-    changeFrequency: "weekly" | "monthly",
+    changeFrequency: "weekly" | "monthly" | "yearly",
     priority: number,
   ) => {
     const enUrl = `${base}${path}`
@@ -39,6 +39,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...localized("/partner", "monthly", 0.8),
     ...localized("/contact", "monthly", 0.8),
     ...localized("/support", "monthly", 0.7),
+    ...localized("/account-deletion", "yearly", 0.5),
+    ...localized("/data-deletion", "yearly", 0.5),
     ...localized("/manifesto", "monthly", 0.6),
     ...localized("/app", "monthly", 0.8),
     { url: `${base}/privacy-policy`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },

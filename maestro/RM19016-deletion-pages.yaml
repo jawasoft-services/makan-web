@@ -1,0 +1,12 @@
+url: http://127.0.0.1:31016/id/account-deletion
+---
+- openLink: http://127.0.0.1:31016/id/account-deletion
+- assertVisible: "Hapus akun Makan-mu"
+- assertVisible: "Email Makan untuk menghapus akun saya"
+- scrollUntilVisible:
+    element:
+      text: "Ajukan penghapusan data tertentu"
+    direction: DOWN
+- tapOn: "Ajukan penghapusan data tertentu"
+- assertVisible: "Hapus data Makan tertentu"
+- assertVisible: "Email Makan untuk menghapus data tertentu"

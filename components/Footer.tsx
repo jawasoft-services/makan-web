@@ -21,6 +21,8 @@ export default function Footer() {
     { label: t('restaurants'), href: localizePath(locale, '/partner') },
     { label: t('support'), href: localizePath(locale, '/support') },
     { label: t('contact'), href: localizePath(locale, '/contact') },
+    { label: t('deleteAccount'), href: localizePath(locale, '/account-deletion') },
+    { label: t('deleteData'), href: localizePath(locale, '/data-deletion') },
     { label: t('privacy'), href: '/privacy-policy' },
     { label: t('terms'), href: '/tos' },
   ]
