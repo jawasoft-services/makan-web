@@ -29,7 +29,7 @@ const terminalCopy: Record<Exclude<InviteState, "active">, { title: string; body
   },
   full: {
     title: "This table is full",
-    body: "Six friends have already joined this invite.",
+    body: "Six people have already joined this invite.",
   },
   invalid: {
     title: "This invite isn’t available",
@@ -156,7 +156,7 @@ export default function InviteLanding({ publicId }: { publicId: string }) {
         {hostName} invited you to their table
       </h1>
       <p className="max-w-md text-base leading-relaxed text-brand-muted sm:text-lg">
-        Open Makan to see the invite. Joining adds {hostName} as your friend—it won’t add anyone else at the table.
+        Open Makan to see the invite. Join to become Makan friends with {hostName} and everyone else who joins this table.
       </p>
       <button type="button" onClick={openApp} className="invite-primary">Open in Makan</button>
       <a
