@@ -21,6 +21,7 @@ export default function Navbar() {
   const locale = useLocale()
   const t = useTranslations('Nav')
   const isHome = stripLocalePrefix(pathname) === '/'
+  const isInvite = stripLocalePrefix(pathname).startsWith('/invite/')
   const homeHref = localizePath(locale, '/')
   const navLinks = [
     { label: t('howItWorks'), href: '#how-it-works' },
@@ -40,6 +41,10 @@ export default function Navbar() {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  // Invite links are a focused handoff into the app. The marketing navigation
+  // adds competing exits and a second App Store CTA, so the invite owns its page.
+  if (isInvite) return null
 
   return (
     <nav
