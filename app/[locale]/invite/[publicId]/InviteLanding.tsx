@@ -93,7 +93,7 @@ export default function InviteLanding({ publicId }: { publicId: string }) {
   }, [publicId])
 
   const appUrl = useMemo(
-    () => secret ? `makanapp://invite/${publicId}#s=${encodeURIComponent(secret)}` : "",
+    () => secret ? `makanapp://invite/${publicId}?s=${encodeURIComponent(secret)}` : "",
     [publicId, secret],
   )
 

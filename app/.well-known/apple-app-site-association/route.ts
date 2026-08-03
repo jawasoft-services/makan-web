@@ -1,19 +1,9 @@
-const details = [
-  "T3Z49Z9YUB.com.makanofficial.makanapp",
-  "T3Z49Z9YUB.com.makanofficial.makandev",
-].map((appID) => ({
-  appID,
-  components: [
-    {
-      "/": "/invite/*",
-      comment: "Makan table invite links",
-    },
-  ],
-}))
-
 export function GET() {
   return Response.json(
-    { applinks: { apps: [], details } },
+    // Invite credentials live in URL fragments. HTTPS universal-link handoff
+    // does not preserve them reliably, so invite URLs must open the safe web
+    // landing first and enter Makan through its explicit custom-scheme CTA.
+    { applinks: { apps: [], details: [] } },
     {
       headers: {
         "Content-Type": "application/json",
