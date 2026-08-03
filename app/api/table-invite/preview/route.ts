@@ -11,6 +11,7 @@ export const runtime = "nodejs"
 
 const PUBLIC_ID_PATTERN = /^[A-Za-z0-9_-]{12}$/
 const SECRET_PATTERN = /^[A-Za-z0-9_-]{43}$/
+const CONSENT_VERSION = 2
 
 type PreviewBody = {
   publicId?: unknown
@@ -41,6 +42,7 @@ const secretMatches = (storedHex: unknown, secret: string): boolean => {
 }
 
 const inviteState = (data: Record<string, unknown>, now: number): string => {
+  if (data.consentVersion !== CONSENT_VERSION) return "invalid"
   if (data.status === "revoked") return "revoked"
   if (data.status === "full") return "full"
   const expiresAt = data.expiresAt as { toMillis?: () => number } | undefined
