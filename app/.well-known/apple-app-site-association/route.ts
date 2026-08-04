@@ -1,9 +1,21 @@
 export function GET() {
   return Response.json(
-    // Invite credentials live in URL fragments. HTTPS universal-link handoff
-    // does not preserve them reliably, so invite URLs must open the safe web
-    // landing first and enter Makan through its explicit custom-scheme CTA.
-    { applinks: { apps: [], details: [] } },
+    {
+      applinks: {
+        apps: [],
+        details: [
+          {
+            appIDs: ["T3Z49Z9YUB.com.makanofficial.makanapp"],
+            components: [
+              {
+                "/": "/club/*",
+                comment: "Permanent Restaurant Club venue routes. The app resolves the slug to an exact server-owned venue before showing or recording anything.",
+              },
+            ],
+          },
+        ],
+      },
+    },
     {
       headers: {
         "Content-Type": "application/json",
