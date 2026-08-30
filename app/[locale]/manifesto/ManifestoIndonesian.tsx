@@ -1,17 +1,15 @@
 import Link from "next/link"
 import { Emphasis } from "@/components/Emphasis"
 
-// Indonesian manifesto. Not a translation — the same argument told in
-// Indonesian, with local substitutions (nasi bungkus, warung, tanya mas-nya)
-// where the English has its own references.
+// Indonesian manifesto. Same story, told in Indonesian — not translated.
+// It travels through one meal: kamu duduk -> menunya datang -> harus pilih ->
+// Makan menjawab -> dari mana jawabannya -> kalau tidak tahu -> makanannya
+// datang -> kamu makan -> yang tidak akan kami lakukan -> awalnya ->
+// kamu pulang -> lain kali kamu duduk di tempat baru.
 //
-// Register decisions, deliberate: "kamu" throughout, never "Anda" (Anda reads
-// like a bank or a government form and kills the warmth). "kami" wherever the
-// team speaks — exclusive we, because the reader did not build this. "kita"
-// appears exactly ONCE, on the shared human problem, where including the reader
-// is the whole point. Category loanwords (menu, review, feed) stay English
-// because translating them reads stiff; abstract marketing English does not
-// appear at all.
+// Register: "kamu" throughout, never "Anda". "kami" whenever the team speaks,
+// because the reader did not build this. Short sentences, everyday words, no
+// strategy language. Category loanwords (menu, review) stay English.
 export default function ManifestoIndonesian() {
   return (
     <main
@@ -24,7 +22,7 @@ export default function ManifestoIndonesian() {
         </p>
 
         <h1 className="mt-6 text-[34px] font-bold leading-[1.08] tracking-[-0.025em] text-brand-ink sm:text-[52px] lg:text-[64px]">
-          Kamu pegang menunya dan{" "}
+          Kamu duduk. Menunya datang. Kamu{" "}
           <Emphasis variant="warm" trigger="load">
             bingung&nbsp;mau&nbsp;makan&nbsp;apa
           </Emphasis>
@@ -33,86 +31,93 @@ export default function ManifestoIndonesian() {
 
         <div className="mt-12 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
           <p className="text-[19px] font-medium text-brand-ink sm:text-xl">
-            Makan adalah aplikasi yang kamu buka saat itu. Cuma itu idenya.
-            Semua hal lain yang dilakukan Makan hanya untuk sembilan puluh detik
-            antara kamu duduk dan kamu bilang mau pesan apa.
+            Makan itu buat saat itu.
           </p>
           <p>
-            Semua aplikasi makanan jago di satu hal: bantu kamu pilih tempat.
-            Bintang bisa melakukan itu. Empat setengah, dua ribu review, kamu
-            langsung gas ke sana. Lalu kamu duduk, menunya datang, dan tidak ada
-            satu pun yang menolong. Tidak ada yang menilai rendangnya dibanding
-            ayam bakarnya. Tidak ada yang tahu kamu kurang suka daun ketumbar.
-            Aplikasinya berhasil membawa kamu sampai pintu, lalu berhenti di
-            meja — padahal di meja itulah keputusannya benar-benar terjadi.
+            Aplikasi makanan yang lain sudah membantu kamu sampai sini. Mereka
+            memberi peringkat tempat. Empat setengah, dua ribu review, jadi kamu
+            datang. Bagus. Tapi sekarang kamu sudah duduk, ada dua puluh menu di
+            depanmu, dan tidak ada satu bintang pun yang memberi tahu kamu harus
+            makan yang mana.
           </p>
           <p>
-            Jadi kamu melakukan apa yang semua orang lakukan. Pesan{" "}
-            <span className="italic">yang aman aja</span>. Atau ikut pesanan
-            orang yang duduk paling cepat. Dan kadang makanannya datang, satu
-            suap, dan kamu langsung tahu kamu salah pilih — dan kesempatan makan
-            itu sudah habis. <span className="italic">Kita</span> semua pernah
-            di posisi itu.
+            Jadi kamu melakukan apa yang semua orang lakukan. Pesan yang aman.
+            Atau ikut pesanan temanmu. Dan kadang makanannya datang dan kamu
+            langsung tahu: seharusnya kamu pesan yang dia pesan.
           </p>
           <p className="text-[19px] font-medium text-brand-ink sm:text-xl">
-            Makan mulai di titik{" "}
-            <Emphasis variant="warm">mereka&nbsp;berhenti</Emphasis>.
+            Makan mulai di sini.{" "}
+            <Emphasis variant="warm">Di&nbsp;meja</Emphasis>, dengan menu yang
+            terbuka.
           </p>
         </div>
 
         <div className="mt-16 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
           <p>
-            Cara kerjanya dari apa yang sudah pernah kamu makan. Setiap makanan
-            yang kamu simpan menambah satu hal nyata yang Makan tahu tentang
-            kamu — bukan pendapat yang kamu tulis, tapi makanan yang benar-benar
-            kamu pilih hari Selasa itu dan kamu habiskan.
+            Makan melihat apa yang pernah kamu makan. Bukan apa yang kamu tulis
+            soal makanan itu. Tapi apa yang benar-benar kamu pilih, kamu makan,
+            dan kamu habiskan.
           </p>
           <p>
-            Lalu Makan menanyakan satu hal yang jawabannya selalu jujur. Dua
-            makananmu sendiri, berdampingan:{" "}
+            Lalu Makan melihat menu ini dan mencari yang paling dekat dengan apa
+            yang sudah kamu suka. Dan Makan bilang alasannya. Kamu pilih yang
+            dibakar daripada yang digoreng, empat dari lima kali. Kamu boleh
+            tidak setuju. Memang harus bisa.
+          </p>
+        </div>
+
+        <div className="mt-16 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+          <p>
+            Semua itu datang dari satu hal kecil. Setiap kali kamu makan
+            sesuatu, kamu simpan. Satu foto. Kamu di mana. Sudah, itu saja.
+          </p>
+          <p>
+            Nanti, Makan menunjukkan dua makananmu sendiri dan bertanya satu
+            hal:{" "}
             <Emphasis variant="warm">
               mana yang akan kamu pesan lagi lebih dulu?
-            </Emphasis>{" "}
-            Bukan nilai dari lima. Sebuah pilihan — bentuknya sama persis dengan
-            pilihan yang nanti kamu buat di meja. Jawab beberapa puluh kali, dan
-            Makan tahu sesuatu yang tidak bisa diketahui situs review mana pun:
-            bukan apa yang disukai orang banyak, tapi apa yang kamu sendiri
-            pesan lagi.
+            </Emphasis>
           </p>
           <p>
-            Seringnya kamu ada di tempat yang{" "}
-            <Emphasis variant="warm">
-              belum&nbsp;pernah&nbsp;kamu&nbsp;datangi
-            </Emphasis>
-            , dan justru itu yang Makan dirancang untuk mengatasi — bukan kasus
-            pinggiran yang sekadar ditoleransi. Makan melihat apa yang pernah
-            kamu pilih, mencari yang paling dekat di menu ini, lalu memberi tahu
-            yang mana dan kenapa: karena kamu pilih yang dibakar daripada yang
-            digoreng, empat dari lima kali. Kamu boleh tidak setuju dengan
-            alasannya — itu justru gunanya alasan itu ditampilkan.
+            Tidak ada bintang. Tidak ada nilai. Cuma pilih satu. Lakukan
+            beberapa kali, dan Makan tahu sesuatu yang tidak akan pernah
+            diketahui situs review mana pun. Bukan apa yang disukai orang
+            banyak. Tapi apa yang kamu pesan lagi.
           </p>
         </div>
 
         <div className="mt-16 rounded-2xl border border-brand-line bg-white/40 p-6 sm:p-8">
           <p className="text-[22px] font-semibold leading-[1.25] tracking-[-0.01em] text-brand-ink sm:text-[26px]">
-            Dan kadang Makan memang tidak tahu.
+            Kadang Makan memang tidak tahu.
           </p>
           <p className="mt-4 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
-            Belum cukup orang yang makan di sini, atau tidak ada yang kamu
-            simpan yang cukup dekat dengan menu di depanmu. Kalau itu terjadi,
-            Makan akan <Emphasis variant="warm">mengatakannya</Emphasis>, dan
-            menyebut yang mana dari keduanya — supaya kamu tahu harus tanya
-            mas-nya atau tinggal pesan apa pun yang kamu mau. Makan tidak akan
-            mengemas tebakan sebagai jawaban. Rekomendasi yang tidak bisa
-            dipercaya lebih buruk daripada tidak ada rekomendasi, karena kamu
-            baru tahu setelah makanannya sampai di meja.
+            Mungkin belum ada yang makan di sini. Mungkin tidak ada yang kamu
+            simpan yang mirip dengan menu ini. Kalau itu terjadi, Makan akan{" "}
+            <Emphasis variant="warm">mengatakannya</Emphasis>, dan menyebut yang
+            mana dari keduanya. Lalu kamu bisa tanya mas-nya, atau pesan apa pun
+            yang kamu mau.
+          </p>
+          <p className="mt-4 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+            Makan tidak akan pura-pura tahu. Tebakan yang dikemas jadi jawaban
+            itu lebih buruk daripada tidak ada jawaban, karena kamu baru sadar
+            waktu makanannya sudah ada di depanmu.
+          </p>
+        </div>
+
+        <div className="mt-16 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+          <p>Lalu makanannya datang, dan kamu makan.</p>
+          <p>
+            Itu bagian yang paling enak, dan bukan cuma karena kamu lapar. Kamu
+            baru saja belajar sesuatu. Simpan, dan minggu depan Makan bisa
+            membandingkannya dengan yang lain dan bertanya mana yang akan kamu
+            pesan lagi. Makan malam hari ini adalah{" "}
+            <Emphasis variant="warm">jawaban&nbsp;besok</Emphasis>.
           </p>
         </div>
 
         <div className="mt-16">
           <p className="text-[15px] text-brand-ink/70">
-            Empat hal yang tidak akan kami lakukan, karena masing-masing
-            diam-diam akan merusak janji di atas.
+            Empat hal yang tidak akan pernah kami lakukan ke kamu.
           </p>
 
           <div className="mt-8 space-y-7 border-l-2 border-brand-orange pl-5 sm:pl-7">
@@ -121,52 +126,45 @@ export default function ManifestoIndonesian() {
                 Tidak ada makanan yang akan diberi nilai dari lima.
               </p>
               <p className="mt-2 text-[17px] leading-relaxed text-brand-ink/80">
-                Angka 4,6 adalah seribu orang asing dengan seribu selera
-                berbeda, diratakan jadi satu angka yang tidak mewakili siapa
-                pun. Satu-satunya peringkat di Makan adalah milikmu: makananmu
-                dibandingkan satu sama lain sampai urutannya benar-benar kamu
-                percaya. Makanan nomor tiga sepanjang hidupmu bisa jadi masakan
-                ibumu waktu kamu sembilan tahun. Tidak ada rata-rata yang bisa
-                menemukan itu.
+                Angka 4,6 itu seribu orang asing dengan seribu selera berbeda,
+                dipadatkan jadi satu angka yang tidak pas untuk siapa pun.
+                Satu-satunya urutan di Makan adalah urutanmu. Makanan nomor tiga
+                sepanjang hidupmu bisa jadi masakan ibumu waktu kamu sembilan
+                tahun. Tidak ada rata-rata yang bisa menemukan itu.
               </p>
             </div>
 
             <div>
               <p className="font-semibold text-brand-ink">
-                Kami selalu menyebut sebuah saran datang dari mana.
+                Kami selalu bilang sebuah jawaban datang dari mana.
               </p>
               <p className="mt-2 text-[17px] leading-relaxed text-brand-ink/80">
-                Pilihanmu sendiri, pilihan temanmu, atau keterangan dari
-                restorannya — diberi label, tidak pernah dilebur jadi satu kata
-                &ldquo;direkomendasikan&rdquo;. Kalau kami tidak bisa
-                menunjukkan dasarnya, berarti saran itu belum layak diberikan —
-                dan kami lebih memilih menunjukkan alasan yang tipis daripada
-                menyembunyikannya.
+                Dari kamu, dari temanmu, atau dari restorannya sendiri.
+                Disebutkan, setiap kali. Tidak pernah dilebur jadi satu kata
+                &ldquo;direkomendasikan&rdquo;.
               </p>
             </div>
 
             <div>
               <p className="font-semibold text-brand-ink">
-                Tidak ada restoran yang bisa membayar untuk masuk ke pesananmu.
+                Tidak ada restoran yang bisa bayar untuk mengubah pesananmu.
               </p>
               <p className="mt-2 text-[17px] leading-relaxed text-brand-ink/80">
-                Tidak ke sarannya, tidak ke feed-mu, tidak jadi
-                &ldquo;pilihan&nbsp;utama&rdquo;. Begitu sebuah dapur bisa
-                membayar untuk mengubah apa yang kami sarankan kamu makan, tidak
-                ada lagi yang pantas dibaca di halaman ini.
+                Sepeser pun tidak, selamanya. Begitu sebuah dapur bisa membeli
+                tempatnya di makan malammu, tidak ada lagi yang pantas dibaca di
+                halaman ini.
               </p>
             </div>
 
             <div>
               <p className="font-semibold text-brand-ink">
-                Kalau kamu berubah pikiran, sarannya ikut berubah.
+                Kamu bisa menghapus semuanya, kapan saja.
               </p>
               <p className="mt-2 text-[17px] leading-relaxed text-brand-ink/80">
-                Setiap makanan yang kamu simpan adalah milikmu. Hapus satu, dan
-                itu berhenti dihitung dalam saran kami. Hapus semuanya, dan
-                Makan melupakan apa yang sudah disimpulkannya tentang kamu —
-                karena catatan yang tidak bisa kamu tarik kembali sebenarnya
-                bukan milikmu.
+                Hapus satu makanan, dan itu berhenti dihitung. Hapus semuanya,
+                dan Makan melupakan apa yang sudah disimpulkannya tentang kamu.
+                Catatan yang tidak bisa kamu tarik kembali itu bukan benar-benar
+                milikmu.
               </p>
             </div>
           </div>
@@ -179,70 +177,66 @@ export default function ManifestoIndonesian() {
           </p>
 
           <p className="mt-5 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
-            AI tidak bisa mencium aroma, mengunyah, atau mengingat rasanya lapar
-            waktu kecil. Jadi kami menarik garisnya di tempat yang jujur: AI
-            tidak akan pernah bilang sebuah makanan itu enak, tidak akan
-            menuliskan ingatanmu, tidak akan mengarang pendapat yang bukan
-            milikmu. Rasa adalah satu hal di sini yang memang harus manusia —
-            dan itu milikmu.
+            AI tidak bisa mencium. Tidak bisa mengunyah. Tidak ingat rasanya
+            lapar waktu kecil. Jadi AI tidak akan pernah bilang sebuah makanan
+            itu enak, tidak akan menuliskan ingatanmu, tidak akan mengarang
+            pendapat yang bukan milikmu. Mencicipi itu bagian manusianya, dan
+            itu tetap milikmu.
           </p>
           <p className="mt-5 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
-            Ada satu hal sempit yang sedang kami bangun, dan hanya kalau kamu
-            menyalakannya: mengenali bahwa dua fotomu sendiri adalah makanan yang
-            sama, supaya Makan bisa bilang kamu pernah memakannya dan apa
-            pendapatmu waktu itu. Mengenali, bukan menilai. Fotomu sendiri, bukan
-            foto orang lain. Matikan, dan semua yang sudah disimpulkannya ikut
-            hilang.
+            Ada satu pekerjaan kecil yang sedang kami bangun, dan hanya kalau
+            kamu menyalakannya. AI bisa mengenali kalau dua fotomu sendiri itu
+            makanan yang sama. Lalu Makan bisa bilang: kamu pernah makan ini,
+            dan ini pendapatmu waktu itu. Mengenali, bukan menilai. Fotomu
+            sendiri, bukan foto orang lain. Matikan, dan Makan lupa.
           </p>
         </div>
 
         <div className="mt-16 border-t border-brand-line pt-12">
           <p className="text-[15px] text-brand-ink/70">
-            Semua ini bukan hasil rapat strategi.
+            Semua ini bukan hasil rapat.
           </p>
 
           <div className="mt-6 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
             <p>
-              Makan bermula saat COVID. Aku tidak bisa bertemu teman-teman, jadi
-              beberapa dari kami membuka satu shared story di Snapchat dan
-              memposting apa yang sedang kami makan — makan malam, sarapan, nasi
-              bungkus di jalan pulang. Tanpa direncanakan, anggotanya lewat dari
-              300 orang. Saat kamu tidak bisa berbagi meja, foto makanan itu
-              menjadi mejanya.
+              Ini mulai waktu COVID. Aku tidak bisa bertemu teman-teman, jadi
+              beberapa dari kami membuat shared story di Snapchat dan memposting
+              makan malam kami. Sarapan. Nasi bungkus di jalan pulang. Tiga
+              ratus orang ikut tanpa kami minta.
             </p>
             <p>
-              Itu <Emphasis variant="warm">enam&nbsp;tahun</Emphasis> dan ribuan
-              makanan yang lalu, dan dari situ kami belajar hal yang menjadi
-              dasar seluruh aplikasi ini. Catatannya ada. Kami bisa scroll ke
-              belakang dan melihat tepat apa yang masing-masing dari kami pesan
-              lagi. Tapi setiap kali salah satu dari kami duduk di restoran yang
-              belum pernah didatangi, semua catatan itu cuma diam di sana, tidak
-              terpakai, sementara kami menatap menu dan tetap pesan yang aman.
+              Enam tahun. Ribuan makanan. Dan ini yang kami pelajari dari situ.
             </p>
             <p>
-              Catatannya sendiri bukan tujuannya. Catatan itu bahan mentah untuk
-              sebuah keputusan yang tidak ada yang membantu kami buat.
+              Semuanya tersimpan. Kami bisa scroll ke belakang dan melihat tepat
+              apa yang masing-masing dari kami pesan lagi. Tapi setiap kali
+              salah satu dari kami duduk di tempat baru, tidak ada satu pun yang
+              menolong. Kami menatap menu dan tetap pesan yang aman.
             </p>
             <p>
-              Jadi kalau kamu sudah pakai Makan untuk mengingat makanan: tidak
-              ada yang diambil. Catatanmu tetap milikmu, tetap pribadi kecuali
-              kamu membagikannya, tetap foto dan caption yang sama. Catatan itu
-              baru saja diberi pekerjaan yang selama ini memang jadi buktinya.
+              Menyimpan makanannya bukan tujuannya. Makanan itu tersimpan{" "}
+              <Emphasis variant="warm">untuk&nbsp;ini</Emphasis>.
+            </p>
+            <p>
+              Jadi kalau kamu sudah pakai Makan untuk mengingat makananmu, tidak
+              ada yang diambil. Makananmu tetap milikmu, tetap pribadi kecuali
+              kamu membagikannya. Sekarang cuma ada gunanya.
             </p>
           </div>
         </div>
 
         <p className="mt-14 text-[22px] font-semibold leading-[1.25] tracking-[-0.01em] text-brand-ink sm:text-[28px]">
-          Mungkin kamu masih punya dua puluh ribu kali makan lagi seumur hidup.{" "}
+          Kamu selesai. Kamu bayar. Kamu pulang. Dan lain kali kamu duduk di
+          tempat baru dan ada yang menyerahkan menu ke kamu,{" "}
           <span className="text-brand-orange">
-            Pesan sesuatu yang akan kamu{" "}
-            <Emphasis variant="warm">ingat</Emphasis>.
+            kamu tidak akan{" "}
+            <Emphasis variant="warm">mulai&nbsp;dari&nbsp;nol</Emphasis>.
           </span>
         </p>
 
         <p className="mt-10 text-[16px] italic leading-relaxed text-brand-ink/70">
           Kalau kamu pernah membaca satu menu dua kali dan akhirnya tetap pesan
-          yang aman, kamu sudah tahu ini untuk apa.
+          yang aman, ini buat kamu.
         </p>
 
         <div className="mt-16 flex items-center justify-between border-t border-white/15 pt-8">

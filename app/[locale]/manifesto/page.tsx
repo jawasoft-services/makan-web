@@ -16,31 +16,30 @@ export async function generateMetadata({
   return createPageMetadata({
     title: 'Manifesto — Makan',
     description: isIndonesian
-      ? 'Kamu pegang menunya dan bingung mau makan apa. Makan adalah aplikasi yang kamu buka saat itu.'
-      : "You're holding the menu and you have no idea. Makan is the app you open then.",
+      ? 'Kamu duduk. Menunya datang. Kamu bingung mau makan apa. Makan itu buat saat ini.'
+      : "You sit down. The menu comes. You have no idea what to order. Makan is for right then.",
     path: isIndonesian ? '/id/manifesto' : '/manifesto',
     type: 'article',
     locale,
   })
 }
 
-// The full manifesto. A server component: it ships the complete essay as plain
-// HTML (nothing is hidden behind JS). The only client code is <Emphasis>, a
-// leaf that lets a few load-bearing phrases "ignite" into saffron as the reader
-// reaches them — reduced-motion viewers and crawlers get the finished emphasis
-// statically.
+// The manifesto, told as ONE STORY that travels through a single meal:
+// you sit down -> the menu comes -> you have to choose -> Makan answers ->
+// where that answer came from -> when it can't answer -> the food arrives ->
+// you eat -> what we will never do -> where this began -> you walk out ->
+// next time you sit down somewhere new.
 //
-// Structure is deliberate and evidence-led. Reading research (Nielsen: ~20-28%
-// of words read; Chartbeat: viewership peaks ~550px, ~half reach 1500px) means
-// the argument has to be COMPLETE before the fold and a half. So the order is:
-// the reader's moment -> what Makan is -> the gap other apps leave -> how it
-// answers -> what it refuses to do -> and only THEN the origin story, which
-// works as proof rather than as an opening. Everything abstract is cashed out
-// into a concrete scene, which is the best-evidenced persuasion lever we have.
+// Every capability is explained at the point IN THE MEAL where it happens,
+// rather than in a section of its own. Plain words only, short sentences,
+// readable by a ten-year-old on the first pass. No strategy language.
 //
-// Emphasis chain, read alone, is the manifesto in miniature: no idea -> where
-// they stop -> order again first -> never been here -> say so -> tasted ->
-// six years -> remember.
+// The only client code is <Emphasis>, a leaf that lets load-bearing phrases
+// "ignite" into saffron as the reader reaches them — reduced-motion viewers
+// and crawlers get the finished emphasis statically. Read the emphasised
+// words alone and you get the story in miniature: no idea -> at the table ->
+// order again first -> say so -> tomorrow's answer -> tasted -> for this ->
+// starting from nothing.
 export default async function ManifestoPage({
   params,
 }: {
@@ -61,226 +60,222 @@ export default async function ManifestoPage({
             Manifesto
           </p>
 
-          {/* The moment, as the opening move. Not history, not a belief in the
-              abstract — the scene the reader has actually been in. */}
+          {/* Beginning of the meal: sitting down. */}
           <h1
             className="mt-6 text-[34px] font-bold leading-[1.08] tracking-[-0.025em] text-brand-ink sm:text-[52px] lg:text-[64px]"
           >
-            You&apos;re holding the menu and you have{' '}
+            You sit down. The menu comes. You have{' '}
             <Emphasis variant="warm" trigger="load">no&nbsp;idea</Emphasis>.
           </h1>
 
           <div className="mt-12 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
             <p className="text-[19px] font-medium text-brand-ink sm:text-xl">
-              Makan is the app you open then. That is the whole idea. Everything
-              else it does is in service of the ninety seconds between sitting
-              down and telling someone what you want.
+              Makan is for right then.
             </p>
             <p>
-              Every food app is good at one job: helping you pick a place. Stars
-              do that. Four and a half, two thousand reviews, you get in the car.
-              Then you sit down, the menu arrives, and none of it helps. Nobody
-              rated the rendang against the ayam bakar. Nobody knew you don&apos;t
-              much like coriander. The apps got you through the door and stopped
-              at the table, which is exactly where the actual decision happens.
+              Every other food app helped you get this far. They rank places.
+              Four and a half stars, two thousand reviews, so you came. Good.
+              But now you are sitting down, there are twenty things on the menu,
+              and not one of those stars tells you which one to eat.
             </p>
             <p>
-              So you do what everyone does. You order the safe thing. Or you copy
-              whoever ordered first. And sometimes the food arrives and you know,
-              one bite in, that you chose wrong and the meal is spent.
+              So you do what everybody does. You pick the safe thing. Or you
+              copy your friend. And sometimes the plate lands and you know
+              straight away that you should have had what she ordered.
             </p>
             <p className="text-[19px] font-medium text-brand-ink sm:text-xl">
-              Makan starts where{' '}
-              <Emphasis variant="warm">they&nbsp;stop</Emphasis>.
+              Makan starts here.{' '}
+              <Emphasis variant="warm">At&nbsp;the&nbsp;table</Emphasis>, with
+              the menu open.
             </p>
           </div>
 
-          {/* How it works. Concrete mechanism, no mystique. */}
+          {/* The choice: what Makan actually says. */}
           <div className="mt-16 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
             <p>
-              It works from what you have already eaten. Every meal you save is
-              one more real thing Makan knows about you — not an opinion you
-              typed, a dish you actually chose on a Tuesday and finished.
+              It looks at what you have eaten before. Not what you said about
+              it. What you really chose, and ate, and finished.
             </p>
             <p>
-              Then it asks the only question that gets an honest answer. Two of
-              your own meals, side by side:{' '}
-              <Emphasis variant="warm">which would you order again first?</Emphasis>{' '}
-              Not a score out of five. A choice, the same shape as the one
-              you&apos;ll make at the table. Answer a few dozen of those and
-              Makan knows something no review site can know — not what a crowd
-              enjoyed, but what you personally go back for.
-            </p>
-            <p>
-              Most of the time you are somewhere{' '}
-              <Emphasis variant="warm">you&apos;ve&nbsp;never&nbsp;been</Emphasis>,
-              and that is the case Makan is built for, not the exception it
-              tolerates. It takes what you have chosen before, finds the closest
-              thing on this menu, and tells you which and why: because you
-              picked the grilled one over the fried one, four times out of five.
-              You can disagree with the reasoning, which is the point of showing
-              it.
+              Then it looks at this menu and finds the thing closest to what you
+              already love. And it tells you why. You picked the grilled one
+              over the fried one, four times out of five. You can argue with
+              that. You should be able to.
             </p>
           </div>
 
-          {/* The honesty promise. Specific and literally keepable — a vague
-              "we might be wrong" measurably lowers confidence; naming WHICH
-              kind of thin evidence is what earns trust. */}
+          {/* Where the answer comes from. */}
+          <div className="mt-16 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+            <p>
+              All of that comes from something small. Every time you eat
+              something, you save it. A photo. Where you were. That is it.
+            </p>
+            <p>
+              Later, Makan shows you two of your own meals and asks one
+              question:{' '}
+              <Emphasis variant="warm">which would you order again first?</Emphasis>
+            </p>
+            <p>
+              No stars. No score. Just pick one. Do that a few times and Makan
+              knows something no review site can ever know. Not what a crowd
+              liked. What you go back for.
+            </p>
+          </div>
+
+          {/* When it can't answer. */}
           <div className="mt-16 rounded-2xl border border-brand-line bg-white/40 p-6 sm:p-8">
             <p className="text-[22px] font-semibold leading-[1.25] tracking-[-0.01em] text-brand-ink sm:text-[26px]">
-              And sometimes it won&apos;t know.
+              Sometimes it will not know.
             </p>
             <p className="mt-4 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
-              Too few people have eaten here, or nothing you&apos;ve saved is
-              close enough to what&apos;s on this menu. When that happens Makan
-              will <Emphasis variant="warm">say&nbsp;so</Emphasis>, and say which
-              of the two it is, so you know whether to ask the waiter or just
-              order what you fancy. It will not dress a guess up as an answer.
-              A recommendation you can&apos;t trust is worse than no
-              recommendation, because you only find out at the table.
+              Maybe nobody has eaten here yet. Maybe nothing you have saved is
+              anything like this menu. When that happens Makan will{' '}
+              <Emphasis variant="warm">say&nbsp;so</Emphasis>, and tell you
+              which of the two it is. Then you can ask the waiter, or just order
+              what you fancy.
+            </p>
+            <p className="mt-4 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+              It will not pretend. A guess dressed up as an answer is worse than
+              no answer, because you only find out when the food is already in
+              front of you.
             </p>
           </div>
 
-          {/* Commitments. Each abstract value cashed out into a concrete
-              practice — the strongest evidenced persuasion lever. */}
+          {/* The food arrives. This is the turn: the meal feeds the next one. */}
+          <div className="mt-16 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+            <p>Then the food comes, and you eat it.</p>
+            <p>
+              That is the good part, and not only because you are hungry. You
+              just learned something. Save it, and next week Makan can hold it
+              up against something else and ask you which one you would go back
+              to. Tonight&apos;s dinner is{' '}
+              <Emphasis variant="warm">tomorrow&apos;s&nbsp;answer</Emphasis>.
+            </p>
+          </div>
+
+          {/* Promises, in the signature negation shape. Short and plain. */}
           <div className="mt-16">
             <p className="text-[15px] text-brand-ink/70">
-              Four things we won&apos;t do, because each one would quietly break
-              the promise above.
+              Four things we will never do to you.
             </p>
 
             <div className="mt-8 space-y-7 border-l-2 border-brand-orange pl-5 sm:pl-7">
               <div>
                 <p className="text-brand-ink font-semibold">
-                  No dish will ever have a score out of five.
+                  No dish will ever get a score out of five.
                 </p>
                 <p className="mt-2 text-brand-ink/80 text-[17px] leading-relaxed">
                   A 4.6 is a thousand strangers with a thousand different
-                  appetites flattened into one number that describes none of
-                  them. The only ranking on Makan is yours: your meals, held
-                  against each other, until the order is one you actually
-                  believe. Your third-favourite meal ever might be something
-                  your mum made you when you were nine. No aggregate will ever
-                  find that.
+                  mouths, squashed into one number that fits none of them. The
+                  only list on Makan is yours. Your third favourite meal ever
+                  might be something your mum made you when you were nine. No
+                  average will ever find that.
                 </p>
               </div>
 
               <div>
                 <p className="text-brand-ink font-semibold">
-                  We always say where a suggestion came from.
+                  We always tell you where an answer came from.
                 </p>
                 <p className="mt-2 text-brand-ink/80 text-[17px] leading-relaxed">
-                  Your own choices, a friend&apos;s, or something the restaurant
-                  told us — labelled, never blended into the word
-                  &ldquo;recommended&rdquo;. If we can&apos;t show you the
-                  working, we haven&apos;t earned the suggestion, and we&apos;d
-                  rather show you a thin reason than hide it.
+                  You, a friend, or the restaurant itself. Said out loud, every
+                  time. Never mushed together into the word
+                  &ldquo;recommended&rdquo;.
                 </p>
               </div>
 
               <div>
                 <p className="text-brand-ink font-semibold">
-                  No restaurant can buy its way into what you order.
+                  No restaurant can pay to change what you order.
                 </p>
                 <p className="mt-2 text-brand-ink/80 text-[17px] leading-relaxed">
-                  Not the suggestion, not the feed, not a nudge, not a
-                  &ldquo;featured&rdquo; slot. The moment a kitchen can pay to
-                  change what we tell you to eat, nothing else on this page is
-                  worth reading.
+                  Not a penny, not ever. The day a kitchen can buy its way into
+                  your dinner, nothing else on this page is worth reading.
                 </p>
               </div>
 
               <div>
                 <p className="text-brand-ink font-semibold">
-                  Change your mind and the advice changes with it.
+                  You can delete any of it, whenever you like.
                 </p>
                 <p className="mt-2 text-brand-ink/80 text-[17px] leading-relaxed">
-                  Every meal you save is yours. Delete one and it stops counting
-                  towards what we suggest. Delete all of it and Makan forgets
-                  what it worked out about you, because a record you can&apos;t
-                  take back isn&apos;t really yours.
+                  Take one meal away and it stops counting. Take them all away
+                  and Makan forgets what it worked out about you. A record you
+                  cannot undo is not really yours.
                 </p>
               </div>
             </div>
           </div>
 
-          {/* The AI line. Framed as a deliberate boundary rather than an
-              apology: a flaw-confession measurably backfires on an attentive
-              reader, while a stated design limit reads as competence. */}
+          {/* The AI line, plainly. */}
           <div className="mt-16">
             <p className="mt-6 text-[26px] font-semibold leading-[1.2] tracking-[-0.01em] text-brand-ink sm:text-[32px]">
               AI has never <Emphasis variant="warm">tasted</Emphasis> food.
             </p>
 
             <p className="mt-5 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
-              It can&apos;t smell, can&apos;t chew, can&apos;t remember being
-              hungry as a child. So we drew the line where the line honestly
-              falls: it will never tell you a dish is good, never write your
-              memories for you, never invent an opinion you didn&apos;t have.
-              Taste is the one thing here that has to be human, and it&apos;s
-              yours.
+              It cannot smell. It cannot chew. It does not remember being hungry
+              as a kid. So it will never tell you a dish is good, never write
+              your memories for you, never make up an opinion you did not have.
+              Tasting is the human bit, and it stays yours.
             </p>
             <p className="mt-5 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
-              There is one narrow job we are building, and only if you switch it
-              on: noticing that two of your own photos show the same dish, so
-              Makan can tell you that you have eaten this before and what you
-              thought last time. Recognising, not judging. Your photos, not
-              anyone else&apos;s. Switch it off and what it worked out goes with
-              it.
+              There is one small job we are building, and only if you switch it
+              on. It can spot that two of your own photos are the same dish. Then
+              Makan can tell you: you have had this before, and here is what you
+              thought. Recognising, not judging. Your photos, nobody
+              else&apos;s. Switch it off and it forgets.
             </p>
           </div>
 
-          {/* Origin story — LAST, as proof. Research is consistent that history
-              belongs after the belief: a first-time reader has no reason to care
-              who founded us until they share the claim. Here it substantiates
-              the claim instead of delaying it. */}
+          {/* Where it began — late, as proof, told simply. */}
           <div className="mt-16 border-t border-brand-line pt-12">
             <p className="text-[15px] text-brand-ink/70">
-              None of this came out of a strategy meeting.
+              None of this came out of a meeting.
             </p>
 
             <div className="mt-6 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
               <p>
-                Makan started during COVID. I couldn&apos;t see my friends, so a
-                few of us opened a Snapchat story and posted what we were eating
-                — dinner, breakfast, nasi bungkus on the way home. It grew past
-                300 people without us trying. When you can&apos;t share a table,
-                the photo of the meal becomes the table.
+                It started in COVID. I could not see my friends, so a few of us
+                made a Snapchat story and posted our dinners. Breakfast. Nasi
+                bungkus on the way home. Three hundred people joined without us
+                asking anyone.
               </p>
               <p>
-                That was{' '}
-                <Emphasis variant="warm">six&nbsp;years</Emphasis> and thousands
-                of meals ago, and it taught us the thing this whole app rests
-                on. We had the record. We could scroll back and see exactly what
-                each of us went back for. And every time one of us sat down in a
-                restaurant we&apos;d never been to, all of it just sat there,
-                unused, while we squinted at a menu and ordered the safe thing
-                anyway.
+                Six years. Thousands of meals. And here is what we learned from
+                it.
               </p>
               <p>
-                The record was never the point. It was the raw material for a
-                decision nobody was helping us make.
+                We had all of it saved. We could scroll back and see exactly
+                what each of us went back for. But every time one of us sat down
+                somewhere new, none of it helped. We stared at the menu and
+                ordered the safe thing anyway.
               </p>
               <p>
-                So if you already use Makan to remember meals: nothing is being
-                taken away. Your diary is still yours, still private unless you
-                share it, still the same photos and captions. It has just been
-                given the job it was always the evidence for.
+                Keeping the meals was never the point. The meals were{' '}
+                <Emphasis variant="warm">for&nbsp;this</Emphasis>.
+              </p>
+              <p>
+                So if you already use Makan to remember your food, nothing is
+                going away. Your meals are still yours, still private unless you
+                share them. They just have a job now.
               </p>
             </div>
           </div>
 
-          {/* Close */}
+          {/* End of the meal, and the loop closes on the next one. */}
           <p className="mt-14 text-[22px] font-semibold leading-[1.25] tracking-[-0.01em] text-brand-ink sm:text-[28px]">
-            You have maybe twenty thousand meals left in your life.{' '}
+            You finish. You pay. You walk out. And the next time you sit down
+            somewhere new and somebody hands you a menu,{' '}
             <span className="text-brand-orange">
-              Order something you&apos;ll <Emphasis variant="warm">remember</Emphasis>.
+              you will not be{' '}
+              <Emphasis variant="warm">starting&nbsp;from&nbsp;nothing</Emphasis>.
             </span>
           </p>
 
           <p className="mt-10 text-[16px] italic leading-relaxed text-brand-ink/70">
-            If you&apos;ve ever read a menu twice and still ordered the safe
-            thing, you already know what this is for.
+            If you have ever read a menu twice and still ordered the safe thing,
+            this is for you.
           </p>
 
           {/* Signature + back link */}
