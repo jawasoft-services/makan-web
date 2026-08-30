@@ -16,8 +16,8 @@ export async function generateMetadata({
   return createPageMetadata({
     title: 'Manifesto — Makan',
     description: isIndonesian
-      ? 'Semuanya bermula karena kami tidak bisa makan bersama. Makan adalah catatan tentang apa yang kamu makan dan siapa yang ada bersamamu.'
-      : "It started because we couldn't eat together. Makan is the record of what you ate — the food diary you keep with your friends.",
+      ? 'Semuanya bermula karena kami tidak bisa makan bersama. Makan adalah aplikasi yang kamu buka saat kamu tidak tahu mau pesan apa.'
+      : "It started because we couldn't eat together. Makan is the app you open when you don't know what to order.",
     path: isIndonesian ? '/id/manifesto' : '/manifesto',
     type: 'article',
     locale,
@@ -29,8 +29,8 @@ export async function generateMetadata({
 // leaf that lets a few load-bearing phrases "ignite" into saffron as the reader
 // reaches them — reduced-motion viewers and crawlers get the finished emphasis
 // statically. Read only the emphasised words and you get the manifesto in
-// miniature: eat together -> the table -> remember what you ate -> otherwise
-// forget -> mattered/trended -> tasted -> with you -> that's the gap Makan fills.
+// miniature: eat together -> the table -> what you ate -> on your own ->
+// order again first -> never seen -> tasted -> with you -> holding the menu.
 export default async function ManifestoPage({
   params,
 }: {
@@ -70,31 +70,46 @@ export default async function ManifestoPage({
             </p>
             <p>
               That was six years ago. We&apos;ve sent each other thousands of
-              meals since. At some point it stopped feeling like a story and
-              started feeling like a record. So we built an app around it.
+              meals since. And somewhere in there I noticed something odd about
+              all of it.
             </p>
             <p>
-              Most food apps are about deciding where to eat next. They rank
-              restaurants. They score them. They take a thousand strangers&apos;
-              opinions and turn them into one number out of five, and once
-              you&apos;ve eaten, they ask you to do the same. A year goes by,
-              you&apos;ve got a list of places you went to, and you cannot for
-              the life of you{' '}
-              <Emphasis variant="underline">remember what you ate</Emphasis> at
-              any of them.
+              Most food apps help you pick a restaurant. They rank places, score
+              them, take a thousand strangers&apos; opinions and turn them into
+              one number out of five. Then you get there, sit down, open the
+              menu — and you are completely{' '}
+              <Emphasis variant="underline">on your own</Emphasis>. Twelve
+              dishes. No idea. You order the safe thing, or you order what the
+              table&apos;s having, and sometimes you get it wrong.
+            </p>
+            <p>
+              Meanwhile a year goes by, you&apos;ve got a list of places you
+              went to, and you cannot for the life of you remember{' '}
+              <Emphasis variant="warm">what&nbsp;you&nbsp;ate</Emphasis> at any
+              of them. Those two problems are the same problem. You can&apos;t
+              use what you liked, because you never kept it.
             </p>
           </div>
 
           {/* Apex line — pulled out as the structural peak */}
           <p className="mt-14 text-[26px] font-semibold leading-[1.2] tracking-[-0.01em] text-brand-ink sm:text-[34px]">
-            Makan is the opposite. It&apos;s the record of what you ate.
+            Makan is the app you open when you don&apos;t know what to order.
           </p>
 
           <div className="mt-10 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
             <p>
-              Your meal isn&apos;t content. Choose Public or Friends Only when
-              you post. It&apos;s a food diary — the kind that remembers
-              what you&apos;d <Emphasis variant="warm">otherwise&nbsp;forget</Emphasis>.
+              It works by remembering. Every meal you save is one more thing
+              Makan knows about how you actually eat — not what you said in a
+              review, what you chose on a Tuesday. Your meal isn&apos;t content.
+              Choose Public or Friends Only when you save it.
+            </p>
+            <p>
+              Then it asks you the only question that gets a straight answer. Two
+              of your own meals, side by side:{' '}
+              <Emphasis variant="warm">which would you order again first?</Emphasis>{' '}
+              Not a score out of five. A choice. Answer enough of those and Makan
+              knows something no review site does — not what strangers enjoyed,
+              but what you would go back for.
             </p>
             <p>
               The meal that stays with you in five years probably isn&apos;t the
@@ -103,7 +118,29 @@ export default async function ManifestoPage({
               nobody else seems to know about. The meal that{' '}
               <Emphasis variant="warm">mattered</Emphasis> beats the meal that{' '}
               <Emphasis variant="cool">trended</Emphasis>. Makan is built around
-              that.
+              that, because it is better evidence.
+            </p>
+          </div>
+
+          {/* The hard case — cold start is the point, not the edge case */}
+          <div className="mt-16">
+            <p className="text-[15px] text-brand-ink/70">
+              The hard part isn&apos;t the place you know.
+            </p>
+
+            <p className="mt-6 text-[26px] font-semibold leading-[1.2] tracking-[-0.01em] text-brand-ink sm:text-[32px]">
+              It&apos;s the menu you&apos;ve{' '}
+              <Emphasis variant="warm">never&nbsp;seen</Emphasis>.
+            </p>
+
+            <p className="mt-5 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+              A restaurant you&apos;ve never been to is where every food app
+              quietly gives up and shows you an average. Makan does the opposite:
+              it looks at what you have chosen before, finds the thing on this
+              menu closest to it, and tells you why it thinks so. If your own
+              meals can&apos;t answer, it asks the people you chose to trust. And
+              when nobody can answer honestly, it says that instead of guessing.
+              &ldquo;Not enough yet&rdquo; is a real answer here.
             </p>
           </div>
 
@@ -123,28 +160,31 @@ export default async function ManifestoPage({
                   on Makan is your own: your meals, held up against each other,
                   until the order is one you actually believe. Your #3 of all
                   time might be the same dish your mum made for you as a kid.
-                  That means more than a 4.6 from people who weren&apos;t there.
+                  That means more than a 4.6 from people who weren&apos;t there —
+                  and it is the only thing worth basing a recommendation on.
                 </p>
               </div>
 
               <div>
                 <p className="text-brand-ink font-semibold">
-                  Your feed isn&apos;t sorted by what&apos;s popular.
+                  We tell you where a suggestion came from.
                 </p>
                 <p className="mt-2 text-brand-ink/80 text-[17px] leading-relaxed">
-                  Your friends, in the order they posted. There&apos;s a public
-                  feed if you want to see past them, and it works the same way.
-                  Nothing jumps the queue for having more likes.
+                  Your own choice, a friend&apos;s, or something the restaurant
+                  told us — never blurred into one word like
+                  &ldquo;recommended&rdquo;. If we can&apos;t show our working,
+                  we haven&apos;t earned the suggestion.
                 </p>
               </div>
 
               <div>
                 <p className="text-brand-ink font-semibold">
-                  Restaurants can&apos;t pay their way into your feed.
+                  Restaurants can&apos;t pay their way in.
                 </p>
                 <p className="mt-2 text-brand-ink/80 text-[17px] leading-relaxed">
-                  If you see a place on Makan, it&apos;s because someone you
-                  know ate there and remembered it.
+                  Not into your feed, and not into what we suggest you order. If
+                  you see a place on Makan, it&apos;s because someone you know
+                  ate there and remembered it.
                 </p>
               </div>
 
@@ -153,7 +193,8 @@ export default async function ManifestoPage({
                   Your record is yours.
                 </p>
                 <p className="mt-2 text-brand-ink/80 text-[17px] leading-relaxed">
-                  We hold it for you. You can delete it whenever you want.
+                  We hold it for you. Change your mind and it changes what we
+                  suggest. Delete it whenever you want.
                 </p>
               </div>
             </div>
@@ -171,34 +212,44 @@ export default async function ManifestoPage({
 
             <p className="mt-5 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
               It can&apos;t smell, can&apos;t chew, can&apos;t remember being
-              hungry as a kid. So it won&apos;t write your meals, generate your
-              recipes, or guess what you ate from a photo. The point of
-              remembering what you ate is that you tasted it. AI never has.
+              hungry as a kid. So it will never tell you a meal was good, write
+              your memories for you, or invent an opinion you didn&apos;t have.
+            </p>
+            <p className="mt-5 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+              We are building one narrow thing, and only if you switch it on:
+              spotting that two of your own photos are the same dish, so Makan
+              can tell you that you have eaten this before. That is recognition,
+              not judgement. The judgement stays with you, because you are the
+              one who tasted it.
             </p>
           </div>
 
           {/* Gallery + closing */}
           <div className="mt-16 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
             <p>
-              What Makan does is help you remember how you&apos;ve eaten.
-              The Tuesday night dinner. The long lunch in Lisbon that ran four
-              hours. The kebab at 2am after you got home. The first time someone
-              cooked for you properly. The breakfast you ate alone the morning
-              after. The meal you cooked the first night in a new flat. Every
-              meal saved with what was happening around it. What you ate. Who
-              was <Emphasis variant="warm">with&nbsp;you</Emphasis>.
+              So Makan remembers how you&apos;ve eaten. The Tuesday night
+              dinner. The long lunch in Lisbon that ran four hours. The kebab at
+              2am after you got home. The first time someone cooked for you
+              properly. The breakfast you ate alone the morning after. The meal
+              you cooked the first night in a new flat. Every meal saved with
+              what was happening around it. What you ate. Who was{' '}
+              <Emphasis variant="warm">with&nbsp;you</Emphasis>. And all of it
+              waiting for the next time you need it.
             </p>
           </div>
 
           {/* Closing peak */}
           <p className="mt-14 text-[22px] font-semibold leading-[1.25] tracking-[-0.01em] text-brand-ink sm:text-[28px]">
             You remember who was at the table. You can never remember what you
-            actually ate. <span className="text-brand-orange">That&apos;s the gap Makan fills.</span>
+            actually ate — so every new menu starts you back at zero.{' '}
+            <span className="text-brand-orange">
+              That&apos;s the gap Makan fills.
+            </span>
           </p>
 
           <p className="mt-10 text-[16px] italic leading-relaxed text-brand-ink/70">
-            If you&apos;ve ever tried to remember a meal and couldn&apos;t,
-            you&apos;ll get it.
+            If you&apos;ve ever sat down, read the whole menu twice, and ordered
+            the safe thing anyway — you&apos;ll get it.
           </p>
 
           {/* Signature + back link */}
