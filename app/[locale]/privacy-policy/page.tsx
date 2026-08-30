@@ -611,6 +611,13 @@ export default function PrivacyPolicy() {
                 Where the change is significant, we will take reasonable steps to notify you, for
                 example within the App or by email.
               </p>
+              <p>
+                The most recent change, made on 30 August 2026, rewrote the dish recognition parts of
+                sections 3, 4 and 13. That feature is now described as part of how the App works rather
+                than as something you switch on, and legitimate interests replaces consent as its
+                lawful basis. Your right to object is explained in sections 3 and 11. Photographs you
+                saved before the feature existed are still excluded from it unless you opt them in.
+              </p>
             </div>
           </section>
 
