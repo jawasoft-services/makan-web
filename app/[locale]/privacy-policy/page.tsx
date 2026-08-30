@@ -186,25 +186,35 @@ export default function PrivacyPolicy() {
               <p>
                 <strong className="font-semibold text-brand-ink">Dish recognition — a feature we are building.</strong>{' '}
                 The hardest version of the question Makan exists to answer is a menu in a restaurant
-                you have never visited. To help there, we are building an optional feature that would
-                recognise when two of your own meals are the same dish — so the App can tell you that
-                you have eaten something before, and point to a dish somewhere new that resembles one
-                you already chose to return to.
+                you have never visited. To help there, we are building a feature that recognises when
+                two of your own meals are the same dish — so the App can tell you that you have eaten
+                something before, and point to a dish somewhere new that resembles one you already
+                chose to return to.
               </p>
               <p>
                 <strong className="font-semibold text-brand-ink">It is not available yet, and nothing analyses your photographs today.</strong>{' '}
-                When it arrives you will be asked to turn it on. It will never be on by default.
-                Photographs you uploaded before it existed will never be analysed unless you
-                separately opt them in — doing nothing means they are never touched. We will describe
-                the feature in this Policy, and name the service provider involved, before it starts.
+                We will describe the feature in this Policy, and name the service provider involved,
+                before it starts. Photographs you uploaded before it existed will never be analysed
+                unless you separately opt them in — doing nothing means they are never touched. That
+                was our promise when you saved them, and it does not change.
               </p>
               <p>
-                <strong className="font-semibold text-brand-ink">If you say no, nothing about the App gets worse.</strong>{' '}
-                Turning this down leaves every other part of Makan working exactly as it does now, and
-                we will not keep asking. You can change your mind later in either direction.
+                <strong className="font-semibold text-brand-ink">When it arrives, it will be part of how the App works.</strong>{' '}
+                Recognising your own dishes is not an extra we add on the side; it is how Makan answers
+                the question you opened it to ask. So we will not ask you to switch it on, and there
+                will not be a setting to switch it off. For this we rely on legitimate interests rather
+                than your consent, and we explain that choice in section 4.2.
               </p>
               <p>
-                If we do introduce it: we will compare your photographs only with your own. We will
+                <strong className="font-semibold text-brand-ink">You can still tell us to stop.</strong>{' '}
+                You have a right to object to processing we base on legitimate interests. If you would
+                rather we did not do this with your photographs, write to us at
+                support@makanofficial.com and we will stop for your account. Your guidance will then
+                come from whatever other evidence we have, which may be less useful to you. We will not
+                keep asking you to change your mind.
+              </p>
+              <p>
+                When we introduce it: we will compare your photographs only with your own. We will
                 use it only to recognise and compare dishes. We will not use it to identify people,
                 faces or places, to work out your dietary habits, your health or your beliefs, for
                 advertising, or to make decisions about you that have legal or similarly significant
@@ -221,10 +231,11 @@ export default function PrivacyPolicy() {
                 Under UK GDPR, we rely on the following lawful bases. In short:{' '}
                 <strong className="font-semibold text-brand-ink">contract</strong> covers your account
                 and the core features; <strong className="font-semibold text-brand-ink">legitimate
-                interests</strong> covers the private taste picture, usage measurement, security,
-                fault-fixing, and improving the Services; and{' '}
+                interests</strong> covers the private taste picture, dish recognition, usage
+                measurement, security, fault-fixing, and improving the Services; and{' '}
                 <strong className="font-semibold text-brand-ink">consent</strong> covers enquiries,
-                external marketing, and dish recognition when it arrives.
+                external marketing, and any analysis of photographs you saved before dish recognition
+                existed.
               </p>
               <div>
                 <h3 className="font-medium text-brand-ink">4.1 Contract</h3>
@@ -249,6 +260,21 @@ export default function PrivacyPolicy() {
                   object at any time using the contact details above, and we will stop.
                 </p>
                 <p className="mt-2">
+                  <strong className="font-semibold text-brand-ink">Dish recognition (section 3).</strong>{' '}
+                  We rely on legitimate interests here for the same reason. Makan is the app you open
+                  when you do not know what to order, and knowing that two of your photographs are the
+                  same dish is what makes an answer possible — so the feature is the service, not an
+                  addition to it. We consider the interest a shared one: the comparison happens only
+                  between your own photographs, what it produces is a fact about food rather than a
+                  judgement about you, nothing from it is used to advertise to you or to evaluate you,
+                  and nothing about it leaves the App. Weighed against your rights and reasonable
+                  expectations, we think someone who asks an app what to order expects it to recognise
+                  the meals they already showed it. Two limits keep that balance honest. Photographs
+                  you saved before the feature existed are left out of it unless you opt them in. And
+                  you can object at any time using the contact details above, after which we stop for
+                  your account.
+                </p>
+                <p className="mt-2">
                   <strong className="font-semibold text-brand-ink">Operating and improving the Services.</strong>{' '}
                   We also rely on legitimate interests for internal operations: measuring how the App
                   is used, security, abuse prevention, crash and fault diagnosis, and improving
@@ -259,10 +285,11 @@ export default function PrivacyPolicy() {
               <div>
                 <h3 className="font-medium text-brand-ink">4.3 Consent</h3>
                 <p className="mt-2">
-                  We rely on your consent when you submit an enquiry through the Site, and before we
+                  We rely on your consent when you submit an enquiry through the Site, before we
                   feature content that identifies you on an external platform such as our Instagram
-                  (see section 5). If we introduce dish recognition (section 3), we will rely on your
-                  consent for it, and separately for any analysis of photographs you saved beforehand.
+                  (see section 5), and before we analyse any photograph you saved before dish
+                  recognition existed (section 3). We do not rely on consent for dish recognition
+                  itself; that is explained in section 4.2.
                 </p>
                 <p className="mt-2">
                   You can withdraw consent at any time by contacting us or unsubscribing. Withdrawing
@@ -564,10 +591,12 @@ export default function PrivacyPolicy() {
                 not analysis, and we do that for every meal you save.
               </p>
               <p>
-                If we introduce the dish recognition feature described in section 3, it will work by
-                measuring how similar the food in two photographs looks, and only for people who have
-                turned it on. It affects only what the App shows you about your own meals. You will be
-                able to correct any grouping that is wrong, and turn the feature off.
+                When we introduce the dish recognition feature described in section 3, it will work by
+                measuring how similar the food in two photographs looks. It affects only what the App
+                shows you about your own meals, it does not produce a judgement about you, and it makes
+                no decision that has a legal or similarly significant effect. You will be able to
+                correct any grouping that is wrong, and you can object to the processing altogether as
+                described in sections 3 and 11.
               </p>
             </div>
           </section>
@@ -581,6 +610,13 @@ export default function PrivacyPolicy() {
                 The updated version will be published with a revised &ldquo;Last updated&rdquo; date.
                 Where the change is significant, we will take reasonable steps to notify you, for
                 example within the App or by email.
+              </p>
+              <p>
+                The most recent change, made on 30 August 2026, rewrote the dish recognition parts of
+                sections 3, 4 and 13. That feature is now described as part of how the App works rather
+                than as something you switch on, and legitimate interests replaces consent as its
+                lawful basis. Your right to object is explained in sections 3 and 11. Photographs you
+                saved before the feature existed are still excluded from it unless you opt them in.
               </p>
             </div>
           </section>
