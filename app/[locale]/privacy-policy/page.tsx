@@ -21,15 +21,22 @@ export default function PrivacyPolicy() {
 
         {/* Title */}
         <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-brand-ink">Privacy Policy</h1>
-        <p className="mt-2 text-sm text-brand-muted">Last updated: 18 July 2026</p>
+        <p className="mt-2 text-sm text-brand-muted">Last updated: 30 August 2026</p>
 
         <div className="mt-10 space-y-10 text-[15px] leading-relaxed text-brand-ink/80">
 
           <p>
             MAKAN APP LTD (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;) operates the Makan mobile
             application (the &ldquo;App&rdquo;) and the website at makanofficial.com (the
-            &ldquo;Site&rdquo;) (together, the &ldquo;Services&rdquo;). This Privacy Policy
-            explains how we collect, use, store, and protect personal data when you use the Services.
+            &ldquo;Site&rdquo;) (together, the &ldquo;Services&rdquo;).
+          </p>
+          <p>
+            <strong className="font-semibold text-brand-ink">Makan is for deciding what to eat.</strong>{' '}
+            You use it when you are looking at a menu and do not know what to order. Almost everything
+            the App does with your information exists to answer that one question: it remembers the
+            meals you have had, it learns which ones you would choose again, and it uses that to tell
+            you what you are likely to enjoy. This Policy explains what we collect and what we do with
+            it, and where a thing we hold exists to help you decide, it says so.
           </p>
           <p>
             We comply with the UK General Data Protection Regulation (UK GDPR) and the Data
@@ -77,16 +84,18 @@ export default function PrivacyPolicy() {
                   <li>Meal photos you upload</li>
                   <li>Captions or notes added to meals</li>
                   <li>Restaurant or location tags applied to meals</li>
-                  <li>Audience settings selected for each post (just me, friends-only, or public)</li>
+                  <li>The audience you choose for each meal — friends-only or public (see section 5)</li>
                   <li>Friend relationships and friend requests (Makan uses mutual friendships)</li>
                   <li>Likes, craves, and comments</li>
+                  <li>Your answers when the App asks you to compare two of your own meals and pick the one you would choose again</li>
                 </ul>
               </div>
               <div>
                 <h3 className="font-medium text-brand-ink">2.3 Technical, usage, and security data (App and Site)</h3>
                 <ul className="mt-2 list-disc pl-5 space-y-1">
                   <li>Device and app information required to operate the Services, such as device type, operating system, and app version</li>
-                  <li>Usage and analytics events (for example, which screens are opened and which features are used), collected to understand and improve the Services</li>
+                  <li>Usage and analytics events, collected to understand and improve the Services. These record which screens are opened and which features are used. Where an action involves another person — for example liking or commenting on someone else&apos;s meal — the event also records the account identifier of that other person, so we can tell what kind of interaction took place</li>
+                  <li>Crash reports and diagnostic data, including a device identifier and the actions leading up to a crash, used to find and fix faults</li>
                   <li>Approximate location derived from your IP address, used for aggregate analytics</li>
                   <li>Security, abuse-prevention, and diagnostic logs used to protect users and the Services</li>
                 </ul>
@@ -109,11 +118,46 @@ export default function PrivacyPolicy() {
                   submit, and a timestamp, so we can respond to you.
                 </p>
               </div>
-              <p>
-                We do not intentionally collect special category personal data. However,
-                user-generated content may reveal sensitive information. You should avoid uploading
-                personal data you do not wish to be processed.
-              </p>
+              <div>
+                <h3 className="font-medium text-brand-ink">2.6 What you have to give us, and what you do not</h3>
+                <p className="mt-2">
+                  To create and use a Makan account we need your email address; without it we cannot
+                  provide the App. Everything else is your choice. You do not have to add a display
+                  name, upload meals, tag a restaurant, add captions, add friends, or allow location
+                  access. If you choose not to, the related features are unavailable but the rest of
+                  the App works normally.
+                </p>
+                <p className="mt-2">
+                  We do not intentionally collect special category personal data. However,
+                  user-generated content may reveal sensitive information. You should avoid uploading
+                  personal data you do not wish to be processed.
+                </p>
+              </div>
+              <div>
+                <h3 className="font-medium text-brand-ink">2.7 How we work out what you like</h3>
+                <p className="mt-2">
+                  This is the part of Makan that answers the question you came with, so it is worth
+                  reading.
+                </p>
+                <p className="mt-2">
+                  When the App shows you two of your own saved meals and asks which one you would
+                  choose again, we keep your answer. From enough of those answers we build a private
+                  picture of your own taste: an ordering of your own meals, a sense of which
+                  restaurants suit you, and short written summaries of what your choices suggest you
+                  enjoy. That picture is what lets Makan tell you what you are likely to like at a
+                  restaurant you have never been to.
+                </p>
+                <p className="mt-2">
+                  It is personal data about you, so you should know exactly what it is and is not:
+                </p>
+                <ul className="mt-2 list-disc pl-5 space-y-1">
+                  <li>It is built <strong className="font-semibold text-brand-ink">only from choices you made on purpose</strong> — the comparisons you answered. We do not build it by watching what you look at, tap, or linger on.</li>
+                  <li>It is <strong className="font-semibold text-brand-ink">stored privately against your account and shown only to you.</strong> No other user sees it.</li>
+                  <li>It is used <strong className="font-semibold text-brand-ink">only to help you decide what to eat.</strong> Never to advertise to you, never to rank you against other people, never to make a decision that affects you outside the App.</li>
+                  <li>Losing a comparison does not mean you disliked something. It records only which of two meals you would return to first.</li>
+                  <li>You can <strong className="font-semibold text-brand-ink">object</strong> to us building it at all — see section 11 — and it is <strong className="font-semibold text-brand-ink">deleted when you delete your account.</strong></li>
+                </ul>
+              </div>
             </div>
           </section>
 
@@ -123,20 +167,48 @@ export default function PrivacyPolicy() {
             <div className="mt-4 space-y-3">
               <p>We use personal data to:</p>
               <ul className="list-disc pl-5 space-y-1">
+                <li><strong className="font-semibold text-brand-ink">Help you decide what to eat</strong> — by remembering the meals you have saved, keeping the comparisons you have answered, and building the private picture of your taste described in section 2.7</li>
                 <li>Create and manage user accounts</li>
-                <li>Provide core App functionality, including saving meals and displaying feeds according to your selected audience settings</li>
+                <li>Provide core App functionality, including saving meals and displaying feeds according to the audience you chose</li>
                 <li>Operate the friend graph, including friend requests and mutual friendships</li>
                 <li>Synchronise content across your devices</li>
                 <li>Show nearby places and calculate distances, using your device location where you have granted permission</li>
+                <li>Find and fix faults, using crash reports and diagnostic data</li>
                 <li>Maintain security, prevent abuse, and protect the integrity of the Services</li>
                 <li>Respond to support enquiries</li>
                 <li>Feature content you post to a public audience in our own marketing, where permitted (see section 5)</li>
                 <li>Understand usage and improve the reliability, performance, and design of the Services</li>
               </ul>
               <p>
-                We do not sell personal data, we do not use personal data for third-party
-                advertising, and we do not use AI to generate, infer, or analyse the content of your
-                meals.
+                We do not sell personal data, and we do not use personal data for third-party
+                advertising.
+              </p>
+              <p>
+                <strong className="font-semibold text-brand-ink">Dish recognition — a feature we are building.</strong>{' '}
+                The hardest version of the question Makan exists to answer is a menu in a restaurant
+                you have never visited. To help there, we are building an optional feature that would
+                recognise when two of your own meals are the same dish — so the App can tell you that
+                you have eaten something before, and point to a dish somewhere new that resembles one
+                you already chose to return to.
+              </p>
+              <p>
+                <strong className="font-semibold text-brand-ink">It is not available yet, and nothing analyses your photographs today.</strong>{' '}
+                When it arrives you will be asked to turn it on. It will never be on by default.
+                Photographs you uploaded before it existed will never be analysed unless you
+                separately opt them in — doing nothing means they are never touched. We will describe
+                the feature in this Policy, and name the service provider involved, before it starts.
+              </p>
+              <p>
+                <strong className="font-semibold text-brand-ink">If you say no, nothing about the App gets worse.</strong>{' '}
+                Turning this down leaves every other part of Makan working exactly as it does now, and
+                we will not keep asking. You can change your mind later in either direction.
+              </p>
+              <p>
+                If we do introduce it: we will compare your photographs only with your own. We will
+                use it only to recognise and compare dishes. We will not use it to identify people,
+                faces or places, to work out your dietary habits, your health or your beliefs, for
+                advertising, or to make decisions about you that have legal or similarly significant
+                effects.
               </p>
             </div>
           </section>
@@ -145,26 +217,57 @@ export default function PrivacyPolicy() {
           <section>
             <h2 className="text-lg font-semibold text-brand-ink">4. Lawful Bases for Processing</h2>
             <div className="mt-4 space-y-4">
-              <p>Under UK GDPR, we rely on the following lawful bases.</p>
+              <p>
+                Under UK GDPR, we rely on the following lawful bases. In short:{' '}
+                <strong className="font-semibold text-brand-ink">contract</strong> covers your account
+                and the core features; <strong className="font-semibold text-brand-ink">legitimate
+                interests</strong> covers the private taste picture, usage measurement, security,
+                fault-fixing, and improving the Services; and{' '}
+                <strong className="font-semibold text-brand-ink">consent</strong> covers enquiries,
+                external marketing, and dish recognition when it arrives.
+              </p>
               <div>
                 <h3 className="font-medium text-brand-ink">4.1 Contract</h3>
-                <p className="mt-2">Processing is necessary to provide the App and its core features once you create an account.</p>
+                <p className="mt-2">
+                  Processing is necessary to provide the App and its core features once you create an
+                  account — account management, saving and displaying meals according to your chosen
+                  audience, the friend graph, and syncing across your devices.
+                </p>
               </div>
               <div>
                 <h3 className="font-medium text-brand-ink">4.2 Legitimate interests</h3>
                 <p className="mt-2">
-                  Processing is necessary for internal operations such as security, abuse prevention,
-                  understanding usage, and improving the reliability of the Services. We balance these
-                  interests against your rights and expectations.
+                  <strong className="font-semibold text-brand-ink">The private picture of your taste (section 2.7).</strong>{' '}
+                  We rely on legitimate interests to build it. Makan exists to help you decide what to
+                  order, and that picture is the means by which it does so — it is not an incidental
+                  by-product of running the App, it is the service you came for. We consider the
+                  interest a shared one: the picture is built only from comparisons you deliberately
+                  answered, it is visible only to you, it is never used to advertise to you or to
+                  evaluate you, and it produces nothing that leaves the App. Weighed against your
+                  rights and reasonable expectations, we think someone who asks an app what they
+                  should order expects that app to remember what they liked. If you disagree, you can
+                  object at any time using the contact details above, and we will stop.
+                </p>
+                <p className="mt-2">
+                  <strong className="font-semibold text-brand-ink">Operating and improving the Services.</strong>{' '}
+                  We also rely on legitimate interests for internal operations: measuring how the App
+                  is used, security, abuse prevention, crash and fault diagnosis, and improving
+                  reliability and design. We balance these against your rights and expectations, we do
+                  not use this data for advertising, and you can object as described in section 11.
                 </p>
               </div>
               <div>
                 <h3 className="font-medium text-brand-ink">4.3 Consent</h3>
                 <p className="mt-2">
-                  We rely on your consent when you submit an enquiry through the Site, for any
-                  optional analytics technologies that require consent, and before we feature content
-                  that identifies you on an external platform such as our Instagram (see section 5).
-                  You can withdraw consent at any time by contacting us or unsubscribing.
+                  We rely on your consent when you submit an enquiry through the Site, and before we
+                  feature content that identifies you on an external platform such as our Instagram
+                  (see section 5). If we introduce dish recognition (section 3), we will rely on your
+                  consent for it, and separately for any analysis of photographs you saved beforehand.
+                </p>
+                <p className="mt-2">
+                  You can withdraw consent at any time by contacting us or unsubscribing. Withdrawing
+                  your consent does not affect the lawfulness of any processing we carried out before
+                  you withdrew it.
                 </p>
               </div>
             </div>
@@ -174,31 +277,51 @@ export default function PrivacyPolicy() {
           <section>
             <h2 className="text-lg font-semibold text-brand-ink">5. Sharing and Visibility Controls</h2>
             <div className="mt-4 space-y-3">
-              <p>The App supports different visibility settings. What other users can see depends on the choices you make.</p>
-              <ul className="list-disc pl-5 space-y-1">
-                <li>Public posts are visible to other users and may appear in discovery features within the App</li>
-                <li>Friends-only posts are visible only to your mutual friends</li>
-                <li>Private posts are visible only to you within your personal meal diary</li>
-              </ul>
               <p>
-                If you change the audience of a post or delete it, the change is applied within the
-                App. Copies may remain temporarily in device caches or system backups for limited
-                periods, as described in the retention section.
+                Each meal you save has one of two audiences. What other people can see depends on
+                which you choose.
               </p>
-              <div>
+              <ul className="list-disc pl-5 space-y-1">
+                <li><strong className="font-semibold text-brand-ink">Public</strong> — visible to other users, and it may appear in discovery features within the App</li>
+                <li><strong className="font-semibold text-brand-ink">Friends only</strong> — visible to your mutual friends</li>
+              </ul>
+              <p>Your first shared meal is always friends-only. After that you choose for each meal.</p>
+              <p>
+                To be clear about what &ldquo;friends only&rdquo; means: a meal that is not public can
+                be seen by people you and they have both added as friends. It is not visible only to
+                you. If you do not want a meal seen by anyone else, do not save it to Makan.
+              </p>
+              <p>
+                You choose a meal&apos;s audience at the moment you save it, and at present there is no
+                way to change that choice afterwards. If you want a meal to have a different audience,
+                delete it and save it again.
+              </p>
+              <p>
+                Deleting a meal removes it from the App. Copies may remain temporarily in device
+                caches or system backups for limited periods, as described in the retention section.
+              </p>
+
+              <div className="pt-2">
                 <h3 className="font-medium text-brand-ink">Featuring your public content in our marketing</h3>
                 <p className="mt-2">
-                  Where you post content to a public audience, we may feature it in our own promotional
-                  materials and on our own channels, including third-party platforms such as Instagram
-                  and TikTok — for example, a curated &ldquo;Makan of the Week&rdquo;. This may include
-                  your meal photo (which may show identifiable people), your caption, and your username
-                  or display name.
+                  Where you post content to a public audience, we may feature it in our own
+                  promotional materials and on our own channels, including third-party platforms such
+                  as Instagram and TikTok — for example, a curated &ldquo;Makan of the Week&rdquo;.
+                  This may include your meal photo, your caption, and your username or display name.
                 </p>
                 <ul className="mt-2 list-disc pl-5 space-y-1">
-                  <li>Only public content. We never use content you have set to private or friends-only.</li>
+                  <li>Only public content. We never use content you have set to friends-only.</li>
                   <li>Lawful basis. Where we feature content that identifies you on an external platform, we rely on your consent, which we ask for beforehand and which you can withdraw at any time. For promotional surfaces we operate inside the Services, we may rely on our legitimate interests in promoting Makan, balanced against your rights, and you can object at any time.</li>
-                  <li>Under-18s. We do not feature content from users we know to be under 18 in external marketing.</li>
-                  <li>Your controls. You can decline, ask us to remove featured content from channels we control, or object, by contacting support@makanofficial.com. Content already shared onward by others may remain outside our control.</li>
+                  <li>Other people in your photos. Before we feature anything externally we look at it first, and we do not publish photographs in which other people are clearly identifiable. If you appear in content we have featured and you did not agree to it, contact us and we will remove it from the channels we control.</li>
+                  <li>Under-18s. We do not knowingly feature content from users under 18 in external marketing. We cannot verify age, so if this applies to you, contact us and we will remove it.</li>
+                  <li>
+                    Your controls. You can decline, ask us to remove featured content from channels we
+                    control, or object, by contacting{' '}
+                    <a href="mailto:support@makanofficial.com" className="text-brand-orange hover:underline">
+                      support@makanofficial.com
+                    </a>
+                    . Content already shared onward by others may remain outside our control.
+                  </li>
                   <li>Third-party platforms. When your content appears on a third-party platform, that platform processes it under its own privacy policy.</li>
                 </ul>
               </div>
@@ -207,41 +330,40 @@ export default function PrivacyPolicy() {
 
           {/* 6 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">6. Service Providers (Processors)</h2>
+            <h2 className="text-lg font-semibold text-brand-ink">6. Service Providers and Other Recipients</h2>
             <div className="mt-4 space-y-4">
               <p>
-                We use the following providers to operate the Services. Each processes personal data
-                on our behalf under contractual terms that require appropriate security and
-                confidentiality.
+                We use the following providers to operate the Services. Where they process personal
+                data on our behalf, they do so under contractual terms requiring appropriate security
+                and confidentiality. Some of the services below are contacted directly by your device,
+                which means they see your IP address even where we send them nothing about you; those
+                are listed here too, so the picture is complete.
               </p>
-              <ul className="list-disc pl-5 space-y-2">
-                <li>
-                  <span className="text-brand-ink">Google LLC (Firebase)</span> — the App&apos;s
-                  backend. We use Firebase Authentication, Cloud Firestore, Cloud Storage, Cloud
-                  Functions, and Firebase Analytics to store and synchronise account and meal data,
-                  operate core features, and understand usage.
-                </li>
-                <li>
-                  <span className="text-brand-ink">Vercel Inc.</span> — hosting for the Site, and
-                  Vercel Web Analytics, which measures aggregate Site usage.
-                </li>
-                <li>
-                  <span className="text-brand-ink">Google LLC (Google Sheets)</span> — secure
-                  storage of contact-form and enquiry submissions.
-                </li>
-                <li>
-                  <span className="text-brand-ink">Resend</span> — delivery of transactional emails,
-                  such as contact-form notifications.
-                </li>
-                <li>
-                  <span className="text-brand-ink">Apple Inc.</span> — distribution of the App
-                  through the App Store.
-                </li>
-              </ul>
+              <div>
+                <h3 className="font-medium text-brand-ink">Providers that process data on our behalf</h3>
+                <ul className="mt-2 list-disc pl-5 space-y-1">
+                  <li>Google LLC (Firebase) — the App&apos;s backend. We use Firebase Authentication, Cloud Firestore, Cloud Storage, Cloud Functions, and Firebase Analytics to store and synchronise account and meal data, operate core features, and understand usage.</li>
+                  <li>Functional Software, Inc. (Sentry) — crash and error reporting for the App. Receives diagnostic data about faults, including a user identifier and the sequence of actions before a crash, so we can find and fix them.</li>
+                  <li>Vercel Inc. — hosting for the Site, and Vercel Web Analytics, which measures aggregate Site usage.</li>
+                  <li>Google LLC (Google Sheets) — secure storage of contact-form and enquiry submissions.</li>
+                  <li>Resend — delivery of transactional emails, such as contact-form notifications.</li>
+                  <li>Apple Inc. — distribution of the App through the App Store.</li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-medium text-brand-ink">Services your device contacts directly</h3>
+                <ul className="mt-2 list-disc pl-5 space-y-1">
+                  <li>Google LLC (Places and Maps) — restaurant search and nearby places. When you search for a restaurant or ask the App for places near you, your search text and your approximate location are sent to Google.</li>
+                  <li>KLIPY — the GIF picker in comments. When you type in the GIF search box, what you type is sent to Klipy, and because the request comes from your phone, Klipy also sees your IP address. Klipy does not receive your Makan account identifier or any device identifier. Klipy also sees the IP address of anyone whose device loads a GIF in a comment.</li>
+                  <li>Unsplash — supplies the photographs used in our own editorial collections inside the App. Your device loads those images directly from Unsplash, so Unsplash sees your IP address. Nothing about you or your meals is sent.</li>
+                </ul>
+              </div>
               <p>
-                We do not use third-party advertising SDKs or cross-app tracking technologies. If we
-                introduce additional processors, we will update this Privacy Policy before those
-                changes take effect.
+                We do not use third-party advertising SDKs or cross-app tracking technologies. We keep
+                this list current. Where we replace or add a provider performing a function already
+                described in this Policy, we update this list before the new provider begins processing
+                personal data. Where a change would introduce a new purpose, we describe it in this
+                Policy and establish a lawful basis for it first.
               </p>
             </div>
           </section>
@@ -251,17 +373,25 @@ export default function PrivacyPolicy() {
             <h2 className="text-lg font-semibold text-brand-ink">7. Cookies and Similar Technologies</h2>
             <div className="mt-4 space-y-3">
               <p>
-                The Site uses Vercel Web Analytics, which is privacy-friendly and cookieless: it
-                identifies visits using a hash that resets daily and cannot track you across days or
-                across other websites. It stores no information on your device and collects no
-                personal identifiers, so it does not require a consent banner.
+                <strong className="font-semibold text-brand-ink">The Site.</strong> The Site uses
+                Vercel Web Analytics, which is privacy-friendly and cookieless: it identifies visits
+                using a hash that resets daily and cannot track you across days or across other
+                websites. Vercel Web Analytics does not use cookies and collects no personal
+                identifiers. The fonts used on the Site are served from our own domain, so loading a
+                page does not send your details to a font provider.
               </p>
               <p>
-                The App uses Firebase Analytics, which relies on device identifiers to measure how
-                features are used. Because this stores and accesses information on your device, we ask
-                for your consent within the App before enabling non-essential analytics, and you can
-                change your choice at any time in the App&apos;s settings. We never use these
-                technologies for advertising or cross-app tracking.
+                <strong className="font-semibold text-brand-ink">The App.</strong> The App uses
+                Firebase Analytics, which relies on a device identifier to measure how features are
+                used, and Sentry, which uses a device identifier to report crashes. We rely on our
+                legitimate interests in understanding usage and fixing faults, as described in section
+                4.2. We never use these technologies for advertising, for cross-app tracking, or to
+                build the picture of your taste described in section 2.7. If you would prefer that we
+                did not process your usage data in this way, tell us at{' '}
+                <a href="mailto:support@makanofficial.com" className="text-brand-orange hover:underline">
+                  support@makanofficial.com
+                </a>{' '}
+                and we will stop for your account.
               </p>
             </div>
           </section>
@@ -271,15 +401,26 @@ export default function PrivacyPolicy() {
             <h2 className="text-lg font-semibold text-brand-ink">8. International Data Transfers</h2>
             <div className="mt-4 space-y-3">
               <p>
-                Some of our providers — including Google, Vercel, Resend, and Apple — process personal
-                data outside the United Kingdom, including in the United States.
+                Some of the services listed in section 6 — including Google, Sentry, Vercel, Resend,
+                Apple, Klipy, and Unsplash — receive or process personal data outside the United
+                Kingdom, including in the United States.
               </p>
               <p>
-                Where international transfers occur, we rely on appropriate safeguards recognised under
-                UK law, such as the UK International Data Transfer Agreement or Addendum, the UK
+                Where international transfers occur, we rely on appropriate safeguards recognised
+                under UK law, such as the UK International Data Transfer Agreement or Addendum, the UK
                 extension to the EU Standard Contractual Clauses, or transfers to providers certified
                 under an applicable data protection framework. You can request more information about
                 these safeguards using the contact details above.
+              </p>
+              <p>
+                If you use the Services in Indonesia, additional rights and protections apply to you
+                under Indonesia&apos;s Personal Data Protection Law (UU PDP No. 27/2022). We are
+                extending this Policy and our practices to meet those requirements. For questions
+                about your data as a user in Indonesia, contact{' '}
+                <a href="mailto:support@makanofficial.com" className="text-brand-orange hover:underline">
+                  support@makanofficial.com
+                </a>
+                .
               </p>
             </div>
           </section>
@@ -305,31 +446,38 @@ export default function PrivacyPolicy() {
           <section>
             <h2 className="text-lg font-semibold text-brand-ink">10. Data Retention</h2>
             <div className="mt-4 space-y-4">
-              <p>We retain personal data only for as long as necessary for the purposes described in this Privacy Policy.</p>
+              <p>
+                We retain personal data only for as long as necessary for the purposes described in
+                this Privacy Policy.
+              </p>
               <div>
                 <h3 className="font-medium text-brand-ink">10.1 Active accounts</h3>
-                <p className="mt-2">Account data and meal content are retained while an account remains active.</p>
+                <p className="mt-2">
+                  Account data and meal content are retained while an account remains active.
+                </p>
               </div>
               <div>
                 <h3 className="font-medium text-brand-ink">10.2 Deleted accounts</h3>
                 <p className="mt-2">
                   When an account is deleted, personal data is deleted or anonymised within 30 days,
                   unless a longer retention period is required by law or necessary for security
-                  purposes such as preventing abuse.
+                  purposes such as preventing abuse. We keep a permanent record that an account was
+                  deleted, in a form that does not identify you, so that the deletion cannot be
+                  accidentally undone.
                 </p>
               </div>
               <div>
                 <h3 className="font-medium text-brand-ink">10.3 Enquiry data</h3>
                 <p className="mt-2">
-                  Enquiry data is retained until you ask us to remove it, or until it is
-                  no longer needed for the purpose it was submitted for.
+                  Enquiry data is retained until you ask us to remove it, or until it is no longer
+                  needed for the purpose it was submitted for.
                 </p>
               </div>
               <div>
                 <h3 className="font-medium text-brand-ink">10.4 Backups and security logs</h3>
                 <ul className="mt-2 list-disc pl-5 space-y-1">
-                  <li>Backups may retain data for up to 35 days as part of system resilience and recovery processes</li>
-                  <li>Security and abuse-prevention logs may be retained for up to 180 days</li>
+                  <li>Backups retain data for a limited period as part of system resilience and recovery</li>
+                  <li>Security and abuse-prevention logs are retained for a limited period appropriate to detecting and investigating abuse</li>
                 </ul>
               </div>
             </div>
@@ -346,8 +494,8 @@ export default function PrivacyPolicy() {
                 <li>Request deletion of personal data</li>
                 <li>Request restriction of processing in certain circumstances</li>
                 <li>Request data portability where applicable</li>
-                <li>Object to processing in certain circumstances</li>
-                <li>Withdraw consent where we rely on it</li>
+                <li>Object to processing we carry out on the basis of legitimate interests. This includes the private picture of your taste described in section 2.7, and the usage measurement and crash reporting described in section 7</li>
+                <li>Withdraw consent where we rely on it. Withdrawing consent does not affect the lawfulness of processing we carried out before you withdrew it</li>
               </ul>
               <p>
                 You can delete your account at any time from within the App, which begins the deletion
@@ -359,8 +507,8 @@ export default function PrivacyPolicy() {
                 the time limits required by law.
               </p>
               <p>
-                You also have the right to lodge a complaint with the UK Information Commissioner&apos;s
-                Office (ICO) at ico.org.uk.
+                You also have the right to lodge a complaint with the UK Information
+                Commissioner&apos;s Office (ICO) at ico.org.uk.
               </p>
             </div>
           </section>
@@ -369,16 +517,21 @@ export default function PrivacyPolicy() {
           <section>
             <h2 className="text-lg font-semibold text-brand-ink">12. Children</h2>
             <div className="mt-4 space-y-3">
+              <p>You must be at least 13 to create an account.</p>
               <p>
-                You must be at least 13 to create an account. Because a service like ours may be
-                accessed by people under 18, we follow the UK Age Appropriate Design Code (the
-                Children&apos;s Code). In practice this means:
+                The App does not verify age. Because a service like ours may be used by children and
+                we cannot reliably tell which of our users are children, we apply the protections
+                expected by the UK Age Appropriate Design Code (the Children&apos;s Code) to{' '}
+                <strong className="font-semibold text-brand-ink">every</strong> user, not only to
+                those we believe to be young. In practice this means:
               </p>
               <ul className="list-disc pl-5 space-y-1">
-                <li>Your first post is friends-only; after that, you choose Public or Friends Only for each meal</li>
+                <li>Your first shared meal is always friends-only; after that, you choose friends-only or public for each meal</li>
                 <li>Location access is off by default and only used, with permission, at the moment you use a location feature</li>
-                <li>We collect the minimum data needed and do not profile users or use data for targeted advertising</li>
+                <li>We collect the minimum data needed, and we never use your data for targeted advertising</li>
+                <li>We build a private picture of your own taste from the comparisons you answer, as described in section 2.7. It exists to help you choose what to eat, it is shown only to you, and it is never used to advertise to you, to judge you, or to decide anything about you</li>
                 <li>We do not use manipulative design or nudges to push you to share more than you intend</li>
+                <li>We do not use streaks, badges, points, or leaderboards to keep you using the App</li>
               </ul>
               <p>
                 If we become aware that personal data has been collected from a child under 13, we
@@ -390,11 +543,33 @@ export default function PrivacyPolicy() {
 
           {/* 13 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">13. Automated Decision-Making</h2>
-            <p className="mt-4">
-              We do not use automated decision-making or profiling that produces legal or similarly
-              significant effects, and we do not use AI to generate or interpret your meal content.
-            </p>
+            <h2 className="text-lg font-semibold text-brand-ink">13. Automated Decision-Making and Profiling</h2>
+            <div className="mt-4 space-y-3">
+              <p>
+                We do not use automated decision-making or profiling that produces legal effects or
+                similarly significant effects for you.
+              </p>
+              <p>
+                Makan does build the private picture of your taste described in section 2.7, and it is
+                fair to call that a profile of your preferences. We would rather say so plainly than
+                hide behind wording. What matters is what it is for and what it cannot do: it exists
+                to answer &ldquo;what should I order&rdquo;, it is assembled from comparisons you
+                chose to answer, it is shown to nobody but you, and it is never used to evaluate you,
+                to decide whether you can use any part of the Services, or to advertise to you.
+              </p>
+              <p>
+                We do not analyse the content of your meal photographs. By &ldquo;analyse&rdquo; we
+                mean working out what a photograph shows. Ordinary technical handling — resizing,
+                compressing, storing and delivering your photographs so the App can display them — is
+                not analysis, and we do that for every meal you save.
+              </p>
+              <p>
+                If we introduce the dish recognition feature described in section 3, it will work by
+                measuring how similar the food in two photographs looks, and only for people who have
+                turned it on. It affects only what the App shows you about your own meals. You will be
+                able to correct any grouping that is wrong, and turn the feature off.
+              </p>
+            </div>
           </section>
 
           {/* 14 */}
