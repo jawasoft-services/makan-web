@@ -108,66 +108,10 @@ export default function ManifestoIndonesian() {
           <p>Lalu makanannya datang, dan kamu makan.</p>
           <p>
             Itu bagian yang paling enak, dan bukan cuma karena kamu lapar. Kamu
-            baru saja belajar sesuatu. Simpan, dan minggu depan Makan bisa
+            baru saja belajar sesuatu. Simpan, dan lain kali Makan bisa
             membandingkannya dengan yang lain dan bertanya mana yang akan kamu
-            pesan lagi. Makan malam hari ini adalah{" "}
-            <Emphasis variant="warm">jawaban&nbsp;besok</Emphasis>.
+            pesan lagi.
           </p>
-        </div>
-
-        <div className="mt-16">
-          <p className="text-[15px] text-brand-ink/70">
-            Empat hal yang tidak akan pernah kami lakukan ke kamu.
-          </p>
-
-          <div className="mt-8 space-y-7 border-l-2 border-brand-orange pl-5 sm:pl-7">
-            <div>
-              <p className="font-semibold text-brand-ink">
-                Tidak ada makanan yang akan diberi nilai dari lima.
-              </p>
-              <p className="mt-2 text-[17px] leading-relaxed text-brand-ink/80">
-                Angka 4,6 itu seribu orang asing dengan seribu selera berbeda,
-                dipadatkan jadi satu angka yang tidak pas untuk siapa pun.
-                Satu-satunya urutan di Makan adalah urutanmu. Makanan nomor tiga
-                sepanjang hidupmu bisa jadi masakan ibumu waktu kamu sembilan
-                tahun. Tidak ada rata-rata yang bisa menemukan itu.
-              </p>
-            </div>
-
-            <div>
-              <p className="font-semibold text-brand-ink">
-                Kami selalu bilang sebuah jawaban datang dari mana.
-              </p>
-              <p className="mt-2 text-[17px] leading-relaxed text-brand-ink/80">
-                Dari kamu, dari temanmu, atau dari restorannya sendiri.
-                Disebutkan, setiap kali. Tidak pernah dilebur jadi satu kata
-                &ldquo;direkomendasikan&rdquo;.
-              </p>
-            </div>
-
-            <div>
-              <p className="font-semibold text-brand-ink">
-                Tidak ada restoran yang bisa bayar untuk mengubah pesananmu.
-              </p>
-              <p className="mt-2 text-[17px] leading-relaxed text-brand-ink/80">
-                Sepeser pun tidak, selamanya. Begitu sebuah dapur bisa membeli
-                tempatnya di makan malammu, tidak ada lagi yang pantas dibaca di
-                halaman ini.
-              </p>
-            </div>
-
-            <div>
-              <p className="font-semibold text-brand-ink">
-                Kamu bisa menghapus semuanya, kapan saja.
-              </p>
-              <p className="mt-2 text-[17px] leading-relaxed text-brand-ink/80">
-                Hapus satu makanan, dan itu berhenti dihitung. Hapus semuanya,
-                dan Makan melupakan apa yang sudah disimpulkannya tentang kamu.
-                Catatan yang tidak bisa kamu tarik kembali itu bukan benar-benar
-                milikmu.
-              </p>
-            </div>
-          </div>
         </div>
 
         <div className="mt-16">
@@ -184,11 +128,10 @@ export default function ManifestoIndonesian() {
             itu tetap milikmu.
           </p>
           <p className="mt-5 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
-            Ada satu pekerjaan kecil yang sedang kami bangun, dan hanya kalau
-            kamu menyalakannya. AI bisa mengenali kalau dua fotomu sendiri itu
-            makanan yang sama. Lalu Makan bisa bilang: kamu pernah makan ini,
-            dan ini pendapatmu waktu itu. Mengenali, bukan menilai. Fotomu
-            sendiri, bukan foto orang lain. Matikan, dan Makan lupa.
+            Yang AI lakukan adalah mengenali. AI bisa melihat kalau dua fotomu
+            sendiri itu makanan yang sama, jadi Makan bisa bilang: kamu pernah
+            makan ini, dan ini pendapatmu waktu itu. Fotomu sendiri, bukan foto
+            orang lain. Mengenali, bukan menilai.
           </p>
         </div>
 

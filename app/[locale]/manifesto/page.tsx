@@ -27,19 +27,19 @@ export async function generateMetadata({
 // The manifesto, told as ONE STORY that travels through a single meal:
 // you sit down -> the menu comes -> you have to choose -> Makan answers ->
 // where that answer came from -> when it can't answer -> the food arrives ->
-// you eat -> what we will never do -> where this began -> you walk out ->
-// next time you sit down somewhere new.
+// you eat, and that feeds the next choice -> what AI will and won't do ->
+// where this began -> you walk out -> next time you sit down somewhere new.
 //
 // Every capability is explained at the point IN THE MEAL where it happens,
 // rather than in a section of its own. Plain words only, short sentences,
-// readable by a ten-year-old on the first pass. No strategy language.
+// readable by a ten-year-old on the first pass. No strategy language, and no
+// bulleted promise list — a list interrupts a story.
 //
 // The only client code is <Emphasis>, a leaf that lets load-bearing phrases
 // "ignite" into saffron as the reader reaches them — reduced-motion viewers
 // and crawlers get the finished emphasis statically. Read the emphasised
 // words alone and you get the story in miniature: no idea -> at the table ->
-// order again first -> say so -> tomorrow's answer -> tasted -> for this ->
-// starting from nothing.
+// order again first -> say so -> tasted -> for this -> starting from nothing.
 export default async function ManifestoPage({
   params,
 }: {
@@ -80,7 +80,7 @@ export default async function ManifestoPage({
             </p>
             <p>
               So you do what everybody does. You pick the safe thing. Or you
-              copy your friend. And sometimes the plate lands and you know
+              copy your friend. And sometimes the plate arrives and you know
               straight away that you should have had what she ordered.
             </p>
             <p className="text-[19px] font-medium text-brand-ink sm:text-xl">
@@ -146,68 +146,15 @@ export default async function ManifestoPage({
             <p>Then the food comes, and you eat it.</p>
             <p>
               That is the good part, and not only because you are hungry. You
-              just learned something. Save it, and next week Makan can hold it
+              just learned something. Save it, and next time Makan can hold it
               up against something else and ask you which one you would go back
-              to. Tonight&apos;s dinner is{' '}
-              <Emphasis variant="warm">tomorrow&apos;s&nbsp;answer</Emphasis>.
+              to.
             </p>
           </div>
 
-          {/* Promises, in the signature negation shape. Short and plain. */}
-          <div className="mt-16">
-            <p className="text-[15px] text-brand-ink/70">
-              Four things we will never do to you.
-            </p>
-
-            <div className="mt-8 space-y-7 border-l-2 border-brand-orange pl-5 sm:pl-7">
-              <div>
-                <p className="text-brand-ink font-semibold">
-                  No dish will ever get a score out of five.
-                </p>
-                <p className="mt-2 text-brand-ink/80 text-[17px] leading-relaxed">
-                  A 4.6 is a thousand strangers with a thousand different
-                  mouths, squashed into one number that fits none of them. The
-                  only list on Makan is yours. Your third favourite meal ever
-                  might be something your mum made you when you were nine. No
-                  average will ever find that.
-                </p>
-              </div>
-
-              <div>
-                <p className="text-brand-ink font-semibold">
-                  We always tell you where an answer came from.
-                </p>
-                <p className="mt-2 text-brand-ink/80 text-[17px] leading-relaxed">
-                  You, a friend, or the restaurant itself. Said out loud, every
-                  time. Never mushed together into the word
-                  &ldquo;recommended&rdquo;.
-                </p>
-              </div>
-
-              <div>
-                <p className="text-brand-ink font-semibold">
-                  No restaurant can pay to change what you order.
-                </p>
-                <p className="mt-2 text-brand-ink/80 text-[17px] leading-relaxed">
-                  Not a penny, not ever. The day a kitchen can buy its way into
-                  your dinner, nothing else on this page is worth reading.
-                </p>
-              </div>
-
-              <div>
-                <p className="text-brand-ink font-semibold">
-                  You can delete any of it, whenever you like.
-                </p>
-                <p className="mt-2 text-brand-ink/80 text-[17px] leading-relaxed">
-                  Take one meal away and it stops counting. Take them all away
-                  and Makan forgets what it worked out about you. A record you
-                  cannot undo is not really yours.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* The AI line, plainly. */}
+          {/* The AI line, plainly. Describes what recognition does without
+              promising a switch either way — the consent design is still open,
+              so this states only what is true today. */}
           <div className="mt-16">
             <p className="mt-6 text-[26px] font-semibold leading-[1.2] tracking-[-0.01em] text-brand-ink sm:text-[32px]">
               AI has never <Emphasis variant="warm">tasted</Emphasis> food.
@@ -220,11 +167,10 @@ export default async function ManifestoPage({
               Tasting is the human bit, and it stays yours.
             </p>
             <p className="mt-5 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
-              There is one small job we are building, and only if you switch it
-              on. It can spot that two of your own photos are the same dish. Then
-              Makan can tell you: you have had this before, and here is what you
-              thought. Recognising, not judging. Your photos, nobody
-              else&apos;s. Switch it off and it forgets.
+              What it does is recognise. It can see that two of your own photos
+              are the same dish, so Makan can tell you: you have eaten this
+              before, and here is what you thought of it. Your photos, nobody
+              else&apos;s. Recognising, not judging.
             </p>
           </div>
 
