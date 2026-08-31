@@ -3,7 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google"
 import { NextIntlClientProvider, hasLocale } from "next-intl"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { notFound } from "next/navigation"
-import { Analytics } from "@vercel/analytics/next"
+import SafeAnalytics from "@/components/SafeAnalytics"
 import { ViewTransitions } from "next-view-transitions"
 import Navbar from "@/components/Navbar"
 import SmoothScroll from "@/components/motion/SmoothScroll"
@@ -82,7 +82,7 @@ export default async function RootLayout({
             <Navbar />
             {children}
             <SmoothScroll />
-            {process.env.VERCEL ? <Analytics /> : null}
+            {process.env.VERCEL ? <SafeAnalytics /> : null}
           </NextIntlClientProvider>
         </body>
       </html>

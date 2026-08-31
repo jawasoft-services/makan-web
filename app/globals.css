@@ -17,6 +17,12 @@
   }
 }
 
+@layer components {
+  .invite-primary {
+    @apply inline-flex min-h-14 w-full max-w-sm items-center justify-center rounded-full bg-brand-orange px-8 text-base font-bold text-white shadow-lg shadow-brand-orange/20 transition-transform hover:-translate-y-0.5 active:translate-y-0;
+  }
+}
+
 /* Hero waterfall — continuous vertical scroll of meal cards */
 @keyframes waterfall-scroll {
   0% { transform: translateY(0); }
