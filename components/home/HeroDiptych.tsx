@@ -72,7 +72,10 @@ const DUELS: Duel[] = [
 // flies to the receipts — → what the pile means → the ask.
 // Pacing: the settle (learn -> handoff) gets the longest gaps — the ring
 // holds ~2x as long as any other beat before the next pair arrives.
-const STAGES = [0.03, 0.085, 0.16, 0.225, 0.28, 0.34, 0.395, 0.5, 0.555, 0.61, 0.715, 0.77, 0.825, 0.93, 0.975]
+// Stage 0 IS the landing state: the problem reads with zero action (NN/g:
+// ~57% of viewing time never leaves the first viewport). Hook and headline
+// rise as a load entrance; everything after is earned by scroll.
+const STAGES = [0, 0, 0.16, 0.225, 0.28, 0.34, 0.395, 0.5, 0.555, 0.61, 0.715, 0.77, 0.825, 0.93, 0.975]
 
 export default async function HeroDiptych() {
   const t = await getTranslations("Decision.Hero")
@@ -82,7 +85,7 @@ export default async function HeroDiptych() {
       <div className="md:sticky md:top-0 md:h-screen">
         <PaperSheet fold className="h-full w-full">
           <div className="relative grid h-full grid-cols-1 md:grid-cols-2">
-            <div className="relative md:max-h-full md:overflow-hidden">
+            <div className="order-2 relative md:order-none md:max-h-full md:overflow-hidden">
               <MenuSheet
                 house={t("house")}
                 meta={t("meta")}
@@ -104,7 +107,7 @@ export default async function HeroDiptych() {
             </div>
 
 
-            <div className="flex flex-col justify-center px-8 py-10 md:justify-start md:px-12 md:py-0 md:pt-24">
+            <div className="order-1 flex flex-col justify-center px-8 py-10 md:order-none md:justify-start md:px-12 md:py-0 md:pt-24">
               <p
                 data-scene="0"
                 className="text-[clamp(1.2rem,1.9vw,1.6rem)] font-semibold leading-[1.2] text-brand-muted"

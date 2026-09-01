@@ -57,7 +57,7 @@ export default function ScrollScene({
     // region is far offscreen.
     const setupDesktop = () => {
       let raf = 0
-      const loop = () => {
+      const apply = () => {
         const rect = node.getBoundingClientRect()
         if (rect.bottom > -200 && rect.top < window.innerHeight + 200) {
           const span = node.offsetHeight - window.innerHeight
@@ -72,8 +72,14 @@ export default function ScrollScene({
             beat.classList.toggle("scene-on", !past && progress >= (thresholds[index] ?? 0))
           }
         }
+      }
+      const loop = () => {
+        apply()
         raf = requestAnimationFrame(loop)
       }
+      // The landing state (stage-0 beats) must not wait for the first rAF —
+      // hidden or prerendered tabs never get one. Apply synchronously at arm.
+      apply()
       raf = requestAnimationFrame(loop)
       return () => cancelAnimationFrame(raf)
     }
