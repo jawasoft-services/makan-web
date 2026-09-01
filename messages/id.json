@@ -353,14 +353,13 @@
       "answerMark": "Cocok untuk kamu",
       "thought": "Dari mana dia tahu?",
       "proofLead": "Karena kamu yang kasih tahu, dua makanan sekali pilih:",
-      "duel1Win": "Sate",
-      "duel1Lose": "Sayap goreng",
-      "duel2Win": "Ikan bakar",
-      "duel2Lose": "Cheeseburger",
-      "duel3Win": "Ayam panggang",
-      "duel3Lose": "Cumi goreng",
       "proofTally": "Setiap pilihan mengajari Makan apa yang kamu suka.",
-      "hook": "Semua kelihatan enak."
+      "hook": "Semua kelihatan enak.",
+      "eoyQuestion": "Mana yang mau kamu makan lagi duluan?",
+      "eoyOr": "atau",
+      "eoyAName": "Riverview brekkie",
+      "eoyBName": "Biang biang",
+      "eoyPicked": "kamu pilih ini"
     },
     "Ladder": {
       "eyebrow": "Dari mana jawabannya",

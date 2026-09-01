@@ -353,14 +353,13 @@
       "answerMark": "A good match for you",
       "thought": "How does it know?",
       "proofLead": "Because you told it, two meals at a time:",
-      "duel1Win": "Sate",
-      "duel1Lose": "Fried wings",
-      "duel2Win": "Ikan bakar",
-      "duel2Lose": "Cheeseburger",
-      "duel3Win": "Grilled chicken",
-      "duel3Lose": "Fried calamari",
       "proofTally": "Every pick teaches Makan what you like.",
-      "hook": "Everything sounds good."
+      "hook": "Everything sounds good.",
+      "eoyQuestion": "Which would you eat again first?",
+      "eoyOr": "or",
+      "eoyAName": "Riverview brekkie",
+      "eoyBName": "Biang biang",
+      "eoyPicked": "you picked this"
     },
     "Ladder": {
       "eyebrow": "Where the answer comes from",

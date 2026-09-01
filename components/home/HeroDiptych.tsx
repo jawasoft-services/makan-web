@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server"
 import PaperSheet from "@/components/paper/PaperSheet"
 import MenuSheet, { type MenuSection } from "@/components/menu/MenuSheet"
-import EatOrYeetProof from "@/components/decision/EatOrYeetProof"
+import EatOrYeetDuel from "@/components/decision/EatOrYeetDuel"
 import ScrollScene from "@/components/motion/ScrollScene"
 
 // A Western Berawa menu is a genuinely incoherent decision — brunch, poke,
@@ -42,8 +42,8 @@ const SECTIONS: MenuSection[] = [
 
 // The story at the reader's own pace: the menu alone → "Everything sounds
 // good." → the problem → the ring drawn on the menu → the doubt → the
-// receipts → the ask.
-const STAGES = [0.06, 0.2, 0.4, 0.58, 0.74, 0.9]
+// mechanism (two meals, pick one) → the pick lands → the ask.
+const STAGES = [0.05, 0.18, 0.36, 0.52, 0.66, 0.8, 0.92]
 
 export default async function HeroDiptych() {
   const t = await getTranslations("Decision.Hero")
@@ -97,18 +97,23 @@ export default async function HeroDiptych() {
                 {t("thought")}
               </p>
               <div data-scene="4">
-                <EatOrYeetProof
-                  className="mt-2"
-                  lead={t("proofLead")}
-                  duels={[
-                    { win: t("duel1Win"), lose: t("duel1Lose") },
-                    { win: t("duel2Win"), lose: t("duel2Lose") },
-                    { win: t("duel3Win"), lose: t("duel3Lose") },
-                  ]}
-                  tally={t("proofTally")}
+                <p className="mt-2 text-[0.8rem] font-semibold leading-[1.5] text-brand-ink">
+                  {t("proofLead")}
+                </p>
+                <EatOrYeetDuel
+                  className="mt-3 max-w-[26rem]"
+                  question={t("eoyQuestion")}
+                  or={t("eoyOr")}
+                  a={{ name: t("eoyAName"), src: "/meals/card-01.jpg" }}
+                  b={{ name: t("eoyBName"), src: "/meals/card-02.jpg" }}
+                  winner="b"
+                  pickedLabel={t("eoyPicked")}
                 />
               </div>
-              <div data-scene="5" className="mt-7 flex items-center gap-4">
+              <p data-scene="6" className="mt-3 text-[0.78rem] leading-[1.5] text-brand-muted">
+                {t("proofTally")}
+              </p>
+              <div data-scene="6" className="mt-6 flex items-center gap-4">
                 <span className="inline-flex items-center rounded-full bg-brand-orange px-7 py-3.5 text-sm font-bold text-white shadow-[0_7px_16px_-7px_rgba(255,153,50,0.55)]">
                   {t("cta")}
                 </span>
