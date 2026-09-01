@@ -307,6 +307,48 @@
     .scene-armed [data-scene][data-eoy-shrink] {
       opacity: 1;
       transform: none;
+      /* The pen underlines the key phrase at load — the site's one gesture,
+       introduced from second zero. Double stroke, drawn in sequence. */
+    .hand-underline path {
+      fill: none;
+      stroke: #FF9932;
+      stroke-linecap: round;
+      vector-effect: non-scaling-stroke;
+    }
+    .hand-underline-1 { stroke-width: 5; }
+    .hand-underline-2 { stroke-width: 3; opacity: 0.9; }
+    .scene-armed [data-scene]:not(.scene-on) .hand-underline-1,
+    .scene-armed [data-scene]:not(.scene-on) .hand-underline-2 {
+      stroke-dasharray: 340;
+      stroke-dashoffset: 340;
+    }
+    .scene-armed [data-scene].scene-on .hand-underline-1 {
+      stroke-dasharray: 340;
+      stroke-dashoffset: 340;
+      animation: hand-ring-draw 0.5s cubic-bezier(0.33, 0, 0.5, 1) 0.55s forwards;
+    }
+    .scene-armed [data-scene].scene-on .hand-underline-2 {
+      stroke-dasharray: 340;
+      stroke-dashoffset: 340;
+      animation: hand-ring-draw 0.35s cubic-bezier(0.33, 0, 0.6, 1) 1s forwards;
+    }
+  }
+    .hand-underline-1 { stroke-width: 5; }
+    .hand-underline-2 { stroke-width: 3; opacity: 0.9; }
+    .scene-armed [data-scene]:not(.scene-on) .hand-underline-1,
+    .scene-armed [data-scene]:not(.scene-on) .hand-underline-2 {
+      stroke-dasharray: 340;
+      stroke-dashoffset: 340;
+    }
+    .scene-armed [data-scene].scene-on .hand-underline-1 {
+      stroke-dasharray: 340;
+      stroke-dashoffset: 340;
+      animation: hand-ring-draw 0.5s cubic-bezier(0.33, 0, 0.5, 1) 0.55s forwards;
+    }
+    .scene-armed [data-scene].scene-on .hand-underline-2 {
+      stroke-dasharray: 340;
+      stroke-dashoffset: 340;
+      animation: hand-ring-draw 0.35s cubic-bezier(0.33, 0, 0.6, 1) 1s forwards;
     }
   }
   @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {

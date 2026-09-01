@@ -361,7 +361,9 @@
       "learnLabel": "Makan learned",
       "learn1": "Fish beats beef, for you.",
       "learn2": "Fresh and spicy beats fried.",
-      "learn3": "Chilli beats cheese."
+      "learn3": "Chilli beats cheese.",
+      "headlineAccent": "what to order",
+      "scrollCue": "Scroll"
     },
     "Ladder": {
       "eyebrow": "Where the answer comes from",
