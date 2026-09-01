@@ -1,14 +1,31 @@
+import { useId } from "react"
 import Image from "next/image"
 
 type Meal = { name: string; src: string }
 
-/**
- * The Eat or Yeet mechanism, played out on the page: two meals the reader's
- * stand-in actually saved, the app's real question, and — one scroll stage
- * later — the pick. Cards carry data-scene="5" with data-eoy-win/-dim, so
- * they stay visible from the moment the duel appears and only the DECISION
- * animates: winner lifts and gains the saffron ring and tick, loser dims.
- */
+function PenRing() {
+  const penId = useId()
+  return (
+    <svg
+      className="hand-ring h-full w-full -rotate-1 overflow-visible"
+      viewBox="0 0 300 90"
+      preserveAspectRatio="none"
+      aria-hidden
+    >
+      <defs>
+        <filter id={penId} x="-25%" y="-45%" width="150%" height="190%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.016" numOctaves="2" seed="9" result="n" />
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </defs>
+      <g filter={`url(#${penId})`}>
+        <path className="hand-ring-lap1" d="M31,54 C25,30 74,13 149,9 C221,5 289,17 286,42 C283,67 209,86 141,84 C71,82 22,73 33,45" />
+        <path className="hand-ring-lap2" d="M33,45 C40,27 78,18 131,13 C167,9 205,10 231,15" />
+      </g>
+    </svg>
+  )
+}
+
 function Card({
   meal,
   isWin,
@@ -18,45 +35,52 @@ function Card({
   isWin: boolean
   pickedLabel: string
 }) {
-  return (
-    <figure
-      data-scene="5"
-      {...(isWin ? { "data-eoy-win": "" } : { "data-eoy-dim": "" })}
-      className="relative w-full overflow-hidden rounded-xl border border-brand-muted/20 bg-brand-card shadow-[0_10px_24px_-12px_rgba(43,21,3,0.35)]"
-    >
+  const body = (
+    <>
       <div className="relative aspect-[1080/720]">
         <Image
           src={meal.src}
           alt={meal.name}
           fill
-          sizes="(min-width: 768px) 200px, 45vw"
+          sizes="(min-width: 768px) 260px, 46vw"
           className="object-cover object-top"
         />
       </div>
-      <figcaption className="px-2.5 py-2 text-[0.78rem] font-bold text-brand-ink">
+      <figcaption className="px-3 py-2.5 text-[0.85rem] font-bold text-brand-ink">
         {meal.name}
         {isWin ? <span className="sr-only"> — {pickedLabel}</span> : null}
       </figcaption>
+    </>
+  )
+
+  return (
+    <figure
+      data-scene="4"
+      data-place
+      className="relative w-full rounded-xl border border-brand-muted/20 bg-brand-card shadow-[0_12px_28px_-14px_rgba(43,21,3,0.4)]"
+    >
       {isWin ? (
         <>
-          <span
-            data-scene="5"
-            aria-hidden
-            className="absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center rounded-full bg-brand-orange text-sm font-extrabold text-white shadow-[0_4px_10px_-3px_rgba(255,153,50,0.8)]"
-          >
-            ✓
+          <div className="overflow-hidden rounded-xl">{body}</div>
+          {/* The pick: the same pen that marks the menu rings the winner. */}
+          <span data-scene="5" className="pointer-events-none absolute -inset-[7%] z-10 block">
+            <PenRing />
           </span>
-          <span
-            data-scene="5"
-            aria-hidden
-            className="pointer-events-none absolute inset-0 rounded-xl border-[3px] border-brand-orange"
-          />
         </>
-      ) : null}
+      ) : (
+        <div data-scene="5" data-eoy-dim className="overflow-hidden rounded-xl">
+          {body}
+        </div>
+      )}
     </figure>
   )
 }
 
+/**
+ * The Eat or Yeet mechanism, played out on the page. Both meals settle in
+ * together (stage 4); one scroll stage later the pick lands — the saffron
+ * pen rings the winner while the loser dims and steps back (stage 5).
+ */
 export default function EatOrYeetDuel({
   question,
   or,
@@ -76,11 +100,14 @@ export default function EatOrYeetDuel({
 }) {
   return (
     <div className={className}>
-      <p className="text-[0.9rem] font-bold text-brand-ink">{question}</p>
-      <div className="relative mt-2 grid grid-cols-2 gap-3">
+      <p data-scene="4" className="text-[0.95rem] font-bold text-brand-ink">{question}</p>
+      <div className="relative mt-3 grid grid-cols-2 gap-4">
         <Card meal={a} isWin={winner === "a"} pickedLabel={pickedLabel} />
         <Card meal={b} isWin={winner === "b"} pickedLabel={pickedLabel} />
-        <span className="pointer-events-none absolute left-1/2 top-[34%] -translate-x-1/2 rounded-full border border-brand-muted/25 bg-brand-cream px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-[0.12em] text-brand-muted">
+        <span
+          data-scene="4"
+          className="pointer-events-none absolute left-1/2 top-[34%] z-20 -translate-x-1/2 rounded-full border border-brand-muted/25 bg-brand-cream px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-brand-muted"
+        >
           {or}
         </span>
       </div>

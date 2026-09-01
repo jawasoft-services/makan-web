@@ -96,20 +96,18 @@ export default async function HeroDiptych() {
               >
                 {t("thought")}
               </p>
-              <div data-scene="4">
-                <p className="mt-2 text-[0.8rem] font-semibold leading-[1.5] text-brand-ink">
-                  {t("proofLead")}
-                </p>
-                <EatOrYeetDuel
-                  className="mt-3 max-w-[26rem]"
-                  question={t("eoyQuestion")}
-                  or={t("eoyOr")}
-                  a={{ name: t("eoyAName"), src: "/meals/card-01.jpg" }}
-                  b={{ name: t("eoyBName"), src: "/meals/card-02.jpg" }}
-                  winner="b"
-                  pickedLabel={t("eoyPicked")}
-                />
-              </div>
+              <p data-scene="4" className="mt-2 text-[0.8rem] font-semibold leading-[1.5] text-brand-ink">
+                {t("proofLead")}
+              </p>
+              <EatOrYeetDuel
+                className="mt-3 md:max-w-[32rem]"
+                question={t("eoyQuestion")}
+                or={t("eoyOr")}
+                a={{ name: t("eoyAName"), src: "/meals/card-30.jpg" }}
+                b={{ name: t("eoyBName"), src: "/meals/card-40.jpg" }}
+                winner="b"
+                pickedLabel={t("eoyPicked")}
+              />
               <p data-scene="6" className="mt-3 text-[0.78rem] leading-[1.5] text-brand-muted">
                 {t("proofTally")}
               </p>

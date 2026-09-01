@@ -291,13 +291,9 @@
       animation: hand-ring-draw 0.4s cubic-bezier(0.33, 0, 0.6, 1) 0.9s forwards;
       /* Duel cards stay visible from the moment the duel appears; only the
        decision animates. Winner lifts, loser steps back. */
-    .scene-armed [data-scene][data-eoy-win],
     .scene-armed [data-scene][data-eoy-dim] {
       opacity: 1;
       transform: none;
-    }
-    .scene-armed [data-scene][data-eoy-win].scene-on {
-      transform: scale(1.03);
     }
     .scene-armed [data-scene][data-eoy-dim].scene-on {
       opacity: 0.45;
@@ -307,13 +303,9 @@
   }
     /* Duel cards stay visible from the moment the duel appears; only the
        decision animates. Winner lifts, loser steps back. */
-    .scene-armed [data-scene][data-eoy-win],
     .scene-armed [data-scene][data-eoy-dim] {
       opacity: 1;
       transform: none;
-    }
-    .scene-armed [data-scene][data-eoy-win].scene-on {
-      transform: scale(1.03);
     }
     .scene-armed [data-scene][data-eoy-dim].scene-on {
       opacity: 0.45;
@@ -340,13 +332,9 @@
       animation: hand-ring-draw 0.4s cubic-bezier(0.33, 0, 0.6, 1) 0.9s forwards;
       /* Duel cards stay visible from the moment the duel appears; only the
        decision animates. Winner lifts, loser steps back. */
-    .scene-armed [data-scene][data-eoy-win],
     .scene-armed [data-scene][data-eoy-dim] {
       opacity: 1;
       transform: none;
-    }
-    .scene-armed [data-scene][data-eoy-win].scene-on {
-      transform: scale(1.03);
     }
     .scene-armed [data-scene][data-eoy-dim].scene-on {
       opacity: 0.45;
@@ -356,13 +344,9 @@
   }
     /* Duel cards stay visible from the moment the duel appears; only the
        decision animates. Winner lifts, loser steps back. */
-    .scene-armed [data-scene][data-eoy-win],
     .scene-armed [data-scene][data-eoy-dim] {
       opacity: 1;
       transform: none;
-    }
-    .scene-armed [data-scene][data-eoy-win].scene-on {
-      transform: scale(1.03);
     }
     .scene-armed [data-scene][data-eoy-dim].scene-on {
       opacity: 0.45;
