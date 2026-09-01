@@ -28,6 +28,7 @@ if (missingInIndonesian.length || missingInEnglish.length) {
   process.exit(1)
 }
 
+const englishSource = JSON.stringify(english)
 const indonesianSource = JSON.stringify(indonesian)
 for (const productTerm of [
   "Eat or Yeet",
@@ -35,6 +36,9 @@ for (const productTerm of [
   "Public",
   "Friends Only",
 ]) {
+  // The rule is "never translate a product term we use" — not "never retire
+  // one". Only assert preservation while the English catalogue still uses it.
+  if (!englishSource.includes(productTerm)) continue
   if (!indonesianSource.includes(productTerm)) {
     console.error(`Indonesian copy must preserve product term: ${productTerm}`)
     process.exit(1)
