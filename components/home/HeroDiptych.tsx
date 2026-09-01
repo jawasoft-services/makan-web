@@ -101,7 +101,7 @@ export default async function HeroDiptych() {
             </div>
 
 
-            <div className="flex flex-col justify-center px-8 py-10 md:px-12">
+            <div className="flex flex-col justify-center px-8 py-10 md:justify-start md:px-12 md:py-0 md:pt-24">
               <p
                 data-scene="0"
                 className="text-[clamp(1.2rem,1.9vw,1.6rem)] font-semibold leading-[1.2] text-brand-muted"
@@ -110,7 +110,7 @@ export default async function HeroDiptych() {
               </p>
               <h1
                 data-scene="1"
-                className="mt-2 max-w-[13ch] text-[clamp(2rem,4vw,3.4rem)] font-bold leading-[1.04] tracking-[-0.015em] text-brand-ink"
+                className="mt-2 max-w-[13ch] text-[clamp(2rem,3.6vw,3.1rem)] font-bold leading-[1.04] tracking-[-0.015em] text-brand-ink"
               >
                 {t("headline")}
               </h1>
@@ -118,17 +118,18 @@ export default async function HeroDiptych() {
                   that taught Makan the taste the answer just claimed. */}
               <p
                 data-scene="3"
+                data-scene-until="6"
                 className="mt-6 text-[0.95rem] font-bold text-brand-ink"
               >
                 {t("thought")}
               </p>
-              <p data-scene="4" className="mt-2 text-[0.8rem] font-semibold leading-[1.5] text-brand-ink">
+              <p data-scene="4" data-scene-until="10" className="mt-2 text-[0.8rem] font-semibold leading-[1.5] text-brand-ink">
                 {t("proofLead")}
               </p>
-              <p data-scene="4" className="mt-2 text-[0.95rem] font-bold text-brand-ink">
+              <p data-scene="4" data-scene-until="10" className="mt-2 text-[0.95rem] font-bold text-brand-ink">
                 {t("eoyQuestion")}
               </p>
-              <div className="mt-3 md:relative md:h-[17rem] md:max-w-[30rem]">
+              <div className="mt-3 md:relative md:h-[15rem] md:max-w-[30rem]">
                 <EatOrYeetDuel
                   duel={DUELS[0]}
                   or={t("eoyOr")}
@@ -156,23 +157,27 @@ export default async function HeroDiptych() {
                   outStage={10}
                   className="mt-6 md:absolute md:inset-x-0 md:top-0 md:mt-0"
                 />
-              </div>
-              {/* The receipts pile up — Makan learns from all of them together. */}
-              <div className="mt-3 hidden items-center gap-3 md:flex">
-                <SettledDuel duel={DUELS[0]} appearStage={6} />
-                <SettledDuel duel={DUELS[1]} appearStage={8} />
-                <SettledDuel duel={DUELS[2]} appearStage={10} />
-              </div>
-              <p data-scene="10" className="mt-3 max-w-[30rem] text-[0.85rem] font-semibold leading-[1.5] text-brand-ink">
-                {t("proofTally")}
-              </p>
-              <div data-scene="11" className="mt-5 flex items-center gap-4">
+                {/* Once the duels have vacated the slot, the payoff takes it
+                    over — nothing stacks below an empty stage. */}
+                <div className="md:absolute md:inset-x-0 md:bottom-2">
+                  <p data-scene="10" className="mt-6 max-w-[30rem] text-[0.85rem] font-semibold leading-[1.5] text-brand-ink md:mt-0">
+                    {t("proofTally")}
+                  </p>
+                  <div data-scene="11" className="mt-4 flex items-center gap-4">
                 <span className="inline-flex items-center rounded-full bg-brand-orange px-7 py-3.5 text-sm font-bold text-white shadow-[0_7px_16px_-7px_rgba(255,153,50,0.55)]">
                   {t("cta")}
                 </span>
                 <span className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-brand-muted">
                   {t("platform")}
                 </span>
+                  </div>
+                </div>
+              </div>
+              {/* The receipts pile up — Makan learns from all of them together. */}
+              <div className="mt-3 hidden items-center gap-3 md:flex">
+                <SettledDuel duel={DUELS[0]} appearStage={6} />
+                <SettledDuel duel={DUELS[1]} appearStage={8} />
+                <SettledDuel duel={DUELS[2]} appearStage={10} />
               </div>
             </div>
           </div>

@@ -52,7 +52,7 @@ export default async function FirstDayScene() {
         <PaperSheet fold className="h-full w-full">
           <div className="relative grid h-full grid-cols-1 md:grid-cols-2">
             {/* Text page LEFT this time — the spread turned. */}
-            <div className="order-2 flex flex-col justify-center px-8 py-10 md:order-1 md:px-12">
+            <div className="order-2 flex flex-col justify-center px-8 py-10 md:order-1 md:justify-start md:px-12 md:py-0 md:pt-24">
               <p
                 data-scene="0"
                 className="text-[clamp(1.2rem,1.9vw,1.6rem)] font-semibold leading-[1.2] text-brand-muted"
@@ -61,18 +61,23 @@ export default async function FirstDayScene() {
               </p>
               <h2
                 data-scene="1"
-                className="mt-2 max-w-[16ch] text-[clamp(1.8rem,3.4vw,2.9rem)] font-bold leading-[1.05] tracking-[-0.015em] text-brand-ink"
+                className="mt-2 max-w-[16ch] text-[clamp(1.8rem,3vw,2.6rem)] font-bold leading-[1.05] tracking-[-0.015em] text-brand-ink"
               >
                 {t("objection")}
               </h2>
 
-              <p data-scene="2" className="mt-6 text-[0.95rem] font-bold text-brand-ink">
+              {/* One slot, three tenants: the turn + Holly's meal make way
+                  for Mali's note. Absolute on md so retired beats leave no
+                  hole in the flow; stacked naturally on mobile. */}
+              <div className="mt-6 md:relative md:h-[16rem]">
+              <p data-scene="2" data-scene-until="5" className="text-[0.95rem] font-bold text-brand-ink md:absolute md:top-0">
                 {t("turn")}
               </p>
               <figure
                 data-scene="3"
+                data-scene-until="5"
                 data-place
-                className="mt-3 w-[15rem] rounded-xl border border-brand-muted/20 bg-brand-card shadow-[0_12px_28px_-14px_rgba(43,21,3,0.4)]"
+                className="mt-3 w-[13rem] rounded-xl border border-brand-muted/20 bg-brand-card shadow-[0_12px_28px_-14px_rgba(43,21,3,0.4)] md:absolute md:top-8 md:mt-0"
               >
                 <div className="overflow-hidden rounded-xl">
                   <div className="relative aspect-[3/2]">
@@ -94,7 +99,7 @@ export default async function FirstDayScene() {
               <div
                 data-scene="5"
                 data-place
-                className="mt-6 w-[19rem] -rotate-1 rounded-[3px] border border-brand-muted/25 bg-brand-card p-4 shadow-[0_12px_28px_-14px_rgba(43,21,3,0.4)]"
+                className="mt-6 w-[19rem] -rotate-1 rounded-[3px] border border-brand-muted/25 bg-brand-card p-4 shadow-[0_12px_28px_-14px_rgba(43,21,3,0.4)] md:absolute md:top-0 md:mt-0"
               >
                 <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-brand-orange">
                   {t("slipFrom")}
@@ -115,6 +120,7 @@ export default async function FirstDayScene() {
                 </dl>
               </div>
 
+              </div>
               <p data-scene="6" className="mt-6 text-[0.95rem] font-bold text-brand-ink">
                 {t("nowhereQ")}
               </p>
