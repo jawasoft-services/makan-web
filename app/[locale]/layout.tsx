@@ -72,7 +72,9 @@ export default async function RootLayout({
   // The Decision namespace is deploy-gated (spec §2): its copy must not reach
   // the client payload of live pages. Server components read it via
   // getTranslations, which does not need the client provider.
-  const { Decision: _gated, ...clientMessages } = messages as Record<string, unknown>
+  const clientMessages = Object.fromEntries(
+    Object.entries(messages).filter(([namespace]) => namespace !== "Decision"),
+  )
 
   return (
     <ViewTransitions>
