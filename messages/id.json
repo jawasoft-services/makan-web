@@ -412,7 +412,7 @@
       "friendMealSub": "Disimpan @Holly · dia pesan lagi, dua kali",
       "friendMealAlt": "Green curry milik Holly, disimpan di Makan",
       "friendMark": "Holly pesan ini lagi",
-      "slipFrom": "Catatan dari Mali · sudah 23 hari makan di sini",
+      "slipFrom": "Menu Maitre'D punya Mali",
       "alwaysKey": "Selalu pesan",
       "slipAlways": "Green curry-nya, pakai roti bukan nasi.",
       "tryKey": "Coba ini kalau…",
@@ -424,7 +424,9 @@
       "emptySub": "Makan bilang begitu. Dia tidak pernah mengarang.",
       "house": "Soi 5",
       "meta": "Jl. Batu Bolong · 12.00 – 22.00",
-      "legal": "V vegetarian · VG vegan. Harga dalam ribuan rupiah, belum termasuk pajak dan layanan 21%."
+      "legal": "V vegetarian · VG vegan. Harga dalam ribuan rupiah, belum termasuk pajak dan layanan 21%.",
+      "maitredIntro": "Dan setiap tempat punya Maitre'D.",
+      "maitredWho": "Mali sudah makan di sini pada 23 hari berbeda. Tidak ada yang lebih tahu Soi 5 di Makan — sampai ada yang makan di sini lebih sering."
     }
   }
 }

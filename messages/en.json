@@ -412,7 +412,7 @@
       "friendMealSub": "Saved by @Holly · she ordered it again, twice",
       "friendMealAlt": "Holly's green curry, saved on Makan",
       "friendMark": "Holly ordered this again",
-      "slipFrom": "A note from Mali · eaten here on 23 days",
+      "slipFrom": "Mali's Maitre'D Menu",
       "alwaysKey": "Always order",
       "slipAlways": "The green curry, with roti not rice.",
       "tryKey": "Try this if…",
@@ -424,7 +424,9 @@
       "emptySub": "Makan says so. It never makes it up.",
       "house": "Soi 5",
       "meta": "Jl. Batu Bolong · 12pm – 10pm",
-      "legal": "V vegetarian · VG vegan. Prices in thousands of rupiah, subject to 21% government tax & service."
+      "legal": "V vegetarian · VG vegan. Prices in thousands of rupiah, subject to 21% government tax & service.",
+      "maitredIntro": "And every place has a Maitre'D.",
+      "maitredWho": "Mali has eaten here on 23 different days. Nobody on Makan knows Soi 5 better — until someone eats here more."
     }
   }
 }

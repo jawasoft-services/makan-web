@@ -69,7 +69,7 @@ export default async function FirstDayScene() {
               {/* One slot, three tenants: the turn + Holly's meal make way
                   for Mali's note. Absolute on md so retired beats leave no
                   hole in the flow; stacked naturally on mobile. */}
-              <div className="mt-6 md:relative md:h-[14rem]">
+              <div className="mt-6 md:relative md:h-[18rem]">
               <p data-scene="2" data-scene-until="5" className="text-[0.95rem] font-bold text-brand-ink md:absolute md:top-0">
                 {t("turn")}
               </p>
@@ -96,13 +96,22 @@ export default async function FirstDayScene() {
                 </div>
               </figure>
 
+              <p
+                data-scene="5"
+                className="mt-6 text-[0.95rem] font-bold text-brand-ink md:absolute md:top-0 md:mt-0"
+              >
+                {t("maitredIntro")}
+              </p>
               <div
                 data-scene="5"
                 data-place
-                className="mt-6 w-[19rem] -rotate-1 rounded-[3px] border border-brand-muted/25 bg-brand-card p-4 shadow-[0_12px_28px_-14px_rgba(43,21,3,0.4)] md:absolute md:top-0 md:mt-0"
+                className="mt-3 w-[21rem] max-w-full -rotate-1 rounded-[3px] border border-brand-muted/25 bg-brand-card p-4 shadow-[0_12px_28px_-14px_rgba(43,21,3,0.4)] md:absolute md:top-8 md:mt-0"
               >
                 <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-brand-orange">
                   {t("slipFrom")}
+                </p>
+                <p className="mt-1.5 text-[0.8rem] leading-[1.5] text-brand-muted">
+                  {t("maitredWho")}
                 </p>
                 <dl className="mt-2 grid grid-cols-[max-content_minmax(0,1fr)] gap-x-3 gap-y-1.5">
                   {[
@@ -121,7 +130,7 @@ export default async function FirstDayScene() {
               </div>
 
               </div>
-              <p data-scene="6" className="mt-6 text-[0.95rem] font-bold text-brand-ink">
+              <p data-scene="6" className="mt-4 text-[0.95rem] font-bold text-brand-ink">
                 {t("nowhereQ")}
               </p>
               <div

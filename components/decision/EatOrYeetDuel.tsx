@@ -102,17 +102,17 @@ export function EatOrYeetDuel({
                   sizes="(min-width: 768px) 260px, 46vw"
                   className="object-cover object-top"
                 />
+                {isWin ? (
+                  <span data-scene={pickStage} className="pointer-events-none absolute -inset-[6%] z-10 block">
+                    <PenRing />
+                  </span>
+                ) : null}
               </div>
               <figcaption className="px-3 py-2.5 text-[0.85rem] font-bold text-brand-ink">
                 {meal.name}
                 {isWin ? <span className="sr-only"> — {pickedLabel}</span> : null}
               </figcaption>
             </div>
-            {isWin ? (
-              <span data-scene={pickStage} className="pointer-events-none absolute -inset-[7%] z-10 block">
-                <PenRing />
-              </span>
-            ) : null}
           </figure>
         ))}
         <span className="pointer-events-none absolute left-1/2 top-[32%] z-20 -translate-x-1/2 rounded-full border border-brand-muted/25 bg-brand-cream px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-brand-muted">
