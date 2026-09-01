@@ -36,11 +36,11 @@ export default function MenuSheet({
             <span className="whitespace-nowrap text-[0.72rem] font-bold uppercase tracking-[0.2em] text-brand-muted">
               {section.heading}
             </span>
-            <i className="h-px flex-1 bg-brand-muted/30" />
+            <span aria-hidden className="h-px flex-1 bg-brand-muted/30" />
           </div>
           <ul>
             {section.items.map((item) => (
-              <MenuItem key={item.name} {...item} />
+              <MenuItem key={`${section.heading}-${item.name}`} {...item} />
             ))}
           </ul>
         </section>

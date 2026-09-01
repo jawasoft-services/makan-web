@@ -45,13 +45,16 @@ export default async function HeroDiptych() {
   return (
     <PaperSheet fold className="w-full">
       <div className="grid grid-cols-1 md:grid-cols-2">
-        <MenuSheet
-          house={t("house")}
-          meta={t("meta")}
-          sections={SECTIONS}
-          legal={t("legal")}
-          className="px-8 py-10 md:px-10"
-        />
+        <div className="relative max-h-[42vh] overflow-hidden md:max-h-none md:overflow-visible">
+          <MenuSheet
+            house={t("house")}
+            meta={t("meta")}
+            sections={SECTIONS}
+            legal={t("legal")}
+            className="px-8 py-10 md:px-10"
+          />
+          <div aria-hidden className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-brand-cream md:hidden" />
+        </div>
         <div className="flex flex-col justify-center px-8 py-10 md:px-12">
           <h1 className="max-w-[13ch] text-[clamp(2rem,4vw,3.4rem)] font-bold leading-[1.04] tracking-[-0.015em] text-brand-ink">
             {t("headline")}

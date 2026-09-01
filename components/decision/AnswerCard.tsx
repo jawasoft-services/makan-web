@@ -8,7 +8,7 @@ import {
 type AnswerCardProps = {
   level: DecisionEvidenceLevel
   /** The saffron label. Its meaning MUST also appear in ink nearby. */
-  mark: string
+  mark?: string
   dish: ReactNode
   reason: string
   note?: string
@@ -38,11 +38,13 @@ export default function AnswerCard({
         .filter(Boolean)
         .join(" ")}
     >
-      <span
-        className={`inline-block text-[0.72rem] font-extrabold uppercase tracking-[0.15em] ${MARK_CLASSES[form]}`}
-      >
-        {mark}
-      </span>
+      {mark && form !== "none" ? (
+        <span
+          className={`inline-block text-[0.72rem] font-extrabold uppercase tracking-[0.15em] ${MARK_CLASSES[form]}`}
+        >
+          {mark}
+        </span>
+      ) : null}
       <p className="mt-[0.9em] text-[1.5rem] font-bold leading-[1.1] text-brand-ink">
         {dish}
       </p>

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import Image from "next/image"
 import { getTranslations } from "next-intl/server"
 import PaperSheet from "@/components/paper/PaperSheet"
 import HandRing from "@/components/decision/HandRing"
@@ -42,7 +43,8 @@ export default async function EvidenceLadder() {
   const t = await getTranslations("Decision.Ladder")
   const title = t("title")
   const accent = t("titleAccent")
-  const [before, after] = title.split(accent)
+  const hasAccent = title.includes(accent)
+  const [before, after] = hasAccent ? title.split(accent) : [title, ""]
 
   return (
     <PaperSheet className="w-full">
@@ -53,7 +55,11 @@ export default async function EvidenceLadder() {
           </p>
           <h2 className="mt-3 max-w-[13ch] text-[clamp(1.9rem,3.4vw,3rem)] font-bold leading-[1.02] tracking-[-0.03em] text-brand-ink">
             {before}
-            <em className="font-extrabold not-italic text-brand-orange">{accent}</em>
+            {hasAccent ? (
+              <em className="font-extrabold not-italic text-brand-ink underline decoration-brand-orange decoration-4 underline-offset-4">
+                {accent}
+              </em>
+            ) : null}
             {after}
           </h2>
           <p className="mt-4 max-w-[34em] text-[0.95rem] leading-[1.62] text-brand-muted">
@@ -62,15 +68,33 @@ export default async function EvidenceLadder() {
         </header>
 
         <Rung n={1}>
-          <Mark level="personal_taste">{t("l1Mark")}</Mark>
-          <p className="mt-3 text-lg font-bold text-brand-ink">{t("l1When")}</p>
-          <p className="text-[clamp(1.5rem,2.6vw,2.4rem)] font-bold leading-[1.1] text-brand-ink">
-            <HandRing>{t("l1Dish")}</HandRing>
-          </p>
-          <p className="mt-2 text-[0.9rem] leading-[1.6] text-brand-muted">{t("l1Reason")}</p>
-          <p className="mt-3 max-w-[34em] border-l-2 border-brand-orange pl-3 text-[0.8rem] leading-[1.55] text-brand-muted">
-            {t("l1Note")}
-          </p>
+          <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_clamp(150px,22vw,240px)] md:items-center">
+            <div>
+              <Mark level="personal_taste">{t("l1Mark")}</Mark>
+              <p className="mt-3 text-lg font-bold text-brand-ink">{t("l1When")}</p>
+              <p className="text-[clamp(1.5rem,2.6vw,2.4rem)] font-bold leading-[1.1] text-brand-ink">
+                <HandRing>{t("l1Dish")}</HandRing>
+              </p>
+              <p className="mt-2 text-[0.9rem] leading-[1.6] text-brand-muted">{t("l1Reason")}</p>
+              <p className="mt-3 max-w-[34em] border-l-2 border-brand-orange pl-3 text-[0.8rem] leading-[1.55] text-brand-muted">
+                {t("l1Note")}
+              </p>
+            </div>
+            <figure className="relative -rotate-1 overflow-hidden rounded-[3px] shadow-[0_2px_4px_rgba(43,21,3,0.14),0_18px_34px_-18px_rgba(43,21,3,0.5)]">
+              <div className="relative aspect-[1200/828]">
+                <Image
+                  src="/meals/IMG_6952.jpg"
+                  alt="Eggs Benedict saved on Makan by @Valesca"
+                  fill
+                  sizes="(min-width: 768px) 240px, 100vw"
+                  className="object-cover object-top"
+                />
+              </div>
+              <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[rgba(36,17,2,0.82)] to-transparent px-3 pb-2 pt-8 text-[0.6rem] font-semibold tracking-[0.06em] text-white">
+                Saved by @Valesca · Eggs Benedict
+              </figcaption>
+            </figure>
+          </div>
         </Rung>
 
         <Rung n={2}>
