@@ -41,7 +41,7 @@ const SECTIONS: MenuSection[] = [
 // The story: a new place → the objection said out loud → Holly's real meal →
 // the pen rings her dish on this menu → the note from someone who really
 // knows the place → and the honest state where nobody's been.
-const STAGES = [0.05, 0.16, 0.28, 0.4, 0.52, 0.66, 0.82]
+const STAGES = [0.05, 0.16, 0.28, 0.4, 0.52, 0.62, 0.78]
 
 export default async function FirstDayScene() {
   const t = await getTranslations("Decision.FirstDay")
@@ -69,7 +69,7 @@ export default async function FirstDayScene() {
               {/* One slot, three tenants: the turn + Holly's meal make way
                   for Mali's note. Absolute on md so retired beats leave no
                   hole in the flow; stacked naturally on mobile. */}
-              <div className="mt-6 md:relative md:h-[16rem]">
+              <div className="mt-6 md:relative md:h-[14rem]">
               <p data-scene="2" data-scene-until="5" className="text-[0.95rem] font-bold text-brand-ink md:absolute md:top-0">
                 {t("turn")}
               </p>
@@ -146,7 +146,7 @@ export default async function FirstDayScene() {
                   ),
                 }))}
                 legal={t("legal")}
-                className="px-8 py-10 md:px-10"
+                className="px-8 py-10 md:px-10 md:pt-24"
               />
               <div
                 aria-hidden

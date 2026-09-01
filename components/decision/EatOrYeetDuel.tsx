@@ -150,7 +150,7 @@ export function SettledDuel({ duel, appearStage }: { duel: Duel; appearStage: nu
       {cards.map(({ meal, isWin }) => (
         <span
           key={meal.name}
-          className="relative block h-11 w-16 overflow-hidden rounded-md border border-brand-muted/25"
+          className="relative block h-9 w-[3.4rem] overflow-hidden rounded-md border border-brand-muted/25"
         >
           <Image
             src={meal.src}

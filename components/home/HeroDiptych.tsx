@@ -95,7 +95,7 @@ export default async function HeroDiptych() {
                   ),
                 }))}
                 legal={t("legal")}
-                className="px-8 py-10 md:px-10"
+                className="px-8 py-10 md:px-10 md:pt-24"
               />
               <div
                 aria-hidden
@@ -126,10 +126,10 @@ export default async function HeroDiptych() {
               >
                 {t("thought")}
               </p>
-              <p data-scene="4" data-scene-until="13" className="mt-2 text-[0.8rem] font-semibold leading-[1.5] text-brand-ink">
+              <p data-scene="4" className="mt-2 text-[0.8rem] font-semibold leading-[1.5] text-brand-ink">
                 {t("proofLead")}
               </p>
-              <p data-scene="4" data-scene-until="13" className="mt-2 text-[0.95rem] font-bold text-brand-ink">
+              <p data-scene="4" className="mt-2 text-[0.95rem] font-bold text-brand-ink">
                 {t("eoyQuestion")}
               </p>
               <div className="mt-3 md:relative md:h-[17rem] md:max-w-[30rem]">
@@ -174,8 +174,18 @@ export default async function HeroDiptych() {
                 />
                 {/* Once the duels have vacated the slot, the payoff takes it
                     over — nothing stacks below an empty stage. */}
-                <div className="md:absolute md:inset-x-0 md:bottom-2">
-                  <p data-scene="13" style={{ transitionDelay: "0.5s" }} className="mt-6 max-w-[30rem] text-[0.85rem] font-semibold leading-[1.5] text-brand-ink md:mt-0">
+                <div className="md:absolute md:inset-0 md:flex md:flex-col md:justify-start md:pt-1">
+                  {/* The payoff recaps the three extractions, so the vacated
+                      slot is filled by the data — not by empty paper. */}
+                  <ul data-scene="13" style={{ transitionDelay: "0.4s" }} className="mt-6 hidden max-w-[30rem] space-y-1.5 md:mt-0 md:block">
+                    {[t("learn1"), t("learn2"), t("learn3")].map((fact) => (
+                      <li key={fact} className="flex items-baseline gap-2 text-[0.85rem] font-semibold text-brand-ink">
+                        <span aria-hidden className="text-[0.6rem] text-brand-orange">●</span>
+                        {fact}
+                      </li>
+                    ))}
+                  </ul>
+                  <p data-scene="13" style={{ transitionDelay: "0.5s" }} className="mt-6 max-w-[30rem] text-[0.85rem] font-semibold leading-[1.5] text-brand-ink md:mt-4">
                     {t("proofTally")}
                   </p>
                   <div data-scene="14" className="mt-4 flex items-center gap-4">
@@ -189,7 +199,7 @@ export default async function HeroDiptych() {
                 </div>
               </div>
               {/* The receipts pile up — Makan learns from all of them together. */}
-              <div className="mt-3 hidden items-center gap-3 md:flex">
+              <div className="mt-3 hidden max-w-full flex-wrap items-center gap-2.5 md:flex">
                 <SettledDuel duel={DUELS[0]} appearStage={7} />
                 <SettledDuel duel={DUELS[1]} appearStage={10} />
                 <SettledDuel duel={DUELS[2]} appearStage={13} />
