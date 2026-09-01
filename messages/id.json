@@ -341,5 +341,19 @@
     "relatedLinksLabel": "Sumber informasi penghapusan data",
     "privacyLink": "Baca Kebijakan Privasi Makan",
     "backHome": "Kembali ke beranda"
+  },
+  "Decision": {
+    "Hero": {
+      "headline": "Kamu masih belum tahu mau pesan apa.",
+      "body": "Makan menjawab dengan makanan yang benar-benar pernah dimakan — punyamu, dan punya orang yang kamu percaya.",
+      "cta": "Unduh Makan — gratis",
+      "platform": "Gratis di iPhone",
+      "house": "Bright Palm",
+      "meta": "Jl. Pantai Berawa · 07.00 – 23.00",
+      "legal": "V vegetarian · VG vegan · GF bebas gluten. Harga dalam ribuan rupiah, belum termasuk pajak dan layanan 21%.",
+      "answerMark": "Cocok untuk kamu",
+      "answerDish": "Grilled Barramundi",
+      "answerReason": "Kamu memilih panggang dibanding goreng enam dari tujuh kali, dan selalu memilih ikan ketika dibandingkan dengan burger. Belum ada orang yang kamu percaya makan di sini — yang ini datang dari seleramu sendiri."
+    }
   }
 }

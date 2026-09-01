@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
 import PaperSheet from "@/components/paper/PaperSheet"
+import HeroDiptych from "@/components/home/HeroDiptych"
 
 /**
  * Dev-only harness for the deploy-gated decision-first components.
@@ -16,6 +17,7 @@ export default async function DevPreview({
   setRequestLocale(locale)
   return (
     <main>
+      <HeroDiptych />
       <PaperSheet fold className="min-h-[50vh]">
         <p className="p-10 text-brand-muted">paper harness</p>
       </PaperSheet>

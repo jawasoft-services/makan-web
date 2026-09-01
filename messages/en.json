@@ -341,5 +341,19 @@
     "relatedLinksLabel": "Data deletion resources",
     "privacyLink": "Read the Makan Privacy Policy",
     "backHome": "Back to home"
+  },
+  "Decision": {
+    "Hero": {
+      "headline": "You still don't know what to order.",
+      "body": "Makan answers with meals that actually happened — yours, and people you trust.",
+      "cta": "Get Makan — free",
+      "platform": "Free on iPhone",
+      "house": "Bright Palm",
+      "meta": "Jl. Pantai Berawa · 7am – 11pm",
+      "legal": "V vegetarian · VG vegan · GF gluten free. Prices in thousands of rupiah, subject to 21% government tax & service.",
+      "answerMark": "A good match for you",
+      "answerDish": "Grilled Barramundi",
+      "answerReason": "You've chosen grilled over fried six times out of seven, and fish every time it's been up against a burger. Nobody you trust has eaten here yet — this one comes from your own taste."
+    }
   }
 }
