@@ -6,8 +6,9 @@ export type MenuEntry = {
   price: string
   /** Dietary markers as printed, e.g. "VG GF". */
   diet?: string
-  /** Makan's annotation: a hand-drawn ring around the name, with a label. */
-  circled?: { label: string }
+  /** Makan's annotation: a hand-drawn ring around the name, with a label.
+   *  `stage` is the scroll-scene index the ring draws at (default 2). */
+  circled?: { label: string; stage?: number }
 }
 
 /**
@@ -29,7 +30,7 @@ export default function MenuItem({ name, description, price, diet, circled }: Me
             <span className="relative inline-block">
               <span className="relative z-[2]">{name}</span>
               <span
-                data-scene="2"
+                data-scene={circled.stage ?? 2}
                 aria-hidden
                 className="absolute left-[-12%] top-[-48%] z-[1] block h-[196%] w-[124%]"
               >

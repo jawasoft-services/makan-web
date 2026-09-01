@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
 import HeroDiptych from "@/components/home/HeroDiptych"
-import EvidenceLadder from "@/components/home/EvidenceLadder"
+import FirstDayScene from "@/components/home/FirstDayScene"
 
 /**
  * Dev-only harness for the deploy-gated decision-first components.
@@ -18,7 +18,7 @@ export default async function DevPreview({
   return (
     <main className="pt-20">
       <HeroDiptych />
-      <EvidenceLadder />
+      <FirstDayScene />
     </main>
   )
 }

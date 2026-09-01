@@ -399,6 +399,28 @@
       "l1Beat2": "Tuna Poke",
       "l1Beat3": "Wagyu Cheeseburger",
       "l1More": "and 8 more"
+    },
+    "FirstDay": {
+      "intro": "Now somewhere new.",
+      "objection": "Day one. Makan knows nothing about you yet.",
+      "turn": "But Holly has been here four times.",
+      "friendMealName": "Green curry",
+      "friendMealSub": "Saved by @Holly · she ordered it again, twice",
+      "friendMealAlt": "Holly's green curry, saved on Makan",
+      "friendMark": "Holly ordered this again",
+      "slipFrom": "A note from Mali · eaten here on 23 days",
+      "alwaysKey": "Always order",
+      "slipAlways": "The green curry, with roti not rice.",
+      "tryKey": "Try this if…",
+      "slipTry": "You can handle it properly hot. Say so.",
+      "knowKey": "Good to know",
+      "slipKnow": "Cash only after 9.",
+      "nowhereQ": "And a place nobody has tried yet?",
+      "emptyState": "Not enough meals here yet to help you choose.",
+      "emptySub": "Makan says so. It never makes it up.",
+      "house": "Soi 5",
+      "meta": "Jl. Batu Bolong · 12pm – 10pm",
+      "legal": "V vegetarian · VG vegan. Prices in thousands of rupiah, subject to 21% government tax & service."
     }
   }
 }

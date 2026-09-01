@@ -399,6 +399,28 @@
       "l1Beat2": "Tuna Poke",
       "l1Beat3": "Wagyu Cheeseburger",
       "l1More": "dan 8 lagi"
+    },
+    "FirstDay": {
+      "intro": "Sekarang di tempat baru.",
+      "objection": "Hari pertama. Makan belum tahu apa-apa tentang kamu.",
+      "turn": "Tapi Holly sudah empat kali ke sini.",
+      "friendMealName": "Green curry",
+      "friendMealSub": "Disimpan @Holly · dia pesan lagi, dua kali",
+      "friendMealAlt": "Green curry milik Holly, disimpan di Makan",
+      "friendMark": "Holly pesan ini lagi",
+      "slipFrom": "Catatan dari Mali · sudah 23 hari makan di sini",
+      "alwaysKey": "Selalu pesan",
+      "slipAlways": "Green curry-nya, pakai roti bukan nasi.",
+      "tryKey": "Coba ini kalau…",
+      "slipTry": "Kamu kuat pedas beneran. Bilang saja.",
+      "knowKey": "Perlu tahu",
+      "slipKnow": "Setelah jam 9 cuma terima tunai.",
+      "nowhereQ": "Kalau tempat yang belum ada yang coba?",
+      "emptyState": "Belum cukup makanan di sini untuk membantumu memilih.",
+      "emptySub": "Makan bilang begitu. Dia tidak pernah mengarang.",
+      "house": "Soi 5",
+      "meta": "Jl. Batu Bolong · 12.00 – 22.00",
+      "legal": "V vegetarian · VG vegan. Harga dalam ribuan rupiah, belum termasuk pajak dan layanan 21%."
     }
   }
 }
