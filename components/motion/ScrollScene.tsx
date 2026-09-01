@@ -32,8 +32,8 @@ export default function ScrollScene({
 
     const desktop = window.matchMedia("(min-width: 768px)")
 
-    if (!desktop.matches) {
-      // Mobile: each beat arrives as it enters the viewport, in order.
+    // Mobile: each beat arrives as it enters the viewport, in order.
+    const setupMobile = () => {
       const observer = new IntersectionObserver(
         (entries) => {
           for (const entry of entries) {
@@ -55,26 +55,44 @@ export default function ScrollScene({
     // and a polling loop survives any scroll machinery. One
     // getBoundingClientRect per frame, and the toggles early-out while the
     // region is far offscreen.
-    let raf = 0
-    const loop = () => {
-      const rect = node.getBoundingClientRect()
-      if (rect.bottom > -200 && rect.top < window.innerHeight + 200) {
-        const span = node.offsetHeight - window.innerHeight
-        const progress = span > 0 ? Math.min(1, Math.max(0, -rect.top / span)) : 1
-        for (const beat of beats) {
-          const index = Number(beat.dataset.scene ?? 0)
-          // data-scene-until gives a beat a WINDOW: on at its own stage, off
-          // again when a later stage arrives (a resolved duel making way for
-          // the next). Mobile ignores windows — everything stays in flow.
-          const until = beat.dataset.sceneUntil
-          const past = until !== undefined && progress >= (thresholds[Number(until)] ?? 2)
-          beat.classList.toggle("scene-on", !past && progress >= (thresholds[index] ?? 0))
+    const setupDesktop = () => {
+      let raf = 0
+      const loop = () => {
+        const rect = node.getBoundingClientRect()
+        if (rect.bottom > -200 && rect.top < window.innerHeight + 200) {
+          const span = node.offsetHeight - window.innerHeight
+          const progress = span > 0 ? Math.min(1, Math.max(0, -rect.top / span)) : 1
+          for (const beat of beats) {
+            const index = Number(beat.dataset.scene ?? 0)
+            // data-scene-until gives a beat a WINDOW: on at its own stage,
+            // off again when a later stage arrives (a resolved duel making
+            // way for the next).
+            const until = beat.dataset.sceneUntil
+            const past = until !== undefined && progress >= (thresholds[Number(until)] ?? 2)
+            beat.classList.toggle("scene-on", !past && progress >= (thresholds[index] ?? 0))
+          }
         }
+        raf = requestAnimationFrame(loop)
       }
       raf = requestAnimationFrame(loop)
+      return () => cancelAnimationFrame(raf)
     }
-    raf = requestAnimationFrame(loop)
-    return () => cancelAnimationFrame(raf)
+
+    // The branch must FOLLOW the breakpoint, not be chosen once at mount: a
+    // pane resized across 768px otherwise leaves mobile's permanent classes
+    // under desktop's windowed layout — every stage on at once. On a switch
+    // the desktop loop recomputes every beat (including turning strays off)
+    // on its first frame.
+    let teardown = desktop.matches ? setupDesktop() : setupMobile()
+    const onChange = () => {
+      teardown()
+      teardown = desktop.matches ? setupDesktop() : setupMobile()
+    }
+    desktop.addEventListener("change", onChange)
+    return () => {
+      desktop.removeEventListener("change", onChange)
+      teardown()
+    }
   }, [thresholds])
 
   return (
