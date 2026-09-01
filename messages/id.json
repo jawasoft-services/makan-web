@@ -345,17 +345,14 @@
   "Decision": {
     "Hero": {
       "headline": "Kamu masih belum tahu mau pesan apa.",
-      "body": "Makan membantu kamu memilih. Pakai makanan sungguhan — punyamu, dan punya orang yang kamu percaya.",
-      "cta": "Unduh Makan — gratis",
+      "cta": "Unduh Makan",
       "platform": "Gratis di iPhone",
       "house": "Bright Palm",
       "meta": "Jl. Pantai Berawa · 07.00 – 23.00",
       "legal": "V vegetarian · VG vegan · GF bebas gluten. Harga dalam ribuan rupiah, belum termasuk pajak dan layanan 21%.",
       "answerMark": "Cocok untuk kamu",
-      "answerDish": "Grilled Barramundi",
-      "answerReason": "Kamu memilih panggang dibanding goreng enam dari tujuh kali. Dan kamu selalu pilih ikan waktu dibandingkan burger. Belum ada orang yang kamu percaya makan di sini, jadi ini murni dari yang kamu suka.",
-      "thought": "Tunggu — dari mana dia tahu itu?",
-      "proofLead": "Karena kamu yang memberitahunya, dua makanan sekali pilih:",
+      "thought": "Dari mana dia tahu?",
+      "proofLead": "Karena kamu yang kasih tahu, dua makanan sekali pilih:",
       "duel1Win": "Sate",
       "duel1Lose": "Sayap goreng",
       "duel2Win": "Ikan bakar",
@@ -363,7 +360,6 @@
       "duel3Win": "Ayam panggang",
       "duel3Lose": "Cumi goreng",
       "proofTally": "Setiap pilihan mengajari Makan apa yang kamu suka.",
-      "scene": "Selasa malam. Menunya datang.",
       "hook": "Semua kelihatan enak."
     },
     "Ladder": {

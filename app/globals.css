@@ -272,6 +272,42 @@
       opacity: 1;
       transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
       transition-delay: calc(0.2s + var(--deal, 0) * 130ms);
+      .scene-armed [data-scene]:not(.scene-on) .hand-ring-lap1 {
+      stroke-dasharray: 1400;
+      stroke-dashoffset: 1400;
+    }
+    .scene-armed [data-scene]:not(.scene-on) .hand-ring-lap2 {
+      stroke-dasharray: 700;
+      stroke-dashoffset: 700;
+    }
+    .scene-armed [data-scene].scene-on .hand-ring-lap1 {
+      stroke-dasharray: 1400;
+      stroke-dashoffset: 1400;
+      animation: hand-ring-draw 0.78s cubic-bezier(0.33, 0, 0.5, 1) 0.1s forwards;
+    }
+    .scene-armed [data-scene].scene-on .hand-ring-lap2 {
+      stroke-dasharray: 700;
+      stroke-dashoffset: 700;
+      animation: hand-ring-draw 0.4s cubic-bezier(0.33, 0, 0.6, 1) 0.9s forwards;
+    }
+  }
+    .scene-armed [data-scene]:not(.scene-on) .hand-ring-lap1 {
+      stroke-dasharray: 1400;
+      stroke-dashoffset: 1400;
+    }
+    .scene-armed [data-scene]:not(.scene-on) .hand-ring-lap2 {
+      stroke-dasharray: 700;
+      stroke-dashoffset: 700;
+    }
+    .scene-armed [data-scene].scene-on .hand-ring-lap1 {
+      stroke-dasharray: 1400;
+      stroke-dashoffset: 1400;
+      animation: hand-ring-draw 0.78s cubic-bezier(0.33, 0, 0.5, 1) 0.1s forwards;
+    }
+    .scene-armed [data-scene].scene-on .hand-ring-lap2 {
+      stroke-dasharray: 700;
+      stroke-dashoffset: 700;
+      animation: hand-ring-draw 0.4s cubic-bezier(0.33, 0, 0.6, 1) 0.9s forwards;
     }
   }
 }

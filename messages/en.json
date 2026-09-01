@@ -345,16 +345,13 @@
   "Decision": {
     "Hero": {
       "headline": "You still don't know what to order.",
-      "body": "Makan helps you choose. It uses real meals — yours, and ones from people you trust.",
-      "cta": "Get Makan — free",
+      "cta": "Get Makan",
       "platform": "Free on iPhone",
       "house": "Bright Palm",
       "meta": "Jl. Pantai Berawa · 7am – 11pm",
       "legal": "V vegetarian · VG vegan · GF gluten free. Prices in thousands of rupiah, subject to 21% government tax & service.",
       "answerMark": "A good match for you",
-      "answerDish": "Grilled Barramundi",
-      "answerReason": "You picked grilled over fried six times out of seven. And you picked fish every time it was up against a burger. Nobody you trust has eaten here yet, so this one is just from what you like.",
-      "thought": "Wait — how does it know that?",
+      "thought": "How does it know?",
       "proofLead": "Because you told it, two meals at a time:",
       "duel1Win": "Sate",
       "duel1Lose": "Fried wings",
@@ -363,7 +360,6 @@
       "duel3Win": "Grilled chicken",
       "duel3Lose": "Fried calamari",
       "proofTally": "Every pick teaches Makan what you like.",
-      "scene": "Tuesday night. The menu lands.",
       "hook": "Everything sounds good."
     },
     "Ladder": {
