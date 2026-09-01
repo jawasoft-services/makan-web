@@ -142,3 +142,68 @@
   .animate-bounce { animation: none; }
   [style*="waterfall-scroll"] { animation: none !important; }
 }
+
+@layer components {
+  .paper-sheet {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-color: #FFF4E6;
+    color: #2B1503;
+  }
+  .paper-tone,
+  .paper-relief,
+  .paper-tooth,
+  .paper-fold,
+  .paper-edge {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .paper-tone {
+    z-index: 1;
+    background:
+      radial-gradient(78% 58% at 18% 4%, rgba(255, 255, 255, 0.6), transparent 62%),
+      radial-gradient(70% 55% at 92% 98%, rgba(43, 21, 3, 0.07), transparent 64%);
+  }
+  /* Fibre relief. baseFrequency must stay ~0.04: higher values produce
+     per-pixel static that averages to flat grey. feDiffuseLighting turns the
+     noise into a bump map, which is what reads as paper rather than speckle.
+     multiply is required — the lit texture is near-white, so soft-light and
+     overlay bleach the cream instead of darkening into it. */
+  .paper-relief {
+    z-index: 2;
+    mix-blend-mode: multiply;
+    opacity: 0.8;
+    background-size: 420px 420px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cfilter id='p' filterUnits='userSpaceOnUse' x='0' y='0' width='420' height='420'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.042' numOctaves='5' stitchTiles='stitch' result='n'/%3E%3CfeDiffuseLighting in='n' lighting-color='%23ffffff' surfaceScale='2.6'%3E%3CfeDistantLight azimuth='45' elevation='60'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='420' height='420' filter='url(%23p)'/%3E%3C/svg%3E");
+  }
+  .paper-tooth {
+    z-index: 3;
+    mix-blend-mode: multiply;
+    opacity: 0.18;
+    background-size: 220px 220px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='t' filterUnits='userSpaceOnUse' x='0' y='0' width='220' height='220'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch' result='n'/%3E%3CfeColorMatrix in='n' type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23t)'/%3E%3C/svg%3E");
+  }
+  .paper-fold {
+    z-index: 4;
+    background: linear-gradient(
+      90deg,
+      transparent 42%,
+      rgba(43, 21, 3, 0.035) 47%,
+      rgba(43, 21, 3, 0.1) 49.4%,
+      rgba(43, 21, 3, 0.16) 50%,
+      rgba(43, 21, 3, 0.1) 50.6%,
+      rgba(43, 21, 3, 0.035) 53%,
+      transparent 58%
+    );
+  }
+  .paper-edge {
+    z-index: 5;
+    box-shadow: inset 0 0 110px rgba(43, 21, 3, 0.075);
+  }
+  .paper-body {
+    position: relative;
+    z-index: 6;
+  }
+}
