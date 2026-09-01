@@ -1,7 +1,6 @@
 import type { CSSProperties, ReactNode } from "react"
 import Image from "next/image"
 import { getTranslations } from "next-intl/server"
-import PaperSheet from "@/components/paper/PaperSheet"
 import HandRing from "@/components/decision/HandRing"
 import { MARK_CLASSES, markFormFor, type DecisionEvidenceLevel } from "@/components/decision/evidence"
 import EatOrYeetProof from "@/components/decision/EatOrYeetProof"
@@ -51,7 +50,7 @@ export default async function EvidenceLadder() {
   const [before, after] = hasAccent ? title.split(accent) : [title, ""]
 
   return (
-    <PaperSheet className="w-full">
+    <section className="w-full bg-brand-card">
       <div className="px-8 py-14 md:px-16">
         <Reveal>
         <header className="mb-10">
@@ -167,6 +166,6 @@ export default async function EvidenceLadder() {
           </p>
         </Reveal>
       </div>
-    </PaperSheet>
+    </section>
   )
 }

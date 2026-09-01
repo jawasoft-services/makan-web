@@ -49,8 +49,8 @@ export default async function HeroDiptych() {
 
   return (
     <PaperSheet fold className="w-full">
-      <div className="grid grid-cols-1 md:grid-cols-2">
-        <div className="relative max-h-[42vh] overflow-hidden md:max-h-none md:overflow-visible">
+      <Reveal className="relative grid grid-cols-1 md:grid-cols-2">
+        <div className="relative max-h-[46vh] overflow-hidden md:max-h-none md:overflow-visible">
           <MenuSheet
             house={t("house")}
             meta={t("meta")}
@@ -60,7 +60,23 @@ export default async function HeroDiptych() {
           />
           <div aria-hidden className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-brand-cream md:hidden" />
         </div>
-        <Reveal className="flex flex-col justify-center px-8 py-10 md:px-12">
+        {/* Makan's answer laid on the printed menu — the product's whole
+            gesture as one object. Straddles the spine on the spread; on
+            mobile it overlaps the menu's faded lower edge. */}
+        <div
+          data-beat
+          style={beat(2)}
+          className="relative z-10 -mt-20 px-6 md:absolute md:left-[21%] md:top-[46%] md:mt-0 md:w-[clamp(280px,27vw,380px)] md:px-0"
+        >
+          <AnswerCard
+            className="-rotate-2 md:rotate-[-2.5deg]"
+            level="personal_taste"
+            mark={t("answerMark")}
+            dish={t("answerDish")}
+            reason={t("answerReason")}
+          />
+        </div>
+        <div className="flex flex-col justify-center px-8 py-10 md:px-12">
           <h1
             data-beat
             style={beat(0)}
@@ -71,15 +87,6 @@ export default async function HeroDiptych() {
           <p data-beat style={beat(1)} className="mt-4 max-w-[34ch] text-base leading-[1.55] text-brand-muted">
             {t("body")}
           </p>
-          <div data-beat style={beat(2)}>
-            <AnswerCard
-              className="mt-7"
-              level="personal_taste"
-              mark={t("answerMark")}
-              dish={t("answerDish")}
-              reason={t("answerReason")}
-            />
-          </div>
           {/* The reader's doubt, then the receipts: the Eat or Yeet picks that
               taught Makan the taste the answer just claimed. */}
           <p data-beat style={beat(3)} className="mt-6 text-[0.95rem] font-bold text-brand-ink">
@@ -105,8 +112,8 @@ export default async function HeroDiptych() {
               {t("platform")}
             </span>
           </div>
-        </Reveal>
-      </div>
+        </div>
+      </Reveal>
     </PaperSheet>
   )
 }

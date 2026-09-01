@@ -137,6 +137,12 @@ menu and scrolls normally. Real turns only at: the hero resolving into the answe
 descending, and the final page landing on one dish. Rejected: turning all eight movements, which is
 ~6,000px of captured scroll and a mobile drop-off risk before the CTA.
 
+**D5a (2026-09-01, Devon).** The paper is the hero's object, not the site's wallpaper: every
+movement after the hero sits on white. And the answer card is laid physically **on** the menu —
+overlapping the spread across the spine on desktop, overlapping the menu's faded lower edge on
+mobile — so the product's whole gesture (Makan's answer on your menu) is one object. This
+supersedes D5's "menu as the ground everywhere"; the three earned page-turns survive.
+
 **D6. Hero composition: the diptych.** An open spread — menu printed on the left page, Makan's
 answer on the right, hairline spine between. It establishes the book object in the first second,
 shows before-and-after in one glance, sets up every page-turn that follows, and stacks cleanly on

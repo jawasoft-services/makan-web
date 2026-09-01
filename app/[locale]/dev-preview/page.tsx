@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
-import PaperSheet from "@/components/paper/PaperSheet"
 import HeroDiptych from "@/components/home/HeroDiptych"
 import EvidenceLadder from "@/components/home/EvidenceLadder"
 
@@ -20,9 +19,6 @@ export default async function DevPreview({
     <main className="pt-20">
       <HeroDiptych />
       <EvidenceLadder />
-      <PaperSheet fold className="min-h-[50vh]">
-        <p className="p-10 text-brand-muted">paper harness</p>
-      </PaperSheet>
     </main>
   )
 }
