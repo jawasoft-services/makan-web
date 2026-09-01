@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { getTranslations } from "next-intl/server"
 import PaperSheet from "@/components/paper/PaperSheet"
 import HandRing from "@/components/decision/HandRing"
@@ -24,12 +25,12 @@ function Mark({ level, children }: { level: DecisionEvidenceLevel; children: str
   )
 }
 
-function Rung({ n, children }: { n: number; children: React.ReactNode }) {
+function Rung({ n, children }: { n: number; children: ReactNode }) {
   return (
     <article
       className={`grid grid-cols-[3rem_minmax(0,1fr)] gap-x-6 border-t border-brand-muted/20 first:border-t-0 ${RUNG_PADDING[n]}`}
     >
-      <div className="text-[1.6rem] font-extralight leading-none tabular-nums text-brand-muted opacity-40">
+      <div className="text-[1.6rem] font-extralight leading-none tabular-nums text-brand-muted">
         {String(n).padStart(2, "0")}
       </div>
       <div>{children}</div>
@@ -82,13 +83,13 @@ export default async function EvidenceLadder() {
         <Rung n={3}>
           <Mark level="maitred_menu">{t("l3Mark")}</Mark>
           <p className="mt-3 text-base font-bold text-brand-ink">{t("l3When")}</p>
-          <dl className="mt-3 grid gap-1.5">
+          <dl className="mt-3 grid grid-cols-[max-content_minmax(0,1fr)] gap-x-3 gap-y-1.5">
             {[
               [t("alwaysKey"), t("l3Always")],
               [t("tryKey"), t("l3Try")],
               [t("knowKey"), t("l3Know")],
             ].map(([key, value]) => (
-              <div key={key} className="grid grid-cols-[max-content_minmax(0,1fr)] gap-3">
+              <div key={key} className="contents">
                 <dt className="text-[0.72rem] font-extrabold uppercase tracking-[0.12em] text-brand-orange">
                   {key}
                 </dt>

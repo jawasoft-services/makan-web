@@ -1,6 +1,8 @@
 import { readFile } from "node:fs/promises"
+import { join } from "node:path"
 
-const config = await readFile("tailwind.config.ts", "utf8")
+const projectRoot = process.cwd()
+const config = await readFile(join(projectRoot, "tailwind.config.ts"), "utf8")
 const muted = config.match(/muted:\s*"(#[0-9A-Fa-f]{6})"/)?.[1]
 if (!muted) {
   console.error("Could not read brand.muted from tailwind.config.ts")

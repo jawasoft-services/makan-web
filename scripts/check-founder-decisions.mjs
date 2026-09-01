@@ -59,9 +59,26 @@ for (const sourceRoot of sourceRoots) {
 
 const manifestPath =
   process.env.LOCKED_SURFACES ?? 'docs/founder-decisions.locked-surfaces.json'
-const lockedSurfaceChecks = JSON.parse(
-  await readFile(join(projectRoot, manifestPath), 'utf8'),
-)
+
+let lockedSurfaceChecks
+try {
+  const manifestSource = await readFile(join(projectRoot, manifestPath), 'utf8')
+  lockedSurfaceChecks = JSON.parse(manifestSource)
+} catch (error) {
+  console.error(
+    `FD-001 failed — could not read or parse the locked-surface manifest at ` +
+      `${manifestPath}: ${error.message}`,
+  )
+  process.exit(1)
+}
+
+if (!Array.isArray(lockedSurfaceChecks) || lockedSurfaceChecks.length === 0) {
+  console.error(
+    `FD-001 failed — the locked-surface manifest at ${manifestPath} must be a ` +
+      `non-empty array of checks.`,
+  )
+  process.exit(1)
+}
 
 for (const check of lockedSurfaceChecks) {
   let source

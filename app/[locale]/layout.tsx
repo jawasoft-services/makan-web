@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import { Plus_Jakarta_Sans } from "next/font/google"
 import { NextIntlClientProvider, hasLocale } from "next-intl"
-import { getTranslations, setRequestLocale } from "next-intl/server"
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server"
 import { notFound } from "next/navigation"
 import SafeAnalytics from "@/components/SafeAnalytics"
 import { ViewTransitions } from "next-view-transitions"
@@ -68,11 +68,17 @@ export default async function RootLayout({
   setRequestLocale(locale)
   const t = await getTranslations("Global")
 
+  const messages = await getMessages()
+  // The Decision namespace is deploy-gated (spec §2): its copy must not reach
+  // the client payload of live pages. Server components read it via
+  // getTranslations, which does not need the client provider.
+  const { Decision: _gated, ...clientMessages } = messages as Record<string, unknown>
+
   return (
     <ViewTransitions>
       <html lang={locale} className={jakarta.variable}>
         <body className="font-sans antialiased">
-          <NextIntlClientProvider>
+          <NextIntlClientProvider messages={clientMessages}>
             <a
               href="#main-content"
               className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-lg focus:bg-brand-orange focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"

@@ -15,9 +15,9 @@ import type { ReactNode } from "react"
 export default function HandRing({ children }: { children: ReactNode }) {
   return (
     <span className="relative z-0 mx-[0.72em] my-[0.55em] inline-block">
-      <span className="relative z-[1]">{children}</span>
+      <span className="relative z-[2]">{children}</span>
       <svg
-        className="hand-ring absolute left-[-23%] top-[-100%] z-[2] h-[300%] w-[148%] -rotate-[1.3deg] overflow-visible"
+        className="hand-ring absolute left-[-23%] top-[-100%] z-[1] h-[300%] w-[148%] -rotate-[1.3deg] overflow-visible"
         viewBox="0 0 300 90"
         preserveAspectRatio="none"
         aria-hidden

@@ -17,7 +17,7 @@ export default async function DevPreview({
   const { locale } = await params
   setRequestLocale(locale)
   return (
-    <main>
+    <main className="pt-20">
       <HeroDiptych />
       <EvidenceLadder />
       <PaperSheet fold className="min-h-[50vh]">
