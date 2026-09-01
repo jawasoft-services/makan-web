@@ -353,12 +353,10 @@
       "answerMark": "A good match for you",
       "thought": "How does Makan know…",
       "proofLead": "Because you told it, two meals at a time:",
-      "proofTally": "Every pick teaches Makan what you like.",
+      "proofTally": "One pick tells Makan a little. All your picks together tell it a lot.",
       "hook": "Everything sounds good.",
       "eoyQuestion": "Which would you eat again first?",
       "eoyOr": "or",
-      "eoyAName": "ROS BEEEEF",
-      "eoyBName": "Sushi",
       "eoyPicked": "you picked this"
     },
     "Ladder": {

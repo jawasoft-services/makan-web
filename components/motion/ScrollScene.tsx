@@ -63,7 +63,12 @@ export default function ScrollScene({
         const progress = span > 0 ? Math.min(1, Math.max(0, -rect.top / span)) : 1
         for (const beat of beats) {
           const index = Number(beat.dataset.scene ?? 0)
-          beat.classList.toggle("scene-on", progress >= (thresholds[index] ?? 0))
+          // data-scene-until gives a beat a WINDOW: on at its own stage, off
+          // again when a later stage arrives (a resolved duel making way for
+          // the next). Mobile ignores windows — everything stays in flow.
+          const until = beat.dataset.sceneUntil
+          const past = until !== undefined && progress >= (thresholds[Number(until)] ?? 2)
+          beat.classList.toggle("scene-on", !past && progress >= (thresholds[index] ?? 0))
         }
       }
       raf = requestAnimationFrame(loop)

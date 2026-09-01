@@ -1,7 +1,8 @@
 import { useId } from "react"
 import Image from "next/image"
 
-type Meal = { name: string; src: string }
+export type DuelMeal = { name: string; src: string }
+export type Duel = { a: DuelMeal; b: DuelMeal; winner: "a" | "b" }
 
 function PenRing() {
   const penId = useId()
@@ -26,91 +27,113 @@ function PenRing() {
   )
 }
 
-function Card({
-  meal,
-  isWin,
-  pickedLabel,
-}: {
-  meal: Meal
-  isWin: boolean
-  pickedLabel: string
-}) {
-  const body = (
-    <>
-      <div className="relative aspect-[1080/720]">
-        <Image
-          src={meal.src}
-          alt={meal.name}
-          fill
-          sizes="(min-width: 768px) 260px, 46vw"
-          className="object-cover object-top"
-        />
-      </div>
-      <figcaption className="px-3 py-2.5 text-[0.85rem] font-bold text-brand-ink">
-        {meal.name}
-        {isWin ? <span className="sr-only"> — {pickedLabel}</span> : null}
-      </figcaption>
-    </>
-  )
-
-  return (
-    <figure
-      data-scene="4"
-      data-place
-      className="relative w-full rounded-xl border border-brand-muted/20 bg-brand-card shadow-[0_12px_28px_-14px_rgba(43,21,3,0.4)]"
-    >
-      {isWin ? (
-        <>
-          <div className="overflow-hidden rounded-xl">{body}</div>
-          {/* The pick: the same pen that marks the menu rings the winner. */}
-          <span data-scene="5" className="pointer-events-none absolute -inset-[7%] z-10 block">
-            <PenRing />
-          </span>
-        </>
-      ) : (
-        <div data-scene="5" data-eoy-dim className="overflow-hidden rounded-xl">
-          {body}
-        </div>
-      )}
-    </figure>
-  )
-}
-
 /**
- * The Eat or Yeet mechanism, played out on the page. Both meals settle in
- * together (stage 4); one scroll stage later the pick lands — the saffron
- * pen rings the winner while the loser dims and steps back (stage 5).
+ * One Eat or Yeet comparison, staged: the pair settles in at `inStage`, the
+ * pick lands at `pickStage` (the saffron pen rings the winner, the loser
+ * dims), and on md+ the whole duel makes way at `outStage` for the next one.
+ * On mobile duels stack in flow and the window is ignored.
  */
-export default function EatOrYeetDuel({
-  question,
+export function EatOrYeetDuel({
+  duel,
   or,
-  a,
-  b,
-  winner,
   pickedLabel,
+  inStage,
+  pickStage,
+  outStage,
   className = "",
 }: {
-  question: string
+  duel: Duel
   or: string
-  a: Meal
-  b: Meal
-  winner: "a" | "b"
   pickedLabel: string
+  inStage: number
+  pickStage: number
+  outStage?: number
   className?: string
 }) {
+  const cards = [
+    { meal: duel.a, isWin: duel.winner === "a" },
+    { meal: duel.b, isWin: duel.winner === "b" },
+  ]
   return (
-    <div className={className}>
-      <p data-scene="4" className="text-[0.95rem] font-bold text-brand-ink">{question}</p>
-      <div className="relative mt-3 grid grid-cols-2 gap-4">
-        <Card meal={a} isWin={winner === "a"} pickedLabel={pickedLabel} />
-        <Card meal={b} isWin={winner === "b"} pickedLabel={pickedLabel} />
-        <span
-          data-scene="4"
-          className="pointer-events-none absolute left-1/2 top-[34%] z-20 -translate-x-1/2 rounded-full border border-brand-muted/25 bg-brand-cream px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-brand-muted"
-        >
+    <div
+      data-scene={inStage}
+      {...(outStage !== undefined ? { "data-scene-until": outStage } : {})}
+      data-place
+      className={className}
+    >
+      <div className="relative grid grid-cols-2 gap-4">
+        {cards.map(({ meal, isWin }) => (
+          <figure
+            key={meal.name}
+            className="relative w-full rounded-xl border border-brand-muted/20 bg-brand-card shadow-[0_12px_28px_-14px_rgba(43,21,3,0.4)]"
+          >
+            <div
+              {...(isWin ? {} : { "data-scene": pickStage, "data-eoy-dim": "" })}
+              className="overflow-hidden rounded-xl"
+            >
+              <div className="relative aspect-[3/2]">
+                <Image
+                  src={meal.src}
+                  alt={meal.name}
+                  fill
+                  sizes="(min-width: 768px) 260px, 46vw"
+                  className="object-cover object-top"
+                />
+              </div>
+              <figcaption className="px-3 py-2.5 text-[0.85rem] font-bold text-brand-ink">
+                {meal.name}
+                {isWin ? <span className="sr-only"> — {pickedLabel}</span> : null}
+              </figcaption>
+            </div>
+            {isWin ? (
+              <span data-scene={pickStage} className="pointer-events-none absolute -inset-[7%] z-10 block">
+                <PenRing />
+              </span>
+            ) : null}
+          </figure>
+        ))}
+        <span className="pointer-events-none absolute left-1/2 top-[32%] z-20 -translate-x-1/2 rounded-full border border-brand-muted/25 bg-brand-cream px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-brand-muted">
           {or}
         </span>
       </div>
     </div>
+  )
+}
+
+/**
+ * A resolved comparison at receipt size: two thumbnails, winner ringed,
+ * loser dimmed. These accumulate in a row as the big duels resolve — the
+ * pile is the point: Makan learns from all of them together.
+ */
+export function SettledDuel({ duel, appearStage }: { duel: Duel; appearStage: number }) {
+  const cards = [
+    { meal: duel.a, isWin: duel.winner === "a" },
+    { meal: duel.b, isWin: duel.winner === "b" },
+  ]
+  return (
+    <span data-scene={appearStage} className="relative flex items-center gap-1.5">
+      {cards.map(({ meal, isWin }) => (
+        <span
+          key={meal.name}
+          className="relative block h-11 w-16 overflow-hidden rounded-md border border-brand-muted/25"
+        >
+          <Image
+            src={meal.src}
+            alt=""
+            fill
+            sizes="64px"
+            className={`object-cover object-top ${isWin ? "" : "opacity-50 grayscale-[0.4]"}`}
+          />
+          {isWin ? (
+            <span className="pointer-events-none absolute -inset-[10%]">
+              <PenRing />
+            </span>
+          ) : null}
+        </span>
+      ))}
+      <span className="sr-only">
+        {duel.winner === "a" ? duel.a.name : duel.b.name} ✓
+      </span>
+    </span>
   )
 }

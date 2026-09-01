@@ -353,12 +353,10 @@
       "answerMark": "Cocok untuk kamu",
       "thought": "Dari mana Makan tahu…",
       "proofLead": "Karena kamu yang kasih tahu, dua makanan sekali pilih:",
-      "proofTally": "Setiap pilihan mengajari Makan apa yang kamu suka.",
+      "proofTally": "Satu pilihan mengajari Makan sedikit. Semua pilihanmu bersama mengajari banyak.",
       "hook": "Semua kelihatan enak.",
       "eoyQuestion": "Mana yang mau kamu makan lagi duluan?",
       "eoyOr": "atau",
-      "eoyAName": "ROS BEEEEF",
-      "eoyBName": "Sushi",
       "eoyPicked": "kamu pilih ini"
     },
     "Ladder": {
