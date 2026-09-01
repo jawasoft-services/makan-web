@@ -309,7 +309,7 @@ not optional, and a section with no food in it fails it.
 white-on-saffron contract. A from-scratch rebuild renames or deletes those files and **`npm run
 lint` fails**, which fails `next build`. The *rule* is correct and stays; the *guard* must be
 re-pointed at the new components in the same commit that renames them. This is a required build
-step, not a discovery to make at deploy time.
+step, not a discovery to make at deploy time. **Resolved:** see Task 1 / Task 2 of docs/superpowers/plans/2026-09-01-decision-first-site-foundations.md.
 
 **B2 — the claim audit must be rewritten, and it inverts.** `docs/homepage-claim-audit.md` maps
 every current homepage claim to code evidence. Today all of them hold. Verified read-only against
@@ -331,6 +331,14 @@ the site ships when that table has evidence in every row.
 **B3 — local `main` drifts.** `~/dev/makan-web-saffron` is the canonical deploy source and `main`
 auto-deploys to production. Check both directions (`git rev-list --left-right --count
 main...origin/main`) before committing, and never `-c user.email`.
+
+**B4 — the i18n guard blocks retiring product terms.** `scripts/check-i18n.mjs`
+asserts `messages/id.json` contains the literals `Eat or Yeet`, `Top 4`,
+`Public` and `Friends Only`. The intent is "never translate a product term";
+as written it also means "never retire one", so removing diary-frame copy
+fails lint and therefore the build. Fixed by asserting a term only while
+`messages/en.json` still uses it. Same class of problem as B1: a guard coupled
+to today's content rather than to the rule it protects. **Resolved:** see Task 1 / Task 2 of docs/superpowers/plans/2026-09-01-decision-first-site-foundations.md.
 
 ## 10. Measurement
 
