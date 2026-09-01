@@ -14,7 +14,7 @@ const config: Config = {
           orange: "#FF9932",          // locked — never change
           cream: "#FFF4E6",           // page ground
           ink: "#2B1503",             // body text on cream (14.9:1)
-          muted: "#85613F",           // secondary text on cream (5.1:1)
+          muted: "#785739",           // secondary text on cream and paper (4.72:1 on stock)
           line: "#F3E2CD",            // hairlines on cream
           card: "#FFFFFF",            // elevated surfaces
           night: "#050505",           // preserved dark — hero + dark-over-imagery only
