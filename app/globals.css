@@ -272,47 +272,7 @@
       opacity: 1;
       transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
       transition-delay: calc(0.2s + var(--deal, 0) * 130ms);
-      .scene-armed [data-scene]:not(.scene-on) .hand-ring-lap1 {
-      stroke-dasharray: 1400;
-      stroke-dashoffset: 1400;
     }
-    .scene-armed [data-scene]:not(.scene-on) .hand-ring-lap2 {
-      stroke-dasharray: 700;
-      stroke-dashoffset: 700;
-    }
-    .scene-armed [data-scene].scene-on .hand-ring-lap1 {
-      stroke-dasharray: 1400;
-      stroke-dashoffset: 1400;
-      animation: hand-ring-draw 0.78s cubic-bezier(0.33, 0, 0.5, 1) 0.1s forwards;
-    }
-    .scene-armed [data-scene].scene-on .hand-ring-lap2 {
-      stroke-dasharray: 700;
-      stroke-dashoffset: 700;
-      animation: hand-ring-draw 0.4s cubic-bezier(0.33, 0, 0.6, 1) 0.9s forwards;
-      /* Duel cards stay visible from the moment the duel appears; only the
-       decision animates. Winner lifts, loser steps back. */
-    .scene-armed [data-scene][data-eoy-dim] {
-      opacity: 1;
-      transform: none;
-    }
-    .scene-armed [data-scene][data-eoy-dim].scene-on {
-      opacity: 0.45;
-      transform: scale(0.97);
-      filter: grayscale(0.4);
-    }
-  }
-    /* Duel cards stay visible from the moment the duel appears; only the
-       decision animates. Winner lifts, loser steps back. */
-    .scene-armed [data-scene][data-eoy-dim] {
-      opacity: 1;
-      transform: none;
-    }
-    .scene-armed [data-scene][data-eoy-dim].scene-on {
-      opacity: 0.45;
-      transform: scale(0.97);
-      filter: grayscale(0.4);
-    }
-  }
     .scene-armed [data-scene]:not(.scene-on) .hand-ring-lap1 {
       stroke-dasharray: 1400;
       stroke-dashoffset: 1400;
@@ -330,8 +290,8 @@
       stroke-dasharray: 700;
       stroke-dashoffset: 700;
       animation: hand-ring-draw 0.4s cubic-bezier(0.33, 0, 0.6, 1) 0.9s forwards;
-      /* Duel cards stay visible from the moment the duel appears; only the
-       decision animates. Winner lifts, loser steps back. */
+    }
+    /* Duel cards: losers stay visible until the pick, then step back. */
     .scene-armed [data-scene][data-eoy-dim] {
       opacity: 1;
       transform: none;
@@ -341,19 +301,22 @@
       transform: scale(0.97);
       filter: grayscale(0.4);
     }
-  }
-    /* Duel cards stay visible from the moment the duel appears; only the
-       decision animates. Winner lifts, loser steps back. */
-    .scene-armed [data-scene][data-eoy-dim] {
+    /* The ringed winner is the through-line between states: visible from the
+       moment its duel appears, and at handoff it flies down into its place
+       in the receipts row (md rule below). */
+    .scene-armed [data-scene][data-eoy-shrink] {
       opacity: 1;
       transform: none;
     }
-    .scene-armed [data-scene][data-eoy-dim].scene-on {
-      opacity: 0.45;
-      transform: scale(0.97);
-      filter: grayscale(0.4);
+  }
+  @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+    .scene-armed [data-scene][data-eoy-shrink].scene-on {
+      opacity: 0;
+      transform: translate(var(--shx, -16rem), var(--shy, 11rem)) scale(0.24) rotate(-2deg);
+      transition-duration: 0.65s;
     }
   }
+
 }
 
 @keyframes beat-rise {

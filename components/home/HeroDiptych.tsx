@@ -137,6 +137,7 @@ export default async function HeroDiptych() {
                   inStage={4}
                   pickStage={5}
                   outStage={6}
+                  shrinkTo={{ x: "-16.5rem", y: "11rem" }}
                   className="md:absolute md:inset-x-0 md:top-0"
                 />
                 <EatOrYeetDuel
@@ -146,6 +147,7 @@ export default async function HeroDiptych() {
                   inStage={6}
                   pickStage={7}
                   outStage={8}
+                  shrinkTo={{ x: "-7.3rem", y: "11rem" }}
                   className="mt-6 md:absolute md:inset-x-0 md:top-0 md:mt-0"
                 />
                 <EatOrYeetDuel
@@ -155,12 +157,13 @@ export default async function HeroDiptych() {
                   inStage={8}
                   pickStage={9}
                   outStage={10}
+                  shrinkTo={{ x: "1.9rem", y: "11rem" }}
                   className="mt-6 md:absolute md:inset-x-0 md:top-0 md:mt-0"
                 />
                 {/* Once the duels have vacated the slot, the payoff takes it
                     over — nothing stacks below an empty stage. */}
                 <div className="md:absolute md:inset-x-0 md:bottom-2">
-                  <p data-scene="10" className="mt-6 max-w-[30rem] text-[0.85rem] font-semibold leading-[1.5] text-brand-ink md:mt-0">
+                  <p data-scene="10" style={{ transitionDelay: "0.5s" }} className="mt-6 max-w-[30rem] text-[0.85rem] font-semibold leading-[1.5] text-brand-ink md:mt-0">
                     {t("proofTally")}
                   </p>
                   <div data-scene="11" className="mt-4 flex items-center gap-4">

@@ -40,6 +40,7 @@ export function EatOrYeetDuel({
   inStage,
   pickStage,
   outStage,
+  shrinkTo,
   className = "",
 }: {
   duel: Duel
@@ -48,16 +49,21 @@ export function EatOrYeetDuel({
   inStage: number
   pickStage: number
   outStage?: number
+  /** Where the ringed winner flies at handoff — its receipt's position. */
+  shrinkTo?: { x: string; y: string }
   className?: string
 }) {
   const cards = [
     { meal: duel.a, isWin: duel.winner === "a" },
     { meal: duel.b, isWin: duel.winner === "b" },
   ]
+  // The wrapper lingers one stage past outStage so the winner's handoff
+  // flight is visible while the next duel arrives; the loser windows itself
+  // out at outStage.
   return (
     <div
       data-scene={inStage}
-      {...(outStage !== undefined ? { "data-scene-until": outStage } : {})}
+      {...(outStage !== undefined ? { "data-scene-until": outStage + 1 } : {})}
       data-place
       className={className}
     >
@@ -65,6 +71,16 @@ export function EatOrYeetDuel({
         {cards.map(({ meal, isWin }) => (
           <figure
             key={meal.name}
+            {...(isWin && outStage !== undefined
+              ? {
+                  "data-scene": outStage,
+                  "data-eoy-shrink": "",
+                  style: { "--shx": shrinkTo?.x, "--shy": shrinkTo?.y } as React.CSSProperties,
+                }
+              : {})}
+            {...(!isWin && outStage !== undefined
+              ? { "data-scene": inStage, "data-scene-until": outStage }
+              : {})}
             className="relative w-full rounded-xl border border-brand-muted/20 bg-brand-card shadow-[0_12px_28px_-14px_rgba(43,21,3,0.4)]"
           >
             <div
@@ -111,7 +127,11 @@ export function SettledDuel({ duel, appearStage }: { duel: Duel; appearStage: nu
     { meal: duel.b, isWin: duel.winner === "b" },
   ]
   return (
-    <span data-scene={appearStage} className="relative flex items-center gap-1.5">
+    <span
+      data-scene={appearStage}
+      style={{ transitionDelay: "0.45s" }}
+      className="relative flex items-center gap-1.5"
+    >
       {cards.map(({ meal, isWin }) => (
         <span
           key={meal.name}
