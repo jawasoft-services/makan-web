@@ -467,7 +467,7 @@ export default function PaperSheet({
 Nothing in this plan mounts on a real route (the deploy gate), so without a
 harness there is nowhere to verify anything visually. The harness returns 404
 outside development, even if this branch ever merges. The sitemap is manually
-curated, so it cannot leak there.
+curated, so it cannot leak there. The route must also be declared in i18n/availability.ts's INDONESIAN_ROUTES, or proxy.ts redirects /id/dev-preview back to English.
 
 Create `app/[locale]/dev-preview/page.tsx`:
 

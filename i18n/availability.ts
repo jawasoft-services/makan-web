@@ -4,6 +4,7 @@ const INDONESIAN_ROUTES = new Set([
   "/account-deletion",
   "/contact",
   "/data-deletion",
+  "/dev-preview", // dev-only harness; page 404s in production
   "/manifesto",
   "/partner",
   "/story",
