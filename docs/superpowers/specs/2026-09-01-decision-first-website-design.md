@@ -105,7 +105,19 @@ know what to order."* The first clause originally sat on the menu page as a prin
 cut on Devon's instruction. If the full sentence is wanted, it belongs in the headline, not on the
 menu. Unresolved; the single-sentence version is what is built.
 
-**Sub:** *Makan answers with meals that actually happened — yours, and people you trust.*
+**Sub:** *Makan helps you choose. It uses real meals — yours, and ones from people you trust.*
+
+**D3a — voice (2026-09-01).** Doctrine §22 is a hard constraint on every visible string, not a
+preference: *"It uses words a ten-year-old knows."* The first build failed it — `"It works down
+from what it knows best to what it knows least"`, `"No level can answer"`, `"Facts the restaurant
+supplied"`, `"labelled as theirs"`, `"never outranks a real meal"`. That register is a strategy
+deck describing a product, not a person at the table talking to you.
+
+The rewrite rule, for anyone writing a new section: **name the thing that happened, in the order it
+happened, using the doctrine's own verbs — eat, save, remember, choose, share, try, know, trust.**
+`"Everyone on Makan, counted together"` becomes `"Lots of people have eaten here."` `"No level can
+answer"` becomes `"Nobody has eaten here yet."` The evidence marks RM19665 specifies stay verbatim;
+everything around them is Makan's own voice and must read aloud without sounding written.
 
 **Competitive note.** [OrderThis](https://orderthisapp.com/) (*"Skip the doubt."*) and
 [MyOrderGuide](https://www.myorderguide.app/) (*"Stop scrolling menus. Just eat well."*) already
