@@ -362,7 +362,9 @@
       "duel2Lose": "Cheeseburger",
       "duel3Win": "Grilled chicken",
       "duel3Lose": "Fried calamari",
-      "proofTally": "Every pick teaches Makan what you like."
+      "proofTally": "Every pick teaches Makan what you like.",
+      "scene": "Tuesday night. The menu lands.",
+      "hook": "Everything sounds good."
     },
     "Ladder": {
       "eyebrow": "Where the answer comes from",

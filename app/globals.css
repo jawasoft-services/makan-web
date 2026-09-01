@@ -246,6 +246,34 @@
       animation-delay: calc(0.55s + var(--deal, 0) * 130ms);
     }
   }
+
+  /* Scroll scene — staged disclosure. Beats are hidden only once JS arms the
+     scene (and only when motion is allowed), then switch on as the reader
+     scrolls. [data-place] settles downward, like a card laid on the menu. */
+  @media (prefers-reduced-motion: no-preference) {
+    .scene-armed [data-scene] {
+      opacity: 0;
+      transform: translateY(18px);
+      transition:
+        opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .scene-armed [data-scene][data-place] {
+      transform: translateY(-18px) scale(1.04);
+    }
+    .scene-armed [data-scene].scene-on {
+      opacity: 1;
+      transform: none;
+    }
+    .scene-armed [data-scene]:not(.scene-on) [data-deal] {
+      opacity: 0;
+    }
+    .scene-armed [data-scene].scene-on [data-deal] {
+      opacity: 1;
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      transition-delay: calc(0.2s + var(--deal, 0) * 130ms);
+    }
+  }
 }
 
 @keyframes beat-rise {

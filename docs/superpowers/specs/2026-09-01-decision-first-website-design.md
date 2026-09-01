@@ -100,10 +100,16 @@ Surfaces requiring the swap, none of which are a website deploy:
 
 > **You still don't know what to order.**
 
-**Open:** the doctrine's own opening is two sentences — *"Everything sounds good. You still don't
-know what to order."* The first clause originally sat on the menu page as a printed footer and was
-cut on Devon's instruction. If the full sentence is wanted, it belongs in the headline, not on the
-menu. Unresolved; the single-sentence version is what is built.
+**Resolved (2026-09-01, D4a):** both sentences ship, as separate story beats. The hero is now a
+pinned scroll scene — the reader scrolls and the page discloses itself bit by bit, in the order
+the evening happens: the scene line ("Tuesday night. The menu lands."), then *"Everything sounds
+good."*, then the headline, then the answer card placed on the menu, then the doubt, then the
+receipts, then the ask. Devon, 2026-09-01: *"dont display all the information slap bang, let the
+user scroll and discover bit by bit. reframe the copy as a story."* This is D5's first earned
+page-turn, built. Mobile discovers the same beats sequentially as they scroll into view.
+Implementation note: the stage is driven by a rAF loop, not scroll events — the site runs Lenis
+smooth-scroll and the loop survives any scroll machinery; content stays visible without JS and
+under reduced motion.
 
 **Sub:** *Makan helps you choose. It uses real meals — yours, and ones from people you trust.*
 
