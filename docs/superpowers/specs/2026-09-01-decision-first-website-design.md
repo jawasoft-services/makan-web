@@ -70,6 +70,11 @@ Consequences:
   and runs during lint.
 - Indonesian text expansion is a layout constraint, not an afterthought — see §8.
 
+**D2a (2026-09-01).** The mockup menu artefact — Bright Palm's section headings and dish
+descriptions — is provider-authored content in the restaurant's own voice and stays English in
+both locales, exactly as dish names do. A Berawa café's printed menu genuinely is in English.
+Makan's own copy remains fully translated. (Resolution of final-review finding I7.)
+
 **Platform.** Makan is iOS-only; Android is an email waitlist. Statcounter puts Indonesia at ~77%
 Android / ~23% iOS (July 2026), which would cap conversion hard in the operational market — but the
 site's audience is worldwide, and the Canggu/Berawa Western-café cohort the first bet targets skews
@@ -223,6 +228,10 @@ as the marquee colour everywhere, and it is the rule to hand anyone building a n
 
 Sizes: eyebrow 11–15px/800, section marks 10.5–14px/800, Maitre'D keys 9.5–12.5px/800.
 
+Heading accents follow D11 by rendering in ink with a saffron underline — emphasis in saffron,
+meaning in ink. The muted-token change (D9) is production-visible on every existing page the
+moment this branch merges; named in the final review (I1) and accepted.
+
 ### 6.3 Who is speaking
 
 The menu is ink, medium-weight, hairline-ruled, flat on cream. Makan is bold, saffron, and
@@ -361,5 +370,6 @@ build; any change to `#FF9932`; any monetization surface.
 1. **Hero headline** — one sentence or the doctrine's full two (§4).
 2. **RM19665 status drift** — which of the two states is true (§2), since the release condition
    depends on it.
-3. **Photography** — the ladder uses one real meal photo. Production has ~3,300; no selection or
-   rights process is defined for using them on the marketing site.
+3. **Photography** — resolved 2026-09-01: the marketing site uses only meal photographs already
+   published on makanofficial.com's own public surfaces (`public/meals/`). The ladder uses
+   `IMG_6952.jpg` (@Valesca's Eggs Benedict), which the live meal strip already displays.
