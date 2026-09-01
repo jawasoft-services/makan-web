@@ -39,6 +39,9 @@ export function EatOrYeetDuel({
   pickedLabel,
   inStage,
   pickStage,
+  learnStage,
+  learnLabel,
+  learned,
   outStage,
   shrinkTo,
   className = "",
@@ -48,6 +51,10 @@ export function EatOrYeetDuel({
   pickedLabel: string
   inStage: number
   pickStage: number
+  /** The settle beat: the ring holds and Makan says what it just learned. */
+  learnStage?: number
+  learnLabel?: string
+  learned?: string
   outStage?: number
   /** Where the ringed winner flies at handoff — its receipt's position. */
   shrinkTo?: { x: string; y: string }
@@ -112,6 +119,14 @@ export function EatOrYeetDuel({
           {or}
         </span>
       </div>
+      {learnStage !== undefined && learned ? (
+        <p data-scene={learnStage} className="mt-3 text-[0.85rem] leading-[1.5]">
+          <span className="mr-2 inline-block rounded-full bg-brand-orange px-2 py-0.5 text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-white">
+            {learnLabel}
+          </span>
+          <span className="font-semibold text-brand-ink">{learned}</span>
+        </p>
+      ) : null}
     </div>
   )
 }

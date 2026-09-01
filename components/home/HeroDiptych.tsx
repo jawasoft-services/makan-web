@@ -67,15 +67,16 @@ const DUELS: Duel[] = [
 
 // The story at the reader's own pace: the menu alone → "Everything sounds
 // good." → the problem → the ring on the menu → the doubt → three Eat or
-// Yeet comparisons resolving one after another, each settling into a pile
-// of receipts → what the pile means → the ask.
-const STAGES = [0.04, 0.13, 0.24, 0.33, 0.4, 0.47, 0.54, 0.61, 0.68, 0.75, 0.84, 0.93]
+// Yeet comparisons, each with its own rhythm — pair in, the pen circles,
+// the ring SETTLES while Makan says what it just learned, then the winner
+// flies to the receipts — → what the pile means → the ask.
+const STAGES = [0.035, 0.1, 0.19, 0.27, 0.33, 0.4, 0.46, 0.53, 0.6, 0.66, 0.73, 0.79, 0.85, 0.91, 0.96]
 
 export default async function HeroDiptych() {
   const t = await getTranslations("Decision.Hero")
 
   return (
-    <ScrollScene thresholds={STAGES} className="relative md:h-[420vh]">
+    <ScrollScene thresholds={STAGES} className="relative md:h-[520vh]">
       <div className="md:sticky md:top-0 md:h-screen">
         <PaperSheet fold className="h-full w-full">
           <div className="relative grid h-full grid-cols-1 md:grid-cols-2">
@@ -118,55 +119,64 @@ export default async function HeroDiptych() {
                   that taught Makan the taste the answer just claimed. */}
               <p
                 data-scene="3"
-                data-scene-until="6"
+                data-scene-until="7"
                 className="mt-6 text-[0.95rem] font-bold text-brand-ink"
               >
                 {t("thought")}
               </p>
-              <p data-scene="4" data-scene-until="10" className="mt-2 text-[0.8rem] font-semibold leading-[1.5] text-brand-ink">
+              <p data-scene="4" data-scene-until="13" className="mt-2 text-[0.8rem] font-semibold leading-[1.5] text-brand-ink">
                 {t("proofLead")}
               </p>
-              <p data-scene="4" data-scene-until="10" className="mt-2 text-[0.95rem] font-bold text-brand-ink">
+              <p data-scene="4" data-scene-until="13" className="mt-2 text-[0.95rem] font-bold text-brand-ink">
                 {t("eoyQuestion")}
               </p>
-              <div className="mt-3 md:relative md:h-[15rem] md:max-w-[30rem]">
+              <div className="mt-3 md:relative md:h-[17rem] md:max-w-[30rem]">
                 <EatOrYeetDuel
                   duel={DUELS[0]}
                   or={t("eoyOr")}
                   pickedLabel={t("eoyPicked")}
                   inStage={4}
                   pickStage={5}
-                  outStage={6}
-                  shrinkTo={{ x: "-16.5rem", y: "11rem" }}
+                  learnStage={6}
+                  learnLabel={t("learnLabel")}
+                  learned={t("learn1")}
+                  outStage={7}
+                  shrinkTo={{ x: "-16.5rem", y: "13rem" }}
                   className="md:absolute md:inset-x-0 md:top-0"
                 />
                 <EatOrYeetDuel
                   duel={DUELS[1]}
                   or={t("eoyOr")}
                   pickedLabel={t("eoyPicked")}
-                  inStage={6}
-                  pickStage={7}
-                  outStage={8}
-                  shrinkTo={{ x: "-7.3rem", y: "11rem" }}
+                  inStage={7}
+                  pickStage={8}
+                  learnStage={9}
+                  learnLabel={t("learnLabel")}
+                  learned={t("learn2")}
+                  outStage={10}
+                  shrinkTo={{ x: "-7.3rem", y: "13rem" }}
                   className="mt-6 md:absolute md:inset-x-0 md:top-0 md:mt-0"
                 />
                 <EatOrYeetDuel
                   duel={DUELS[2]}
                   or={t("eoyOr")}
                   pickedLabel={t("eoyPicked")}
-                  inStage={8}
-                  pickStage={9}
-                  outStage={10}
-                  shrinkTo={{ x: "1.9rem", y: "11rem" }}
+                  inStage={10}
+                  pickStage={11}
+                  learnStage={12}
+                  learnLabel={t("learnLabel")}
+                  learned={t("learn3")}
+                  outStage={13}
+                  shrinkTo={{ x: "1.9rem", y: "13rem" }}
                   className="mt-6 md:absolute md:inset-x-0 md:top-0 md:mt-0"
                 />
                 {/* Once the duels have vacated the slot, the payoff takes it
                     over — nothing stacks below an empty stage. */}
                 <div className="md:absolute md:inset-x-0 md:bottom-2">
-                  <p data-scene="10" style={{ transitionDelay: "0.5s" }} className="mt-6 max-w-[30rem] text-[0.85rem] font-semibold leading-[1.5] text-brand-ink md:mt-0">
+                  <p data-scene="13" style={{ transitionDelay: "0.5s" }} className="mt-6 max-w-[30rem] text-[0.85rem] font-semibold leading-[1.5] text-brand-ink md:mt-0">
                     {t("proofTally")}
                   </p>
-                  <div data-scene="11" className="mt-4 flex items-center gap-4">
+                  <div data-scene="14" className="mt-4 flex items-center gap-4">
                 <span className="inline-flex items-center rounded-full bg-brand-orange px-7 py-3.5 text-sm font-bold text-white shadow-[0_7px_16px_-7px_rgba(255,153,50,0.55)]">
                   {t("cta")}
                 </span>
@@ -178,9 +188,9 @@ export default async function HeroDiptych() {
               </div>
               {/* The receipts pile up — Makan learns from all of them together. */}
               <div className="mt-3 hidden items-center gap-3 md:flex">
-                <SettledDuel duel={DUELS[0]} appearStage={6} />
-                <SettledDuel duel={DUELS[1]} appearStage={8} />
-                <SettledDuel duel={DUELS[2]} appearStage={10} />
+                <SettledDuel duel={DUELS[0]} appearStage={7} />
+                <SettledDuel duel={DUELS[1]} appearStage={10} />
+                <SettledDuel duel={DUELS[2]} appearStage={13} />
               </div>
             </div>
           </div>

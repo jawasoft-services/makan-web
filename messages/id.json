@@ -357,7 +357,11 @@
       "hook": "Semua kelihatan enak.",
       "eoyQuestion": "Mana yang mau kamu makan lagi duluan?",
       "eoyOr": "atau",
-      "eoyPicked": "kamu pilih ini"
+      "eoyPicked": "kamu pilih ini",
+      "learnLabel": "Makan belajar",
+      "learn1": "Buat kamu, ikan menang dari daging.",
+      "learn2": "Segar dan pedas menang dari gorengan.",
+      "learn3": "Yang seru menang dari yang aman."
     },
     "Ladder": {
       "eyebrow": "Dari mana jawabannya",

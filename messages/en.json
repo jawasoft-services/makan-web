@@ -357,7 +357,11 @@
       "hook": "Everything sounds good.",
       "eoyQuestion": "Which would you eat again first?",
       "eoyOr": "or",
-      "eoyPicked": "you picked this"
+      "eoyPicked": "you picked this",
+      "learnLabel": "Makan learned",
+      "learn1": "Fish beats beef, for you.",
+      "learn2": "Fresh and spicy beats fried.",
+      "learn3": "Exciting beats safe."
     },
     "Ladder": {
       "eyebrow": "Where the answer comes from",
