@@ -18,7 +18,7 @@ export default function MenuItem({ name, description, price, diet }: MenuEntry) 
         <span className="text-[1.05rem] font-semibold text-brand-ink">
           {name}
           {diet ? (
-            <span className="ml-1.5 text-[0.6rem] font-bold tracking-[0.1em] text-brand-muted opacity-75">
+            <span className="ml-1.5 text-[0.6rem] font-bold tracking-[0.1em] text-brand-muted">
               {diet}
             </span>
           ) : null}

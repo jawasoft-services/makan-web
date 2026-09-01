@@ -565,7 +565,7 @@ export default function MenuItem({ name, description, price, diet }: MenuEntry) 
         <span className="text-[1.05rem] font-semibold text-brand-ink">
           {name}
           {diet ? (
-            <span className="ml-1.5 text-[0.6rem] font-bold tracking-[0.1em] text-brand-muted opacity-75">
+            <span className="ml-1.5 text-[0.6rem] font-bold tracking-[0.1em] text-brand-muted">
               {diet}
             </span>
           ) : null}
@@ -635,7 +635,7 @@ export default function MenuSheet({
         </section>
       ))}
 
-      <p className="mt-[1.35em] border-t border-brand-muted/30 pt-[0.95em] text-center text-[0.62rem] leading-[1.6] text-brand-muted opacity-90">
+      <p className="mt-[1.35em] border-t border-brand-muted/30 pt-[0.95em] text-center text-[0.62rem] leading-[1.6] text-brand-muted">
         {legal}
       </p>
     </div>

@@ -46,7 +46,7 @@ export default function MenuSheet({
         </section>
       ))}
 
-      <p className="mt-[1.35em] border-t border-brand-muted/30 pt-[0.95em] text-center text-[0.62rem] leading-[1.6] text-brand-muted opacity-90">
+      <p className="mt-[1.35em] border-t border-brand-muted/30 pt-[0.95em] text-center text-[0.62rem] leading-[1.6] text-brand-muted">
         {legal}
       </p>
     </div>
