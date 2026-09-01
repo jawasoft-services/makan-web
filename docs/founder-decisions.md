@@ -30,5 +30,7 @@ Enforcement:
 - Approved design specification:
   `docs/superpowers/specs/2026-07-09-white-on-saffron-redesign-design.md`
 - Automated check: `npm run check:founder-decisions` (also runs during lint)
+- Locked-surface manifest: `docs/founder-decisions.locked-surfaces.json`
+  (rename a locked component and update this file in the same commit)
 
 Only an explicit new founder decision from Devon can supersede FD-001.

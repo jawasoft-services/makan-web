@@ -57,27 +57,23 @@ for (const sourceRoot of sourceRoots) {
   }
 }
 
-const lockedSurfaceChecks = [
-  {
-    file: 'components/Navbar.tsx',
-    required: ['text-white/90', 'text-white', 'bg-white'],
-  },
-  {
-    file: 'components/B2BTeaser.tsx',
-    required: ['text-white', 'bg-white'],
-  },
-  {
-    file: 'components/LatestOnMakan.tsx',
-    required: ['bg-brand-orange text-white'],
-  },
-  {
-    file: 'components/FinalCTA.tsx',
-    required: ['text-white', 'bg-white'],
-  },
-]
+const manifestPath =
+  process.env.LOCKED_SURFACES ?? 'docs/founder-decisions.locked-surfaces.json'
+const lockedSurfaceChecks = JSON.parse(
+  await readFile(join(projectRoot, manifestPath), 'utf8'),
+)
 
 for (const check of lockedSurfaceChecks) {
-  const source = await readFile(join(projectRoot, check.file), 'utf8')
+  let source
+  try {
+    source = await readFile(join(projectRoot, check.file), 'utf8')
+  } catch {
+    failures.push(
+      `${check.file} is declared in the locked-surface manifest but does not exist. ` +
+        `If it was renamed, update ${manifestPath} in the same commit.`,
+    )
+    continue
+  }
   for (const required of check.required) {
     if (!source.includes(required)) {
       failures.push(`${check.file} must preserve the founder colour contract: ${required}`)

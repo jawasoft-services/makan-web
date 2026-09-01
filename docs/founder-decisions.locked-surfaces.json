@@ -1,0 +1,6 @@
+[
+  { "file": "components/Navbar.tsx", "required": ["text-white/90", "text-white", "bg-white"] },
+  { "file": "components/B2BTeaser.tsx", "required": ["text-white", "bg-white"] },
+  { "file": "components/LatestOnMakan.tsx", "required": ["bg-brand-orange text-white"] },
+  { "file": "components/FinalCTA.tsx", "required": ["text-white", "bg-white"] }
+]
