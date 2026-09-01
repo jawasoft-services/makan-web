@@ -70,13 +70,15 @@ const DUELS: Duel[] = [
 // Yeet comparisons, each with its own rhythm — pair in, the pen circles,
 // the ring SETTLES while Makan says what it just learned, then the winner
 // flies to the receipts — → what the pile means → the ask.
-const STAGES = [0.035, 0.1, 0.19, 0.27, 0.33, 0.4, 0.46, 0.53, 0.6, 0.66, 0.73, 0.79, 0.85, 0.91, 0.96]
+// Pacing: the settle (learn -> handoff) gets the longest gaps — the ring
+// holds ~2x as long as any other beat before the next pair arrives.
+const STAGES = [0.03, 0.085, 0.16, 0.225, 0.28, 0.34, 0.395, 0.5, 0.555, 0.61, 0.715, 0.77, 0.825, 0.93, 0.975]
 
 export default async function HeroDiptych() {
   const t = await getTranslations("Decision.Hero")
 
   return (
-    <ScrollScene thresholds={STAGES} className="relative md:h-[520vh]">
+    <ScrollScene thresholds={STAGES} className="relative md:h-[600vh]">
       <div className="md:sticky md:top-0 md:h-screen">
         <PaperSheet fold className="h-full w-full">
           <div className="relative grid h-full grid-cols-1 md:grid-cols-2">
