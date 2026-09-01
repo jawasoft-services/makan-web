@@ -46,7 +46,7 @@ const SECTIONS: MenuSection[] = [
 
 // Real saved meals (share cards already published on the live meal strip).
 // Three comparisons, each teaching one taste fact that adds up to the
-// barramundi: fish over beef, fresh spice over fried, bold over safe.
+// barramundi: fish over beef, fresh spice over fried, chilli over creamy.
 const DUELS: Duel[] = [
   {
     a: { name: "ROS BEEEEF", src: "/meals/card-30.jpg" },
@@ -59,8 +59,8 @@ const DUELS: Duel[] = [
     winner: "b",
   },
   {
-    a: { name: "Riverview brekkie", src: "/meals/card-01.jpg" },
-    b: { name: "Biang biang", src: "/meals/card-02.jpg" },
+    a: { name: "Bacon and Brie", src: "/meals/card-05.jpg" },
+    b: { name: "Date night", src: "/meals/card-15.jpg" },
     winner: "b",
   },
 ]
