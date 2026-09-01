@@ -353,7 +353,16 @@
       "legal": "V vegetarian · VG vegan · GF gluten free. Prices in thousands of rupiah, subject to 21% government tax & service.",
       "answerMark": "A good match for you",
       "answerDish": "Grilled Barramundi",
-      "answerReason": "You picked grilled over fried six times out of seven. And you picked fish every time it was up against a burger. Nobody you trust has eaten here yet, so this one is just from what you like."
+      "answerReason": "You picked grilled over fried six times out of seven. And you picked fish every time it was up against a burger. Nobody you trust has eaten here yet, so this one is just from what you like.",
+      "thought": "Wait — how does it know that?",
+      "proofLead": "Because you told it, two meals at a time:",
+      "duel1Win": "Sate",
+      "duel1Lose": "Fried wings",
+      "duel2Win": "Ikan bakar",
+      "duel2Lose": "Cheeseburger",
+      "duel3Win": "Grilled chicken",
+      "duel3Lose": "Fried calamari",
+      "proofTally": "Every pick teaches Makan what you like."
     },
     "Ladder": {
       "eyebrow": "Where the answer comes from",
@@ -389,7 +398,12 @@
       "closer": "A restaurant can't pay to be the answer. Being popular doesn't win either. And Makan would rather tell you it doesn't know.",
       "alwaysKey": "Always order",
       "tryKey": "Try this if…",
-      "knowKey": "Good to know"
+      "knowKey": "Good to know",
+      "l1ProofLead": "Eggs Benedict beat these, one against one:",
+      "l1Beat1": "Buttermilk Pancakes",
+      "l1Beat2": "Tuna Poke",
+      "l1Beat3": "Wagyu Cheeseburger",
+      "l1More": "and 8 more"
     }
   }
 }

@@ -231,6 +231,30 @@
       animation: hand-ring-draw 0.4s cubic-bezier(0.33, 0, 0.6, 1) 1.34s forwards;
     }
   }
+
+  /* Scroll reveal — content is visible by default; Reveal (a small client
+     component) adds .is-revealing when the section enters the viewport, and
+     only then, only with motion allowed, do entrance animations run. The
+     hand-ring draw above is keyed off the same class. */
+  @media (prefers-reduced-motion: no-preference) {
+    .is-revealing [data-beat] {
+      animation: beat-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: calc(var(--beat, 0) * 110ms);
+    }
+    .is-revealing [data-deal] {
+      animation: chip-deal 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: calc(0.55s + var(--deal, 0) * 130ms);
+    }
+  }
+}
+
+@keyframes beat-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes chip-deal {
+  from { opacity: 0; transform: translateY(10px) rotate(-2deg) scale(0.97); }
+  to   { opacity: 1; transform: none; }
 }
 
 @keyframes hand-ring-draw {

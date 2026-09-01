@@ -1,7 +1,12 @@
+import type { CSSProperties } from "react"
 import { getTranslations } from "next-intl/server"
 import PaperSheet from "@/components/paper/PaperSheet"
 import MenuSheet, { type MenuSection } from "@/components/menu/MenuSheet"
 import AnswerCard from "@/components/decision/AnswerCard"
+import EatOrYeetProof from "@/components/decision/EatOrYeetProof"
+import Reveal from "@/components/motion/Reveal"
+
+const beat = (n: number) => ({ "--beat": n }) as CSSProperties
 
 // A Western Berawa menu is a genuinely incoherent decision — brunch, poke,
 // pizza and wagyu with no cuisine logic tying them together. That is the real
@@ -55,21 +60,44 @@ export default async function HeroDiptych() {
           />
           <div aria-hidden className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-brand-cream md:hidden" />
         </div>
-        <div className="flex flex-col justify-center px-8 py-10 md:px-12">
-          <h1 className="max-w-[13ch] text-[clamp(2rem,4vw,3.4rem)] font-bold leading-[1.04] tracking-[-0.015em] text-brand-ink">
+        <Reveal className="flex flex-col justify-center px-8 py-10 md:px-12">
+          <h1
+            data-beat
+            style={beat(0)}
+            className="max-w-[13ch] text-[clamp(2rem,4vw,3.4rem)] font-bold leading-[1.04] tracking-[-0.015em] text-brand-ink"
+          >
             {t("headline")}
           </h1>
-          <p className="mt-4 max-w-[34ch] text-base leading-[1.55] text-brand-muted">
+          <p data-beat style={beat(1)} className="mt-4 max-w-[34ch] text-base leading-[1.55] text-brand-muted">
             {t("body")}
           </p>
-          <AnswerCard
-            className="mt-7"
-            level="personal_taste"
-            mark={t("answerMark")}
-            dish={t("answerDish")}
-            reason={t("answerReason")}
-          />
-          <div className="mt-7 flex items-center gap-4">
+          <div data-beat style={beat(2)}>
+            <AnswerCard
+              className="mt-7"
+              level="personal_taste"
+              mark={t("answerMark")}
+              dish={t("answerDish")}
+              reason={t("answerReason")}
+            />
+          </div>
+          {/* The reader's doubt, then the receipts: the Eat or Yeet picks that
+              taught Makan the taste the answer just claimed. */}
+          <p data-beat style={beat(3)} className="mt-6 text-[0.95rem] font-bold text-brand-ink">
+            {t("thought")}
+          </p>
+          <div data-beat style={beat(4)}>
+            <EatOrYeetProof
+              className="mt-2"
+              lead={t("proofLead")}
+              duels={[
+                { win: t("duel1Win"), lose: t("duel1Lose") },
+                { win: t("duel2Win"), lose: t("duel2Lose") },
+                { win: t("duel3Win"), lose: t("duel3Lose") },
+              ]}
+              tally={t("proofTally")}
+            />
+          </div>
+          <div data-beat style={beat(9)} className="mt-7 flex items-center gap-4">
             <span className="inline-flex items-center rounded-full bg-brand-orange px-7 py-3.5 text-sm font-bold text-white shadow-[0_7px_16px_-7px_rgba(255,153,50,0.55)]">
               {t("cta")}
             </span>
@@ -77,7 +105,7 @@ export default async function HeroDiptych() {
               {t("platform")}
             </span>
           </div>
-        </div>
+        </Reveal>
       </div>
     </PaperSheet>
   )

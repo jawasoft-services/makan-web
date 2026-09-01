@@ -353,7 +353,16 @@
       "legal": "V vegetarian · VG vegan · GF bebas gluten. Harga dalam ribuan rupiah, belum termasuk pajak dan layanan 21%.",
       "answerMark": "Cocok untuk kamu",
       "answerDish": "Grilled Barramundi",
-      "answerReason": "Kamu memilih panggang dibanding goreng enam dari tujuh kali. Dan kamu selalu pilih ikan waktu dibandingkan burger. Belum ada orang yang kamu percaya makan di sini, jadi ini murni dari yang kamu suka."
+      "answerReason": "Kamu memilih panggang dibanding goreng enam dari tujuh kali. Dan kamu selalu pilih ikan waktu dibandingkan burger. Belum ada orang yang kamu percaya makan di sini, jadi ini murni dari yang kamu suka.",
+      "thought": "Tunggu — dari mana dia tahu itu?",
+      "proofLead": "Karena kamu yang memberitahunya, dua makanan sekali pilih:",
+      "duel1Win": "Sate",
+      "duel1Lose": "Sayap goreng",
+      "duel2Win": "Ikan bakar",
+      "duel2Lose": "Cheeseburger",
+      "duel3Win": "Ayam panggang",
+      "duel3Lose": "Cumi goreng",
+      "proofTally": "Setiap pilihan mengajari Makan apa yang kamu suka."
     },
     "Ladder": {
       "eyebrow": "Dari mana jawabannya",
@@ -389,7 +398,12 @@
       "closer": "Restoran tidak bisa membayar untuk jadi jawaban. Populer juga tidak menang. Dan Makan lebih baik bilang dia tidak tahu.",
       "alwaysKey": "Selalu pesan",
       "tryKey": "Coba ini kalau…",
-      "knowKey": "Perlu diketahui"
+      "knowKey": "Perlu diketahui",
+      "l1ProofLead": "Eggs Benedict mengalahkan ini, satu lawan satu:",
+      "l1Beat1": "Buttermilk Pancakes",
+      "l1Beat2": "Tuna Poke",
+      "l1Beat3": "Wagyu Cheeseburger",
+      "l1More": "dan 8 lagi"
     }
   }
 }

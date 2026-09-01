@@ -1,9 +1,13 @@
-import type { ReactNode } from "react"
+import type { CSSProperties, ReactNode } from "react"
 import Image from "next/image"
 import { getTranslations } from "next-intl/server"
 import PaperSheet from "@/components/paper/PaperSheet"
 import HandRing from "@/components/decision/HandRing"
 import { MARK_CLASSES, markFormFor, type DecisionEvidenceLevel } from "@/components/decision/evidence"
+import EatOrYeetProof from "@/components/decision/EatOrYeetProof"
+import Reveal from "@/components/motion/Reveal"
+
+const beat = (n: number) => ({ "--beat": n }) as CSSProperties
 
 // Air and type size contract from 01 to 06 alongside the saffron, so the
 // layout performs the thinning evidence rather than the copy explaining it.
@@ -28,14 +32,14 @@ function Mark({ level, children }: { level: DecisionEvidenceLevel; children: str
 
 function Rung({ n, children }: { n: number; children: ReactNode }) {
   return (
-    <article
-      className={`grid grid-cols-[3rem_minmax(0,1fr)] gap-x-6 border-t border-brand-muted/20 first:border-t-0 ${RUNG_PADDING[n]}`}
-    >
-      <div className="text-[1.6rem] font-extralight leading-none tabular-nums text-brand-muted">
-        {String(n).padStart(2, "0")}
-      </div>
-      <div>{children}</div>
-    </article>
+    <Reveal className="border-t border-brand-muted/20 first:border-t-0">
+      <article className={`grid grid-cols-[3rem_minmax(0,1fr)] gap-x-6 ${RUNG_PADDING[n]}`}>
+        <div data-beat style={beat(0)} className="text-[1.6rem] font-extralight leading-none tabular-nums text-brand-muted">
+          {String(n).padStart(2, "0")}
+        </div>
+        <div data-beat style={beat(1)}>{children}</div>
+      </article>
+    </Reveal>
   )
 }
 
@@ -49,11 +53,12 @@ export default async function EvidenceLadder() {
   return (
     <PaperSheet className="w-full">
       <div className="px-8 py-14 md:px-16">
+        <Reveal>
         <header className="mb-10">
-          <p className="text-[0.82rem] font-extrabold uppercase tracking-[0.2em] text-brand-orange">
+          <p data-beat style={beat(0)} className="text-[0.82rem] font-extrabold uppercase tracking-[0.2em] text-brand-orange">
             {t("eyebrow")}
           </p>
-          <h2 className="mt-3 max-w-[13ch] text-[clamp(1.9rem,3.4vw,3rem)] font-bold leading-[1.02] tracking-[-0.03em] text-brand-ink">
+          <h2 data-beat style={beat(1)} className="mt-3 max-w-[13ch] text-[clamp(1.9rem,3.4vw,3rem)] font-bold leading-[1.02] tracking-[-0.03em] text-brand-ink">
             {before}
             {hasAccent ? (
               <em className="font-extrabold not-italic text-brand-ink underline decoration-brand-orange decoration-4 underline-offset-4">
@@ -62,10 +67,13 @@ export default async function EvidenceLadder() {
             ) : null}
             {after}
           </h2>
-          <p className="mt-4 max-w-[34em] text-[0.95rem] leading-[1.62] text-brand-muted">
+          <p data-beat style={beat(2)} className="mt-4 max-w-[34em] text-[0.95rem] leading-[1.62] text-brand-muted">
             {t("intro")}
           </p>
         </header>
+        </Reveal>
+
+        <div>
 
         <Rung n={1}>
           <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_clamp(150px,22vw,240px)] md:items-center">
@@ -76,6 +84,12 @@ export default async function EvidenceLadder() {
                 <HandRing>{t("l1Dish")}</HandRing>
               </p>
               <p className="mt-2 text-[0.9rem] leading-[1.6] text-brand-muted">{t("l1Reason")}</p>
+              <EatOrYeetProof
+                className="mt-3"
+                lead={t("l1ProofLead")}
+                beaten={[t("l1Beat1"), t("l1Beat2"), t("l1Beat3")]}
+                more={t("l1More")}
+              />
               <p className="mt-3 max-w-[34em] border-l-2 border-brand-orange pl-3 text-[0.8rem] leading-[1.55] text-brand-muted">
                 {t("l1Note")}
               </p>
@@ -145,10 +159,13 @@ export default async function EvidenceLadder() {
             <p className="mt-2 text-[0.85rem] leading-[1.6] text-brand-muted">{t("l6Reason")}</p>
           </div>
         </Rung>
+        </div>
 
-        <p className="mt-10 max-w-[22em] border-t-2 border-brand-ink pt-6 text-[clamp(1rem,1.5vw,1.3rem)] font-bold leading-[1.38] tracking-[-0.018em] text-brand-ink">
-          {t("closer")}
-        </p>
+        <Reveal>
+          <p data-beat style={beat(0)} className="mt-10 max-w-[22em] border-t-2 border-brand-ink pt-6 text-[clamp(1rem,1.5vw,1.3rem)] font-bold leading-[1.38] tracking-[-0.018em] text-brand-ink">
+            {t("closer")}
+          </p>
+        </Reveal>
       </div>
     </PaperSheet>
   )
