@@ -206,4 +206,33 @@
     position: relative;
     z-index: 6;
   }
+
+  .hand-ring path {
+    fill: none;
+    stroke: #FF9932;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .hand-ring-lap1 { stroke-width: 3.6; }
+  .hand-ring-lap2 { stroke-width: 2.1; opacity: 0.9; }
+
+  /* Content must never depend on an animation to become visible: the ring is
+     fully drawn by default and only animates when .is-revealing is applied. */
+  @media (prefers-reduced-motion: no-preference) {
+    .is-revealing .hand-ring-lap1 {
+      stroke-dasharray: 1400;
+      stroke-dashoffset: 1400;
+      animation: hand-ring-draw 0.78s cubic-bezier(0.33, 0, 0.5, 1) 0.72s forwards;
+    }
+    .is-revealing .hand-ring-lap2 {
+      stroke-dasharray: 700;
+      stroke-dashoffset: 700;
+      animation: hand-ring-draw 0.4s cubic-bezier(0.33, 0, 0.6, 1) 1.34s forwards;
+    }
+  }
+}
+
+@keyframes hand-ring-draw {
+  to { stroke-dashoffset: 0; }
 }
