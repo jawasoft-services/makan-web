@@ -4,7 +4,7 @@
 
 **Goal:** Unblock the two lint guards that would fail a from-scratch rebuild, land the paper/colour design system, and build the two designed sections — the hero diptych and the evidence ladder — behind the deploy gate.
 
-**Architecture:** Three layers, built bottom-up. `PaperSheet` renders the four CSS-only paper layers and is the ground every section sits on. `MenuSheet`/`MenuItem` render printed-menu typography. `AnswerCard` renders Makan's voice with a six-value evidence level taken verbatim from RM19665. The hero and ladder compose those three. Nothing here changes an existing route or homepage section — new components only, assembled on a branch that is not deployed.
+**Architecture:** Three layers, built bottom-up. `PaperSheet` renders the four CSS-only paper layers and is the ground every section sits on. `MenuSheet`/`MenuItem` render printed-menu typography. `AnswerCard` renders Makan's voice with a six-value evidence level taken verbatim from RM19665. The hero and ladder compose those three. Nothing here changes an existing route or homepage section — new components plus a dev-only harness route that 404s in production, assembled on a branch that is not deployed.
 
 **Tech Stack:** Next.js 16 (App Router), React 19, Tailwind CSS 4, next-intl 4, TypeScript 5. No test runner exists in this repo; the verification cycle is `npm run lint` (eslint + two custom guards), `npm run build`, and browser assertions via the preview tools.
 
@@ -74,7 +74,7 @@ cd ~/dev/makan-web-saffron
 LOCKED_SURFACES=scripts/__fixtures__/locked-surfaces.missing.json node scripts/check-founder-decisions.mjs; echo "exit=$?"
 ```
 
-Expected before the change: crash with `ENOENT ... components/DoesNotExist.tsx` and a non-zero exit — an unhandled throw, not a readable failure.
+Expected before the change: `FD-001 passed` and `exit=0` — the guard ignores the fixture entirely, because nothing reads `LOCKED_SURFACES` yet. That silent pass IS the failing test: it proves the guard is coupled to hard-coded filenames rather than to a declared contract.
 Expected after Step 3: `FD-001 failed` listing `components/DoesNotExist.tsx is declared in the locked-surface manifest but does not exist`, `exit=1`.
 
 - [ ] **Step 3: Replace the hard-coded list with the manifest**
@@ -181,7 +181,7 @@ Expected: `Indonesian copy must preserve product term: Top 4`, `exit=1` — even
 
 - [ ] **Step 2: Make the assertion conditional**
 
-In `scripts/check-i18n.mjs`, replace the product-term loop with:
+In `scripts/check-i18n.mjs`, replace the existing `const indonesianSource = JSON.stringify(indonesian)` line **and** the product-term loop that follows it with (the replacement re-declares both consts — leaving the original in place is a duplicate-declaration SyntaxError):
 
 ```js
 const englishSource = JSON.stringify(english)
@@ -346,6 +346,7 @@ patches. #785739 restores 4.72:1 and is guarded by check:contrast."
 
 **Files:**
 - Create: `components/paper/PaperSheet.tsx`
+- Create: `app/[locale]/dev-preview/page.tsx` (dev-only render harness)
 - Modify: `app/globals.css` (append a `@layer components` block)
 
 **Interfaces:**
@@ -461,30 +462,69 @@ export default function PaperSheet({
 }
 ```
 
-- [ ] **Step 3: Verify it builds and renders**
+- [ ] **Step 3: Create the dev-only render harness**
+
+Nothing in this plan mounts on a real route (the deploy gate), so without a
+harness there is nowhere to verify anything visually. The harness returns 404
+outside development, even if this branch ever merges. The sitemap is manually
+curated, so it cannot leak there.
+
+Create `app/[locale]/dev-preview/page.tsx`:
+
+```tsx
+import { notFound } from "next/navigation"
+import { setRequestLocale } from "next-intl/server"
+import PaperSheet from "@/components/paper/PaperSheet"
+
+/**
+ * Dev-only harness for the deploy-gated decision-first components.
+ * Tasks 7 and 8 mount their sections here as they land.
+ */
+export default async function DevPreview({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  if (process.env.NODE_ENV === "production") notFound()
+  const { locale } = await params
+  setRequestLocale(locale)
+  return (
+    <main>
+      <PaperSheet fold className="min-h-[50vh]">
+        <p className="p-10 text-brand-muted">paper harness</p>
+      </PaperSheet>
+    </main>
+  )
+}
+```
+
+- [ ] **Step 4: Verify the build and the texture**
 
 ```bash
 npm run lint && npm run build
 ```
-Expected: all four checks pass; `next build` completes.
+Expected: all checks pass; `next build` completes (the harness prerenders as a 404 in production — that is correct, not a failure).
 
-Then render it temporarily to confirm the texture composites. Start the dev preview (`makan-web-saffron-dev`, port 3456), and in the browser console confirm the relief layer is actually painting:
+Start the dev preview (`makan-web-saffron-dev`, port 3456), open `http://localhost:3456/dev-preview`, and in the browser console:
 
 ```js
 getComputedStyle(document.querySelector('.paper-relief')).mixBlendMode
 // expected: "multiply"
 getComputedStyle(document.querySelector('.paper-relief')).backgroundImage.slice(0, 30)
 // expected: 'url("data:image/svg+xml,%3Csvg'
+document.querySelectorAll('.paper-tone,.paper-relief,.paper-tooth,.paper-fold,.paper-edge').length
+// expected: 5
 ```
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
-git add components/paper/PaperSheet.tsx app/globals.css
-git commit -m "feat(paper): CSS-only four-layer paper stock
+git add components/paper/PaperSheet.tsx app/globals.css "app/[locale]/dev-preview/page.tsx"
+git commit -m "feat(paper): CSS-only four-layer paper stock + dev-only harness
 
 feTurbulence fibre relief lit by feDiffuseLighting, multiplied at 0.80,
-plus tooth, tone, fold and edge. No image asset; text stays real DOM."
+plus tooth, tone, fold and edge. No image asset; text stays real DOM.
+Harness route 404s in production."
 ```
 
 ---
@@ -756,6 +796,8 @@ import type { ReactNode } from "react"
  * lighter lap sweeps back over the top-left past the start, and
  * feDisplacementMap pushes the edges around.
  *
+ * One instance per page: the SVG filter id is fixed.
+ *
  * baseFrequency must stay LOW (0.016). High-frequency displacement reads as a
  * shaky hand; low-frequency reads as a confident stroke that is simply not
  * perfect. Same amplitude, opposite character.
@@ -1018,10 +1060,31 @@ npm run lint && npm run build
 ```
 Expected: `i18n passed` (proving EN/ID parity for the new keys), all other checks pass, build completes.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Mount in the harness and verify both locales**
+
+In `app/[locale]/dev-preview/page.tsx`, add the import and render `<HeroDiptych />` above the placeholder sheet:
+
+```tsx
+import HeroDiptych from "@/components/home/HeroDiptych"
+```
+
+With the dev preview running, on `http://localhost:3456/dev-preview`:
+
+```js
+document.body.innerText.includes("You still don't know what to order.")  // true
+document.querySelectorAll('.paper-fold').length                          // >= 1 — the spread has its crease
+```
+
+and on `http://localhost:3456/id/dev-preview`:
+
+```js
+document.body.innerText.includes("Kamu masih belum tahu mau pesan apa.")  // true
+```
+
+- [ ] **Step 6: Commit**
 
 ```bash
-git add components/home/HeroDiptych.tsx messages/en.json messages/id.json
+git add components/home/HeroDiptych.tsx messages/en.json messages/id.json "app/[locale]/dev-preview/page.tsx"
 git commit -m "feat(home): hero diptych — the menu and its answer as one spread
 
 Menu on the left page, Makan's answer on the right, hairline spine
@@ -1153,15 +1216,7 @@ function Mark({ level, children }: { level: DecisionEvidenceLevel; children: str
   )
 }
 
-function Rung({
-  n,
-  when,
-  children,
-}: {
-  n: number
-  when: string
-  children: React.ReactNode
-}) {
+function Rung({ n, children }: { n: number; children: React.ReactNode }) {
   return (
     <article
       className={`grid grid-cols-[3rem_minmax(0,1fr)] gap-x-6 border-t border-brand-muted/20 first:border-t-0 ${RUNG_PADDING[n]}`}
@@ -1169,10 +1224,7 @@ function Rung({
       <div className="text-[1.6rem] font-extralight leading-none tabular-nums text-brand-muted opacity-40">
         {String(n).padStart(2, "0")}
       </div>
-      <div>
-        {children}
-        <p className="sr-only">{when}</p>
-      </div>
+      <div>{children}</div>
     </article>
   )
 }
@@ -1200,7 +1252,7 @@ export default async function EvidenceLadder() {
           </p>
         </header>
 
-        <Rung n={1} when={t("l1When")}>
+        <Rung n={1}>
           <Mark level="personal_taste">{t("l1Mark")}</Mark>
           <p className="mt-3 text-lg font-bold text-brand-ink">{t("l1When")}</p>
           <p className="text-[clamp(1.5rem,2.6vw,2.4rem)] font-bold leading-[1.1] text-brand-ink">
@@ -1212,14 +1264,14 @@ export default async function EvidenceLadder() {
           </p>
         </Rung>
 
-        <Rung n={2} when={t("l2When")}>
+        <Rung n={2}>
           <Mark level="trusted_person">{t("l2Mark")}</Mark>
           <p className="mt-3 text-base font-bold text-brand-ink">{t("l2When")}</p>
           <p className="mt-1 text-xl font-bold text-brand-ink">{t("l2Dish")}</p>
           <p className="mt-2 text-[0.85rem] leading-[1.6] text-brand-muted">{t("l2Reason")}</p>
         </Rung>
 
-        <Rung n={3} when={t("l3When")}>
+        <Rung n={3}>
           <Mark level="maitred_menu">{t("l3Mark")}</Mark>
           <p className="mt-3 text-base font-bold text-brand-ink">{t("l3When")}</p>
           <dl className="mt-3 grid gap-1.5">
@@ -1228,7 +1280,7 @@ export default async function EvidenceLadder() {
               [t("tryKey"), t("l3Try")],
               [t("knowKey"), t("l3Know")],
             ].map(([key, value]) => (
-              <div key={key} className="grid grid-cols-[9rem_minmax(0,1fr)] gap-3">
+              <div key={key} className="grid grid-cols-[max-content_minmax(0,1fr)] gap-3">
                 <dt className="text-[0.72rem] font-extrabold uppercase tracking-[0.12em] text-brand-orange">
                   {key}
                 </dt>
@@ -1239,21 +1291,21 @@ export default async function EvidenceLadder() {
           <p className="mt-3 text-[0.85rem] leading-[1.6] text-brand-muted">{t("l3Reason")}</p>
         </Rung>
 
-        <Rung n={4} when={t("l4When")}>
+        <Rung n={4}>
           <Mark level="community_evidence">{t("l4Mark")}</Mark>
           <p className="mt-3 text-base font-bold text-brand-ink">{t("l4When")}</p>
           <p className="mt-1 text-lg font-bold text-brand-ink">{t("l4Dish")}</p>
           <p className="mt-2 text-[0.85rem] leading-[1.6] text-brand-muted">{t("l4Reason")}</p>
         </Rung>
 
-        <Rung n={5} when={t("l5When")}>
+        <Rung n={5}>
           <Mark level="restaurant_provided">{t("l5Mark")}</Mark>
           <p className="mt-3 text-base font-bold text-brand-ink">{t("l5When")}</p>
           <p className="mt-1 text-lg font-bold text-brand-ink">{t("l5Dish")}</p>
           <p className="mt-2 text-[0.85rem] leading-[1.6] text-brand-muted">{t("l5Reason")}</p>
         </Rung>
 
-        <Rung n={6} when={t("l6When")}>
+        <Rung n={6}>
           <p className="text-base font-bold text-brand-ink">{t("l6When")}</p>
           <div className="mt-3 rounded-[3px] border border-dashed border-brand-muted/35 bg-white/30 p-6">
             <p className="text-lg font-semibold text-brand-ink">{t("l6Dish")}</p>
@@ -1270,7 +1322,7 @@ export default async function EvidenceLadder() {
 }
 ```
 
-Each `Rung` renders `when` twice — once visibly in ink beside the saffron mark, and once in `sr-only` inside the `Rung` wrapper for assistive tech reading order. That is the D11 rule made structural: the saffron label never carries meaning alone.
+Every saffron mark's meaning is carried by the ink `when` line rendered directly beneath it — the D11 rule made structural. There is deliberately no `sr-only` duplicate: the ink line is already in the accessibility tree, and duplicating it would read each rung's condition twice.
 
 - [ ] **Step 3: Verify parity, build, and the saffron rule**
 
@@ -1285,17 +1337,35 @@ const en = require("./messages/en.json").Decision.Ladder;
 const id = require("./messages/id.json").Decision.Ladder;
 const a = Object.keys(en).sort(), b = Object.keys(id).sort();
 if (JSON.stringify(a) !== JSON.stringify(b)) { console.error("ladder key mismatch"); process.exit(1); }
-for (const term of ["Eat or Yeet", "Maitre’D", "Maitre'"'"'D"]) {
-  // product terms are never translated
-}
 console.log("ladder catalogues in sync:", a.length, "keys");'
 ```
-Expected: `ladder catalogues in sync: 27 keys`.
+Expected: `ladder catalogues in sync: 34 keys`.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 4: Mount in the harness and verify**
+
+In `app/[locale]/dev-preview/page.tsx`, import `EvidenceLadder` and render it under `<HeroDiptych />`:
+
+```tsx
+import EvidenceLadder from "@/components/home/EvidenceLadder"
+```
+
+Then on `http://localhost:3456/dev-preview`:
+
+```js
+document.querySelectorAll('article').length                          // 6 — five levels + fallback
+document.querySelectorAll('.hand-ring-lap1,.hand-ring-lap2').length  // 2 — both laps of the ring
+```
+
+and on `http://localhost:3456/id/dev-preview`:
+
+```js
+document.body.innerText.includes("Belum cukup makanan di sini")  // true
+```
+
+- [ ] **Step 5: Commit**
 
 ```bash
-git add components/home/EvidenceLadder.tsx messages/en.json messages/id.json
+git add components/home/EvidenceLadder.tsx messages/en.json messages/id.json "app/[locale]/dev-preview/page.tsx"
 git commit -m "feat(home): evidence ladder — five levels plus fallback
 
 Level names and evidence language taken from RM19665. Saffron drains as
@@ -1345,4 +1415,4 @@ git commit -m "docs(spec): record the i18n product-term guard as blocker B4"
 
 **Type consistency.** `DecisionEvidenceLevel` is defined once in Task 6 and consumed by name in Tasks 6, 7 and 8. `MenuEntry`/`MenuSection` are defined in Task 5 and consumed in Task 7. `markFormFor` and `MARK_CLASSES` are defined in Task 6 and used in Tasks 6 and 8. `PaperSheet`'s `fold` prop is defined in Task 4 and used in Task 7.
 
-**Known gap, deliberate.** Nothing here is mounted on a route, so nothing is visible on the site. That is the deploy gate working as designed. A follow-up plan mounts these sections, swaps the tagline, rewrites `docs/homepage-claim-audit.md` and attaches analytics — and it may only run once the §2 release condition is met.
+**Known gap, deliberate.** Nothing here is mounted on a public route — the only mount is the `dev-preview` harness, which returns 404 outside development. Nothing is visible on the site; that is the deploy gate working as designed. A follow-up plan mounts these sections, swaps the tagline, rewrites `docs/homepage-claim-audit.md` and attaches analytics — and it may only run once the §2 release condition is met.
