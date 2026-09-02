@@ -372,8 +372,8 @@
       "turn": "Makan belum pernah melihatmu makan di sini. Tapi seorang teman sudah, tiga kali, dan tiap kali pesan nasi ayam.",
       "turnWhy": "Kamu pasti akan tanya mereka lewat chat. Makan sudah tahu duluan.",
       "friendMealName": "Nasi ayam",
-      "friendMealSub": "Disimpan di Lucky Plaza, tiga kali",
-      "friendMealAlt": "Nasi ayam Hainan di Lucky Plaza, disimpan di Makan",
+      "friendMealSub": "Tiga kali datang di Agustus. Nasi ayam setiap kali.",
+      "friendMealAlt": "Nasi ayam di Lucky Plaza, disimpan di Makan pada {date}",
       "friendMark": "Dipesan di sini tiga kali",
       "slipFrom": "Menu Maitre'D punya Mali",
       "alwaysKey": "Selalu pesan",
@@ -389,7 +389,10 @@
       "meta": "Jl. Pantai Pererenan · 11.00 – 21.00",
       "legal": "Harga dalam ribuan rupiah, belum termasuk pajak dan layanan 21%.",
       "maitredIntro": "Lalu ada Maitre'D. Itu siapa pun yang paling sering makan di sini.",
-      "maitredWho": "Mali sudah makan di sini pada 23 hari berbeda, lebih banyak dari siapa pun di Makan. Kalau ada yang melampauinya, catatannya jadi milik orang itu."
+      "maitredWho": "Mali sudah makan di sini pada 23 hari berbeda, lebih banyak dari siapa pun di Makan. Kalau ada yang melampauinya, catatannya jadi milik orang itu.",
+      "visit1": "10 Agu",
+      "visit2": "12 Agu",
+      "visit3": "21 Agu"
     },
     "Landing": {
       "title": "Tahu mau pesan apa.",

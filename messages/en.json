@@ -372,8 +372,8 @@
       "turn": "Makan has never seen you eat here. But a friend has, three times, and ordered the chicken rice every time.",
       "turnWhy": "You'd have texted them to ask. Makan already knows.",
       "friendMealName": "Chicken rice",
-      "friendMealSub": "Saved at Lucky Plaza, three times",
-      "friendMealAlt": "Hainanese chicken rice at Lucky Plaza, saved on Makan",
+      "friendMealSub": "Three visits in August. Chicken rice every time.",
+      "friendMealAlt": "Chicken rice at Lucky Plaza, saved on Makan on {date}",
       "friendMark": "Ordered here three times",
       "slipFrom": "Mali's Maitre'D Menu",
       "alwaysKey": "Always order",
@@ -389,7 +389,10 @@
       "meta": "Jl. Pantai Pererenan · 11am – 9pm",
       "legal": "Prices in thousands of rupiah, subject to 21% government tax & service.",
       "maitredIntro": "Then there's the Maitre'D. That's whoever has eaten here the most.",
-      "maitredWho": "Mali has eaten here on 23 different days, more than anyone else on Makan. If someone beats that, the notes become theirs."
+      "maitredWho": "Mali has eaten here on 23 different days, more than anyone else on Makan. If someone beats that, the notes become theirs.",
+      "visit1": "10 Aug",
+      "visit2": "12 Aug",
+      "visit3": "21 Aug"
     },
     "Landing": {
       "title": "Know what to order.",

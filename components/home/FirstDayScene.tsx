@@ -41,6 +41,13 @@ const SECTIONS: MenuSection[] = [
 // meal (offered as an example, never as a claim about the reader's friends)
 // → the pen rings her dish on this menu → the note from someone who really
 // knows the place → and the honest state where nobody's been.
+// The friend's three plates, oldest first (dates in copy).
+const VISITS = [
+  { src: "/meals/lucky-plaza-chicken-rice-1.jpg", dateKey: "visit1" },
+  { src: "/meals/lucky-plaza-chicken-rice-2.jpg", dateKey: "visit2" },
+  { src: "/meals/lucky-plaza-chicken-rice-3.jpg", dateKey: "visit3" },
+] as const
+
 const STAGES = [0.05, 0.16, 0.28, 0.4, 0.52, 0.62, 0.78]
 
 export default async function FirstDayScene() {
@@ -77,27 +84,36 @@ export default async function FirstDayScene() {
                 <p className="text-[0.95rem] font-bold leading-[1.4] text-brand-ink">{t("turn")}</p>
                 <p className="mt-1.5 text-[0.85rem] font-semibold text-brand-muted">{t("turnWhy")}</p>
               </div>
+              {/* Three visits, three plates: "three times" shown, not said.
+                  Real public saves from one account (it has five; the story
+                  uses three), dated. */}
               <figure
                 data-scene="3"
                 data-scene-until="5"
                 data-place
-                className="saved-card mt-3 w-[13rem] md:staged:absolute md:staged:top-[7.5rem] md:staged:mt-0"
+                className="mt-3 w-full max-w-[34rem] md:staged:absolute md:staged:top-[7.5rem] md:staged:mt-0"
               >
-                <div className="overflow-hidden rounded-xl">
-                  <div className="relative aspect-[3/2]">
-                    <Image
-                      src="/meals/lucky-plaza-chicken-rice.jpg"
-                      alt={t("friendMealAlt")}
-                      fill
-                      sizes="240px"
-                      className="object-cover object-top"
-                    />
-                  </div>
-                  <figcaption className="px-3 py-2.5">
-                    <span className="block text-[0.85rem] font-bold text-brand-ink">{t("friendMealName")}</span>
-                    <span className="block text-[0.75rem] text-brand-muted">{t("friendMealSub")}</span>
-                  </figcaption>
+                <div className="grid grid-cols-3 gap-3">
+                  {VISITS.map((visit, i) => (
+                    <div key={visit.src} className="saved-card overflow-hidden">
+                      <div className="relative aspect-[3/2]">
+                        <Image
+                          src={visit.src}
+                          alt={t("friendMealAlt", { date: t(visit.dateKey) })}
+                          fill
+                          sizes="(min-width: 768px) 180px, 30vw"
+                          className="object-cover"
+                        />
+                      </div>
+                      <p className="px-2.5 py-2 text-[0.72rem] font-bold text-brand-ink">
+                        <span className="text-brand-muted">{i + 1}.</span> {t(visit.dateKey)}
+                      </p>
+                    </div>
+                  ))}
                 </div>
+                <figcaption className="mt-2 text-[0.8rem] font-semibold text-brand-ink">
+                  {t("friendMealName")} <span className="font-medium text-brand-muted">· {t("friendMealSub")}</span>
+                </figcaption>
               </figure>
 
               <p
