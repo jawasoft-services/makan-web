@@ -71,15 +71,18 @@ export default async function FirstDayScene() {
                   for Mali's note. Absolute only once staged, so retired beats
                   leave no hole; stacked naturally in flow. The cards sit
                   3.5rem down so a two-line lead never runs under them. */}
-              <div className="mt-6 md:relative md:staged:h-[18rem]">
-              <p data-scene="2" data-scene-until="5" className="text-[0.95rem] font-bold text-brand-ink md:staged:absolute md:staged:top-0">
-                {t("turn")}
-              </p>
+              <div className="mt-6 md:relative md:staged:h-[19rem]">
+              {/* The scenario, spoon-fed: what Makan does not know, what your
+                  friends do, and the thing you would have done anyway. */}
+              <div data-scene="2" data-scene-until="5" className="md:staged:absolute md:staged:top-0">
+                <p className="text-[0.95rem] font-bold leading-[1.4] text-brand-ink">{t("turn")}</p>
+                <p className="mt-1.5 text-[0.85rem] font-semibold text-brand-muted">{t("turnWhy")}</p>
+              </div>
               <figure
                 data-scene="3"
                 data-scene-until="5"
                 data-place
-                className="saved-card mt-3 w-[13rem] md:staged:absolute md:staged:top-14 md:staged:mt-0"
+                className="saved-card mt-3 w-[13rem] md:staged:absolute md:staged:top-[7.5rem] md:staged:mt-0"
               >
                 <div className="overflow-hidden rounded-xl">
                   <div className="relative aspect-[3/2]">
