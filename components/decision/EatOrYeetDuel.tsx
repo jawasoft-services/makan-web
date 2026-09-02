@@ -34,8 +34,9 @@ export function EatOrYeetDuel({
   learnLabel?: string
   learned?: string
   outStage?: number
-  /** Where the ringed winner flies at handoff — its receipt's position. */
-  shrinkTo?: { x: string; y: string }
+  /** Where the ringed winner flies at handoff — its receipt's position —
+   *  and how small it gets (scale, default 0.24). */
+  shrinkTo?: { x: string; y: string; scale?: number }
   className?: string
 }) {
   const cards = [
@@ -60,7 +61,7 @@ export function EatOrYeetDuel({
               ? {
                   "data-scene": outStage,
                   "data-eoy-shrink": "",
-                  style: { "--shx": shrinkTo?.x, "--shy": shrinkTo?.y } as React.CSSProperties,
+                  style: { "--shx": shrinkTo?.x, "--shy": shrinkTo?.y, "--shs": shrinkTo?.scale } as React.CSSProperties,
                 }
               : {})}
             {...(!isWin && outStage !== undefined

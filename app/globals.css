@@ -316,7 +316,7 @@
   @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
     .scene-armed [data-scene][data-eoy-shrink].scene-on {
       opacity: 0;
-      transform: translate(var(--shx, -16rem), var(--shy, 11rem)) scale(0.24) rotate(-2deg);
+      transform: translate(var(--shx, -16rem), var(--shy, 11rem)) scale(var(--shs, 0.24)) rotate(-2deg);
       transition-duration: 0.65s;
     }
   }
