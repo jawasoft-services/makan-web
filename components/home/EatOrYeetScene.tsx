@@ -39,17 +39,25 @@ const DUELS: Duel[] = [
 // winner while Makan says what it learned.
 const STAGES = [0, 0.06, 0.13, 0.19, 0.25, 0.36, 0.42, 0.48, 0.59, 0.65, 0.71, 0.82, 0.89, 0.95]
 
-// Flight targets: card b (the winner is always b) sits at 28.5rem in a
-// 56rem slot with a 1rem gap, so its centre is 42.25rem from the slot's
-// left edge and 10.5rem below its top; the receipt pile is left-aligned
-// under the slot (23.5rem tall, 1rem gap, thumbs 2.25rem), one settled duel
-// every 8.175rem, winner thumb centred 5.475rem into each. Verified by
-// probe: the flown card lands within 2px of its thumb.
-const FLIGHT = [
-  { x: "-36.8rem", y: "15.1rem", scale: 0.12 },
-  { x: "-28.6rem", y: "15.1rem", scale: 0.12 },
-  { x: "-20.4rem", y: "15.1rem", scale: 0.12 },
-]
+// The slot is as wide as the viewport height allows (two 3:2 cards plus
+// heading, learn line and receipts must fit above the fold), capped at the
+// column's inner width (max-w-5xl 64rem minus 2×2.5rem padding = 59rem, or
+// the viewport minus that padding when narrower — the cap MUST equal the
+// real layout width, or the flight maths below aims past the receipt). Everything derives from --slot-w, so the cards grow on
+// a tall screen instead of leaving floor, and the flights still land.
+//   card b centre x = 0.75·W + 0.25rem (1rem gap, winner is always b)
+//   card b centre y = (W − 1rem)/6 + 1.35rem
+//   receipt pile: left-aligned under the slot, one settled duel every
+//   8.175rem, winner thumb centred 5.475rem in, 2.125rem below the slot.
+const SLOT_VARS = {
+  "--slot-w": "min(59rem, calc(100vw - 5rem), calc((100vh - 26.5rem) * 3))",
+  "--slot-h": "calc((var(--slot-w) - 1rem) / 3 + 5.2rem)",
+} as React.CSSProperties
+const FLIGHT = [0, 1, 2].map((k) => ({
+  x: `calc(${(5.475 + k * 8.175).toFixed(3)}rem - 0.75 * var(--slot-w) - 0.25rem)`,
+  y: "calc(var(--slot-h) + 2.125rem - (var(--slot-w) - 1rem) / 6 - 1.35rem)",
+  scale: 0.12,
+}))
 
 /**
  * The proof, full width. The menu scene ends on the ring; this one answers
@@ -82,7 +90,7 @@ export default async function EatOrYeetScene() {
 
           {/* One slot, three tenants, then the payoff. Absolute only once
               staged; stacked naturally in flow. */}
-          <div className="mt-8 md:relative md:max-w-[56rem] md:staged:h-[23.5rem]">
+          <div style={SLOT_VARS} className="mt-8 md:relative md:max-w-[var(--slot-w)] md:staged:h-[var(--slot-h)]">
             <EatOrYeetDuel
               duel={DUELS[0]}
               or={t("eoyOr")}

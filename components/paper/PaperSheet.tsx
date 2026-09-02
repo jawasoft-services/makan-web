@@ -25,7 +25,7 @@ export default function PaperSheet({
       <div className="paper-tooth" aria-hidden />
       {fold ? <div className="paper-fold hidden md:block" aria-hidden /> : null}
       <div className="paper-edge" aria-hidden />
-      <div className="paper-body">{children}</div>
+      <div className="paper-body h-full">{children}</div>
     </div>
   )
 }

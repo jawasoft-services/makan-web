@@ -51,9 +51,9 @@ export default async function FirstDayScene() {
     <ScrollScene thresholds={STAGES} className="relative md:staged:h-[340vh]">
       <div className="md:staged:sticky md:staged:top-0 md:staged:h-screen">
         <PaperSheet fold className="h-full w-full">
-          <div className="relative grid h-full grid-cols-1 md:grid-cols-2">
+          <div className="relative grid h-full grid-cols-1 md:grid-cols-2 md:staged:grid-rows-[minmax(0,1fr)]">
             {/* Text page LEFT this time — the spread turned. */}
-            <div className="order-2 flex flex-col justify-center px-8 py-10 md:order-1 md:justify-start md:px-12 md:py-0 md:pt-24">
+            <div className="order-2 flex flex-col justify-center px-8 py-10 md:order-1 md:px-12 md:py-0 md:pt-20">
               <p
                 data-scene="0"
                 className="text-[clamp(1.2rem,1.9vw,1.6rem)] font-semibold leading-[1.2] text-brand-muted"
@@ -69,7 +69,8 @@ export default async function FirstDayScene() {
 
               {/* One slot, three tenants: the turn + Holly's meal make way
                   for Mali's note. Absolute only once staged, so retired beats
-                  leave no hole; stacked naturally in flow. */}
+                  leave no hole; stacked naturally in flow. The cards sit
+                  3.5rem down so a two-line lead never runs under them. */}
               <div className="mt-6 md:relative md:staged:h-[18rem]">
               <p data-scene="2" data-scene-until="5" className="text-[0.95rem] font-bold text-brand-ink md:staged:absolute md:staged:top-0">
                 {t("turn")}
@@ -78,7 +79,7 @@ export default async function FirstDayScene() {
                 data-scene="3"
                 data-scene-until="5"
                 data-place
-                className="meal-card mt-3 w-[13rem] md:staged:absolute md:staged:top-8 md:staged:mt-0"
+                className="meal-card mt-3 w-[13rem] md:staged:absolute md:staged:top-14 md:staged:mt-0"
               >
                 <div className="overflow-hidden rounded-xl">
                   <div className="relative aspect-[3/2]">
@@ -109,7 +110,7 @@ export default async function FirstDayScene() {
               <div
                 data-scene="5"
                 data-place
-                className="mt-3 w-[21rem] max-w-full -rotate-1 rounded-[3px] border border-brand-muted/25 bg-brand-card p-4 shadow-[0_1px_2px_rgba(43,21,3,0.08),0_10px_24px_-16px_rgba(43,21,3,0.35)] md:staged:absolute md:staged:top-8 md:staged:mt-0"
+                className="mt-3 w-[21rem] max-w-full -rotate-1 rounded-[3px] border border-brand-muted/25 bg-brand-card p-4 shadow-[0_1px_2px_rgba(43,21,3,0.08),0_10px_24px_-16px_rgba(43,21,3,0.35)] md:staged:absolute md:staged:top-14 md:staged:mt-0"
               >
                 <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-brand-ink">
                   {t("slipFrom")}
@@ -146,7 +147,7 @@ export default async function FirstDayScene() {
               </div>
             </div>
 
-            <div className="relative order-1 md:order-2 md:staged:max-h-full md:staged:overflow-hidden">
+            <div className="relative order-1 md:order-2 md:min-h-0 md:staged:max-h-full md:staged:overflow-hidden">
               <MenuSheet
                 house={t("house")}
                 meta={t("meta")}

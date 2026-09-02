@@ -57,8 +57,8 @@ export default async function HeroDiptych() {
     <ScrollScene thresholds={STAGES} className="relative md:staged:h-[220vh]">
       <div className="md:staged:sticky md:staged:top-0 md:staged:h-screen">
         <PaperSheet fold className="h-full w-full">
-          <div className="relative grid h-full grid-cols-1 md:grid-cols-2">
-            <div className="order-2 relative md:order-none md:staged:max-h-full md:staged:overflow-hidden">
+          <div className="relative grid h-full grid-cols-1 md:grid-cols-2 md:staged:grid-rows-[minmax(0,1fr)]">
+            <div className="order-2 relative md:order-none md:min-h-0 md:staged:max-h-full md:staged:overflow-hidden">
               <MenuSheet
                 house={t("house")}
                 meta={t("meta")}
@@ -80,7 +80,10 @@ export default async function HeroDiptych() {
             </div>
 
 
-            <div className="order-1 flex flex-col justify-center px-8 py-10 md:order-none md:justify-start md:px-12 md:py-0 md:pt-24">
+            {/* Three lines beside a full-height visual: centred in the column, the
+                way a pinned product page captions its hero — not stacked at
+                the top with a bare floor beneath. */}
+            <div className="order-1 flex flex-col justify-center px-8 py-10 md:order-none md:px-12 md:py-0 md:pt-20">
               <p
                 data-scene="0"
                 className="text-[clamp(1.3rem,2.2vw,1.9rem)] font-semibold leading-[1.2] text-brand-muted"
