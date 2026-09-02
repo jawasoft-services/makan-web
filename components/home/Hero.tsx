@@ -118,7 +118,16 @@ export default async function Hero({
             href="#how-it-works"
             className="mt-8 inline-flex min-h-11 items-center gap-2 text-[1rem] font-semibold text-brand-ink underline decoration-brand-orange decoration-2 underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
           >
-            {t("secondary")} <span aria-hidden>↓</span>
+            {t("secondary")}
+            {/* The cue: flits about like something alive for a couple of
+                seconds, then lands under the words and nudges down on a loop
+                (app/globals.css .scroll-cue). Reduced motion: a still arrow. */}
+            <span aria-hidden className="scroll-cue ml-1 inline-flex h-[1.25em] w-[1.25em] items-center justify-center text-brand-orange">
+              <svg viewBox="0 0 20 24" className="h-full w-full" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10 3v17" />
+                <path d="M4 14l6 6 6-6" />
+              </svg>
+            </span>
           </a>
         </div>
 

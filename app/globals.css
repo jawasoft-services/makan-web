@@ -381,3 +381,35 @@
 @keyframes hand-ring-draw {
   to { stroke-dashoffset: 0; }
 }
+
+/* The hero's scroll cue. Two animations on one element: the flit runs once
+   and holds its end state (back at rest), then the nudge takes over the
+   transform (later in the list wins) and loops as the plain "scroll down".
+   The flit starts after the hero's own reveal has finished. */
+.scroll-cue {
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-cue {
+    animation:
+      cue-flit 2.6s cubic-bezier(0.45, 0.05, 0.55, 0.95) 1.4s 1 both,
+      cue-nudge 1.5s ease-in-out 4.2s infinite;
+  }
+}
+@keyframes cue-flit {
+  0%   { transform: translate(0, 0) rotate(0deg) scale(1); }
+  12%  { transform: translate(22px, -16px) rotate(-28deg) scale(1.08); }
+  26%  { transform: translate(-12px, -26px) rotate(24deg) scale(1.04); }
+  40%  { transform: translate(30px, -8px) rotate(-12deg) scale(1.1); }
+  54%  { transform: translate(-18px, -20px) rotate(34deg) scale(1.02); }
+  68%  { transform: translate(10px, -30px) rotate(-22deg) scale(1.08); }
+  82%  { transform: translate(-4px, -10px) rotate(10deg) scale(1.04); }
+  92%  { transform: translate(2px, 3px) rotate(-3deg) scale(0.96); }
+  100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+}
+@keyframes cue-nudge {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  45%      { transform: translateY(7px); opacity: 0.75; }
+  60%      { transform: translateY(7px); opacity: 0.75; }
+}
