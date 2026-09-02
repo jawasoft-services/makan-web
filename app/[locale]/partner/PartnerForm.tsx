@@ -92,9 +92,9 @@ export default function PartnerForm() {
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </div>
-            <h1 className="mt-5 text-2xl font-bold text-brand-ink sm:text-3xl">
+            <h2 className="mt-5 text-2xl font-bold text-brand-ink sm:text-3xl">
               {t('successTitle')}
-            </h1>
+            </h2>
             <p className="mt-3 text-sm leading-relaxed text-brand-muted sm:text-base">
               {t('successBody')}
             </p>
