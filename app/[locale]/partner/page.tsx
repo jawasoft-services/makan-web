@@ -50,7 +50,7 @@ export default async function PartnerPage({
 
         {/* What happens today — every line verified live: Discover RM18642,
             Cravings/Want to Try RM19115 + RM17819, Eat or Yeet, venue QR
-            RM18720 at Cellar Door and FIIK. */}
+            RM18720. */}
         <section className="mt-12 border-t border-brand-line pt-10">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
             {t('liveEyebrow')}

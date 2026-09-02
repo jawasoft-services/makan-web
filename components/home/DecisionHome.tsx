@@ -3,7 +3,6 @@ import HeroDiptych from "@/components/home/HeroDiptych"
 import EatOrYeetScene from "@/components/home/EatOrYeetScene"
 import SeeTheApp from "@/components/home/SeeTheApp"
 import FirstDayScene from "@/components/home/FirstDayScene"
-import WontDo from "@/components/home/WontDo"
 import ForRestaurants from "@/components/home/ForRestaurants"
 import FinalAsk from "@/components/home/FinalAsk"
 import LatestOnMakan from "@/components/LatestOnMakan"
@@ -31,8 +30,7 @@ export default async function DecisionHome({ locale }: { locale: string }) {
       <SeeTheApp />
       <FirstDayScene />
       <div className="relative z-0 md:armed:-mt-[100vh]">
-        <div className="md:armed:sticky md:armed:top-0">
-          <WontDo />
+        <div className="md:armed:sticky md:armed:top-0 md:armed:flex md:armed:min-h-screen md:armed:flex-col md:armed:justify-center">
           <LatestOnMakan mealCount={mealCount} liveMeals={liveMeals} />
         </div>
         <div aria-hidden className="hidden md:armed:block md:armed:h-screen" />

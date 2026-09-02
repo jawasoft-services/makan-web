@@ -9,7 +9,6 @@ const sections = [
   'features',
   'proof',
   'first-day',
-  'wont-do',
   'for-restaurants',
   'faq',
   'android-waitlist',
