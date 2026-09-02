@@ -50,11 +50,14 @@ export default function Footer() {
                 className="h-5 w-auto"
               />
             </Link>
-            <Link
-              href={APP_STORE_URL}
-              className="inline-flex min-h-11 w-fit items-center gap-2 rounded-lg border border-white/20 px-3.5 py-2 text-xs font-medium text-brand-espresso-muted transition-colors hover:border-brand-orange/60 hover:text-white"
-            >
-              {global('downloadAppStore')}
+            <Link href={APP_STORE_URL} className="inline-block w-fit">
+              <Image
+                src="/app-store-badge.svg"
+                alt={global('downloadAppStore')}
+                width={120}
+                height={40}
+                className="h-10 w-auto"
+              />
             </Link>
           </div>
 

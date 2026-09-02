@@ -13,8 +13,17 @@ const CARDS = [
   { name: "Date night", src: "/meals/story/card-15.jpg", rotate: "9deg", x: "9rem", y: "1.6rem" },
 ]
 
-export default async function Hero() {
+export default async function Hero({
+  mealCount,
+  rating,
+}: {
+  /** Live total from Firestore; shown rounded down to the nearest hundred. */
+  mealCount: number
+  /** Real App Store rating, or null when the storefront has none yet. */
+  rating: { rating: number; count: number } | null
+}) {
   const t = await getTranslations("Decision.Landing")
+  const meals = Math.max(100, Math.floor(mealCount / 100) * 100)
   const penId = "landing-underline-pen"
   const title = t("title")
   const accent = t("titleAccent")
@@ -82,9 +91,25 @@ export default async function Hero() {
               {t("platform")}
             </span>
           </div>
-          <a
+          {/* One trust signal beside the ask, both numbers real: the live
+              meal count and the storefront rating (only when it has one). */}
+          <p
             data-beat
             style={{ "--beat": 3 } as React.CSSProperties}
+            className="mt-4 text-[0.9rem] font-semibold text-brand-ink"
+          >
+            {t("trustMeals", { meals: meals.toLocaleString() })}
+            {rating ? (
+              <>
+                <span aria-hidden className="mx-2 text-brand-orange">·</span>
+                <span aria-hidden className="text-brand-orange">★ </span>
+                {t("trustRating", { rating: rating.rating.toFixed(1), count: rating.count })}
+              </>
+            ) : null}
+          </p>
+          <a
+            data-beat
+            style={{ "--beat": 4 } as React.CSSProperties}
             href="#how-it-works"
             className="mt-8 inline-flex min-h-11 items-center gap-2 text-[0.9rem] font-semibold text-brand-ink underline decoration-brand-orange decoration-2 underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
           >

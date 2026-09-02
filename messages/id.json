@@ -384,7 +384,8 @@
   "Decision": {
     "Metadata": {
       "title": "Makan — Tahu mau pesan apa",
-      "description": "Foto apa yang kamu makan. Makan mencari tahu apa yang kamu suka, dan apa yang terus dipesan orang di tempat kamu berada. Lalu dia kasih tahu kamu mau pesan apa. Gratis di iPhone."
+      "description": "Foto apa yang kamu makan. Makan mencari tahu apa yang kamu suka, dan apa yang terus dipesan orang di tempat kamu berada. Lalu dia kasih tahu kamu mau pesan apa. Gratis di iPhone.",
+      "ogSub": "Foto apa yang kamu makan. Makan kasih tahu kamu mau pesan apa."
     },
     "Hero": {
       "headline": "Kamu masih belum tahu mau pesan apa.",
@@ -444,7 +445,10 @@
       "cta": "Unduh Makan",
       "platform": "Gratis di iPhone",
       "secondary": "Lihat cara kerjanya",
-      "cardsAlt": "Tiga makanan yang disimpan di Makan"
+      "cardsAlt": "Tiga makanan yang disimpan di Makan",
+      "trustMeals": "{meals}+ makanan sungguhan tersimpan di Makan",
+      "trustRating": "Dinilai {rating} di App Store ({count} penilaian)",
+      "badgeAlt": "Unduh di App Store"
     },
     "Not": {
       "eyebrow": "Yang tidak akan Makan lakukan",
@@ -490,13 +494,16 @@
     },
     "App": {
       "eyebrow": "Ini Makan",
-      "title": "Dua layar yang paling sering kamu pakai.",
+      "title": "Tiga layar yang paling sering kamu pakai.",
       "shot1Title": "Eat or Yeet",
       "shot1Body": "Dua makanan yang kamu simpan. Ketuk yang mau kamu makan lagi duluan. Sepuluh detik, saat kamu bosan.",
       "shot1Alt": "Layar Eat or Yeet di Makan: dua makanan tersimpan berdampingan",
       "shot2Title": "Makananmu",
       "shot2Body": "Semua foto yang kamu ambil, per hari. Jawaban di menu datang dari sini.",
-      "shot2Alt": "Layar jurnal di Makan: kalender makanan tersimpan"
+      "shot2Alt": "Layar jurnal di Makan: kalender makanan tersimpan",
+      "shot0Title": "Simpan makanan",
+      "shot0Body": "Ambil fotonya, beri nama, unggah. Sepuluh detik.",
+      "shot0Alt": "Menyimpan makanan di Makan: foto, nama, tombol Post"
     }
   }
 }

@@ -1,5 +1,7 @@
 import { getTranslations } from "next-intl/server"
+import Image from "next/image"
 import Reveal from "@/components/motion/Reveal"
+import { APP_STORE_URL } from "@/lib/links"
 import AndroidWaitlist from "@/components/AndroidWaitlist"
 import StoreLink from "@/components/home/StoreLink"
 
@@ -11,6 +13,7 @@ import StoreLink from "@/components/home/StoreLink"
 export default async function FinalAsk() {
   const t = await getTranslations("Decision.Final")
   const home = await getTranslations("Home.Final")
+  const landing = await getTranslations("Decision.Landing")
 
   return (
     <section className="w-full bg-brand-orange px-6 py-24 text-white md:py-32">
@@ -43,9 +46,18 @@ export default async function FinalAsk() {
             {t("cta")}
           </StoreLink>
         </span>
-        <div
+        {/* Apple's own badge, unmodified, as the secondary path to the store. */}
+        <a
           data-beat
           style={{ "--beat": 4 } as React.CSSProperties}
+          href={APP_STORE_URL}
+          className="mt-5 inline-block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+        >
+          <Image src="/app-store-badge.svg" alt={landing("badgeAlt")} width={180} height={60} className="h-[3.25rem] w-auto" />
+        </a>
+        <div
+          data-beat
+          style={{ "--beat": 5 } as React.CSSProperties}
           className="mt-9 rounded-2xl bg-white p-6 text-left md:p-8"
         >
           <p className="text-base font-semibold text-brand-ink">{home("android")}</p>
