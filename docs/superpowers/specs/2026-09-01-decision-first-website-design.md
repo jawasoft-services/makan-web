@@ -397,3 +397,20 @@ build; any change to `#FF9932`; any monetization surface.
 3. **Photography** — resolved 2026-09-01: the marketing site uses only meal photographs already
    published on makanofficial.com's own public surfaces (`public/meals/`). The ladder uses
    `IMG_6952.jpg` (@Valesca's Eggs Benedict), which the live meal strip already displays.
+
+### D12 — Two kinds of evidence, both named (2026-09-02)
+
+The story's Eat or Yeet comparisons are **other people's picks**, shown as what
+they are: the evidence Makan learns from. They are never framed as the reader's
+own ("because you told it" is retired). The payoff names both evidence kinds
+in plain words, in this order:
+
+1. *Your picks teach Makan what you like.* (own taste, doctrine rung 1)
+2. *Everyone's picks teach it what wins here.* (grouped, privacy-safe Makan
+   evidence, doctrine rung 4 — wording follows the approved ladder copy:
+   counted together, not by name)
+
+Consequences: no first-person claims about the reader's history or friends
+(a friend's meal is offered as "say your friend…"); real users are credited
+only for what is true (they saved the meal), never for invented behaviour;
+the Maitre'D slip keys are ink, so no meaning rides on saffron alone (D11).
