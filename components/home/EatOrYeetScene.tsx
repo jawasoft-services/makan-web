@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { getTranslations } from "next-intl/server"
 import {
   EatOrYeetDuel,
@@ -75,6 +76,7 @@ const FLIGHT = [0, 1, 2].map((k) => ({
  */
 export default async function EatOrYeetScene() {
   const t = await getTranslations("Decision.Hero")
+  const landing = await getTranslations("Decision.Landing")
 
   return (
     <ScrollScene id="proof" thresholds={STAGES} style={SCENE_VARS} className="relative bg-brand-card md:staged:h-[var(--scene-h)]">
@@ -159,9 +161,9 @@ export default async function EatOrYeetScene() {
               <div data-scene="13" className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
                 <StoreLink
                   location="proof"
-                  className="inline-flex min-h-14 items-center rounded-full bg-brand-orange px-8 text-base font-bold text-white shadow-[0_10px_24px_-10px_rgba(255,153,50,0.6)] transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink active:translate-y-0"
+                  className="inline-block rounded-[10px] transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink active:translate-y-0"
                 >
-                  {t("cta")}
+                  <Image src="/app-store-badge.svg" alt={landing("badgeAlt")} width={180} height={60} className="h-12 w-auto" />
                 </StoreLink>
                 <span className="text-[0.78rem] font-semibold uppercase tracking-[0.14em] text-brand-orange md:text-[0.74rem]">
                   {t("platform")}

@@ -485,17 +485,21 @@
       "stat2": "48%",
       "stat2Body": "tamu bilang diingat lebih penting daripada poin.",
       "stat2Src": "Toast & Resy, The Regulars Report, 2026",
-      "cta": "Baca halaman restoran"
+      "cta": "Baca halaman restoran",
+      "discoverAlt": "Layar Discover: satu pilihan bagus di dekat tamu, dari Cravings mereka, lengkap dengan jaraknya"
     },
     "App": {
       "eyebrow": "Ini Makan",
-      "title": "Dua layar yang paling sering kamu pakai.",
-      "shot1Title": "Eat or Yeet",
-      "shot1Body": "Dua makanan yang kamu simpan. Ketuk yang mau kamu makan lagi duluan. Sepuluh detik, saat kamu bosan.",
-      "shot1Alt": "Layar Eat or Yeet di Makan: dua makanan tersimpan berdampingan",
-      "shot2Title": "Makananmu",
-      "shot2Body": "Semua foto yang kamu ambil, per hari. Jawaban di menu datang dari sini.",
-      "shot2Alt": "Layar jurnal di Makan: kalender makanan tersimpan"
+      "title": "Tiga layar yang paling sering kamu pakai.",
+      "shot1Title": "Discover",
+      "shot1Body": "Dekat tempat yang pernah kamu simpan? Makan menunjukkan satu pilihan bagus dari Cravings-mu, lengkap dengan jaraknya.",
+      "shot1Alt": "Layar Discover di Makan: satu pilihan bagus di dekatmu, dari Cravings, 1,2 km",
+      "shot2Title": "Eat or Yeet",
+      "shot2Body": "Dua makanan yang kamu simpan. Ketuk yang mau kamu makan lagi duluan. Sepuluh detik, saat kamu bosan.",
+      "shot2Alt": "Layar Eat or Yeet di Makan: dua makanan tersimpan, mana yang mau dimakan lagi duluan",
+      "shot3Title": "Makananmu",
+      "shot3Body": "Semua foto yang kamu ambil, per hari, dengan tempatnya. Jawaban di menu datang dari sini.",
+      "shot3Alt": "Layar jurnal di Makan: kalender makanan tersimpan dengan nama restorannya"
     }
   }
 }

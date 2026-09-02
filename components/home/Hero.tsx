@@ -86,9 +86,9 @@ export default async function Hero({
           >
             <StoreLink
               location="hero"
-              className="inline-flex min-h-14 items-center rounded-full bg-brand-orange px-8 text-base font-bold text-white shadow-[0_10px_24px_-10px_rgba(255,153,50,0.6)] transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink active:translate-y-0"
+              className="inline-block rounded-[10px] transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink active:translate-y-0"
             >
-              {t("cta")}
+              <Image src="/app-store-badge.svg" alt={t("badgeAlt")} width={180} height={60} className="h-14 w-auto" />
             </StoreLink>
             <span className="text-[0.78rem] font-semibold uppercase tracking-[0.14em] text-brand-orange md:text-[0.74rem]">
               {t("platform")}

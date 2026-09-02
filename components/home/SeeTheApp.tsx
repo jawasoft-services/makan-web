@@ -2,12 +2,14 @@ import Image from "next/image"
 import { getTranslations } from "next-intl/server"
 import Reveal from "@/components/motion/Reveal"
 
-// The two screens a diner actually uses: the game that teaches Makan taste,
-// and the diary the answer is drawn from. Real signed-in screenshots. (The
-// composer is not shown: it changed after these were taken.)
+// The three screens a diner actually uses, as real signed-in screenshots
+// already sitting in a device frame: Discover (the nudge back to a saved
+// place), the game that teaches Makan taste, and the diary the answer is
+// drawn from.
 const SHOTS = [
-  { src: "/app-screens/story/eat-or-yeet.webp", titleKey: "shot1Title", bodyKey: "shot1Body", altKey: "shot1Alt" },
-  { src: "/app-screens/story/diary.webp", titleKey: "shot2Title", bodyKey: "shot2Body", altKey: "shot2Alt" },
+  { src: "/app-screens/story/discover.webp", titleKey: "shot1Title", bodyKey: "shot1Body", altKey: "shot1Alt" },
+  { src: "/app-screens/story/eat-or-yeet.webp", titleKey: "shot2Title", bodyKey: "shot2Body", altKey: "shot2Alt" },
+  { src: "/app-screens/story/diary.webp", titleKey: "shot3Title", bodyKey: "shot3Body", altKey: "shot3Alt" },
 ] as const
 
 export default async function SeeTheApp() {
@@ -25,15 +27,17 @@ export default async function SeeTheApp() {
         >
           {t("title")}
         </h2>
-        <div className="mx-auto mt-14 grid max-w-3xl grid-cols-1 gap-14 md:grid-cols-2 md:gap-12">
+        <div className="mx-auto mt-14 grid max-w-5xl grid-cols-1 gap-14 md:grid-cols-3 md:gap-8">
           {SHOTS.map((shot, i) => (
-            <figure key={shot.titleKey} data-beat style={{ "--beat": 2 + i } as React.CSSProperties}>
-              {/* Phone frame: ink bezel, rounded, the screen inside. */}
-              <div className="mx-auto w-full max-w-[17rem] rounded-[2.4rem] border-[6px] border-brand-ink bg-brand-ink shadow-[0_1px_2px_rgba(43,21,3,0.08),0_16px_32px_-18px_rgba(43,21,3,0.5)]">
-                <div className="overflow-hidden rounded-[1.8rem]">
-                  <Image src={shot.src} alt={t(shot.altKey)} width={720} height={1565} sizes="(min-width: 768px) 240px, 60vw" className="block h-auto w-full" />
-                </div>
-              </div>
+            <figure key={shot.src} data-beat style={{ "--beat": 2 + i } as React.CSSProperties}>
+              <Image
+                src={shot.src}
+                alt={t(shot.altKey)}
+                width={760}
+                height={1572}
+                sizes="(min-width: 768px) 280px, 70vw"
+                className="mx-auto block h-auto w-full max-w-[17.5rem] drop-shadow-[0_18px_28px_rgba(43,21,3,0.22)]"
+              />
               <figcaption className="mx-auto mt-6 max-w-[22rem]">
                 <p className="text-[1.15rem] font-bold tracking-[-0.01em] text-brand-ink">{t(shot.titleKey)}</p>
                 <p className="mt-1.5 text-[0.95rem] leading-[1.5] text-brand-ink">{t(shot.bodyKey)}</p>

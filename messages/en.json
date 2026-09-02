@@ -485,17 +485,21 @@
       "stat2": "48%",
       "stat2Body": "of guests say being remembered matters more than points.",
       "stat2Src": "Toast & Resy, The Regulars Report, 2026",
-      "cta": "Read the restaurant page"
+      "cta": "Read the restaurant page",
+      "discoverAlt": "The Discover screen: one good option nearby, from the diner's Cravings, with the distance"
     },
     "App": {
       "eyebrow": "This is Makan",
-      "title": "Two screens you'll use most.",
-      "shot1Title": "Eat or Yeet",
-      "shot1Body": "Two meals you saved. Tap the one you'd eat again first. Ten seconds, when you're bored.",
-      "shot1Alt": "The Eat or Yeet screen in Makan: two saved meals side by side",
-      "shot2Title": "Your meals",
-      "shot2Body": "Every photo you've taken, by day. The answer on the menu comes from here.",
-      "shot2Alt": "The diary screen in Makan: a calendar of saved meals"
+      "title": "Three screens you'll use most.",
+      "shot1Title": "Discover",
+      "shot1Body": "Near a place you've saved? Makan shows one good option from your Cravings, with the distance.",
+      "shot1Alt": "The Discover screen in Makan: one good option nearby, from your Cravings, 1.2 km away",
+      "shot2Title": "Eat or Yeet",
+      "shot2Body": "Two meals you saved. Tap the one you'd eat again first. Ten seconds, when you're bored.",
+      "shot2Alt": "The Eat or Yeet screen in Makan: two saved meals, which would you eat again first",
+      "shot3Title": "Your meals",
+      "shot3Body": "Every photo you've taken, by day, with the place. The answer on the menu comes from here.",
+      "shot3Alt": "The diary screen in Makan: a calendar of saved meals with the restaurant named"
     }
   }
 }

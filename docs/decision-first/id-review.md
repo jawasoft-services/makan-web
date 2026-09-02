@@ -98,11 +98,15 @@ Mark a row `fix` in the last column and write the better line under it. Rows wit
 | `Restaurants.stat2Body` | of guests say being remembered matters more than points. | tamu bilang diingat lebih penting daripada poin. | |
 | `Restaurants.stat2Src` | Toast & Resy, The Regulars Report, 2026 | Toast & Resy, The Regulars Report, 2026 | |
 | `Restaurants.cta` | Read the restaurant page | Baca halaman restoran | |
+| `Restaurants.discoverAlt` | The Discover screen: one good option nearby, from the diner's Cravings, with the distance | Layar Discover: satu pilihan bagus di dekat tamu, dari Cravings mereka, lengkap dengan jaraknya | |
 | `App.eyebrow` | This is Makan | Ini Makan | |
-| `App.title` | Two screens you'll use most. | Dua layar yang paling sering kamu pakai. | |
-| `App.shot1Title` | Eat or Yeet | Eat or Yeet | |
-| `App.shot1Body` | Two meals you saved. Tap the one you'd eat again first. Ten seconds, when you're bored. | Dua makanan yang kamu simpan. Ketuk yang mau kamu makan lagi duluan. Sepuluh detik, saat kamu bosan. | |
-| `App.shot1Alt` | The Eat or Yeet screen in Makan: two saved meals side by side | Layar Eat or Yeet di Makan: dua makanan tersimpan berdampingan | |
-| `App.shot2Title` | Your meals | Makananmu | |
-| `App.shot2Body` | Every photo you've taken, by day. The answer on the menu comes from here. | Semua foto yang kamu ambil, per hari. Jawaban di menu datang dari sini. | |
-| `App.shot2Alt` | The diary screen in Makan: a calendar of saved meals | Layar jurnal di Makan: kalender makanan tersimpan | |
+| `App.title` | Three screens you'll use most. | Tiga layar yang paling sering kamu pakai. | |
+| `App.shot1Title` | Discover | Discover | |
+| `App.shot1Body` | Near a place you've saved? Makan shows one good option from your Cravings, with the distance. | Dekat tempat yang pernah kamu simpan? Makan menunjukkan satu pilihan bagus dari Cravings-mu, lengkap dengan jaraknya. | |
+| `App.shot1Alt` | The Discover screen in Makan: one good option nearby, from your Cravings, 1.2 km away | Layar Discover di Makan: satu pilihan bagus di dekatmu, dari Cravings, 1,2 km | |
+| `App.shot2Title` | Eat or Yeet | Eat or Yeet | |
+| `App.shot2Body` | Two meals you saved. Tap the one you'd eat again first. Ten seconds, when you're bored. | Dua makanan yang kamu simpan. Ketuk yang mau kamu makan lagi duluan. Sepuluh detik, saat kamu bosan. | |
+| `App.shot2Alt` | The Eat or Yeet screen in Makan: two saved meals, which would you eat again first | Layar Eat or Yeet di Makan: dua makanan tersimpan, mana yang mau dimakan lagi duluan | |
+| `App.shot3Title` | Your meals | Makananmu | |
+| `App.shot3Body` | Every photo you've taken, by day, with the place. The answer on the menu comes from here. | Semua foto yang kamu ambil, per hari, dengan tempatnya. Jawaban di menu datang dari sini. | |
+| `App.shot3Alt` | The diary screen in Makan: a calendar of saved meals with the restaurant named | Layar jurnal di Makan: kalender makanan tersimpan dengan nama restorannya | |

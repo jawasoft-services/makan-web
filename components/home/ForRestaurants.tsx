@@ -1,4 +1,5 @@
 import { getLocale, getTranslations } from "next-intl/server"
+import Image from "next/image"
 import Reveal from "@/components/motion/Reveal"
 import { localizePath } from "@/i18n/paths"
 
@@ -76,10 +77,23 @@ export default async function ForRestaurants() {
           </a>
         </div>
 
+        <div className="flex flex-col items-center gap-10">
+          {/* The nudge, as the diner sees it: one good option nearby, from
+              their Cravings, with the distance (Discover, RM18642). */}
+          <Image
+            data-beat
+            style={{ "--beat": 2 } as React.CSSProperties}
+            src="/app-screens/story/discover.webp"
+            alt={t("discoverAlt")}
+            width={760}
+            height={1572}
+            sizes="(min-width: 768px) 280px, 70vw"
+            className="block h-auto w-full max-w-[16.5rem] drop-shadow-[0_18px_28px_rgba(43,21,3,0.22)]"
+          />
         {/* The same slip the diner saw, from the restaurant's side. */}
         <div
           data-beat
-          style={{ "--beat": 2 } as React.CSSProperties}
+          style={{ "--beat": 3 } as React.CSSProperties}
           className="mx-auto w-full max-w-[22rem] rotate-1 rounded-[3px] border border-brand-muted/25 bg-brand-cream p-5 shadow-[0_1px_2px_rgba(43,21,3,0.08),0_10px_24px_-16px_rgba(43,21,3,0.35)] md:mt-10"
         >
           <p className="text-[0.74rem] font-extrabold uppercase tracking-[0.15em] text-brand-ink md:text-[0.68rem]">{slip("slipFrom")}</p>
@@ -96,6 +110,7 @@ export default async function ForRestaurants() {
               </div>
             ))}
           </dl>
+        </div>
         </div>
       </Reveal>
     </section>
