@@ -1,6 +1,6 @@
 # Story photo credits
 
-Every photo in `public/meals/story/` was public on Makan when copied. Source ids are Firestore `meals` document ids (read-only query, ADC, project `munchies-expo`, 2026-09-02).
+Every meal photo in `public/meals/story/` was public on Makan when copied; the app screenshots in `public/app-screens/story/` are the founder's own account and are published with his consent (`public` = may be shown on the site). Source ids are Firestore `meals` document ids (read-only query, ADC, project `munchies-expo`, 2026-09-02).
 
 | file | dish | account | public | date | source |
 |---|---|---|---|---|---|
