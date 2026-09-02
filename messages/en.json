@@ -434,7 +434,17 @@
       "p2": "Reward your Maitre'D however you like. A saved table, a coffee on the house. Cheap for you, big for them.",
       "p3": "Nobody can buy the pick. A deal for first-timers sits next to the honest answer, marked as a deal.",
       "honest": "The Maitre'D and the restaurant tools are designed and not built yet. We're building them with a handful of Bali places first.",
-      "cta": "Read the restaurant page"
+      "cta": "Read the restaurant page",
+      "stat1": "60%",
+      "stat1Body": "of restaurant revenue comes from repeat guests.",
+      "stat1Src": "Olo, 100 million guest records, 2024",
+      "stat2": "48%",
+      "stat2Body": "of guests say being remembered matters more than points.",
+      "stat2Src": "Toast & Resy, The Regulars Report, 2026",
+      "doTitle": "What you have to do: almost nothing.",
+      "do1": "Sign up once. Confirm you're the real place.",
+      "do2": "When a new diner redeems an offer, staff glance at their code and tap once.",
+      "do3": "You don't track anything. Makan works out who your Maitre'D is."
     },
     "App": {
       "eyebrow": "This is Makan",

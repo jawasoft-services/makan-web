@@ -48,16 +48,35 @@ export default async function ForRestaurants() {
               </li>
             ))}
           </ul>
+          {/* Two numbers from the handout, each with its source in ink. */}
+          <dl className="mt-10 grid max-w-[52ch] grid-cols-2 gap-6">
+            {(["stat1", "stat2"] as const).map((k, i) => (
+              <div key={k} data-beat style={{ "--beat": 6 + i } as React.CSSProperties}>
+                <dt className="text-[2.4rem] font-bold leading-none tracking-[-0.02em] text-brand-orange">{t(k)}</dt>
+                <dd className="mt-2 text-[0.95rem] font-semibold leading-[1.45] text-brand-ink">{t(`${k}Body`)}</dd>
+                <dd className="mt-1 text-[0.78rem] leading-[1.4] text-brand-muted">{t(`${k}Src`)}</dd>
+              </div>
+            ))}
+          </dl>
+          <p data-beat style={{ "--beat": 8 } as React.CSSProperties} className="mt-10 text-[1.05rem] font-bold text-brand-ink">{t("doTitle")}</p>
+          <ol className="mt-3 max-w-[52ch] space-y-2">
+            {(["do1", "do2", "do3"] as const).map((k, i) => (
+              <li key={k} data-beat style={{ "--beat": 9 + i } as React.CSSProperties} className="flex items-baseline gap-3 text-[1rem] leading-[1.5] text-brand-ink">
+                <span className="text-[0.8rem] font-bold text-brand-orange">{i + 1}.</span>
+                {t(k)}
+              </li>
+            ))}
+          </ol>
           <p
             data-beat
-            style={{ "--beat": 6 } as React.CSSProperties}
+            style={{ "--beat": 12 } as React.CSSProperties}
             className="mt-8 max-w-[52ch] text-[0.9rem] font-semibold leading-[1.5] text-brand-orange"
           >
             {t("honest")}
           </p>
           <a
             data-beat
-            style={{ "--beat": 7 } as React.CSSProperties}
+            style={{ "--beat": 13 } as React.CSSProperties}
             href={localizePath(locale, "/partner")}
             className="mt-8 inline-flex min-h-12 items-center rounded-full border-2 border-brand-ink px-7 text-sm font-bold text-brand-ink transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink active:translate-y-0"
           >

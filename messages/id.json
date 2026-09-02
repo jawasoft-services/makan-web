@@ -434,7 +434,17 @@
       "p2": "Beri Maitre'D-mu apa saja yang kamu mau. Meja yang disimpan, kopi gratis. Murah buatmu, berarti buat mereka.",
       "p3": "Tidak ada yang bisa membeli pilihan. Promo untuk tamu pertama muncul di samping jawaban jujur, ditandai sebagai promo.",
       "honest": "Maitre'D dan alat untuk restoran sudah dirancang tapi belum dibangun. Kami membangunnya bersama beberapa tempat di Bali dulu.",
-      "cta": "Baca halaman restoran"
+      "cta": "Baca halaman restoran",
+      "stat1": "60%",
+      "stat1Body": "pendapatan restoran datang dari tamu yang kembali.",
+      "stat1Src": "Olo, 100 juta catatan tamu, 2024",
+      "stat2": "48%",
+      "stat2Body": "tamu bilang diingat lebih penting daripada poin.",
+      "stat2Src": "Toast & Resy, The Regulars Report, 2026",
+      "doTitle": "Yang harus kamu lakukan: hampir tidak ada.",
+      "do1": "Daftar sekali. Konfirmasi kamu tempat yang asli.",
+      "do2": "Saat tamu baru menukar promo, staf melihat kodenya dan ketuk sekali.",
+      "do3": "Kamu tidak perlu mencatat apa pun. Makan yang menentukan siapa Maitre'D-mu."
     },
     "App": {
       "eyebrow": "Ini Makan",
