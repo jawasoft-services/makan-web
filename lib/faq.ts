@@ -115,11 +115,36 @@ const DECISION_FAQ_ID: FaqItem = {
   q: 'Dari mana Makan tahu apa yang harus dipesan?',
   a: 'Dari makanan sungguhan. Pilihanmu di Eat or Yeet memberi tahu Makan apa yang kamu suka. Pilihan orang lain memberi tahu Makan hidangan mana yang dipesan lagi di tiap tempat, sebagai jumlah total, bukan nama. Kalau makanan di suatu tempat masih terlalu sedikit, Makan bilang begitu daripada menebak.',
 }
+// Two more decision-page entries, from the restaurant handout's Maitre d'
+// rule and cost page (two visit-days inside 60; free to be on; deals sit
+// beside the honest pick, never buy it).
+const MAITRED_FAQ_EN: FaqItem[] = [
+  {
+    q: "What is a Maitre'D?",
+    a: "The person who has eaten at a place the most on Makan. You need two visits inside 60 days to qualify, and whoever comes most holds the title. It's earned by eating, never bought, and you can lose it to someone who comes more. The Maitre'D leaves short notes for everyone else: always get this, try this if, good to know.",
+  },
+  {
+    q: 'Can a restaurant pay to be the pick?',
+    a: "No. Being on Makan is free for restaurants, with no fee to appear and no cut of the bill. A restaurant can offer a deal to first-time diners, and Makan shows it clearly marked as a deal, next to the honest pick, never instead of it.",
+  },
+]
+const MAITRED_FAQ_ID: FaqItem[] = [
+  {
+    q: "Apa itu Maitre'D?",
+    a: "Orang yang paling sering makan di suatu tempat di Makan. Perlu dua kunjungan dalam 60 hari untuk memenuhi syarat, dan yang paling sering datang memegang gelarnya. Didapat dengan makan, tidak pernah dibeli, dan bisa hilang ke orang yang datang lebih sering. Maitre'D menulis catatan singkat untuk yang lain: selalu pesan ini, coba ini kalau, perlu tahu.",
+  },
+  {
+    q: 'Bisakah restoran membayar supaya jadi pilihan?',
+    a: 'Tidak. Ada di Makan itu gratis untuk restoran, tanpa biaya untuk tampil dan tanpa potongan dari tagihan. Restoran boleh memberi promo untuk tamu pertama, dan Makan menampilkannya dengan jelas sebagai promo, di samping pilihan jujur, bukan menggantikannya.',
+  },
+]
 // Indexes into FAQS / FAQS_ID (both lists share an order): free, Eat or Yeet,
 // who can see, AI.
-const DECISION_PICKS = [1, 5, 3, 7]
+const DECISION_PICKS_A = [1, 5]
+const DECISION_PICKS_B = [3, 7]
 
 export function getDecisionFaqs(locale: string) {
-  const [lead, source] = locale === 'id' ? [DECISION_FAQ_ID, FAQS_ID] : [DECISION_FAQ_EN, FAQS]
-  return [lead, ...DECISION_PICKS.map((i) => source[i])]
+  const id = locale === 'id'
+  const [lead, source, maitred] = id ? [DECISION_FAQ_ID, FAQS_ID, MAITRED_FAQ_ID] : [DECISION_FAQ_EN, FAQS, MAITRED_FAQ_EN]
+  return [lead, ...DECISION_PICKS_A.map((i) => source[i]), ...maitred, ...DECISION_PICKS_B.map((i) => source[i])]
 }

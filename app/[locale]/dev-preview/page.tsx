@@ -6,6 +6,7 @@ import EatOrYeetScene from "@/components/home/EatOrYeetScene"
 import FirstDayScene from "@/components/home/FirstDayScene"
 import WontDo from "@/components/home/WontDo"
 import FinalAsk from "@/components/home/FinalAsk"
+import ForRestaurants from "@/components/home/ForRestaurants"
 import LatestOnMakan from "@/components/LatestOnMakan"
 import FAQ from "@/components/FAQ"
 import FaqSchema from "@/components/FaqSchema"
@@ -16,7 +17,7 @@ import { getMealCount, getRecentPublicMeals } from "@/lib/makan-stats"
 /**
  * Dev-only harness for the deploy-gated decision-first homepage, mounted in
  * page order: the ask → the menu that gets answered → the proof, full width → your first day → what
- * Makan won't do → live proof → a short FAQ → the closing ask → footer.
+ * Makan won't do → live proof → the Maitre'D for restaurants → a short FAQ → the closing ask → footer.
  */
 export default async function DevPreview({
   params,
@@ -46,6 +47,7 @@ export default async function DevPreview({
         </div>
         <div aria-hidden className="hidden md:armed:block md:armed:h-screen" />
       </div>
+      <ForRestaurants />
       <FaqSchema items={faqs} />
       <FAQ items={faqs} />
       <FinalAsk />

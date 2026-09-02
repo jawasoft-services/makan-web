@@ -425,6 +425,16 @@
       "title": "Lain kali kamu tidak tahu mau pesan apa.",
       "body": "Foto apa yang kamu makan. Sesekali main Eat or Yeet. Lain kali kamu duduk dengan menu, Makan sudah punya jawaban.",
       "cta": "Unduh Makan"
+    },
+    "Restaurants": {
+      "eyebrow": "Untuk restoran",
+      "title": "Pelanggan terbaikmu, dengan gelar.",
+      "body": "Siapa pun yang paling sering makan di tempatmu di Makan menjadi Maitre'D-nya. Dua kunjungan dalam 60 hari untuk memenuhi syarat, dan yang paling sering datang memegangnya. Didapat dengan datang, tidak pernah dibeli, dan bisa hilang ke orang yang datang lebih sering. Merekalah yang menulis catatan yang dibaca setiap tamu baru.",
+      "p1": "Ada di Makan itu gratis. Tanpa biaya untuk tampil, tanpa potongan dari tagihan.",
+      "p2": "Beri Maitre'D-mu apa saja yang kamu mau. Meja yang disimpan, kopi gratis. Murah buatmu, berarti buat mereka.",
+      "p3": "Tidak ada yang bisa membeli pilihan. Promo untuk tamu pertama muncul di samping jawaban jujur, ditandai sebagai promo.",
+      "honest": "Maitre'D dan alat untuk restoran sudah dirancang tapi belum dibangun. Kami membangunnya bersama beberapa tempat di Bali dulu.",
+      "cta": "Baca halaman restoran"
     }
   }
 }

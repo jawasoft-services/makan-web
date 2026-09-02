@@ -48,13 +48,20 @@ const VISITS = [
   { src: "/meals/lucky-plaza-chicken-rice-3.jpg", dateKey: "visit3" },
 ] as const
 
-const STAGES = [0.05, 0.16, 0.28, 0.4, 0.52, 0.62, 0.78]
+// Scroll budget per beat, in viewport heights (see EatOrYeetScene). The
+// Maitre'D slip is the beat with the most to read, so it holds longest.
+//  0 setting · 1 the place · 2 what Makan knows / friends · 3 three plates
+//  4 the ring · 5 the Maitre'D · 6 the place nobody has tried
+const HOLD_VH = [40, 50, 60, 80, 60, 170, 90]
+const TRAVEL_VH = HOLD_VH.reduce((a, b) => a + b, 0)
+const STAGES = HOLD_VH.map((_, i) => HOLD_VH.slice(0, i).reduce((a, b) => a + b, 0) / TRAVEL_VH)
+const SCENE_VARS = { "--scene-h": `${TRAVEL_VH + 100}vh` } as React.CSSProperties
 
 export default async function FirstDayScene() {
   const t = await getTranslations("Decision.FirstDay")
 
   return (
-    <ScrollScene thresholds={STAGES} className="relative z-10 md:staged:h-[340vh]">
+    <ScrollScene thresholds={STAGES} style={SCENE_VARS} className="relative z-10 md:staged:h-[var(--scene-h)]">
       <div className="md:staged:sticky md:staged:top-0 md:staged:h-screen">
         <PaperSheet fold className="h-full w-full">
           <div className="relative grid h-full grid-cols-1 md:grid-cols-2 md:staged:grid-rows-[minmax(0,1fr)]">

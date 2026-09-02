@@ -425,6 +425,16 @@
       "title": "Next time you don't know what to order.",
       "body": "Snap what you eat. Play Eat or Yeet now and then. Next time you sit down with a menu, Makan has an answer.",
       "cta": "Get Makan"
+    },
+    "Restaurants": {
+      "eyebrow": "For restaurants",
+      "title": "Your best regular, with a title.",
+      "body": "Whoever eats at your place most on Makan becomes its Maitre'D. Two visits inside 60 days to qualify, and whoever comes most holds it. Earned by showing up, never bought, and they can lose it to someone who comes more. They leave the notes every new diner reads.",
+      "p1": "Being on Makan is free. No fee to appear, no cut of the bill.",
+      "p2": "Reward your Maitre'D however you like. A saved table, a coffee on the house. Cheap for you, big for them.",
+      "p3": "Nobody can buy the pick. A deal for first-timers sits next to the honest answer, marked as a deal.",
+      "honest": "The Maitre'D and the restaurant tools are designed and not built yet. We're building them with a handful of Bali places first.",
+      "cta": "Read the restaurant page"
     }
   }
 }
