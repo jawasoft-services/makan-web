@@ -6,10 +6,11 @@
     "dev": "next dev",
     "build": "npm run images:static && next build",
     "start": "next start",
-    "lint": "eslint && npm run check:founder-decisions && npm run check:i18n && npm run check:contrast",
+    "lint": "eslint && npm run check:founder-decisions && npm run check:i18n && npm run check:contrast && npm run check:photo-credits",
     "check:founder-decisions": "node scripts/check-founder-decisions.mjs",
     "check:i18n": "node scripts/check-i18n.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",
+    "check:photo-credits": "node scripts/check-photo-credits.mjs",
     "images:static": "node scripts/generate-static-images.mjs",
     "venue-qr": "node scripts/generate-venue-qr.mjs",
     "app-qr": "node scripts/generate-app-qr.mjs"
