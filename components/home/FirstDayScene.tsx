@@ -4,37 +4,36 @@ import PaperSheet from "@/components/paper/PaperSheet"
 import MenuSheet, { type MenuSection } from "@/components/menu/MenuSheet"
 import ScrollScene from "@/components/motion/ScrollScene"
 
-// A second restaurant, so the reader's stand-in arrives with nothing: a
-// Thai place, because Holly's real saved meal (card-20, "Thai Spot") is a
-// green curry — her meal has to match a dish on this menu.
+// A second restaurant, so the reader's stand-in arrives with nothing:
+// Lucky Plaza, the Hainanese chicken rice place in Pererenan. The friend's
+// meal is a real public save from Lucky Plaza on Makan (that account has
+// saved chicken rice there five times; the story says three), so the dish
+// the pen rings is the dish in the photo.
 const SECTIONS: MenuSection[] = [
   {
-    heading: "To start",
+    heading: "Chicken rice",
     items: [
-      { name: "Chicken Satay", price: "45", description: "peanut sauce, cucumber relish" },
-      { name: "Som Tam", diet: "V", price: "40", description: "green papaya, lime, chilli, peanuts" },
-      { name: "Spring Rolls", diet: "VG", price: "38", description: "glass noodles, sweet chilli" },
+      { name: "Hainanese Chicken Rice", price: "48", description: "poached chicken, fragrant rice, soup, chilli, ginger" },
+      { name: "Roasted Chicken Rice", price: "50", description: "soy-roasted, same rice, same soup" },
+      { name: "Half Chicken to Share", price: "135", description: "poached or roasted, rice for two" },
     ],
   },
   {
-    heading: "Curries",
+    heading: "On the side",
     items: [
-      { name: "Green Curry", price: "75", description: "chicken, thai basil, roti or rice" },
-      { name: "Massaman", price: "78", description: "slow beef, potato, roasted peanuts" },
-      { name: "Jungle Curry", price: "72", description: "no coconut, all fire" },
+      { name: "Braised Egg", price: "10" },
+      { name: "Extra Rice", price: "12" },
+      { name: "Chicken Soup", price: "15", description: "spring onion, white pepper" },
+      { name: "Cucumber & Pickles", price: "12" },
     ],
   },
   {
-    heading: "From the wok",
+    heading: "Drinks",
     items: [
-      { name: "Pad Thai", price: "65", description: "prawns, tamarind, egg, beansprouts" },
-      { name: "Pad Krapow", price: "62", description: "holy basil, minced pork, fried egg" },
-      { name: "Drunken Noodles", price: "68", description: "wide rice noodles, birds-eye chilli" },
+      { name: "Iced Coffee", price: "28" },
+      { name: "Teh Tarik", price: "22" },
+      { name: "Lime Juice", price: "20" },
     ],
-  },
-  {
-    heading: "Sweet",
-    items: [{ name: "Mango Sticky Rice", diet: "V", price: "45", description: "coconut cream, toasted sesame" }],
   },
 ]
 
@@ -87,7 +86,7 @@ export default async function FirstDayScene() {
                 <div className="overflow-hidden rounded-xl">
                   <div className="relative aspect-[3/2]">
                     <Image
-                      src="/meals/card-20.jpg"
+                      src="/meals/lucky-plaza-chicken-rice.jpg"
                       alt={t("friendMealAlt")}
                       fill
                       sizes="240px"
@@ -157,7 +156,7 @@ export default async function FirstDayScene() {
                 sections={SECTIONS.map((section) => ({
                   ...section,
                   items: section.items.map((item) =>
-                    item.name === "Green Curry"
+                    item.name === "Hainanese Chicken Rice"
                       ? { ...item, circled: { label: t("friendMark"), stage: 4 } }
                       : item,
                   ),
