@@ -43,18 +43,22 @@ export default async function StandingsPage({
         <h1 className="mt-4 text-3xl font-bold text-brand-ink sm:text-4xl lg:text-5xl" style={{ letterSpacing: '-0.02em' }}>
           {t('title')}
         </h1>
-        <p className="mt-6 max-w-[60ch] text-base leading-[1.75] text-brand-muted">{t('intro', { floor: EVIDENCE_FLOOR })}</p>
+        <p className="mt-6 max-w-[60ch] text-base leading-[1.75] text-brand-muted">
+          {t('intro', { floor: EVIDENCE_FLOOR })}
+          {standings.countries > 1 ? ' ' + t('countries', { count: standings.countries }) : ''}
+        </p>
 
         {standings.rows.length ? (
           <>
             {/* Wide table scrolls inside its own box; the page never scrolls sideways. */}
             <div className="mt-10 overflow-x-auto rounded-2xl border border-brand-line bg-brand-card">
-              <table className="w-full min-w-[34rem] border-collapse text-left">
+              <table className="w-full min-w-[42rem] border-collapse text-left">
                 <caption className="sr-only">{t('title')}</caption>
                 <thead>
                   <tr className="border-b border-brand-line text-xs font-semibold uppercase tracking-[0.14em] text-brand-muted">
                     <th scope="col" className="px-4 py-3 sm:px-5">{t('colRank')}</th>
                     <th scope="col" className="px-4 py-3 sm:px-5">{t('colRestaurant')}</th>
+                    <th scope="col" className="px-4 py-3 sm:px-5">{t('colWhere')}</th>
                     <th scope="col" className="px-4 py-3 text-right sm:px-5">{t('colEats')}</th>
                     <th scope="col" className="px-4 py-3 text-right sm:px-5">{t('colYeets')}</th>
                     <th scope="col" className="px-4 py-3 text-right sm:px-5">{t('colRate')}</th>
@@ -68,6 +72,16 @@ export default async function StandingsPage({
                       <th scope="row" className="px-4 py-4 text-base font-semibold text-brand-ink sm:px-5">
                         {row.name}
                       </th>
+                      <td className="px-4 py-4 text-base leading-[1.35] text-brand-ink sm:px-5">
+                        {row.where ? (
+                          <>
+                            <span className="block">{row.where.city}</span>
+                            <span className="block text-sm text-brand-muted">{row.where.country}</span>
+                          </>
+                        ) : (
+                          <span className="text-brand-muted">—</span>
+                        )}
+                      </td>
                       <td className="px-4 py-4 text-right text-base font-bold tabular-nums text-brand-ink sm:px-5">{row.eats}</td>
                       <td className="px-4 py-4 text-right text-base tabular-nums text-brand-muted sm:px-5">{row.yeets}</td>
                       <td className="px-4 py-4 text-right text-base tabular-nums text-brand-ink sm:px-5">{percent.format(row.eatRate)}</td>

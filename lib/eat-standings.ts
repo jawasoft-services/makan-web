@@ -1,6 +1,7 @@
 import 'server-only'
 import { unstable_cache } from 'next/cache'
 import { getDb } from '@/lib/firebase-admin'
+import { getPlaceWhere, type PlaceWhere } from '@/lib/place-city'
 
 /**
  * The Eat or Yeet standings (D-033, docs/superpowers/specs/2026-09-02-eats-standings-design.md).
@@ -30,6 +31,8 @@ export interface StandingRow {
   eatRate: number
   /** ISO date of the first meal ever tagged to the place, or null. */
   since: string | null
+  /** City and country, or null when the place can't be located. */
+  where: PlaceWhere | null
 }
 
 export interface EatStandings {
@@ -39,6 +42,8 @@ export interface EatStandings {
   belowFloor: number
   /** Verified cross-restaurant matchups counted, all restaurants. */
   matchups: number
+  /** Distinct countries among the ranked rows. */
+  countries: number
   /** When this snapshot was computed (ISO). */
   computedAt: string
 }
@@ -46,7 +51,7 @@ export interface EatStandings {
 /** No score is shown below this many verified matchups (spec §2, RM19117 §6). */
 export const EVIDENCE_FLOOR = 10
 
-export const EMPTY_STANDINGS: EatStandings = { rows: [], belowFloor: 0, matchups: 0, computedAt: '' }
+export const EMPTY_STANDINGS: EatStandings = { rows: [], belowFloor: 0, matchups: 0, countries: 0, computedAt: '' }
 
 interface PlaceRef {
   id: string
@@ -139,6 +144,7 @@ export const getEatStandings = unstable_cache(
           matchups: n,
           eatRate: n ? t.eats / n : 0,
           since: since ? new Date(since).toISOString() : null,
+          where: null,
         }
       })
 
@@ -147,13 +153,21 @@ export const getEatStandings = unstable_cache(
         .filter((r) => r.matchups >= EVIDENCE_FLOOR)
         .sort((x, y) => y.eats - x.eats || y.eatRate - x.eatRate || (x.since ?? '').localeCompare(y.since ?? ''))
 
-      return { rows, belowFloor: all.length - rows.length, matchups, computedAt: new Date().toISOString() }
+      // Locate only the ranked rows: that is what the page shows, and what a
+      // live lookup would be paid for.
+      const where = await getPlaceWhere(rows.map((r) => r.placeId))
+      for (const r of rows) r.where = where.get(r.placeId) ?? null
+      const countries = new Set(rows.map((r) => r.where?.country).filter(Boolean)).size
+
+      return { rows, belowFloor: all.length - rows.length, matchups, countries, computedAt: new Date().toISOString() }
     } catch {
       console.error('eat-standings: failed to compute standings; page shows the empty state.')
       return EMPTY_STANDINGS
     }
   },
-  ['makan-eat-standings', 'v1'],
+  // Bump when the row shape or the place-label rule changes: labels are
+  // computed inside this cache.
+  ['makan-eat-standings', 'v2'],
   { revalidate: 3600 },
 )
 

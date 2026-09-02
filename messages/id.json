@@ -537,6 +537,8 @@
     "how2": "Satu pertandingan dihitung kalau kedua makanan ditandai ke restoran dan restorannya berbeda. Dua makanan dari tempat yang sama tidak membuktikan apa-apa, jadi dilewati.",
     "how3": "Restoran perlu {floor} pertandingan sebelum masuk peringkat. Di bawah itu, angkanya terlalu tipis untuk berarti.",
     "how4": "Tidak ada biaya dan Eat tidak bisa dibeli. Peringkat ini adalah pilihan tamu, dijumlahkan.",
-    "partnerCta": "Untuk restoran"
+    "partnerCta": "Untuk restoran",
+    "colWhere": "Lokasi",
+    "countries": "Saat ini itu mencakup {count} negara."
   }
 }

@@ -537,6 +537,8 @@
     "how2": "A matchup counts when both meals are tagged to a restaurant and the restaurants differ. Two meals from the same place prove nothing about it, so they're skipped.",
     "how3": "A restaurant needs {floor} matchups before it's ranked. Below that, the numbers are too thin to mean anything.",
     "how4": "Nothing to pay and no way to buy an Eat. The standings are diners' picks, added up.",
-    "partnerCta": "For restaurants"
+    "partnerCta": "For restaurants",
+    "colWhere": "Where",
+    "countries": "Right now that's {count, plural, one {# country} other {# countries}}."
   }
 }
