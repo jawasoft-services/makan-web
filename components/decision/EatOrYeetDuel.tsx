@@ -98,7 +98,7 @@ export function EatOrYeetDuel({
             so the next pair's "or" never lands on top of this one. */}
         <span
           {...(outStage !== undefined ? { "data-scene": inStage, "data-scene-until": outStage } : {})}
-          className="pointer-events-none absolute left-1/2 top-[32%] z-20 -translate-x-1/2 rounded-full border border-brand-muted/25 bg-brand-cream px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-brand-muted"
+          className="pointer-events-none absolute left-1/2 top-[32%] z-20 -translate-x-1/2 rounded-full border border-brand-orange/30 bg-brand-cream px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-brand-orange"
         >
           {or}
         </span>
@@ -109,7 +109,7 @@ export function EatOrYeetDuel({
           {...(outStage !== undefined ? { "data-scene-until": outStage } : {})}
           className="mt-3 text-[0.85rem] leading-[1.5]"
         >
-          <span className="mr-2 text-[0.66rem] font-bold uppercase tracking-[0.14em] text-brand-muted">
+          <span className="mr-2 text-[0.66rem] font-bold uppercase tracking-[0.14em] text-brand-orange">
             {learnLabel}
           </span>
           <span className="font-bold text-brand-ink">{learned}</span>

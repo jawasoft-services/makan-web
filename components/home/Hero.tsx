@@ -63,7 +63,7 @@ export default async function Hero() {
           <p
             data-beat
             style={{ "--beat": 1 } as React.CSSProperties}
-            className="mt-6 max-w-[34ch] text-[clamp(1.05rem,1.5vw,1.3rem)] leading-[1.5] text-brand-muted"
+            className="mt-6 max-w-[34ch] text-[clamp(1.05rem,1.5vw,1.3rem)] font-semibold leading-[1.5] text-brand-orange"
           >
             {t("sub")}
           </p>
@@ -78,7 +78,7 @@ export default async function Hero() {
             >
               {t("cta")}
             </a>
-            <span className="text-[0.74rem] font-semibold uppercase tracking-[0.14em] text-brand-muted">
+            <span className="text-[0.74rem] font-semibold uppercase tracking-[0.14em] text-brand-orange">
               {t("platform")}
             </span>
           </div>

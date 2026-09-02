@@ -34,8 +34,18 @@ export default async function DevPreview({
       <HeroDiptych />
       <EatOrYeetScene />
       <FirstDayScene />
-      <WontDo />
-      <LatestOnMakan mealCount={mealCount} liveMeals={liveMeals} />
+      {/* Curtain: these two sections already sit under the last spread and
+          are revealed as it lifts away. The block is pulled up one viewport
+          behind the pinned spread, pinned itself while the spread scrolls
+          off, then released; the spacer gives the pin its travel. Only once
+          scenes are armed — in flow, nothing is ever covered. */}
+      <div className="relative z-0 md:armed:-mt-[100vh]">
+        <div className="md:armed:sticky md:armed:top-0">
+          <WontDo />
+          <LatestOnMakan mealCount={mealCount} liveMeals={liveMeals} />
+        </div>
+        <div aria-hidden className="hidden md:armed:block md:armed:h-screen" />
+      </div>
       <FaqSchema items={faqs} />
       <FAQ items={faqs} />
       <FinalAsk />

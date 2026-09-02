@@ -3,6 +3,10 @@
 /* Pinned/absolute scene layout applies only once ScrollScene has armed the
    region — without JS, or under reduced motion, every beat stays in flow. */
 @custom-variant staged (&:is(.scene-armed, .scene-armed *));
+/* Page-level layout that only makes sense once the scenes are pinned (the
+   curtain reveal under the last spread). Off without JS or under reduced
+   motion, when nothing is armed. */
+@custom-variant armed (&:where(body:has(.scene-armed) *));
 @config "../tailwind.config.ts";
 
 @layer base {
