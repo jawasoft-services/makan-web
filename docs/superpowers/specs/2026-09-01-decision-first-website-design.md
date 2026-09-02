@@ -414,3 +414,9 @@ Consequences: no first-person claims about the reader's history or friends
 (a friend's meal is offered as "say your friend…"); real users are credited
 only for what is true (they saved the meal), never for invented behaviour;
 the Maitre'D slip keys are ink, so no meaning rides on saffron alone (D11).
+
+### D13 — Show the product (2026-09-02)
+Two real signed-in screens (Eat or Yeet, the diary) sit between the proof scene and the first day, in ink phone frames, each with a title and one sentence. No mock of the decision surface until RM19664 has a screen to photograph. The site carries no lines about what is or is not built yet; the founder decides when the page goes live.
+
+### D14 — Credits, guards and the go (2026-09-02)
+Every story photo has a row in `docs/decision-first/photo-credits.md`, enforced by `npm run lint`. Text collisions, content past the fold, flight landings and mobile overflow are checked by `npm run check:scenes` (Playwright) against the running site. Lighthouse and axe run via `npm run audit:home`; the 37 saffron-on-white and white-on-saffron contrast pairs it reports are accepted under D10, D11 and RM18846, and the carousel focus finding belongs to the live meal strip component. There is no build-time release gate: the decision home ships when Devon sets `DECISION_HOME=1` on production and says go.
