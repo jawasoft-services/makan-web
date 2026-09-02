@@ -100,12 +100,12 @@ export default async function FirstDayScene() {
                 data-scene="3"
                 data-scene-until="5"
                 data-place
-                className="mt-3 w-full max-w-[34rem] md:staged:absolute md:staged:top-[7.5rem] md:staged:mt-0"
+                className="mt-3 w-full md:staged:absolute md:staged:top-[7.5rem] md:staged:mt-0"
               >
                 <div className="grid grid-cols-3 gap-3">
                   {VISITS.map((visit, i) => (
                     <div key={visit.src} className="saved-card overflow-hidden">
-                      <div className="relative aspect-[3/2]">
+                      <div className="relative aspect-[4/3]">
                         <Image
                           src={visit.src}
                           alt={t("friendMealAlt", { date: t(visit.dateKey) })}
@@ -114,13 +114,13 @@ export default async function FirstDayScene() {
                           className="object-cover"
                         />
                       </div>
-                      <p className="px-2.5 py-2 text-[0.8rem] font-bold text-brand-ink md:text-[0.72rem]">
+                      <p className="px-3 py-2.5 text-[0.85rem] font-bold text-brand-ink">
                         <span className="text-brand-muted">{i + 1}.</span> {t(visit.dateKey)}
                       </p>
                     </div>
                   ))}
                 </div>
-                <figcaption className="mt-2 text-[0.8rem] font-semibold text-brand-ink">
+                <figcaption className="mt-3 text-[0.9rem] font-semibold text-brand-ink">
                   {t("friendMealName")} <span className="font-medium text-brand-muted">· {t("friendMealSub")}</span>
                 </figcaption>
               </figure>
