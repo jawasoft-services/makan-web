@@ -1,8 +1,10 @@
 import type { MetadataRoute } from "next"
 import { getAllReviews } from "@/lib/reviews"
+import { getEatStandings } from "@/lib/eat-standings"
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = "https://www.makanofficial.com"
+  const standings = await getEatStandings()
   const reviews = getAllReviews()
   const blogLastMod = reviews[0] ? new Date(reviews[0].dateModified) : new Date()
 
@@ -38,6 +40,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...localized("/story", "monthly", 0.9),
     ...localized("/partner", "monthly", 0.8),
     ...localized("/standings", "weekly", 0.8),
+    ...standings.cities.flatMap((c) => localized(`/standings/${c.slug}`, "weekly", 0.7)),
+    ...standings.all.flatMap((r) => localized(`/places/${r.slug}`, "weekly", 0.6)),
     ...localized("/contact", "monthly", 0.8),
     ...localized("/support", "monthly", 0.7),
     ...localized("/manifesto", "monthly", 0.6),

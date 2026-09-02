@@ -120,6 +120,11 @@ const lookup = unstable_cache(
   { revalidate: 30 * 24 * 60 * 60 },
 )
 
+/** True when the seed already knows this place (no lookup needed). */
+export function hasSeededWhere(placeId: string): boolean {
+  return Boolean(SEED[placeId])
+}
+
 /** Where each place is, for the ids given. Missing ids resolve to null. */
 export async function getPlaceWhere(ids: string[]): Promise<Map<string, PlaceWhere | null>> {
   const out = new Map<string, PlaceWhere | null>()

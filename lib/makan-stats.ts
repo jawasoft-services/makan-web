@@ -311,6 +311,14 @@ function perHandleCap(max: number) {
   }
 }
 
+/** A caption fit for the front of the site: real words, no auto handles, no swearing. */
+export function isCleanCaption(caption: string): boolean {
+  if (!caption || GENERIC_CAPTION.test(caption)) return false
+  if (caption.split(/\s+/).filter((w) => /\p{L}|\p{N}/u.test(w)).length < MIN_CAPTION_WORDS) return false
+  if (AUTO_HANDLE_MENTION.test(caption) || ROUGH_CAPTION.test(caption)) return false
+  return true
+}
+
 function str(v: unknown): string {
   return typeof v === 'string' ? v.trim() : ''
 }
