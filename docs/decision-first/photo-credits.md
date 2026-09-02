@@ -17,5 +17,5 @@ Every meal photo in `public/meals/story/` was public on Makan when copied; the a
 | diary.webp | App screenshot (diary) | founder's own account, signed-in screenshot | yes | 2026-09-02 | Projects/MAKAN/01-diary-calendar-signed-in.png.png |
 
 Handle to print on the card: **pending Devon** (the username lookup is out of scope for the agent; Devon names the account or it stays "Saved at Lucky Plaza").
-| post-a-meal.mp4 | App recording (Post a Meal) | founder's own account, signed-in recording | yes | 2026-09-02 | Projects/MAKAN/onboarding-audit/rm18002-code-aligned-video/rm18002-happy-path-live.mp4 (33.5s to 47.5s) |
+| post-a-meal.mp4 | App recording (Post a Meal) | founder's own account, signed-in recording | yes | 2026-09-02 | Projects/MAKAN/onboarding-audit/rm18002-code-aligned-video/rm18002-happy-path-live.mp4 (33.5s to 43.5s) |
 | post-a-meal.jpg | App recording poster | founder's own account, signed-in recording | yes | 2026-09-02 | frame at 34s of the same recording |
