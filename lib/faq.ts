@@ -37,7 +37,7 @@ export const FAQS: FaqItem[] = [
   },
   {
     q: 'What is Eat or Yeet?',
-    a: "Eat or Yeet puts two meals from your diary side by side and asks which you'd eat again first. Your choices build your Top 4 and a full ranking of your own meals. It's your taste, so only you get a vote.",
+    a: "Eat or Yeet puts two meals from your diary side by side and asks which you'd eat again first. Your choices build your Top 4 and a full ranking of your own meals. It's your taste: nobody votes on your meals but you. Makan only ever adds other people's picks up as totals, for the place, never for your dishes.",
   },
   {
     q: 'How is Makan different from Yelp or Google reviews?',
@@ -80,7 +80,7 @@ export const FAQS_ID: FaqItem[] = [
   },
   {
     q: 'Apa itu Eat or Yeet?',
-    a: 'Eat or Yeet menaruh dua makanan dari jurnalmu berdampingan, lalu menanyakan mana yang paling ingin kamu makan lagi. Pilihanmu membentuk Top 4 dan peringkat lengkap makananmu sendiri. Ini seleramu, jadi hanya kamu yang punya hak suara.',
+    a: 'Eat or Yeet menaruh dua makanan dari jurnalmu berdampingan, lalu menanyakan mana yang paling ingin kamu makan lagi. Pilihanmu membentuk Top 4 dan peringkat lengkap makananmu sendiri. Ini seleramu: tidak ada yang menilai makananmu selain kamu. Makan hanya menjumlahkan pilihan orang lain sebagai total untuk tempatnya, bukan untuk makananmu.',
   },
   {
     q: 'Apa bedanya Makan dengan Yelp atau ulasan Google?',
