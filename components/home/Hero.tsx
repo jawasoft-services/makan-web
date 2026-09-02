@@ -119,14 +119,27 @@ export default async function Hero({
             className="mt-8 inline-flex min-h-11 items-center gap-2 text-[1rem] font-semibold text-brand-ink underline decoration-brand-orange decoration-2 underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
           >
             {t("secondary")}
-            {/* The cue: a shaft and a head, so the length can move. It flits
-                about like something alive for a couple of seconds (the shaft
-                wiggling long and short), lands under the words, then on a loop
-                stretches downward and springs back: the plain "scroll down".
-                The box is fixed so the stretch never shifts the text
+            {/* The cue. Once the hero has revealed, the arrow flies a drawn
+                route (CSS motion path, nose leading the tangent): a wind-up
+                dip, a climb, one full loop, a hook at the top, a swoop back
+                over the words, and a straight-down landing with a squash. A
+                hand-drawn trail draws itself behind it and fades. Then, on a
+                loop, the plain cue: the shaft stretches downward and springs
+                back. Fixed box, so none of it shifts the text
                 (app/globals.css .scroll-cue). Reduced motion: a still arrow. */}
             <span aria-hidden className="scroll-cue relative ml-1 inline-block h-[1.45em] w-[1.25em] text-brand-orange">
-              <span className="scroll-cue-arrow absolute left-1/2 top-0 flex -translate-x-1/2 flex-col items-center">
+              <svg
+                className="scroll-cue-trail pointer-events-none absolute"
+                style={{ left: -40, top: -60, width: 160, height: 110 }}
+                viewBox="-40 -60 160 110"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+              >
+                <path d="M11,12 C11,22 18,28 30,22 C44,15 52,20 58,24 C69,24 78,15 78,4 C78,-7 69,-16 58,-16 C47,-16 38,-7 38,4 C38,15 47,24 58,24 C72,24 90,14 92,-2 C92,-14 92,-34 78,-34 C64,-34 62,-16 74,-14 C86,-12 60,-44 30,-38 C6,-33 -8,-16 -4,-6 C-1,0 11,0 11,12" pathLength={1} />
+              </svg>
+              <span className="scroll-cue-arrow absolute left-0 top-0 flex flex-col items-center">
                 <span className="scroll-cue-shaft block w-[2.6px] rounded-full bg-current" />
                 <svg viewBox="0 0 20 12" className="-mt-[1px] h-[0.6em] w-[1.1em]" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M3 2l7 8 7-8" />
