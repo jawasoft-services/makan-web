@@ -14,18 +14,18 @@ import { APP_STORE_URL } from "@/lib/links"
 // beef, fresh spice over fried, chilli over creamy.
 const DUELS: Duel[] = [
   {
-    a: { name: "ROS BEEEEF", src: "/meals/card-30.jpg" },
-    b: { name: "Sushi", src: "/meals/card-40.jpg" },
+    a: { name: "ROS BEEEEF", src: "/meals/story/card-30.jpg" },
+    b: { name: "Sushi", src: "/meals/story/card-40.jpg" },
     winner: "b",
   },
   {
-    a: { name: "Fish Sando", src: "/meals/card-46.jpg" },
-    b: { name: "Hangover Tom yum", src: "/meals/IMG_6959.jpg" },
+    a: { name: "Fish Sando", src: "/meals/story/card-46.jpg" },
+    b: { name: "Hangover Tom yum", src: "/meals/story/IMG_6959.jpg" },
     winner: "b",
   },
   {
-    a: { name: "Bacon and Brie", src: "/meals/card-05.jpg" },
-    b: { name: "Date night", src: "/meals/card-15.jpg" },
+    a: { name: "Bacon and Brie", src: "/meals/story/card-05.jpg" },
+    b: { name: "Date night", src: "/meals/story/card-15.jpg" },
     winner: "b",
   },
 ]
@@ -163,7 +163,7 @@ export default async function EatOrYeetScene() {
                 >
                   {t("cta")}
                 </a>
-                <span className="text-[0.74rem] font-semibold uppercase tracking-[0.14em] text-brand-orange">
+                <span className="text-[0.78rem] font-semibold uppercase tracking-[0.14em] text-brand-orange md:text-[0.74rem]">
                   {t("platform")}
                 </span>
               </div>

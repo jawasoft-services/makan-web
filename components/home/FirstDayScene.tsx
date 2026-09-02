@@ -12,6 +12,7 @@ import ScrollScene from "@/components/motion/ScrollScene"
 const SECTIONS: MenuSection[] = [
   {
     heading: "Chicken rice",
+    mobile: true,
     items: [
       { name: "Hainanese Chicken Rice", price: "48", description: "poached chicken, fragrant rice, soup, chilli, ginger" },
       { name: "Roasted Chicken Rice", price: "50", description: "soy-roasted, same rice, same soup" },
@@ -20,6 +21,7 @@ const SECTIONS: MenuSection[] = [
   },
   {
     heading: "On the side",
+    mobile: true,
     items: [
       { name: "Braised Egg", price: "10" },
       { name: "Extra Rice", price: "12" },
@@ -43,9 +45,9 @@ const SECTIONS: MenuSection[] = [
 // knows the place → and the honest state where nobody's been.
 // The friend's three plates, oldest first (dates in copy).
 const VISITS = [
-  { src: "/meals/lucky-plaza-chicken-rice-1.jpg", dateKey: "visit1" },
-  { src: "/meals/lucky-plaza-chicken-rice-2.jpg", dateKey: "visit2" },
-  { src: "/meals/lucky-plaza-chicken-rice-3.jpg", dateKey: "visit3" },
+  { src: "/meals/story/lucky-plaza-chicken-rice-1.jpg", dateKey: "visit1" },
+  { src: "/meals/story/lucky-plaza-chicken-rice-2.jpg", dateKey: "visit2" },
+  { src: "/meals/story/lucky-plaza-chicken-rice-3.jpg", dateKey: "visit3" },
 ] as const
 
 // Scroll budget per beat, in viewport heights (see EatOrYeetScene). The
@@ -112,7 +114,7 @@ export default async function FirstDayScene() {
                           className="object-cover"
                         />
                       </div>
-                      <p className="px-2.5 py-2 text-[0.72rem] font-bold text-brand-ink">
+                      <p className="px-2.5 py-2 text-[0.8rem] font-bold text-brand-ink md:text-[0.72rem]">
                         <span className="text-brand-muted">{i + 1}.</span> {t(visit.dateKey)}
                       </p>
                     </div>
@@ -137,7 +139,7 @@ export default async function FirstDayScene() {
                 data-place
                 className="mt-3 w-[21rem] max-w-full -rotate-1 rounded-[3px] border border-brand-muted/25 bg-brand-card p-4 shadow-[0_1px_2px_rgba(43,21,3,0.08),0_10px_24px_-16px_rgba(43,21,3,0.35)] md:staged:absolute md:staged:top-14 md:staged:mt-0"
               >
-                <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-brand-ink">
+                <p className="text-[0.74rem] font-extrabold uppercase tracking-[0.15em] text-brand-ink md:text-[0.68rem]">
                   {t("slipFrom")}
                 </p>
                 <p className="mt-1.5 text-[0.8rem] leading-[1.5] text-brand-muted">
@@ -150,7 +152,7 @@ export default async function FirstDayScene() {
                     [t("knowKey"), t("slipKnow")],
                   ].map(([key, value]) => (
                     <div key={key} className="contents">
-                      <dt className="text-[0.66rem] font-extrabold uppercase tracking-[0.12em] text-brand-ink">
+                      <dt className="text-[0.72rem] font-extrabold uppercase tracking-[0.12em] text-brand-ink md:text-[0.66rem]">
                         {key}
                       </dt>
                       <dd className="text-[0.82rem] font-medium leading-[1.45] text-brand-ink">{value}</dd>

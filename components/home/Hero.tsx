@@ -8,9 +8,9 @@ import { APP_STORE_URL } from "@/lib/links"
 // the three Eat or Yeet winners from the story below, fanned like a hand of
 // cards. The front card carries the pen ring — the site's one gesture, teased.
 const CARDS = [
-  { name: "Sushi", src: "/meals/card-40.jpg", rotate: "-8deg", x: "0rem", y: "1.2rem" },
-  { name: "Hangover Tom yum", src: "/meals/IMG_6959.jpg", rotate: "2deg", x: "4.5rem", y: "0rem" },
-  { name: "Date night", src: "/meals/card-15.jpg", rotate: "9deg", x: "9rem", y: "1.6rem" },
+  { name: "Sushi", src: "/meals/story/card-40.jpg", rotate: "-8deg", x: "0rem", y: "1.2rem" },
+  { name: "Hangover Tom yum", src: "/meals/story/IMG_6959.jpg", rotate: "2deg", x: "4.5rem", y: "0rem" },
+  { name: "Date night", src: "/meals/story/card-15.jpg", rotate: "9deg", x: "9rem", y: "1.6rem" },
 ]
 
 export default async function Hero() {
@@ -78,7 +78,7 @@ export default async function Hero() {
             >
               {t("cta")}
             </a>
-            <span className="text-[0.74rem] font-semibold uppercase tracking-[0.14em] text-brand-orange">
+            <span className="text-[0.78rem] font-semibold uppercase tracking-[0.14em] text-brand-orange md:text-[0.74rem]">
               {t("platform")}
             </span>
           </div>

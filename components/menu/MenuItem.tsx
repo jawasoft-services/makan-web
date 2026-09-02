@@ -43,7 +43,7 @@ export default function MenuItem({ name, description, price, diet, circled }: Me
                 <span
                   data-deal
                   style={{ "--deal": 7 } as CSSProperties}
-                  className="absolute left-1/2 top-[-1.2rem] -translate-x-1/2 whitespace-nowrap rounded-full bg-brand-orange px-2.5 py-1 text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-white rotate-[-2deg]"
+                  className="absolute left-1/2 top-[-1.2rem] -translate-x-1/2 whitespace-nowrap rounded-full bg-brand-orange px-2.5 py-1 text-[0.72rem] font-extrabold uppercase tracking-[0.14em] text-white rotate-[-2deg] md:text-[0.62rem]"
                 >
                   {circled.label}
                 </span>

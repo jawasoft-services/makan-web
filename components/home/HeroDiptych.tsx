@@ -9,6 +9,7 @@ import ScrollScene from "@/components/motion/ScrollScene"
 const SECTIONS: MenuSection[] = [
   {
     heading: "Brunch, served all day",
+    mobile: true,
     items: [
       { name: "Smashed Avocado", diet: "VG", price: "85", description: "sourdough, whipped feta, chilli oil, dukkah" },
       { name: "Coconut Chia Bowl", diet: "VG GF", price: "78", description: "mango, passionfruit, toasted coconut" },
@@ -24,6 +25,7 @@ const SECTIONS: MenuSection[] = [
   },
   {
     heading: "From the Grill",
+    mobile: true,
     items: [
       { name: "Wagyu Cheeseburger", price: "145", description: "aged cheddar, pickles, house sauce, fries" },
       { name: "Grilled Barramundi", diet: "GF", price: "165", description: "whole fish, sambal matah, charred lime, greens" },

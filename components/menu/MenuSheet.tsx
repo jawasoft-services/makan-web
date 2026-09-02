@@ -1,6 +1,9 @@
 import MenuItem, { type MenuEntry } from "./MenuItem"
 
-export type MenuSection = { heading: string; items: MenuEntry[] }
+/** `mobile`: keep this section on phones. A printed menu is an artefact,
+ *  not content — on a phone only the sections the story points at stay,
+ *  so the reader scrolls a menu, not the whole menu. */
+export type MenuSection = { heading: string; items: MenuEntry[]; mobile?: boolean }
 
 type MenuSheetProps = {
   house: string
@@ -36,9 +39,9 @@ export default function MenuSheet({
       </header>
 
       {sections.map((section) => (
-        <section key={section.heading}>
+        <section key={section.heading} className={section.mobile ? "" : "hidden md:block"}>
           <div className="mb-[0.78em] mt-[1.3em] flex items-center gap-[0.8em] first:mt-0">
-            <span className="whitespace-nowrap text-[0.72rem] font-bold uppercase tracking-[0.2em] text-brand-muted">
+            <span className="whitespace-nowrap text-[0.78rem] font-bold uppercase tracking-[0.2em] text-brand-muted md:text-[0.72rem]">
               {section.heading}
             </span>
             <span aria-hidden className="h-px flex-1 bg-brand-muted/30" />

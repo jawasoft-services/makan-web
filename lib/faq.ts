@@ -139,9 +139,9 @@ const MAITRED_FAQ_ID: FaqItem[] = [
   },
 ]
 // Indexes into FAQS / FAQS_ID (both lists share an order): free, Eat or Yeet,
-// who can see, AI.
+// who can see.
 const DECISION_PICKS_A = [1, 5]
-const DECISION_PICKS_B = [3, 7]
+const DECISION_PICKS_B = [3]
 
 export function getDecisionFaqs(locale: string) {
   const id = locale === 'id'

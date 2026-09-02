@@ -71,7 +71,7 @@ export default async function ForRestaurants() {
           style={{ "--beat": 2 } as React.CSSProperties}
           className="mx-auto w-full max-w-[22rem] rotate-1 rounded-[3px] border border-brand-muted/25 bg-brand-cream p-5 shadow-[0_1px_2px_rgba(43,21,3,0.08),0_10px_24px_-16px_rgba(43,21,3,0.35)] md:mt-10"
         >
-          <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-brand-ink">{slip("slipFrom")}</p>
+          <p className="text-[0.74rem] font-extrabold uppercase tracking-[0.15em] text-brand-ink md:text-[0.68rem]">{slip("slipFrom")}</p>
           <p className="mt-1.5 text-[0.8rem] leading-[1.5] text-brand-muted">{slip("maitredWho")}</p>
           <dl className="mt-3 grid grid-cols-[max-content_minmax(0,1fr)] gap-x-3 gap-y-2">
             {[
@@ -80,7 +80,7 @@ export default async function ForRestaurants() {
               [slip("knowKey"), slip("slipKnow")],
             ].map(([key, value]) => (
               <div key={key} className="contents">
-                <dt className="text-[0.66rem] font-extrabold uppercase tracking-[0.12em] text-brand-ink">{key}</dt>
+                <dt className="text-[0.72rem] font-extrabold uppercase tracking-[0.12em] text-brand-ink md:text-[0.66rem]">{key}</dt>
                 <dd className="text-[0.85rem] font-medium leading-[1.45] text-brand-ink">{value}</dd>
               </div>
             ))}
