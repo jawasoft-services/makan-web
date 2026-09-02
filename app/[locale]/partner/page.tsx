@@ -47,7 +47,7 @@ export default async function PartnerPage({
         className="mx-auto max-w-2xl px-5 sm:px-8 pt-24 sm:pt-32 pb-16 sm:pb-24"
       >
         {/* Hero — statement 1: this is the app people open when they can't decide. */}
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-orange">
           {t('heroEyebrow')}
         </p>
         <h1
@@ -56,14 +56,14 @@ export default async function PartnerPage({
         >
           {t('heroTitle')}
         </h1>
-        <p className="mt-6 text-[15px] sm:text-base leading-[1.75] text-brand-muted">
+        <p className="mt-6 text-base sm:text-base leading-[1.75] text-brand-muted">
           {t('heroBody')}
         </p>
 
         {/* Where Makan is today — the owner's first question, answered with
             live figures (distinct places, trailing 30 days, total). */}
         <section className="mt-12 border-t border-brand-line pt-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-orange">
             {t('numbersEyebrow')}
           </p>
           <h2 className="mt-3 text-2xl font-bold text-brand-ink sm:text-3xl" style={{ letterSpacing: '-0.02em' }}>
@@ -75,11 +75,11 @@ export default async function PartnerPage({
                 <dt className="text-3xl font-bold leading-none tracking-[-0.02em] text-brand-orange tabular-nums">
                   {n.value.toLocaleString('en-GB')}
                 </dt>
-                <dd className="mt-2 text-[15px] leading-[1.5] text-brand-ink">{n.label}</dd>
+                <dd className="mt-2 text-base leading-[1.5] text-brand-ink">{n.label}</dd>
               </div>
             ))}
           </dl>
-          <p className="mt-6 text-[15px] leading-[1.75] text-brand-muted">
+          <p className="mt-6 text-base leading-[1.75] text-brand-muted">
             {t('numbersWhere')}
           </p>
         </section>
@@ -88,7 +88,7 @@ export default async function PartnerPage({
             Friends feed with the venue named (every saved meal carries
             locationName) and Discover (RM18642). */}
         <section className="mt-12 border-t border-brand-line pt-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-orange">
             {t('screensEyebrow')}
           </p>
           <h2 className="mt-3 text-2xl font-bold text-brand-ink sm:text-3xl" style={{ letterSpacing: '-0.02em' }}>
@@ -110,7 +110,7 @@ export default async function PartnerPage({
                   sizes="(min-width: 640px) 240px, 42vw"
                   className="block h-auto w-full max-w-[15rem] drop-shadow-[0_18px_28px_rgba(43,21,3,0.22)]"
                 />
-                <figcaption className="mt-4 max-w-[22ch] text-center text-[14px] font-semibold leading-[1.5] text-brand-ink sm:text-[15px]">
+                <figcaption className="mt-4 max-w-[22ch] text-center text-base font-semibold leading-[1.5] text-brand-ink">
                   {shot.caption}
                 </figcaption>
               </figure>
@@ -120,18 +120,18 @@ export default async function PartnerPage({
 
         {/* Eats — D-033. Copy mirrors the homepage restaurant section. */}
         <section className="mt-12 border-t border-brand-line pt-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-orange">
             {t('eatsEyebrow')}
           </p>
           <h2 className="mt-3 text-2xl font-bold text-brand-ink sm:text-3xl" style={{ letterSpacing: '-0.02em' }}>
             {t('eatsTitle')}
           </h2>
-          <p className="mt-4 text-[15px] leading-[1.75] text-brand-ink">
+          <p className="mt-4 text-base leading-[1.75] text-brand-ink">
             {t('eatsBody')}
           </p>
           <ul className="mt-5 space-y-3">
             {(['eats1', 'eats2', 'eats3'] as const).map((k) => (
-              <li key={k} className="flex items-baseline gap-3 text-[15px] leading-[1.75] text-brand-ink">
+              <li key={k} className="flex items-baseline gap-3 text-base leading-[1.75] text-brand-ink">
                 <span aria-hidden className="text-[0.55rem] text-brand-orange">●</span>
                 {t(k)}
               </li>
@@ -143,7 +143,7 @@ export default async function PartnerPage({
             Cravings/Want to Try RM19115 + RM17819, Eat or Yeet, venue QR
             RM18720. */}
         <section className="mt-12 border-t border-brand-line pt-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-orange">
             {t('liveEyebrow')}
           </p>
           <h2 className="mt-3 text-2xl font-bold text-brand-ink sm:text-3xl" style={{ letterSpacing: '-0.02em' }}>
@@ -151,7 +151,7 @@ export default async function PartnerPage({
           </h2>
           <ul className="mt-5 space-y-3">
             {(['live1', 'live2', 'live3', 'live4'] as const).map((k) => (
-              <li key={k} className="flex items-baseline gap-3 text-[15px] leading-[1.75] text-brand-ink">
+              <li key={k} className="flex items-baseline gap-3 text-base leading-[1.75] text-brand-ink">
                 <span aria-hidden className="text-[0.55rem] text-brand-orange">●</span>
                 {t(k)}
               </li>
@@ -161,26 +161,26 @@ export default async function PartnerPage({
 
         {/* Maître d' — statements 2, 3, 4. */}
         <section className="mt-12 border-t border-brand-line pt-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-orange">
             {t('maitreDEyebrow')}
           </p>
           <h2 className="mt-3 text-xl sm:text-2xl font-bold text-brand-ink">
             {t('maitreDTitle')}
           </h2>
-          <p className="mt-4 text-[15px] leading-[1.75] text-brand-muted">
+          <p className="mt-4 text-base leading-[1.75] text-brand-muted">
             {t('maitreDBody')}
           </p>
-          <p className="mt-4 text-[15px] leading-[1.75] text-brand-muted">
+          <p className="mt-4 text-base leading-[1.75] text-brand-muted">
             {t('maitreDGuide')}
           </p>
-          <p className="mt-4 text-[15px] leading-[1.75] text-brand-muted">
+          <p className="mt-4 text-base leading-[1.75] text-brand-muted">
             {t('maitreDAlready')}
           </p>
         </section>
 
         {/* Why it matters — statement 5, the two figures with their sources. */}
         <section className="mt-12 border-t border-brand-line pt-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-orange">
             {t('statsEyebrow')}
           </p>
           <h2 className="mt-3 text-xl sm:text-2xl font-bold text-brand-ink">
@@ -192,10 +192,10 @@ export default async function PartnerPage({
                 <dt className="text-3xl font-bold leading-none tracking-[-0.02em] text-brand-orange">
                   {t(`${k}Number`)}
                 </dt>
-                <dd className="mt-2 text-[15px] leading-[1.6] text-brand-ink">
+                <dd className="mt-2 text-base leading-[1.6] text-brand-ink">
                   {t(`${k}Body`)}
                 </dd>
-                <dd className="mt-1 text-[13px] leading-[1.4] text-brand-muted">
+                <dd className="mt-1 text-sm leading-[1.4] text-brand-muted">
                   {t(`${k}Src`)}
                 </dd>
               </div>
@@ -208,10 +208,10 @@ export default async function PartnerPage({
           <h2 className="text-xl sm:text-2xl font-bold text-brand-ink">
             {t('rewardsTitle')}
           </h2>
-          <p className="mt-4 text-[15px] leading-[1.75] text-brand-muted">
+          <p className="mt-4 text-base leading-[1.75] text-brand-muted">
             {t('rewardsBody')}
           </p>
-          <p className="mt-4 text-[15px] font-semibold leading-[1.75] text-brand-ink">
+          <p className="mt-4 text-base font-semibold leading-[1.75] text-brand-ink">
             {t('rewardsRule')}
           </p>
         </section>
@@ -221,15 +221,15 @@ export default async function PartnerPage({
           <h2 className="text-xl sm:text-2xl font-bold text-brand-ink">
             {t('costsTitle')}
           </h2>
-          <p className="mt-4 text-[15px] leading-[1.75] text-brand-muted">
+          <p className="mt-4 text-base leading-[1.75] text-brand-muted">
             {t('costsFree')}
           </p>
-          <p className="mt-6 text-[15px] font-semibold text-brand-ink">
+          <p className="mt-6 text-base font-semibold text-brand-ink">
             {t('costsNeverTitle')}
           </p>
           <ul className="mt-3 space-y-2">
             {(['costsNever1', 'costsNever2', 'costsNever3'] as const).map((k) => (
-              <li key={k} className="flex items-baseline gap-3 text-[15px] leading-[1.65] text-brand-muted">
+              <li key={k} className="flex items-baseline gap-3 text-base leading-[1.65] text-brand-muted">
                 <span aria-hidden className="text-[0.6rem] text-brand-orange">●</span>
                 <span>{t(k)}</span>
               </li>
@@ -244,7 +244,7 @@ export default async function PartnerPage({
           </h2>
           <ul className="mt-4 space-y-3">
             {(['rule1', 'rule2', 'rule3'] as const).map((k) => (
-              <li key={k} className="flex items-baseline gap-3 text-[15px] leading-[1.65] text-brand-muted">
+              <li key={k} className="flex items-baseline gap-3 text-base leading-[1.65] text-brand-muted">
                 <span aria-hidden className="text-[0.6rem] text-brand-orange">●</span>
                 <span>{t(k)}</span>
               </li>
@@ -254,7 +254,7 @@ export default async function PartnerPage({
 
         {/* Sign-up form — unchanged component, just given a home in the page flow. */}
         <section className="mt-12 border-t border-brand-line pt-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-orange">
             {t('formEyebrow')}
           </p>
           <div className="mt-6 flex justify-center">

@@ -33,7 +33,7 @@ export default function MenuSheet({
           {house}
         </p>
         <div className="mx-auto my-[0.75em] h-px w-[3.4em] bg-brand-muted opacity-50" />
-        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-brand-muted">
+        <p className="text-[0.74rem] font-semibold uppercase tracking-[0.18em] text-brand-muted">
           {meta}
         </p>
       </header>
@@ -41,7 +41,7 @@ export default function MenuSheet({
       {sections.map((section) => (
         <section key={section.heading} className={section.mobile ? "" : "hidden md:block"}>
           <div className="mb-[0.78em] mt-[1.3em] flex items-center gap-[0.8em] first:mt-0">
-            <span className="whitespace-nowrap text-[0.78rem] font-bold uppercase tracking-[0.2em] text-brand-muted md:text-[0.72rem]">
+            <span className="whitespace-nowrap text-[0.84rem] font-bold uppercase tracking-[0.2em] text-brand-muted md:text-[0.76rem]">
               {section.heading}
             </span>
             <span aria-hidden className="h-px flex-1 bg-brand-muted/30" />

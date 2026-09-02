@@ -95,12 +95,12 @@ export default function PartnerForm() {
             <h2 className="mt-5 text-2xl font-bold text-brand-ink sm:text-3xl">
               {t('successTitle')}
             </h2>
-            <p className="mt-3 text-sm leading-relaxed text-brand-muted sm:text-base">
+            <p className="mt-3 text-base leading-relaxed text-brand-muted">
               {t('successBody')}
             </p>
             <Link
               href={localizePath(locale, '/')}
-              className="mt-8 inline-block text-sm font-medium text-brand-orange hover:underline"
+              className="mt-8 inline-block text-base font-medium text-brand-orange hover:underline"
             >
               &larr; {t('back')}
             </Link>
@@ -140,7 +140,7 @@ export default function PartnerForm() {
               </motion.h2>
 
               <motion.p
-                className="mt-2 text-sm leading-relaxed text-brand-muted"
+                className="mt-2 text-base leading-relaxed text-brand-muted"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
@@ -158,7 +158,7 @@ export default function PartnerForm() {
               transition={{ duration: 0.5, delay: 0.3 }}
             >
               <div>
-                <label htmlFor="name" className="block text-xs font-medium text-brand-muted mb-1.5 ml-1">
+                <label htmlFor="name" className="block text-sm font-medium text-brand-muted mb-1.5 ml-1">
                   {t('name')}
                 </label>
                 <input
@@ -167,12 +167,12 @@ export default function PartnerForm() {
                   placeholder={t('namePlaceholder')}
                   value={name}
                   onChange={(e) => { setName(e.target.value); clearError() }}
-                  className="w-full rounded-xl border border-brand-line bg-brand-card px-4 py-3 text-sm text-brand-ink placeholder:text-brand-muted outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-card"
+                  className="w-full rounded-xl border border-brand-line bg-brand-card px-4 py-3 text-base text-brand-ink placeholder:text-brand-muted outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-card"
                 />
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-xs font-medium text-brand-muted mb-1.5 ml-1">
+                <label htmlFor="email" className="block text-sm font-medium text-brand-muted mb-1.5 ml-1">
                   {t('email')}
                 </label>
                 <input
@@ -181,12 +181,12 @@ export default function PartnerForm() {
                   placeholder="you@restaurant.com"
                   value={email}
                   onChange={(e) => { setEmail(e.target.value); clearError() }}
-                  className="w-full rounded-xl border border-brand-line bg-brand-card px-4 py-3 text-sm text-brand-ink placeholder:text-brand-muted outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-card"
+                  className="w-full rounded-xl border border-brand-line bg-brand-card px-4 py-3 text-base text-brand-ink placeholder:text-brand-muted outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-card"
                 />
               </div>
 
               <div>
-                <label htmlFor="restaurant" className="block text-xs font-medium text-brand-muted mb-1.5 ml-1">
+                <label htmlFor="restaurant" className="block text-sm font-medium text-brand-muted mb-1.5 ml-1">
                   {t('restaurant')}
                 </label>
                 <input
@@ -195,12 +195,12 @@ export default function PartnerForm() {
                   placeholder={t('restaurantPlaceholder')}
                   value={restaurant}
                   onChange={(e) => { setRestaurant(e.target.value); clearError() }}
-                  className="w-full rounded-xl border border-brand-line bg-brand-card px-4 py-3 text-sm text-brand-ink placeholder:text-brand-muted outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-card"
+                  className="w-full rounded-xl border border-brand-line bg-brand-card px-4 py-3 text-base text-brand-ink placeholder:text-brand-muted outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-card"
                 />
               </div>
 
               <div>
-                <label htmlFor="city" className="block text-xs font-medium text-brand-muted mb-1.5 ml-1">
+                <label htmlFor="city" className="block text-sm font-medium text-brand-muted mb-1.5 ml-1">
                   {t('city')} <span className="text-brand-muted">{t('optional')}</span>
                 </label>
                 <input
@@ -209,12 +209,12 @@ export default function PartnerForm() {
                   placeholder={t('cityPlaceholder')}
                   value={city}
                   onChange={(e) => { setCity(e.target.value); clearError() }}
-                  className="w-full rounded-xl border border-brand-line bg-brand-card px-4 py-3 text-sm text-brand-ink placeholder:text-brand-muted outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-card"
+                  className="w-full rounded-xl border border-brand-line bg-brand-card px-4 py-3 text-base text-brand-ink placeholder:text-brand-muted outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-card"
                 />
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-xs font-medium text-brand-muted mb-1.5 ml-1">
+                <label htmlFor="message" className="block text-sm font-medium text-brand-muted mb-1.5 ml-1">
                   {t('anythingElse')} <span className="text-brand-muted">{t('optional')}</span>
                 </label>
                 <textarea
@@ -223,7 +223,7 @@ export default function PartnerForm() {
                   placeholder={t('messagePlaceholder')}
                   value={message}
                   onChange={(e) => { setMessage(e.target.value); clearError() }}
-                  className="w-full rounded-xl border border-brand-line bg-brand-card px-4 py-3 text-sm text-brand-ink placeholder:text-brand-muted outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-card resize-none"
+                  className="w-full rounded-xl border border-brand-line bg-brand-card px-4 py-3 text-base text-brand-ink placeholder:text-brand-muted outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-card resize-none"
                 />
               </div>
 
@@ -241,7 +241,7 @@ export default function PartnerForm() {
                 <button
                   type="submit"
                   disabled={status === 'loading'}
-                  className="w-full rounded-xl bg-brand-orange py-3 text-sm font-semibold text-white transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="w-full rounded-xl bg-brand-orange py-3 text-base font-semibold text-white transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {status === 'loading' ? (
                     <span className="inline-flex items-center gap-2">
@@ -260,7 +260,7 @@ export default function PartnerForm() {
               <AnimatePresence>
                 {errorMsg && (
                   <motion.p
-                    className="text-center text-xs text-red-400"
+                    className="text-center text-sm text-red-400"
                     initial={{ opacity: 0, y: -4 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}

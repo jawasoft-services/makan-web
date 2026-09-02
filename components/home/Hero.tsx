@@ -90,7 +90,7 @@ export default async function Hero({
             >
               <Image src="/app-store-badge.svg" alt={t("badgeAlt")} width={180} height={60} className="h-14 w-auto" />
             </StoreLink>
-            <span className="text-[0.78rem] font-semibold uppercase tracking-[0.14em] text-brand-orange md:text-[0.74rem]">
+            <span className="text-[0.86rem] font-semibold uppercase tracking-[0.14em] text-brand-orange md:text-[0.82rem]">
               {t("platform")}
             </span>
           </div>
@@ -100,7 +100,7 @@ export default async function Hero({
           <p
             data-beat
             style={{ "--beat": 3 } as React.CSSProperties}
-            className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.85rem] font-semibold text-brand-muted"
+            className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.95rem] font-semibold text-brand-muted"
           >
             <span className="whitespace-nowrap">{t("trustMeals", { meals: meals.toLocaleString() })}</span>
             {/* Answers "is this a Bali thing?" before the Bali menu below does. */}
@@ -116,7 +116,7 @@ export default async function Hero({
             data-beat
             style={{ "--beat": 4 } as React.CSSProperties}
             href="#how-it-works"
-            className="mt-8 inline-flex min-h-11 items-center gap-2 text-[0.9rem] font-semibold text-brand-ink underline decoration-brand-orange decoration-2 underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
+            className="mt-8 inline-flex min-h-11 items-center gap-2 text-[1rem] font-semibold text-brand-ink underline decoration-brand-orange decoration-2 underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
           >
             {t("secondary")} <span aria-hidden>↓</span>
           </a>
@@ -148,7 +148,7 @@ export default async function Hero({
                     </span>
                   ) : null}
                 </div>
-                <figcaption className="px-3 py-2.5 text-[0.85rem] font-bold text-brand-ink">{card.name}</figcaption>
+                <figcaption className="px-3 py-2.5 text-[0.95rem] font-bold text-brand-ink">{card.name}</figcaption>
               </div>
             </figure>
           ))}

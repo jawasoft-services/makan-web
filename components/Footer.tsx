@@ -64,7 +64,7 @@ export default function Footer() {
           {/* Link columns */}
           <div className="flex gap-16 sm:gap-20">
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-brand-espresso-muted/70 mb-3">
+              <p className="text-xs font-medium uppercase tracking-[0.15em] text-brand-espresso-muted/70 mb-3">
                 {t('app')}
               </p>
               <ul className="space-y-0.5">
@@ -82,7 +82,7 @@ export default function Footer() {
             </div>
 
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-brand-espresso-muted/70 mb-3">
+              <p className="text-xs font-medium uppercase tracking-[0.15em] text-brand-espresso-muted/70 mb-3">
                 {t('follow')}
               </p>
               <ul className="space-y-0.5">
@@ -124,14 +124,14 @@ export default function Footer() {
           </a>
 
           {/* Copyright */}
-          <p className="mt-5 text-center text-[11px]">
+          <p className="mt-5 text-center text-xs">
             &copy; {new Date().getFullYear()} Makan App Ltd. {t('rights')}
           </p>
 
           {/* Statutory trading disclosure (Companies Act 2006 / 2015 Names &
               Trading Disclosures Regs, reg. 25). Company number verified against
               the Companies House public register. */}
-          <p className="mt-2 text-center text-[11px] leading-relaxed">
+          <p className="mt-2 text-center text-xs leading-relaxed">
             MAKAN APP LTD is a company registered in England and Wales, company
             no. 16736412. Registered office: 86–90 Paul Street, London EC2A 4NE,
             United Kingdom.

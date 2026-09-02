@@ -20,7 +20,7 @@ export default function FAQ({ items }: { items: FaqItem[] }) {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7 }}
         >
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
+          <p className="text-sm font-medium uppercase tracking-[0.18em] text-brand-orange">
             FAQ
           </p>
           <h2
@@ -58,7 +58,7 @@ export default function FAQ({ items }: { items: FaqItem[] }) {
                   </span>
 
                   {/* Question */}
-                  <span className={`flex-1 text-[15px] font-semibold transition-colors duration-300 sm:text-base ${
+                  <span className={`flex-1 text-base font-semibold transition-colors duration-300 sm:text-lg ${
                     isOpen ? 'text-brand-ink' : 'text-brand-muted group-hover:text-brand-ink'
                   }`}>
                     {faq.q}
@@ -82,7 +82,7 @@ export default function FAQ({ items }: { items: FaqItem[] }) {
                   style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}
                 >
                   <div className="overflow-hidden">
-                    <p className="pb-6 pl-[calc(0.75rem+1.25rem+0.25rem)] pr-10 text-sm leading-[1.7] text-brand-muted sm:text-[15px]">
+                    <p className="pb-6 pl-[calc(0.75rem+1.25rem+0.25rem)] pr-10 text-base leading-[1.7] text-brand-muted">
                       {faq.a}
                     </p>
                   </div>

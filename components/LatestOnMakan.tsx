@@ -237,7 +237,7 @@ export default function LatestOnMakan({ mealCount, liveMeals }: LatestOnMakanPro
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
         >
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-orange">
+          <p className="text-sm font-medium uppercase tracking-[0.18em] text-brand-orange">
             {t('eyebrow')}
           </p>
           <h2 className="mt-3 text-2xl font-bold text-brand-ink sm:text-3xl lg:text-4xl" style={{ letterSpacing: '-0.02em' }}>

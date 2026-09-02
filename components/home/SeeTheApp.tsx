@@ -17,7 +17,7 @@ export default async function SeeTheApp() {
   return (
     <section id="features" className="w-full bg-brand-cream px-6 py-20 md:px-10 md:py-28">
       <Reveal className="mx-auto max-w-5xl text-center">
-        <p data-beat className="text-[0.78rem] font-semibold uppercase tracking-[0.16em] text-brand-orange md:text-[0.74rem]">
+        <p data-beat className="text-[0.86rem] font-semibold uppercase tracking-[0.16em] text-brand-orange md:text-[0.82rem]">
           {t("eyebrow")}
         </p>
         <h2
@@ -40,7 +40,7 @@ export default async function SeeTheApp() {
               />
               <figcaption className="mx-auto mt-6 max-w-[22rem]">
                 <p className="text-[1.15rem] font-bold tracking-[-0.01em] text-brand-ink">{t(shot.titleKey)}</p>
-                <p className="mt-1.5 text-[0.95rem] leading-[1.5] text-brand-ink">{t(shot.bodyKey)}</p>
+                <p className="mt-1.5 text-[1.02rem] leading-[1.5] text-brand-ink">{t(shot.bodyKey)}</p>
               </figcaption>
             </figure>
           ))}

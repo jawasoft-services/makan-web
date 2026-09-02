@@ -82,16 +82,16 @@ export default async function FirstDayScene() {
                 {t("objection")}
               </h2>
 
-              {/* One slot, three tenants: the turn + Holly's meal make way
-                  for Mali's note. Absolute only once staged, so retired beats
+              {/* One slot, four tenants: the turn + the three plates, then
+                  Mali's note, then the noodle cart nobody has tried. Absolute only once staged, so retired beats
                   leave no hole; stacked naturally in flow. The cards sit
                   3.5rem down so a two-line lead never runs under them. */}
-              <div className="mt-6 md:relative md:staged:h-[19rem]">
+              <div className="mt-6 md:relative md:staged:h-[20rem]">
               {/* The scenario, spoon-fed: what Makan does not know, what your
                   friends do, and the thing you would have done anyway. */}
               <div data-scene="2" data-scene-until="5" className="md:staged:absolute md:staged:top-0">
-                <p className="text-[0.95rem] font-bold leading-[1.4] text-brand-ink">{t("turn")}</p>
-                <p className="mt-1.5 text-[0.85rem] font-semibold text-brand-muted">{t("turnWhy")}</p>
+                <p className="text-[1.02rem] font-bold leading-[1.4] text-brand-ink">{t("turn")}</p>
+                <p className="mt-1.5 text-[0.92rem] font-semibold text-brand-muted">{t("turnWhy")}</p>
               </div>
               {/* Three visits, three plates: "three times" shown, not said.
                   Real public saves from one account (it has five; the story
@@ -114,35 +114,35 @@ export default async function FirstDayScene() {
                           className="object-cover"
                         />
                       </div>
-                      <p className="px-3 py-2.5 text-[0.85rem] font-bold text-brand-ink">
+                      <p className="px-3 py-2.5 text-[0.92rem] font-bold text-brand-ink">
                         <span className="text-brand-muted">{i + 1}.</span> {t(visit.dateKey)}
                       </p>
                     </div>
                   ))}
                 </div>
-                <figcaption className="mt-3 text-[0.9rem] font-semibold text-brand-ink">
+                <figcaption className="mt-3 text-[1.02rem] font-semibold text-brand-ink">
                   {t("friendMealName")} <span className="font-medium text-brand-muted">· {t("friendMealSub")}</span>
                 </figcaption>
               </figure>
 
-              <p
-                data-scene="5"
-                className="mt-6 text-[0.95rem] font-bold text-brand-ink md:staged:absolute md:staged:top-0 md:staged:mt-0"
-              >
+              {/* Intro and slip share one positioned wrapper, so the slip
+                  sits under the intro however many lines it wraps to (three
+                  at laptop widths), never over its last line. */}
+              <div data-scene="5" data-scene-until="6" className="md:staged:absolute md:staged:top-0">
+              <p className="mt-6 text-[1.02rem] font-bold text-brand-ink md:staged:mt-0">
                 {t("maitredIntro")}
               </p>
               {/* The slip: every label is ink. Saffron is reserved for the pen
                   and the answer on the menu, and no meaning here rides on
                   colour alone (D11). */}
               <div
-                data-scene="5"
                 data-place
-                className="mt-3 w-[21rem] max-w-full -rotate-1 rounded-[3px] border border-brand-muted/25 bg-brand-card p-4 shadow-[0_1px_2px_rgba(43,21,3,0.08),0_10px_24px_-16px_rgba(43,21,3,0.35)] md:staged:absolute md:staged:top-14 md:staged:mt-0"
+                className="mt-3 w-[21rem] max-w-full -rotate-1 rounded-[3px] border border-brand-muted/25 bg-brand-card p-4 shadow-[0_1px_2px_rgba(43,21,3,0.08),0_10px_24px_-16px_rgba(43,21,3,0.35)]"
               >
-                <p className="text-[0.74rem] font-extrabold uppercase tracking-[0.15em] text-brand-ink md:text-[0.68rem]">
+                <p className="text-[0.82rem] font-extrabold uppercase tracking-[0.15em] text-brand-ink md:text-[0.76rem]">
                   {t("slipFrom")}
                 </p>
-                <p className="mt-1.5 text-[0.8rem] leading-[1.5] text-brand-muted">
+                <p className="mt-1.5 text-[0.9rem] leading-[1.5] text-brand-muted">
                   {t("maitredWho")}
                 </p>
                 <dl className="mt-2 grid grid-cols-[max-content_minmax(0,1fr)] gap-x-3 gap-y-1.5">
@@ -152,25 +152,27 @@ export default async function FirstDayScene() {
                     [t("knowKey"), t("slipKnow")],
                   ].map(([key, value]) => (
                     <div key={key} className="contents">
-                      <dt className="text-[0.72rem] font-extrabold uppercase tracking-[0.12em] text-brand-ink md:text-[0.66rem]">
+                      <dt className="text-[0.78rem] font-extrabold uppercase tracking-[0.12em] text-brand-ink md:text-[0.74rem]">
                         {key}
                       </dt>
-                      <dd className="text-[0.82rem] font-medium leading-[1.45] text-brand-ink">{value}</dd>
+                      <dd className="text-[0.9rem] font-medium leading-[1.45] text-brand-ink">{value}</dd>
                     </div>
                   ))}
                 </dl>
               </div>
-
               </div>
-              <p data-scene="6" className="mt-4 text-[0.95rem] font-bold text-brand-ink">
+
+              {/* Fourth tenant of the slot: the slip leaves, the question
+                  and the honest empty state take its place. */}
+              <div data-scene="6" className="md:staged:absolute md:staged:top-0">
+              <p className="mt-4 text-[1.02rem] font-bold text-brand-ink md:staged:mt-0">
                 {t("nowhereQ")}
               </p>
-              <div
-                data-scene="6"
-                className="mt-3 w-[19rem] max-w-full rounded-[3px] border border-dashed border-brand-muted/35 bg-white/30 p-4"
-              >
-                <p className="text-[0.9rem] font-semibold text-brand-ink">{t("emptyState")}</p>
-                <p className="mt-1.5 text-[0.8rem] leading-[1.5] text-brand-muted">{t("emptySub")}</p>
+              <div className="mt-3 w-[19rem] max-w-full rounded-[3px] border border-dashed border-brand-muted/35 bg-white/30 p-4">
+                <p className="text-[1.02rem] font-semibold text-brand-ink">{t("emptyState")}</p>
+                <p className="mt-1.5 text-[0.9rem] leading-[1.5] text-brand-muted">{t("emptySub")}</p>
+              </div>
+              </div>
               </div>
             </div>
 

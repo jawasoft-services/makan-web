@@ -5,14 +5,15 @@ import ScrollScene from "@/components/motion/ScrollScene"
 
 // A Western Berawa menu is a genuinely incoherent decision — brunch, poke,
 // pizza and wagyu with no cuisine logic tying them together. That is the real
-// paralysis, and it is what makes the answer's reason line land.
+// paralysis, and it is what makes the answer's reason line land. Eight
+// dishes: enough to be a menu, few enough to fit above a 720px fold at the
+// 18px base size.
 const SECTIONS: MenuSection[] = [
   {
     heading: "Brunch, served all day",
     mobile: true,
     items: [
       { name: "Smashed Avocado", diet: "VG", price: "85", description: "sourdough, whipped feta, chilli oil, dukkah" },
-      { name: "Coconut Chia Bowl", diet: "VG GF", price: "78", description: "mango, passionfruit, toasted coconut" },
       { name: "Eggs Benedict", price: "98", description: "house hollandaise, muffin, smoked bacon or spinach" },
     ],
   },
@@ -36,7 +37,6 @@ const SECTIONS: MenuSection[] = [
     heading: "From the Oven",
     items: [
       { name: "Margherita", diet: "V", price: "95", description: "fior di latte, san marzano, basil" },
-      { name: "Nduja & Hot Honey", price: "115", description: "fior di latte, nduja, oregano" },
     ],
   },
 ]
@@ -73,7 +73,7 @@ export default async function HeroDiptych() {
                   ),
                 }))}
                 legal={t("legal")}
-                className="px-8 py-10 md:px-10 md:pt-24"
+                className="px-8 py-10 md:px-10 md:pt-20"
               />
               <div
                 aria-hidden
@@ -99,7 +99,7 @@ export default async function HeroDiptych() {
                 {t("headline")}
               </h2>
               {/* The moment of use, said once, in the same beat as the ring. */}
-              <p data-scene="2" className="mt-4 text-[0.95rem] font-bold text-brand-ink">
+              <p data-scene="2" className="mt-4 text-[1.02rem] font-bold text-brand-ink">
                 {t("openLine")}
               </p>
             </div>

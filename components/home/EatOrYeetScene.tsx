@@ -96,7 +96,7 @@ export default async function EatOrYeetScene() {
           <p data-scene="1" className="mt-5 max-w-[48ch] text-[1.05rem] font-bold leading-[1.4] text-brand-ink md:text-[1.15rem]">
             {t("proofLead")}
           </p>
-          <p data-scene="1" className="mt-1.5 text-[0.9rem] font-semibold text-brand-orange">
+          <p data-scene="1" className="mt-1.5 text-[0.95rem] font-semibold text-brand-orange">
             {t("eoyQuestion")}
           </p>
 
@@ -157,7 +157,7 @@ export default async function EatOrYeetScene() {
               <p data-scene="12" className="mt-8 max-w-[44ch] text-[1.05rem] font-semibold leading-[1.5] text-brand-ink md:mt-6">
                 {t("proofTally")} {t("crowdTally")}
               </p>
-              <p data-scene="12" style={{ transitionDelay: "0.15s" }} className="mt-2 max-w-[44ch] text-[0.9rem] font-semibold leading-[1.5] text-brand-orange">
+              <p data-scene="12" style={{ transitionDelay: "0.15s" }} className="mt-2 max-w-[44ch] text-[0.95rem] font-semibold leading-[1.5] text-brand-orange">
                 {t("crowdPrivacy")}
               </p>
               <div data-scene="13" className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">

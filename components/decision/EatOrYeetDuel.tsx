@@ -87,7 +87,7 @@ export function EatOrYeetDuel({
                   </span>
                 ) : null}
               </div>
-              <figcaption className="px-3 py-2.5 text-[0.85rem] font-bold text-brand-ink">
+              <figcaption className="px-3 py-2.5 text-[0.92rem] font-bold text-brand-ink">
                 {meal.name}
                 {isWin ? <span className="sr-only">: {pickedLabel}</span> : null}
               </figcaption>
@@ -107,9 +107,10 @@ export function EatOrYeetDuel({
         <p
           data-scene={learnStage}
           {...(outStage !== undefined ? { "data-scene-until": outStage } : {})}
-          className="mt-3 text-[0.85rem] leading-[1.5]"
+          className="mt-3 text-[0.92rem] leading-[1.5]"
         >
-          <span className="mr-2 text-[0.74rem] font-bold uppercase tracking-[0.14em] text-brand-orange md:text-[0.66rem]">
+          {/* Own line on phones: the label and the lesson wrap as two boxes, never one over the other. */}
+          <span className="block text-[0.74rem] font-bold uppercase tracking-[0.14em] text-brand-orange md:mr-2 md:inline md:text-[0.74rem]">
             {learnLabel}
           </span>
           <span className="font-bold text-brand-ink">{learned}</span>

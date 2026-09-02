@@ -17,6 +17,9 @@
 
   html {
     scroll-behavior: smooth;
+    /* 18px base. Readers told us the type was small; scaling the root keeps
+       every rem-based size, gap and scene measurement in proportion. */
+    font-size: 112.5%;
   }
 
   ::selection {
