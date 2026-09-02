@@ -14,6 +14,8 @@ Written 2026-09-02 for the decision-first homepage (`/dev-preview`, `/` behind `
 | "Not enough meals here yet to help you choose." (the honest empty state) | Home, first-day scene | The ladder's fallback state | RM19665 | Design/Clarify |
 | "How does Makan know what to order?" FAQ answer (your picks, other people's picks as totals, says so when too few meals) | FAQ | Same as the proof scene | RM19665 | Design/Clarify |
 | Restaurant-level Eat or Yeet aggregate (the base of the Eat) | Implied by the Eats section | Server-owned Eat/Yeet/tie counts per restaurant, 10-matchup floor | RM19117 | Upload/Rework |
+| "A QR code for your venue. Scan it and Makan opens on your restaurant's page." | Home restaurant section, partner page | Today `/r/<slug>` is the Phase 1 get-the-app landing page. Devon's wording (2026-09-02): the QR opens the restaurant's place-detail screen (`restaurantPage.tsx`) in the app. Needs the universal link wired on web `main` and the slug resolved to a place id. | RM18722 (infrastructure, Closed; not wired here) | Gap: raise a follow-up to wire `/r/<slug>` to the place screen |
+| "You see who your Maître d' is in the app, by first name" and "you see who holds it in the app" | Partner page, home restaurant section | An owner view. The owner dashboard exists behind `business_dashboard_enabled` (false in production) and has no Maître d' yet. Devon chose the in-app promise over an email (2026-09-02). | RM19505 for the status; the owner view is unticketed | Gap: child of RM19505, or the dashboard epic |
 
 ## B. Claims with no ticket at all (D-033, the Eat)
 
@@ -45,7 +47,7 @@ Suggested shape: one epic "Eats standings (D-033)" with Eats-1 to Eats-4 as chil
 
 ## D. Deliberately not claimed (built, but off in production)
 
-Business claim flow, owner dashboard with visit metrics, nudges and rewards: all in the app behind `business_claim_enabled`, `business_dashboard_enabled`, `business_paid_enabled`, all `false` in `app.json`. Do not describe them on the site until the flags are on.
+Business claim flow, owner dashboard with visit metrics, nudges and rewards: all in the app behind `business_claim_enabled`, `business_dashboard_enabled`, `business_paid_enabled`, all `false` in `app.json`. The site does not describe them, with one exception Devon chose on 2026-09-02: the promise that an owner sees their Maître d' in the app (section A).
 
 ## E. Promises on the site that are commitments, not features
 
@@ -53,6 +55,7 @@ Business claim flow, owner dashboard with visit metrics, nudges and rewards: all
 |---|---|---|---|
 | "Devon, the founder, replies in person within two days." | Partner form (intro and success state) | Nothing in code. A reply-time promise Devon has to keep, or change the copy. | Devon |
 | "Mostly Jakarta, Bali and the UK so far." | Hero trust line, homepage restaurant section, partner page, FAQ | Read off the top 80 venues by meal count on 2026-09-02 (Jakarta and Bali names dominate; London, Durham and Cork follow). Not computed from addresses: meals carry a Place id and a name only. Re-check when a new city takes off. | Devon (re-read when the mix changes) |
+| The named places under the numbers ("Most meals saved" / "Places with the most meals saved") | Homepage restaurant section (top 4), partner page (top 6) | Live from the same Firestore pass: venues by count of meals tagged to them, named as the meals tag them (so "double't Tokyo Bento" appears as tagged). No owner involvement; Devon chose this over a testimonial (2026-09-02). Empty if Firestore is unreachable. | Code |
 | Live numbers: places with meals saved, meals in the last 30 days, meals in total | Homepage restaurant section, partner page | Firestore via `getPlaceStats()` (distinct `placeProviderId`, cached 24h) and `getMealCount()`; floors of 600 / 500 / 581 if Firestore is unreachable. Measured 2026-09-02: 666 places, 692 meals in 30 days, 5,009 total. | Code |
 
 ## F. Open items only Devon can close

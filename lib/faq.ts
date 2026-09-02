@@ -120,11 +120,11 @@ const DECISION_FAQ_ID: FaqItem = {
 // product truth, and the honest empty state covers thin places.
 const WHERE_FAQ_EN: FaqItem = {
   q: 'Where does Makan work?',
-  a: "Anywhere with a menu. Most of the meals saved so far are in Jakarta, Bali and the UK, and the answer at any place gets better as more meals are saved there. If a place has too few, Makan says so instead of guessing.",
+  a: "Anywhere with a menu. Most of the meals saved are in Jakarta, Bali and the UK, and the answer at any place gets better as more meals are saved there. The first people to save meals in a new city are the ones who make it useful there.",
 }
 const WHERE_FAQ_ID: FaqItem = {
   q: 'Makan bisa dipakai di mana?',
-  a: 'Di mana pun ada menu. Sebagian besar makanan yang tersimpan sejauh ini ada di Jakarta, Bali, dan Inggris, dan jawaban di tiap tempat makin bagus seiring makin banyak makanan yang disimpan di sana. Kalau masih terlalu sedikit, Makan bilang begitu daripada menebak.',
+  a: 'Di mana pun ada menu. Sebagian besar makanan yang tersimpan ada di Jakarta, Bali, dan Inggris, dan jawaban di tiap tempat makin bagus seiring makin banyak makanan yang disimpan di sana. Orang pertama yang menyimpan makanan di kota baru adalah yang membuatnya berguna di sana.',
 }
 // Two more decision-page entries, from the restaurant handout's Maitre d'
 // rule and cost page (two visit-days inside 60; free to be on; deals sit

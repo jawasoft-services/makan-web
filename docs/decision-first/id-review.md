@@ -25,17 +25,17 @@ Mark a row `fix` in the last column and write the better line under it. Rows wit
 | `Hero.learn1` | Fish beats beef. | Ikan menang dari daging. | |
 | `Hero.learn2` | Fresh and spicy beats fried. | Segar dan pedas menang dari gorengan. | |
 | `Hero.learn3` | Chilli beats cheese. | Cabai menang dari keju. | |
-| `Hero.crowdTally` | Other people's picks tell it what gets ordered again at Bright Palm. Put together, that's the barramundi. | Pilihan orang lain memberi tahu Makan apa yang dipesan lagi di Bright Palm. Digabung, hasilnya barramundi. | |
+| `Hero.crowdTally` | Other people's meals tell it what keeps getting saved at Bright Palm, and what keeps winning when they play. Put together, that's the barramundi. | Makanan orang lain memberi tahu Makan apa yang terus disimpan di Bright Palm, dan apa yang terus menang saat mereka main. Digabung, hasilnya barramundi. | |
 | `Hero.crowdPrivacy` | Nobody sees your picks and you don't see theirs. Makan only uses the totals. | Tidak ada yang melihat pilihanmu, dan kamu tidak melihat pilihan mereka. Makan hanya memakai jumlah totalnya. | |
 | `Hero.openLine` | Open Makan at the table. It says what to order here. | Buka Makan di meja. Dia kasih tahu apa yang harus dipesan di sini. | |
 | `FirstDay.intro` | Holiday, night one. A menu you don't know. | Liburan, malam pertama. Menu yang tidak kamu kenal. | |
 | `FirstDay.objection` | A place you've never been. | Tempat yang belum pernah kamu datangi. | |
-| `FirstDay.turn` | Makan has never seen you eat here. But a friend has, three times, and ordered the chicken rice every time. | Makan belum pernah melihatmu makan di sini. Tapi seorang teman sudah, tiga kali, dan tiap kali pesan nasi ayam. | |
-| `FirstDay.turnWhy` | You'd have texted them to ask. Makan already knows. | Kamu pasti akan tanya mereka lewat chat. Makan sudah tahu duluan. | |
+| `FirstDay.turn` | Makan has never seen you eat here. But your friend Holly has, three times, and ordered the chicken rice every time. | Makan belum pernah melihatmu makan di sini. Tapi temanmu Holly sudah, tiga kali, dan tiap kali pesan nasi ayam. | |
+| `FirstDay.turnWhy` | You'd have texted Holly to ask. Makan already knows. | Kamu pasti akan tanya Holly lewat chat. Makan sudah tahu duluan. | |
 | `FirstDay.friendMealName` | Chicken rice | Nasi ayam | |
-| `FirstDay.friendMealSub` | Three visits in August. Chicken rice every time. | Tiga kali datang di Agustus. Nasi ayam setiap kali. | |
-| `FirstDay.friendMealAlt` | Chicken rice at Lucky Plaza, saved on Makan on {date} | Nasi ayam di Lucky Plaza, disimpan di Makan pada {date} | |
-| `FirstDay.friendMark` | Ordered here three times | Dipesan di sini tiga kali | |
+| `FirstDay.friendMealSub` | Holly, three visits in August. Chicken rice every time. | Holly, tiga kali datang di Agustus. Nasi ayam setiap kali. | |
+| `FirstDay.friendMealAlt` | Holly's chicken rice at Lucky Plaza, saved on Makan on {date} | Nasi ayam Holly di Lucky Plaza, disimpan di Makan pada {date} | |
+| `FirstDay.friendMark` | Holly ordered this three times | Holly pesan ini tiga kali | |
 | `FirstDay.slipFrom` | Mali's Maître d' notes | Catatan Maître d' dari Mali | |
 | `FirstDay.alwaysKey` | Always order | Selalu pesan | |
 | `FirstDay.slipAlways` | The chicken rice, with the soup and extra chilli. | Nasi ayamnya, dengan sup dan sambal ekstra. | |
@@ -49,7 +49,7 @@ Mark a row `fix` in the last column and write the better line under it. Rows wit
 | `FirstDay.house` | Lucky Plaza | Lucky Plaza | |
 | `FirstDay.meta` | Jl. Pantai Pererenan · 11am – 9pm | Jl. Pantai Pererenan · 11.00 – 21.00 | |
 | `FirstDay.legal` | Prices in thousands of rupiah, subject to 21% government tax & service. | Harga dalam ribuan rupiah, belum termasuk pajak dan layanan 21%. | |
-| `FirstDay.maitredIntro` | Then there's the Maître d'. That's whoever has eaten here the most on Makan. | Lalu ada Maître d'. Itu siapa pun yang paling sering makan di sini di Makan. | |
+| `FirstDay.maitredIntro` | Then there's the Maître d'. Not Holly: whoever has eaten here the most on Makan. | Lalu ada Maître d'. Bukan Holly: siapa pun yang paling sering makan di sini di Makan. | |
 | `FirstDay.maitredWho` | Mali has eaten here on 23 different days, more than anyone else on Makan. If someone beats that, the notes become theirs. | Mali sudah makan di sini pada 23 hari berbeda, lebih banyak dari siapa pun di Makan. Kalau ada yang melampauinya, catatannya jadi milik orang itu. | |
 | `FirstDay.visit1` | 10 Aug | 10 Agu | |
 | `FirstDay.visit2` | 12 Aug | 12 Agu | |
@@ -80,15 +80,17 @@ Mark a row `fix` in the last column and write the better line under it. Rows wit
 | `Restaurants.today1` | Your name under every meal a guest saves at your place, in their friends' feeds, with the photo. | Namamu di bawah setiap makanan yang disimpan tamu di tempatmu, di feed teman-teman mereka, lengkap dengan fotonya. | |
 | `Restaurants.today2` | When a guest craves one of your dishes, Discover reminds them the next time they're nearby, with the distance. | Saat tamu meng-crave salah satu hidanganmu, Discover mengingatkan mereka begitu mereka di dekat situ lagi, lengkap dengan jaraknya. | |
 | `Restaurants.today3` | Win Eat or Yeet on their phone and your dish sits in their Top 4, on their profile, with your name on it. | Menang di Eat or Yeet di ponsel mereka, dan hidanganmu masuk Top 4 mereka, di profil mereka, dengan namamu. | |
-| `Restaurants.today4` | A QR code for your table. Scan it and Makan opens with your name on it. | Kode QR untuk mejamu. Dipindai, dan Makan terbuka dengan namamu di dalamnya. | |
+| `Restaurants.today4` | A QR code for your venue. Scan it and Makan opens on your restaurant's page. | Kode QR untuk tempatmu. Dipindai, dan Makan terbuka di halaman restoranmu. | |
 | `Restaurants.maitredTitle` | And every place gets a Maître d'. | Dan setiap tempat punya Maître d'. | |
-| `Restaurants.maitredBody` | Whoever eats at your place most on Makan becomes its Maître d'. Two visits inside 60 days to qualify. They write the short notes every new diner reads: always get this, try this if, good to know. Nobody can buy it, and they lose it to anyone who comes more often. | Siapa pun yang paling sering makan di tempatmu di Makan menjadi Maître d'-nya. Dua kunjungan dalam 60 hari untuk memenuhi syarat. Merekalah yang menulis catatan singkat yang dibaca setiap tamu baru: selalu pesan ini, coba ini kalau, perlu tahu. Tidak bisa dibeli, dan gelarnya hilang ke siapa pun yang datang lebih sering. | |
+| `Restaurants.maitredBody` | Whoever eats at your place most on Makan becomes its Maître d'. Two visits inside 60 days to qualify. They write the short notes every new diner reads: always get this, try this if, good to know. Nobody can buy it, they lose it to anyone who comes more often, and you see who holds it in the app. | Siapa pun yang paling sering makan di tempatmu di Makan menjadi Maître d'-nya. Dua kunjungan dalam 60 hari untuk memenuhi syarat. Merekalah yang menulis catatan singkat yang dibaca setiap tamu baru: selalu pesan ini, coba ini kalau, perlu tahu. Tidak bisa dibeli, gelarnya hilang ke siapa pun yang datang lebih sering, dan kamu bisa melihat siapa pemegangnya di aplikasi. | |
 | `Restaurants.numbersTitle` | Where Makan is today. | Posisi Makan hari ini. | |
 | `Restaurants.num1Label` | places with meals saved on Makan | tempat yang sudah punya makanan tersimpan di Makan | |
 | `Restaurants.num2Label` | meals saved in the last 30 days | makanan tersimpan dalam 30 hari terakhir | |
-| `Restaurants.numbersWhere` | Mostly Jakarta, Bali and the UK so far. Makan works anywhere with a menu, so the first restaurants in a new city get a clear run. | Sebagian besar di Jakarta, Bali, dan Inggris sejauh ini. Makan bisa dipakai di mana pun ada menu, jadi restoran pertama di kota baru punya jalan yang lapang. | |
+| `Restaurants.numbersWhere` | Jakarta, Bali and the UK first. Makan works anywhere with a menu, so the first restaurants in a new city get a clear run. | Jakarta, Bali, dan Inggris lebih dulu. Makan bisa dipakai di mana pun ada menu, jadi restoran pertama di kota baru punya jalan yang lapang. | |
 | `Restaurants.cta` | Read the restaurant page | Baca halaman restoran | |
 | `Restaurants.feedAlt` | The Friends feed in Makan: a friend's ribeye, with the restaurant's name under the photo | Feed Friends di Makan: ribeye milik teman, dengan nama restorannya di bawah foto | |
+| `Restaurants.topPlacesLabel` | Most meals saved | Makanan tersimpan terbanyak | |
+| `Restaurants.topPlacesMeals` | {count, plural, one {# meal} other {# meals}} | {count} makanan | |
 | `App.eyebrow` | This is Makan | Ini Makan | |
 | `App.title` | Three screens you'll use most. | Tiga layar yang paling sering kamu pakai. | |
 | `App.shot1Title` | Discover | Discover | |

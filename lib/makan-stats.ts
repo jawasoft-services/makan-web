@@ -46,11 +46,15 @@ export interface PlaceStats {
   places: number
   /** Meals saved in the trailing 30 days. */
   recentMeals: number
+  /** The venues with the most meals saved, most first. Real names, as tagged. */
+  topPlaces: { name: string; meals: number }[]
 }
+
+export const TOP_PLACES = 6
 
 // Safe floors if Firestore is unreachable: below what was measured on
 // 2026-09-02 (666 places, 692 meals in 30 days), never above it.
-export const FALLBACK_PLACE_STATS: PlaceStats = { places: 600, recentMeals: 500 }
+export const FALLBACK_PLACE_STATS: PlaceStats = { places: 600, recentMeals: 500, topPlaces: [] }
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000
 
@@ -67,24 +71,36 @@ export const getPlaceStats = unstable_cache(
       if (!db) return FALLBACK_PLACE_STATS
       const cutoff = Timestamp.fromMillis(Date.now() - THIRTY_DAYS_MS)
       const [placesSnap, recentSnap] = await Promise.all([
-        db.collection('meals').select('placeProviderId').get(),
+        db.collection('meals').select('placeProviderId', 'locationName').get(),
         db.collection('meals').where('createdAt', '>=', cutoff).count().get(),
       ])
-      const ids = new Set<string>()
+      const byPlace = new Map<string, { name: string; meals: number }>()
       for (const doc of placesSnap.docs) {
-        const id = str(doc.data().placeProviderId)
-        if (id) ids.add(id)
+        const d = doc.data()
+        const id = str(d.placeProviderId)
+        if (!id) continue
+        const entry = byPlace.get(id) ?? { name: str(d.locationName), meals: 0 }
+        entry.meals += 1
+        if (!entry.name) entry.name = str(d.locationName)
+        byPlace.set(id, entry)
       }
+      const topPlaces = [...byPlace.values()]
+        .filter((p) => p.name)
+        .sort((a, b) => b.meals - a.meals)
+        .slice(0, TOP_PLACES)
       return {
-        places: clamp(ids.size, FALLBACK_PLACE_STATS.places),
+        places: clamp(byPlace.size, FALLBACK_PLACE_STATS.places),
         recentMeals: clamp(recentSnap.data().count, FALLBACK_PLACE_STATS.recentMeals),
+        topPlaces,
       }
     } catch {
       console.error('makan-stats: failed to fetch place stats; using fallback.')
       return FALLBACK_PLACE_STATS
     }
   },
-  ['makan-place-stats'],
+  // Version the key whenever PlaceStats changes shape: a cached value from an
+  // older build must never be read through the new type.
+  ['makan-place-stats', 'v2'],
   { revalidate: 86400 },
 )
 
@@ -115,11 +131,16 @@ const GENERIC_CAPTION = /^(breakfast|lunch|dinner|snack|brunch|supper|food|meal|
 // Accounts that never chose a handle get an auto one (user_xxxx). Real proof
 // has a name on it.
 const AUTO_HANDLE = /^user_/i
+const AUTO_HANDLE_MENTION = /@user_/i
 // The pitch is places you sit down in. A delivery-branch tag proves the
 // opposite of "know what to order at the table".
 const DELIVERY_VENUE = /\b(delivery|gofood|grabfood|shopeefood|deliveroo|uber ?eats)\b/i
-// Candidates over the target so the handle filter below still leaves a full strip.
-const HANDLE_FILTER_SLACK = 4
+// A one-word caption ("Lamb") is a label, not a memory. Two words minimum.
+const MIN_CAPTION_WORDS = 2
+// Twelve cards from three accounts reads as one family's diary. Two per handle.
+const MAX_PER_HANDLE = 2
+// Candidates over the target so the handle filters below still leave a full strip.
+const HANDLE_FILTER_SLACK = 8
 
 /**
  * Returns up to `limit` of the most recent PUBLIC meal posts for the homepage
@@ -180,7 +201,10 @@ export async function getRecentPublicMeals(
       const locationName = str(d.locationName)
       const caption = str(d.caption)
       if (!caption || GENERIC_CAPTION.test(caption)) continue
+      if (caption.split(/\s+/).filter((w) => /\p{L}|\p{N}/u.test(w)).length < MIN_CAPTION_WORDS) continue
       if (DELIVERY_VENUE.test(locationName)) continue
+      // "…by @user_V3DL…" inside a caption leaks the same auto handle.
+      if (AUTO_HANDLE_MENTION.test(caption)) continue
       const raw: Raw = {
         src,
         caption,
@@ -223,6 +247,7 @@ export async function getRecentPublicMeals(
         }
       })
       .filter((m) => m.username && !AUTO_HANDLE.test(m.username))
+      .filter(perHandleCap(MAX_PER_HANDLE))
       .slice(0, limit)
   } catch {
     console.error('makan-stats: failed to fetch public meals; using bundled fallback.')
@@ -258,6 +283,17 @@ function interleaveByShare<T>(primary: T[], secondary: T[], total: number, share
   }
   while (si < s.length) out.push(s[si++])
   return out
+}
+
+/** Keeps the first `max` cards per handle (case-insensitive), in order. */
+function perHandleCap(max: number) {
+  const seen = new Map<string, number>()
+  return (m: PublicMeal) => {
+    const key = m.username.toLowerCase()
+    const n = (seen.get(key) ?? 0) + 1
+    seen.set(key, n)
+    return n <= max
+  }
 }
 
 function str(v: unknown): string {

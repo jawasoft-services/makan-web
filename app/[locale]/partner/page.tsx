@@ -82,6 +82,19 @@ export default async function PartnerPage({
           <p className="mt-6 text-base leading-[1.75] text-brand-muted">
             {t('numbersWhere')}
           </p>
+          {stats.topPlaces.length ? (
+            <div className="mt-8">
+              <h3 className="text-base font-bold text-brand-ink">{t('topPlacesTitle')}</h3>
+              <ol className="mt-3 grid grid-cols-1 gap-x-8 gap-y-2 sm:grid-cols-2">
+                {stats.topPlaces.map((p) => (
+                  <li key={p.name} className="flex items-baseline justify-between gap-4 border-b border-brand-line pb-2 text-base leading-[1.4] text-brand-ink">
+                    <span className="min-w-0 truncate font-semibold">{p.name}</span>
+                    <span className="shrink-0 tabular-nums text-brand-muted">{t('topPlacesMeals', { count: p.meals })}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ) : null}
         </section>
 
         {/* What it looks like — two real screens, both live today: the
@@ -175,6 +188,9 @@ export default async function PartnerPage({
           </p>
           <p className="mt-4 text-base leading-[1.75] text-brand-muted">
             {t('maitreDAlready')}
+          </p>
+          <p className="mt-4 text-base font-semibold leading-[1.75] text-brand-ink">
+            {t('maitreDTell')}
           </p>
         </section>
 

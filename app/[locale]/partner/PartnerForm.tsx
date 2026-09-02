@@ -40,6 +40,11 @@ export default function PartnerForm() {
       setErrorMsg(t('restaurantError'))
       return
     }
+    // The pitch is a standing per city; a reply can't start without one.
+    if (!city.trim()) {
+      setErrorMsg(t('cityError'))
+      return
+    }
 
     setStatus('loading')
 
@@ -201,11 +206,12 @@ export default function PartnerForm() {
 
               <div>
                 <label htmlFor="city" className="block text-sm font-medium text-brand-muted mb-1.5 ml-1">
-                  {t('city')} <span className="text-brand-muted">{t('optional')}</span>
+                  {t('city')}
                 </label>
                 <input
                   id="city"
                   type="text"
+                  required
                   placeholder={t('cityPlaceholder')}
                   value={city}
                   onChange={(e) => { setCity(e.target.value); clearError() }}
