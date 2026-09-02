@@ -13,7 +13,9 @@ export function GET() {
   const lines = [
     "# Makan",
     "",
-    "> A social food journal — remember every meal. Free on the iOS App Store and at makanofficial.com.",
+    process.env.DECISION_HOME === "1"
+      ? "> The app you open when you don't know what to order. Take a photo of what you eat; Makan works out what you like and what people keep ordering where you are. Free on iPhone and at makanofficial.com."
+      : "> A social food journal — remember every meal. Free on the iOS App Store and at makanofficial.com.",
     "",
     "## Restaurant reviews",
     ...reviews.map((r) => `- [${r.restaurant.name} review](${base}/blog/${r.slug}): ${r.metaDescription}`),
@@ -24,6 +26,8 @@ export function GET() {
     "## Product",
     `- [Get Makan](${APP_STORE_URL}): Download Makan free on the App Store.`,
     `- [Manifesto](${base}/manifesto): Why Makan exists.`,
+    `- [Eat or Yeet standings](${base}/standings): Restaurants ranked by Eats, the picks of diners who ate there.`,
+    `- [For restaurants](${base}/partner): Free for restaurants; your name on every saved meal, an Eat every time a diner picks your dish.`,
     "",
     "## Support",
     `- [Support](${base}/support): Contact Makan support, delete your account, report a meal, or make a privacy request.`,
