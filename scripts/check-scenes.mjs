@@ -25,29 +25,36 @@ const probeSource = `
     const out = []
     for (const scene of document.querySelectorAll(".scene-armed")) {
       const top = scene.getBoundingClientRect().top + scrollY
-      const span = scene.offsetHeight - innerHeight
+      const span = Math.max(0, scene.offsetHeight - innerHeight)
       // stage thresholds are internal; sample the region every 2% instead
-      for (let p = 0; p <= 1.0001; p += 0.02) {
-        window.__lenis.scrollTo(top + span * p, { immediate: true, force: true })
-        await P.frames(3)
-        const vis = [...scene.querySelectorAll("[data-scene].scene-on")].filter((e) => P.eff(e) > 0.5)
-        const maxBottom = Math.max(0, ...vis.map((e) => e.getBoundingClientRect().bottom))
-        const col = [...P.collide(scene), ...P.imgOver(scene)]
-        if (col.length || maxBottom > innerHeight + 1) out.push({ scene: scene.textContent.trim().slice(0, 20), p: +p.toFixed(2), col, over: Math.round(maxBottom - innerHeight) })
-        for (const f of scene.querySelectorAll("[data-eoy-shrink].scene-on")) {
-          const wrap = f.closest("[data-place]")
-          if (!wrap || +getComputedStyle(wrap).opacity < 0.5) continue
-          const thumbs = [...scene.querySelectorAll("[data-scene].scene-on")].filter((e) => e.textContent.includes(" / ") && e.dataset.scene === f.dataset.scene)
-          if (!thumbs.length) continue
-          const fr = f.getBoundingClientRect(), tr = thumbs[0].querySelectorAll("span.relative")[1].getBoundingClientRect()
-          const dx = Math.abs(fr.left + fr.width / 2 - (tr.left + tr.width / 2)), dy = Math.abs(fr.top + fr.height / 2 - (tr.top + tr.height / 2))
-          if (dx > 4 || dy > 4) out.push({ scene: "flight", p: +p.toFixed(2), col: [`lands ${Math.round(dx)}/${Math.round(dy)}px off`], over: 0 })
+      if (span > 0) {
+        for (let p = 0; p <= 1.0001; p += 0.02) {
+          window.__lenis.scrollTo(top + span * p, { immediate: true, force: true })
+          await P.frames(3)
+          const vis = [...scene.querySelectorAll("[data-scene].scene-on")].filter((e) => P.eff(e) > 0.5)
+          const maxBottom = Math.max(0, ...vis.map((e) => e.getBoundingClientRect().bottom))
+          const col = [...P.collide(scene), ...P.imgOver(scene)]
+          if (col.length || maxBottom > innerHeight + 1) out.push({ scene: scene.textContent.trim().slice(0, 20), p: +p.toFixed(2), col, over: Math.round(maxBottom - innerHeight) })
+          for (const f of scene.querySelectorAll("[data-eoy-shrink].scene-on")) {
+            const wrap = f.closest("[data-place]")
+            if (!wrap || +getComputedStyle(wrap).opacity < 0.5) continue
+            const thumbs = [...scene.querySelectorAll("[data-scene].scene-on")].filter((e) => e.textContent.includes(" / ") && e.dataset.scene === f.dataset.scene)
+            if (!thumbs.length) continue
+            const fr = f.getBoundingClientRect(), tr = thumbs[0].querySelectorAll("span.relative")[1].getBoundingClientRect()
+            const dx = Math.abs(fr.left + fr.width / 2 - (tr.left + tr.width / 2)), dy = Math.abs(fr.top + fr.height / 2 - (tr.top + tr.height / 2))
+            if (dx > 4 || dy > 4) out.push({ scene: "flight", p: +p.toFixed(2), col: [`lands ${Math.round(dx)}/${Math.round(dy)}px off`], over: 0 })
+          }
         }
       }
     }
-    return out
+    // rest-state pass: every scene fully on, check the whole page for text collisions / images over text
+    document.querySelectorAll("[data-scene]").forEach((e) => e.classList.add("scene-on"))
+    const main = document.querySelector("main")
+    const mainHits = [...P.collide(main), ...P.imgOver(main)]
+    return { out, mainHits }
   })
-  for (const r of result) failures.push(`desktop ${r.scene} @${r.p}: ${r.col.join("; ")}${r.over > 0 ? ` over-fold ${r.over}px` : ""}`)
+  for (const r of result.out) failures.push(`desktop ${r.scene} @${r.p}: ${r.col.join("; ")}${r.over > 0 ? ` over-fold ${r.over}px` : ""}`)
+  for (const h of result.mainHits) failures.push(`desktop main: ${h}`)
   await page.close()
 }
 
@@ -60,7 +67,8 @@ const probeSource = `
   const r = await page.evaluate(() => {
     document.querySelectorAll("[data-scene]").forEach((e) => e.classList.add("scene-on"))
     const P = window.__probe
-    return { overflow: document.documentElement.scrollWidth > innerWidth, col: [...document.querySelectorAll(".scene-armed")].flatMap((s) => [...P.collide(s), ...P.imgOver(s)]) }
+    const main = document.querySelector("main")
+    return { overflow: document.documentElement.scrollWidth > innerWidth, col: [...P.collide(main), ...P.imgOver(main)] }
   })
   if (r.overflow) failures.push("mobile: horizontal overflow")
   for (const c of r.col) failures.push(`mobile collision: ${c}`)
@@ -69,4 +77,4 @@ const probeSource = `
 
 await browser.close()
 if (failures.length) { for (const f of failures) console.error(`check-scenes: ${f}`); process.exit(1) }
-console.log("check-scenes passed — no collisions, nothing past the fold, flights land, mobile clean.")
+console.log("check-scenes passed — no text collisions or images over text on the page, nothing past the fold in the scenes, flights land, no mobile overflow.")
