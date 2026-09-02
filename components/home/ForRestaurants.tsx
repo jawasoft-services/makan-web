@@ -4,9 +4,9 @@ import Reveal from "@/components/motion/Reveal"
 import { localizePath } from "@/i18n/paths"
 
 /**
- * The restaurant's side of what the diner just saw. Everything in the first
- * half is live and verified (Discover RM18642, Cravings and Want to Try
- * RM19115/RM17819, the venue QR RM18720, nothing to pay); the Maitre'D rule follows as the second half. The slip from the
+ * The restaurant's side of what the diner just saw: the Eat (D-033, spec
+ * 2026-09-02-eats-standings-design.md) — one point per verified Eat or Yeet
+ * win, lifetime, published monthly per city — then the Maitre'D rule. The slip from the
  * story appears again beside it, from the other side of the counter.
  */
 export default async function ForRestaurants() {

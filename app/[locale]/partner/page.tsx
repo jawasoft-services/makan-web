@@ -48,6 +48,27 @@ export default async function PartnerPage({
           {t('heroBody')}
         </p>
 
+        {/* Eats — D-033. Copy mirrors the homepage restaurant section. */}
+        <section className="mt-12 border-t border-brand-line pt-10">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
+            {t('eatsEyebrow')}
+          </p>
+          <h2 className="mt-3 text-2xl font-bold text-brand-ink sm:text-3xl" style={{ letterSpacing: '-0.02em' }}>
+            {t('eatsTitle')}
+          </h2>
+          <p className="mt-4 text-[15px] leading-[1.75] text-brand-ink">
+            {t('eatsBody')}
+          </p>
+          <ul className="mt-5 space-y-3">
+            {(['eats1', 'eats2', 'eats3'] as const).map((k) => (
+              <li key={k} className="flex items-baseline gap-3 text-[15px] leading-[1.75] text-brand-ink">
+                <span aria-hidden className="text-[0.55rem] text-brand-orange">●</span>
+                {t(k)}
+              </li>
+            ))}
+          </ul>
+        </section>
+
         {/* What happens today — every line verified live: Discover RM18642,
             Cravings/Want to Try RM19115 + RM17819, Eat or Yeet, venue QR
             RM18720. */}
