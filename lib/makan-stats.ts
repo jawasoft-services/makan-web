@@ -124,7 +124,7 @@ export const HOME_MEAL_STRIP_TARGET = 12
 // "remembered at <place>"), with 1 in 5 venue-less for texture. ~38% of recent
 // public meals carry a venue, so a 6× overfetch reliably fills the venue bucket.
 const VENUE_SHARE = 0.8
-const OVERFETCH = 10
+const OVERFETCH = 16
 // A card with no caption, or a caption that is just the meal type, reads as
 // an empty post on a page whose whole claim is "people remember meals here".
 const GENERIC_CAPTION = /^(breakfast|lunch|dinner|snack|brunch|supper|food|meal|yum|yummy)[.!]*$/i
@@ -132,6 +132,8 @@ const GENERIC_CAPTION = /^(breakfast|lunch|dinner|snack|brunch|supper|food|meal|
 // has a name on it.
 const AUTO_HANDLE = /^user_/i
 const AUTO_HANDLE_MENTION = /@user_/i
+// A caption that swears is fine in the app and wrong on the front page.
+const ROUGH_CAPTION = /\b(fuck\w*|shit\w*|asf|af|wtf|bitch|cunt|dick)\b/i
 // The pitch is places you sit down in. A delivery-branch tag proves the
 // opposite of "know what to order at the table".
 const DELIVERY_VENUE = /\b(delivery|gofood|grabfood|shopeefood|deliveroo|uber ?eats)\b/i
@@ -140,7 +142,7 @@ const MIN_CAPTION_WORDS = 2
 // Twelve cards from three accounts reads as one family's diary. Two per handle.
 const MAX_PER_HANDLE = 2
 // Candidates over the target so the handle filters below still leave a full strip.
-const HANDLE_FILTER_SLACK = 8
+const HANDLE_FILTER_SLACK = 12
 
 /**
  * Returns up to `limit` of the most recent PUBLIC meal posts for the homepage
@@ -205,6 +207,7 @@ export async function getRecentPublicMeals(
       if (DELIVERY_VENUE.test(locationName)) continue
       // "…by @user_V3DL…" inside a caption leaks the same auto handle.
       if (AUTO_HANDLE_MENTION.test(caption)) continue
+      if (ROUGH_CAPTION.test(caption)) continue
       const raw: Raw = {
         src,
         caption,
@@ -248,6 +251,7 @@ export async function getRecentPublicMeals(
       })
       .filter((m) => m.username && !AUTO_HANDLE.test(m.username))
       .filter(perHandleCap(MAX_PER_HANDLE))
+      .filter(uniqueDishAtPlace())
       .slice(0, limit)
   } catch {
     console.error('makan-stats: failed to fetch public meals; using bundled fallback.')
@@ -283,6 +287,17 @@ function interleaveByShare<T>(primary: T[], secondary: T[], total: number, share
   }
   while (si < s.length) out.push(s[si++])
   return out
+}
+
+/** Drops a second card for the same caption at the same place (two friends, one dinner). */
+function uniqueDishAtPlace() {
+  const seen = new Set<string>()
+  return (m: PublicMeal) => {
+    const key = `${m.caption.toLowerCase()}|${m.locationName.toLowerCase()}`
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  }
 }
 
 /** Keeps the first `max` cards per handle (case-insensitive), in order. */

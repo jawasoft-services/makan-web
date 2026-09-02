@@ -109,11 +109,11 @@ export function getFaqs(locale: string) {
 // wording) plus one new entry; the live FAQ is untouched.
 const DECISION_FAQ_EN: FaqItem = {
   q: 'How does Makan know what to order?',
-  a: "From real meals. Your Eat or Yeet picks tell Makan what you like. Other people's picks tell it which dishes get ordered again at each place, as totals, never as names. If a place has too few meals, Makan says so instead of guessing.",
+  a: "From real meals. Your Eat or Yeet picks tell Makan what you like. Other people's meals tell it what keeps getting saved at each place and what keeps winning in Eat or Yeet, as totals, never as names. If a place has too few meals, Makan says so instead of guessing.",
 }
 const DECISION_FAQ_ID: FaqItem = {
   q: 'Dari mana Makan tahu apa yang harus dipesan?',
-  a: 'Dari makanan sungguhan. Pilihanmu di Eat or Yeet memberi tahu Makan apa yang kamu suka. Pilihan orang lain memberi tahu Makan hidangan mana yang dipesan lagi di tiap tempat, sebagai jumlah total, bukan nama. Kalau makanan di suatu tempat masih terlalu sedikit, Makan bilang begitu daripada menebak.',
+  a: 'Dari makanan sungguhan. Pilihanmu di Eat or Yeet memberi tahu Makan apa yang kamu suka. Makanan orang lain memberi tahu Makan apa yang terus disimpan di tiap tempat dan apa yang terus menang di Eat or Yeet, sebagai jumlah total, bukan nama. Kalau makanan di suatu tempat masih terlalu sedikit, Makan bilang begitu daripada menebak.',
 }
 // Where it works: the numbers behind this are live in Firestore (666 places,
 // Jakarta/Bali/UK by place name, 2026-09-02); "anywhere with a menu" is the

@@ -26,7 +26,8 @@
     "getAppShort": "Unduh Makan",
     "menu": "Menu",
     "openMenu": "Buka menu",
-    "closeMenu": "Tutup menu"
+    "closeMenu": "Tutup menu",
+    "standings": "Peringkat"
   },
   "Footer": {
     "app": "Aplikasi",
@@ -482,7 +483,7 @@
       "eyebrow": "Kalau kamu punya restoran",
       "lead": "Bagian sebelumnya untuk tamu. Bagian ini untukmu.",
       "title": "Setiap kali seseorang memilih hidanganmu, kamu dapat satu Eat.",
-      "body": "Eat or Yeet adalah tempat tamu memilih antara dua makanan yang pernah mereka makan. Saat mereka memilih makanan dari tempatmu daripada makanan dari tempat lain, hidanganmu dapat satu Eat, begitu juga restoranmu. Eat terus bertambah seumur hidup. Setiap bulan, restoran dengan Eat terbanyak di kotanya dipublikasikan di aplikasi, di situs ini, dan di Instagram kami.",
+      "body": "Eat or Yeet adalah tempat tamu memilih antara dua makanan yang pernah mereka makan. Saat mereka memilih makanan dari tempatmu daripada makanan dari tempat lain, hidanganmu dapat satu Eat, begitu juga restoranmu. Eat terus bertambah seumur hidup, dan peringkatnya terbuka: di situs ini, di aplikasi, dan di Instagram kami.",
       "p1": "Tidak ada biaya. Tanpa biaya untuk tampil, tanpa potongan dari tagihan, dan Eat tidak bisa dibeli.",
       "p2": "Hanya orang yang makan di tempatmu yang bisa memberimu Eat. Eat or Yeet membandingkan makanan seseorang sendiri, bukan yang lain.",
       "p3": "Makin awal kamu ada di Makan, makin banyak Eat-mu. Peringkat menunjukkan kapan kamu bergabung.",
@@ -515,6 +516,13 @@
       "shot3Title": "Makananmu",
       "shot3Body": "Semua foto yang kamu ambil, per hari, dengan tempatnya. Jawaban di menu datang dari sini.",
       "shot3Alt": "Layar jurnal di Makan: kalender makanan tersimpan dengan nama restorannya"
+    },
+    "Standings": {
+      "eyebrow": "Peringkat",
+      "title": "Restoran yang terus dipilih tamu.",
+      "body": "Setiap kali seseorang memilih makanan dari satu restoran daripada makanan dari restoran lain di Eat or Yeet, pemenangnya dapat satu Eat. Lima dengan Eat terbanyak, di antara restoran dengan {floor} pertandingan atau lebih.",
+      "cta": "Lihat peringkat lengkap",
+      "eats": "Eat · {rate}"
     }
   },
   "Standings": {

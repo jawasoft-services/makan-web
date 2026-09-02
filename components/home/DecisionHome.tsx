@@ -4,6 +4,7 @@ import EatOrYeetScene from "@/components/home/EatOrYeetScene"
 import SeeTheApp from "@/components/home/SeeTheApp"
 import FirstDayScene from "@/components/home/FirstDayScene"
 import ForRestaurants from "@/components/home/ForRestaurants"
+import StandingsPreview from "@/components/home/StandingsPreview"
 import FinalAsk from "@/components/home/FinalAsk"
 import LatestOnMakan from "@/components/LatestOnMakan"
 import FAQ from "@/components/FAQ"
@@ -40,6 +41,7 @@ export default async function DecisionHome({ locale }: { locale: string }) {
         </div>
         <div aria-hidden className="hidden md:armed:block md:armed:h-screen" />
       </div>
+      <StandingsPreview />
       <ForRestaurants stats={placeStats} />
       <FaqSchema items={faqs} />
       <FAQ items={faqs} />

@@ -222,7 +222,9 @@ export default function LatestOnMakan({ mealCount, liveMeals }: LatestOnMakanPro
   const inView = useInView(ref, { once: true, margin: '-80px' })
   const scroller = useRef<HTMLDivElement>(null)
 
-  const meals = liveMeals.length >= 12 ? liveMeals : FALLBACK_MEALS
+  // Eight real cards with names on them beat six bundled ones.
+  const MIN_LIVE = 8
+  const meals = liveMeals.length >= MIN_LIVE ? liveMeals : FALLBACK_MEALS
 
   const scrollByCard = (dir: 1 | -1) => {
     scroller.current?.scrollBy({ left: dir * 384, behavior: 'smooth' })

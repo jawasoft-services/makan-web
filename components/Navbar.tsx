@@ -26,6 +26,7 @@ export default function Navbar() {
   const navLinks = [
     { label: t('howItWorks'), href: '#how-it-works' },
     { label: t('features'), href: '#features' },
+    { label: t('standings'), href: '#standings' },
     { label: t('faq'), href: '#faq' },
     { label: t('restaurants'), href: localizePath(locale, '/partner') },
   ]

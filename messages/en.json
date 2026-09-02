@@ -26,7 +26,8 @@
     "getAppShort": "Get Makan",
     "menu": "Menu",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "standings": "Standings"
   },
   "Footer": {
     "app": "App",
@@ -482,7 +483,7 @@
       "eyebrow": "If you run a restaurant",
       "lead": "The rest of this page was for diners. This part is for you.",
       "title": "Every time someone picks your dish, you get an Eat.",
-      "body": "Eat or Yeet is where diners pick between two meals they've eaten. When they pick a meal from your place over a meal from somewhere else, your dish gets an Eat, and so does your restaurant. Eats add up for life. Every month, the restaurant with the most Eats in its city gets published in the app, on this site and on our Instagram.",
+      "body": "Eat or Yeet is where diners pick between two meals they've eaten. When they pick a meal from your place over a meal from somewhere else, your dish gets an Eat, and so does your restaurant. Eats add up for life, and the standings are public: on this site, in the app and on our Instagram.",
       "p1": "Nothing to pay. No fee to appear, no cut of the bill, no way to buy an Eat.",
       "p2": "Only people who ate at your place can give you one. Eat or Yeet compares a person's own meals, nothing else.",
       "p3": "The earlier you're on Makan, the more Eats you have. The standings show when you joined.",
@@ -515,6 +516,13 @@
       "shot3Title": "Your meals",
       "shot3Body": "Every photo you've taken, by day, with the place. The answer on the menu comes from here.",
       "shot3Alt": "The diary screen in Makan: a calendar of saved meals with the restaurant named"
+    },
+    "Standings": {
+      "eyebrow": "The standings",
+      "title": "The restaurants diners keep picking.",
+      "body": "Every time someone picks a meal from one restaurant over a meal from another in Eat or Yeet, the winner gets an Eat. The five with the most, among restaurants with {floor} or more matchups.",
+      "cta": "See the full standings",
+      "eats": "Eats · {rate}"
     }
   },
   "Standings": {

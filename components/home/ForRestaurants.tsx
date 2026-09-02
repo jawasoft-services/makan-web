@@ -107,20 +107,8 @@ export default async function ForRestaurants({ stats }: { stats: PlaceStats }) {
               ))}
             </dl>
             <p className="mt-4 text-[0.95rem] leading-[1.5] text-brand-muted">{t("numbersWhere")}</p>
-            {/* Real places, by meals saved: the one proof copy cannot fake. */}
-            {stats.topPlaces.length ? (
-              <div className="mt-6">
-                <p className="text-[0.76rem] font-extrabold uppercase tracking-[0.15em] text-brand-ink">{t("topPlacesLabel")}</p>
-                <ol className="mt-2 space-y-1.5">
-                  {stats.topPlaces.slice(0, 4).map((p) => (
-                    <li key={p.name} className="flex items-baseline justify-between gap-4 text-[0.95rem] leading-[1.4] text-brand-ink">
-                      <span className="min-w-0 truncate font-semibold">{p.name}</span>
-                      <span className="shrink-0 tabular-nums text-brand-muted">{t("topPlacesMeals", { count: p.meals })}</span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            ) : null}
+            {/* The named proof lives in the standings section above; the partner
+                page keeps the by-meals list. */}
           </div>
         </div>
       </Reveal>
@@ -143,14 +131,7 @@ export default async function ForRestaurants({ stats }: { stats: PlaceStats }) {
           >
             {t("cta")}
           </a>
-          <a
-            data-beat
-            style={{ "--beat": 2 } as React.CSSProperties}
-            href={localizePath(locale, "/standings")}
-            className="ml-3 mt-8 inline-flex min-h-12 items-center text-base font-bold text-brand-ink underline decoration-brand-orange decoration-2 underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
-          >
-            {t("standingsCta")}
-          </a>
+
         </div>
         <div
           data-beat
