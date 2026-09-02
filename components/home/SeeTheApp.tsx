@@ -1,13 +1,11 @@
 import Image from "next/image"
 import { getTranslations } from "next-intl/server"
 import Reveal from "@/components/motion/Reveal"
-import DemoVideo from "@/components/home/DemoVideo"
 
-// The three screens a diner actually uses: saving a meal (a real screen
-// recording), the game that teaches Makan taste, and the diary the answer is
-// drawn from. Real signed-in screenshots.
+// The two screens a diner actually uses: the game that teaches Makan taste,
+// and the diary the answer is drawn from. Real signed-in screenshots. (The
+// composer is not shown: it changed after these were taken.)
 const SHOTS = [
-  { video: "/app-screens/story/post-a-meal.mp4", poster: "/app-screens/story/post-a-meal.jpg", titleKey: "shot0Title", bodyKey: "shot0Body", altKey: "shot0Alt" },
   { src: "/app-screens/story/eat-or-yeet.webp", titleKey: "shot1Title", bodyKey: "shot1Body", altKey: "shot1Alt" },
   { src: "/app-screens/story/diary.webp", titleKey: "shot2Title", bodyKey: "shot2Body", altKey: "shot2Alt" },
 ] as const
@@ -27,17 +25,13 @@ export default async function SeeTheApp() {
         >
           {t("title")}
         </h2>
-        <div className="mt-12 grid grid-cols-1 gap-12 md:grid-cols-3 md:gap-10">
+        <div className="mt-12 grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-16">
           {SHOTS.map((shot, i) => (
             <figure key={shot.titleKey} data-beat style={{ "--beat": 2 + i } as React.CSSProperties}>
               {/* Phone frame: ink bezel, rounded, the screen inside. */}
               <div className="mx-auto w-full max-w-[15rem] rounded-[2.2rem] border-[6px] border-brand-ink bg-brand-ink shadow-[0_1px_2px_rgba(43,21,3,0.08),0_16px_32px_-18px_rgba(43,21,3,0.5)]">
                 <div className="overflow-hidden rounded-[1.8rem]">
-                  {"video" in shot ? (
-                    <DemoVideo src={shot.video} poster={shot.poster} label={t(shot.altKey)} />
-                  ) : (
-                    <Image src={shot.src} alt={t(shot.altKey)} width={720} height={1565} sizes="(min-width: 768px) 240px, 60vw" className="block h-auto w-full" />
-                  )}
+                  <Image src={shot.src} alt={t(shot.altKey)} width={720} height={1565} sizes="(min-width: 768px) 240px, 60vw" className="block h-auto w-full" />
                 </div>
               </div>
               <figcaption className="mx-auto mt-5 max-w-[22rem] text-center">

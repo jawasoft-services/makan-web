@@ -494,16 +494,13 @@
     },
     "App": {
       "eyebrow": "Ini Makan",
-      "title": "Tiga layar yang paling sering kamu pakai.",
+      "title": "Dua layar yang paling sering kamu pakai.",
       "shot1Title": "Eat or Yeet",
       "shot1Body": "Dua makanan yang kamu simpan. Ketuk yang mau kamu makan lagi duluan. Sepuluh detik, saat kamu bosan.",
       "shot1Alt": "Layar Eat or Yeet di Makan: dua makanan tersimpan berdampingan",
       "shot2Title": "Makananmu",
       "shot2Body": "Semua foto yang kamu ambil, per hari. Jawaban di menu datang dari sini.",
-      "shot2Alt": "Layar jurnal di Makan: kalender makanan tersimpan",
-      "shot0Title": "Simpan makanan",
-      "shot0Body": "Ambil fotonya, beri nama, unggah. Sepuluh detik.",
-      "shot0Alt": "Menyimpan makanan di Makan: foto, nama, tombol Post"
+      "shot2Alt": "Layar jurnal di Makan: kalender makanan tersimpan"
     }
   }
 }

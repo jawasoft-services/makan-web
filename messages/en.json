@@ -494,16 +494,13 @@
     },
     "App": {
       "eyebrow": "This is Makan",
-      "title": "Three screens you'll use most.",
+      "title": "Two screens you'll use most.",
       "shot1Title": "Eat or Yeet",
       "shot1Body": "Two meals you saved. Tap the one you'd eat again first. Ten seconds, when you're bored.",
       "shot1Alt": "The Eat or Yeet screen in Makan: two saved meals side by side",
       "shot2Title": "Your meals",
       "shot2Body": "Every photo you've taken, by day. The answer on the menu comes from here.",
-      "shot2Alt": "The diary screen in Makan: a calendar of saved meals",
-      "shot0Title": "Save a meal",
-      "shot0Body": "Take the photo, name it, post. Ten seconds.",
-      "shot0Alt": "Saving a meal in Makan: the photo, the name, the Post button"
+      "shot2Alt": "The diary screen in Makan: a calendar of saved meals"
     }
   }
 }
