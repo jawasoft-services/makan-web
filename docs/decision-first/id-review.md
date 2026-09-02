@@ -83,7 +83,6 @@ Mark a row `fix` in the last column and write the better line under it. Rows wit
 | `Restaurants.p1` | Being on Makan is free. No fee to appear, no cut of the bill. | Ada di Makan itu gratis. Tanpa biaya untuk tampil, tanpa potongan dari tagihan. | |
 | `Restaurants.p2` | Reward your Maitre'D however you like. A saved table, a coffee on the house. Cheap for you, big for them. | Beri Maitre'D-mu apa saja yang kamu mau. Meja yang disimpan, kopi gratis. Murah buatmu, berarti buat mereka. | |
 | `Restaurants.p3` | Nobody can buy the pick. A deal for first-timers sits next to the honest answer, marked as a deal. | Tidak ada yang bisa membeli pilihan. Promo untuk tamu pertama muncul di samping jawaban jujur, ditandai sebagai promo. | |
-| `Restaurants.honest` | The Maitre'D and the restaurant tools are designed and not built yet. We're building them with a handful of Bali places first. | Maitre'D dan alat untuk restoran sudah dirancang tapi belum dibangun. Kami membangunnya bersama beberapa tempat di Bali dulu. | |
 | `Restaurants.cta` | Read the restaurant page | Baca halaman restoran | |
 | `Restaurants.stat1` | 60% | 60% | |
 | `Restaurants.stat1Body` | of restaurant revenue comes from repeat guests. | pendapatan restoran datang dari tamu yang kembali. | |
@@ -103,4 +102,3 @@ Mark a row `fix` in the last column and write the better line under it. Rows wit
 | `App.shot2Title` | Your meals | Makananmu | |
 | `App.shot2Body` | Every photo you've taken, by day. The answer on the menu comes from here. | Semua foto yang kamu ambil, per hari. Jawaban di menu datang dari sini. | |
 | `App.shot2Alt` | The diary screen in Makan: a calendar of saved meals | Layar jurnal di Makan: kalender makanan tersimpan | |
-| `App.soon` | The menu that gets answered is being built now. These two screens are in the app today. | Menu yang dijawab sedang dibangun sekarang. Dua layar ini sudah ada di aplikasi hari ini. | |

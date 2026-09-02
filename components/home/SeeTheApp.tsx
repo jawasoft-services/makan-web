@@ -3,8 +3,7 @@ import { getTranslations } from "next-intl/server"
 import Reveal from "@/components/motion/Reveal"
 
 // The two screens a diner actually uses: the game that teaches Makan taste,
-// and the diary the answer is drawn from. Real signed-in screenshots. The
-// `soon` line keeps the page honest about the menu surface (RM19664/5).
+// and the diary the answer is drawn from. Real signed-in screenshots.
 const SHOTS = [
   { src: "/app-screens/story/eat-or-yeet.webp", titleKey: "shot1Title", bodyKey: "shot1Body", altKey: "shot1Alt" },
   { src: "/app-screens/story/diary.webp", titleKey: "shot2Title", bodyKey: "shot2Body", altKey: "shot2Alt" },
@@ -41,9 +40,6 @@ export default async function SeeTheApp() {
             </figure>
           ))}
         </div>
-        <p data-beat style={{ "--beat": 4 } as React.CSSProperties} className="mt-12 max-w-[52ch] text-[0.9rem] font-semibold leading-[1.5] text-brand-orange">
-          {t("soon")}
-        </p>
       </Reveal>
     </section>
   )

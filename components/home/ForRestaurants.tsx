@@ -7,7 +7,7 @@ import { localizePath } from "@/i18n/paths"
  * costs (nothing to be on), what they may give, and what nobody can buy.
  * The slip from the story appears again beside it, so the reader sees the
  * same object from the other side of the counter. Facts follow the
- * restaurant handout, including its honest line: designed, not built yet.
+ * restaurant handout.
  */
 export default async function ForRestaurants() {
   const t = await getTranslations("Decision.Restaurants")
@@ -67,13 +67,6 @@ export default async function ForRestaurants() {
               </li>
             ))}
           </ol>
-          <p
-            data-beat
-            style={{ "--beat": 12 } as React.CSSProperties}
-            className="mt-8 max-w-[52ch] text-[0.9rem] font-semibold leading-[1.5] text-brand-orange"
-          >
-            {t("honest")}
-          </p>
           <a
             data-beat
             style={{ "--beat": 13 } as React.CSSProperties}

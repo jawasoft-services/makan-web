@@ -245,9 +245,6 @@
     "rule1": "No pay-to-win. You can't buy a better ranking, a fake regular, or a nicer write-up.",
     "rule2": "No forced discounting. Nobody makes you run a deal. It's a tool, not a toll.",
     "rule3": "No hidden fees on your diners' spend. We don't sit between you and your customer's bill.",
-    "honestTitle": "The honest bit",
-    "honestBody1": "Maître d' and the partner discount tools are designed and signed off, but not built yet. This is where we're headed, and what we'd want to build alongside partner restaurants like yours. It isn't something you can switch on today.",
-    "honestBody2": "You say yes now and pay nothing. We build it with a handful of restaurants on your strip, and the day enough diners nearby are using Makan we turn on your offer and your Maître d' together. Only then does a single rupiah change hands.",
     "formEyebrow": "Ready?",
     "title": "Claim your restaurant on Makan",
     "body": "Get your restaurant in front of diners who remember where they ate. Tell us about your venue.",
@@ -479,7 +476,6 @@
       "p1": "Being on Makan is free. No fee to appear, no cut of the bill.",
       "p2": "Reward your Maitre'D however you like. A saved table, a coffee on the house. Cheap for you, big for them.",
       "p3": "Nobody can buy the pick. A deal for first-timers sits next to the honest answer, marked as a deal.",
-      "honest": "The Maitre'D and the restaurant tools are designed and not built yet. We're building them with a handful of Bali places first.",
       "cta": "Read the restaurant page",
       "stat1": "60%",
       "stat1Body": "of restaurant revenue comes from repeat guests.",
@@ -500,8 +496,7 @@
       "shot1Alt": "The Eat or Yeet screen in Makan: two saved meals side by side",
       "shot2Title": "Your meals",
       "shot2Body": "Every photo you've taken, by day. The answer on the menu comes from here.",
-      "shot2Alt": "The diary screen in Makan: a calendar of saved meals",
-      "soon": "The menu that gets answered is being built now. These two screens are in the app today."
+      "shot2Alt": "The diary screen in Makan: a calendar of saved meals"
     }
   }
 }

@@ -245,9 +245,6 @@
     "rule1": "Tidak ada bayar untuk menang. Kamu tidak bisa membeli peringkat lebih baik, pelanggan tetap palsu, atau ulasan yang lebih bagus.",
     "rule2": "Tidak ada paksaan diskon. Tidak ada yang memaksamu menjalankan promo. Ini alat, bukan pungutan.",
     "rule3": "Tidak ada biaya tersembunyi dari belanja tamu. Kami tidak berada di antara kamu dan tagihan pelanggan.",
-    "honestTitle": "Yang perlu kamu tahu",
-    "honestBody1": "Maître d' dan alat diskon untuk mitra sudah dirancang dan disetujui, tapi belum dibangun. Ini arah yang kami tuju, dan yang ingin kami bangun bersama restoran mitra seperti tempatmu. Ini bukan sesuatu yang bisa kamu aktifkan hari ini.",
-    "honestBody2": "Kamu bilang ya sekarang dan tidak bayar apa pun. Kami membangunnya bersama beberapa restoran di sekitarmu, dan begitu cukup banyak tamu di sekitar situ pakai Makan, kami aktifkan promo dan Maître d'-mu bersamaan. Baru saat itu satu rupiah pun berpindah tangan.",
     "formEyebrow": "Siap?",
     "title": "Daftarkan restoranmu di Makan",
     "body": "Perkenalkan restoranmu kepada orang-orang yang mengingat tempat mereka makan. Ceritakan sedikit tentang tempatmu.",
@@ -479,7 +476,6 @@
       "p1": "Ada di Makan itu gratis. Tanpa biaya untuk tampil, tanpa potongan dari tagihan.",
       "p2": "Beri Maitre'D-mu apa saja yang kamu mau. Meja yang disimpan, kopi gratis. Murah buatmu, berarti buat mereka.",
       "p3": "Tidak ada yang bisa membeli pilihan. Promo untuk tamu pertama muncul di samping jawaban jujur, ditandai sebagai promo.",
-      "honest": "Maitre'D dan alat untuk restoran sudah dirancang tapi belum dibangun. Kami membangunnya bersama beberapa tempat di Bali dulu.",
       "cta": "Baca halaman restoran",
       "stat1": "60%",
       "stat1Body": "pendapatan restoran datang dari tamu yang kembali.",
@@ -500,8 +496,7 @@
       "shot1Alt": "Layar Eat or Yeet di Makan: dua makanan tersimpan berdampingan",
       "shot2Title": "Makananmu",
       "shot2Body": "Semua foto yang kamu ambil, per hari. Jawaban di menu datang dari sini.",
-      "shot2Alt": "Layar jurnal di Makan: kalender makanan tersimpan",
-      "soon": "Menu yang dijawab sedang dibangun sekarang. Dua layar ini sudah ada di aplikasi hari ini."
+      "shot2Alt": "Layar jurnal di Makan: kalender makanan tersimpan"
     }
   }
 }

@@ -175,19 +175,6 @@ export default async function PartnerPage({
           </ul>
         </section>
 
-        {/* The honest bit — statement 11. */}
-        <section className="mt-12 border-t border-brand-line pt-10">
-          <h2 className="text-xl sm:text-2xl font-bold text-brand-ink">
-            {t('honestTitle')}
-          </h2>
-          <p className="mt-4 text-[15px] leading-[1.75] text-brand-muted">
-            {t('honestBody1')}
-          </p>
-          <p className="mt-4 text-[15px] leading-[1.75] text-brand-muted">
-            {t('honestBody2')}
-          </p>
-        </section>
-
         {/* Sign-up form — unchanged component, just given a home in the page flow. */}
         <section className="mt-12 border-t border-brand-line pt-10">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
