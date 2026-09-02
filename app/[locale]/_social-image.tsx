@@ -36,7 +36,7 @@ export async function createDecisionSocialImage(title: string, sub: string) {
           <div style={{ display: "flex", flexDirection: "column" }}>
             <div style={{ fontSize: 108, fontWeight: 700, lineHeight: 1, letterSpacing: "-3px", color: "#2B1503" }}>{title}</div>
             {/* The site's one gesture: a hand-drawn saffron stroke under the promise. */}
-            <svg viewBox="0 0 300 24" width="640" height="26" preserveAspectRatio="none" style={{ marginTop: 10 }}>
+            <svg viewBox="0 0 300 24" width="975" height="28" preserveAspectRatio="none" style={{ marginTop: 10 }}>
               <path d="M8,11 C80,5 222,5 292,10" fill="none" stroke="#FF9932" strokeWidth="6" strokeLinecap="round" />
               <path d="M14,19 C92,14 212,14 286,17" fill="none" stroke="#FF9932" strokeWidth="3.5" strokeLinecap="round" opacity="0.9" />
             </svg>
