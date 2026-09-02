@@ -2,7 +2,13 @@ import { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Footer from '@/components/Footer'
 import PartnerForm from './PartnerForm'
+import Image from 'next/image'
 import { createPageMetadata } from '@/lib/site-metadata'
+import { getMealCount, getPlaceStats } from '@/lib/makan-stats'
+
+// The numbers below are live from Firestore; refresh them hourly rather than
+// freezing them at build.
+export const revalidate = 3600
 
 export async function generateMetadata({
   params,
@@ -27,6 +33,12 @@ export default async function PartnerPage({
   const { locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations('Partner')
+  const [stats, mealCount] = await Promise.all([getPlaceStats(), getMealCount()])
+  const numbers = [
+    { value: stats.places, label: t('num1Label') },
+    { value: stats.recentMeals, label: t('num2Label') },
+    { value: mealCount, label: t('num3Label') },
+  ]
 
   return (
     <div className="min-h-screen bg-brand-cream">
@@ -47,6 +59,64 @@ export default async function PartnerPage({
         <p className="mt-6 text-[15px] sm:text-base leading-[1.75] text-brand-muted">
           {t('heroBody')}
         </p>
+
+        {/* Where Makan is today — the owner's first question, answered with
+            live figures (distinct places, trailing 30 days, total). */}
+        <section className="mt-12 border-t border-brand-line pt-10">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
+            {t('numbersEyebrow')}
+          </p>
+          <h2 className="mt-3 text-2xl font-bold text-brand-ink sm:text-3xl" style={{ letterSpacing: '-0.02em' }}>
+            {t('numbersTitle')}
+          </h2>
+          <dl className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-3">
+            {numbers.map((n) => (
+              <div key={n.label}>
+                <dt className="text-3xl font-bold leading-none tracking-[-0.02em] text-brand-orange tabular-nums">
+                  {n.value.toLocaleString('en-GB')}
+                </dt>
+                <dd className="mt-2 text-[15px] leading-[1.5] text-brand-ink">{n.label}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-6 text-[15px] leading-[1.75] text-brand-muted">
+            {t('numbersWhere')}
+          </p>
+        </section>
+
+        {/* What it looks like — two real screens, both live today: the
+            Friends feed with the venue named (every saved meal carries
+            locationName) and Discover (RM18642). */}
+        <section className="mt-12 border-t border-brand-line pt-10">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
+            {t('screensEyebrow')}
+          </p>
+          <h2 className="mt-3 text-2xl font-bold text-brand-ink sm:text-3xl" style={{ letterSpacing: '-0.02em' }}>
+            {t('screensTitle')}
+          </h2>
+          <div className="mt-8 grid grid-cols-2 gap-6 sm:gap-10">
+            {(
+              [
+                { src: '/app-screens/story/feed.webp', alt: t('screen1Alt'), caption: t('screen1Caption') },
+                { src: '/app-screens/story/discover.webp', alt: t('screen2Alt'), caption: t('screen2Caption') },
+              ] as const
+            ).map((shot) => (
+              <figure key={shot.src} className="flex flex-col items-center">
+                <Image
+                  src={shot.src}
+                  alt={shot.alt}
+                  width={760}
+                  height={1572}
+                  sizes="(min-width: 640px) 240px, 42vw"
+                  className="block h-auto w-full max-w-[15rem] drop-shadow-[0_18px_28px_rgba(43,21,3,0.22)]"
+                />
+                <figcaption className="mt-4 max-w-[22ch] text-center text-[14px] font-semibold leading-[1.5] text-brand-ink sm:text-[15px]">
+                  {shot.caption}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
 
         {/* Eats — D-033. Copy mirrors the homepage restaurant section. */}
         <section className="mt-12 border-t border-brand-line pt-10">

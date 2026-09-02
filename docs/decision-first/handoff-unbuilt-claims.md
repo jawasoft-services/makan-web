@@ -47,7 +47,15 @@ Suggested shape: one epic "Eats standings (D-033)" with Eats-1 to Eats-4 as chil
 
 Business claim flow, owner dashboard with visit metrics, nudges and rewards: all in the app behind `business_claim_enabled`, `business_dashboard_enabled`, `business_paid_enabled`, all `false` in `app.json`. Do not describe them on the site until the flags are on.
 
-## E. Open items only Devon can close
+## E. Promises on the site that are commitments, not features
+
+| Line | Where | What backs it | Who owns it |
+|---|---|---|---|
+| "Devon, the founder, replies in person within two days." | Partner form (intro and success state) | Nothing in code. A reply-time promise Devon has to keep, or change the copy. | Devon |
+| "Mostly Jakarta, Bali and the UK so far." | Hero trust line, homepage restaurant section, partner page, FAQ | Read off the top 80 venues by meal count on 2026-09-02 (Jakarta and Bali names dominate; London, Durham and Cork follow). Not computed from addresses: meals carry a Place id and a name only. Re-check when a new city takes off. | Devon (re-read when the mix changes) |
+| Live numbers: places with meals saved, meals in the last 30 days, meals in total | Homepage restaurant section, partner page | Firestore via `getPlaceStats()` (distinct `placeProviderId`, cached 24h) and `getMealCount()`; floors of 600 / 500 / 581 if Firestore is unreachable. Measured 2026-09-02: 666 places, 692 meals in 30 days, 5,009 total. | Code |
+
+## F. Open items only Devon can close
 
 - The account handle to print on the Lucky Plaza chicken rice cards (user id starts `644Yh`), or keep "Saved at Lucky Plaza".
 - The Indonesian review sheet: `docs/decision-first/id-review.md`.

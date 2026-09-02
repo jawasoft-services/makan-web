@@ -10,7 +10,7 @@ import StoreLink from "@/components/home/StoreLink"
 const CARDS = [
   { name: "Sushi", src: "/meals/story/card-40.jpg", rotate: "-8deg", x: "0rem", y: "1.2rem" },
   { name: "Hangover Tom yum", src: "/meals/story/IMG_6959.jpg", rotate: "2deg", x: "4.5rem", y: "0rem" },
-  { name: "Date night", src: "/meals/story/card-15.jpg", rotate: "9deg", x: "9rem", y: "1.6rem" },
+  { name: "Chilli prawns", src: "/meals/story/card-15.jpg", rotate: "9deg", x: "9rem", y: "1.6rem" },
 ]
 
 export default async function Hero({
@@ -95,13 +95,16 @@ export default async function Hero({
             </span>
           </div>
           {/* One trust signal beside the ask, both numbers real: the live
-              meal count and the storefront rating (only when it has one). */}
+              meal count, where those meals are, and the storefront rating (only when
+              it has one). */}
           <p
             data-beat
             style={{ "--beat": 3 } as React.CSSProperties}
             className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.85rem] font-semibold text-brand-muted"
           >
             <span className="whitespace-nowrap">{t("trustMeals", { meals: meals.toLocaleString() })}</span>
+            {/* Answers "is this a Bali thing?" before the Bali menu below does. */}
+            <span>{t("trustWhere")}</span>
             {showRating && rating ? (
               <span className="whitespace-nowrap">
                 <span aria-hidden className="text-brand-orange">★ </span>

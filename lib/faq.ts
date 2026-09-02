@@ -115,13 +115,24 @@ const DECISION_FAQ_ID: FaqItem = {
   q: 'Dari mana Makan tahu apa yang harus dipesan?',
   a: 'Dari makanan sungguhan. Pilihanmu di Eat or Yeet memberi tahu Makan apa yang kamu suka. Pilihan orang lain memberi tahu Makan hidangan mana yang dipesan lagi di tiap tempat, sebagai jumlah total, bukan nama. Kalau makanan di suatu tempat masih terlalu sedikit, Makan bilang begitu daripada menebak.',
 }
+// Where it works: the numbers behind this are live in Firestore (666 places,
+// Jakarta/Bali/UK by place name, 2026-09-02); "anywhere with a menu" is the
+// product truth, and the honest empty state covers thin places.
+const WHERE_FAQ_EN: FaqItem = {
+  q: 'Where does Makan work?',
+  a: "Anywhere with a menu. Most of the meals saved so far are in Jakarta, Bali and the UK, and the answer at any place gets better as more meals are saved there. If a place has too few, Makan says so instead of guessing.",
+}
+const WHERE_FAQ_ID: FaqItem = {
+  q: 'Makan bisa dipakai di mana?',
+  a: 'Di mana pun ada menu. Sebagian besar makanan yang tersimpan sejauh ini ada di Jakarta, Bali, dan Inggris, dan jawaban di tiap tempat makin bagus seiring makin banyak makanan yang disimpan di sana. Kalau masih terlalu sedikit, Makan bilang begitu daripada menebak.',
+}
 // Two more decision-page entries, from the restaurant handout's Maitre d'
 // rule and cost page (two visit-days inside 60; free to be on; deals sit
 // beside the honest pick, never buy it).
 const MAITRED_FAQ_EN: FaqItem[] = [
   {
-    q: "What is a Maitre'D?",
-    a: "The person who has eaten at a place the most on Makan. You need two visits inside 60 days to qualify, and whoever comes most holds the title. It's earned by eating, never bought, and you can lose it to someone who comes more. The Maitre'D leaves short notes for everyone else: always get this, try this if, good to know.",
+    q: "What is a Maître d'?",
+    a: "The person who has eaten at a place the most on Makan. You need two visits inside 60 days to qualify, and whoever comes most holds the title. It's earned by eating, never bought, and you can lose it to someone who comes more. The Maître d' leaves short notes for everyone else: always get this, try this if, good to know.",
   },
   {
     q: 'Can a restaurant pay to be the pick?',
@@ -130,8 +141,8 @@ const MAITRED_FAQ_EN: FaqItem[] = [
 ]
 const MAITRED_FAQ_ID: FaqItem[] = [
   {
-    q: "Apa itu Maitre'D?",
-    a: "Orang yang paling sering makan di suatu tempat di Makan. Perlu dua kunjungan dalam 60 hari untuk memenuhi syarat, dan yang paling sering datang memegang gelarnya. Didapat dengan makan, tidak pernah dibeli, dan bisa hilang ke orang yang datang lebih sering. Maitre'D menulis catatan singkat untuk yang lain: selalu pesan ini, coba ini kalau, perlu tahu.",
+    q: "Apa itu Maître d'?",
+    a: "Orang yang paling sering makan di suatu tempat di Makan. Perlu dua kunjungan dalam 60 hari untuk memenuhi syarat, dan yang paling sering datang memegang gelarnya. Didapat dengan makan, tidak pernah dibeli, dan bisa hilang ke orang yang datang lebih sering. Maître d' menulis catatan singkat untuk yang lain: selalu pesan ini, coba ini kalau, perlu tahu.",
   },
   {
     q: 'Bisakah restoran membayar supaya jadi pilihan?',
@@ -145,6 +156,8 @@ const DECISION_PICKS_B = [3]
 
 export function getDecisionFaqs(locale: string) {
   const id = locale === 'id'
-  const [lead, source, maitred] = id ? [DECISION_FAQ_ID, FAQS_ID, MAITRED_FAQ_ID] : [DECISION_FAQ_EN, FAQS, MAITRED_FAQ_EN]
-  return [lead, ...DECISION_PICKS_A.map((i) => source[i]), ...maitred, ...DECISION_PICKS_B.map((i) => source[i])]
+  const [lead, where, source, maitred] = id
+    ? [DECISION_FAQ_ID, WHERE_FAQ_ID, FAQS_ID, MAITRED_FAQ_ID]
+    : [DECISION_FAQ_EN, WHERE_FAQ_EN, FAQS, MAITRED_FAQ_EN]
+  return [lead, where, ...DECISION_PICKS_A.map((i) => source[i]), ...maitred, ...DECISION_PICKS_B.map((i) => source[i])]
 }

@@ -8,14 +8,16 @@ import {
 import ScrollScene from "@/components/motion/ScrollScene"
 import StoreLink from "@/components/home/StoreLink"
 
-// Real saved meals (share cards already published on the live meal strip).
+// Real saved meals (share cards already published on the live meal strip),
+// labelled by dish rather than by the owner's caption ("ROS BEEEEF", "Date
+// night") so a stranger reads a menu, not an in-joke.
 // They are shown as what they are — other people's Eat or Yeet picks, the
 // evidence Makan learns from — never as the reader's own. Three comparisons,
 // each teaching one taste fact that adds up to the barramundi: fish over
 // beef, fresh spice over fried, chilli over creamy.
 const DUELS: Duel[] = [
   {
-    a: { name: "ROS BEEEEF", src: "/meals/story/card-30.jpg" },
+    a: { name: "Roast beef", src: "/meals/story/card-30.jpg" },
     b: { name: "Sushi", src: "/meals/story/card-40.jpg" },
     winner: "b",
   },
@@ -26,7 +28,7 @@ const DUELS: Duel[] = [
   },
   {
     a: { name: "Bacon and Brie", src: "/meals/story/card-05.jpg" },
-    b: { name: "Date night", src: "/meals/story/card-15.jpg" },
+    b: { name: "Chilli prawns", src: "/meals/story/card-15.jpg" },
     winner: "b",
   },
 ]

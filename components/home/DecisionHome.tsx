@@ -12,14 +12,19 @@ import Footer from "@/components/Footer"
 import SiteSchema from "@/components/SiteSchema"
 import HomepageAnalytics from "@/components/HomepageAnalytics"
 import { getDecisionFaqs } from "@/lib/faq"
-import { getMealCount, getRecentPublicMeals } from "@/lib/makan-stats"
+import { getMealCount, getPlaceStats, getRecentPublicMeals } from "@/lib/makan-stats"
 import { getAppStoreRating } from "@/lib/app-store"
 
 /** The decision-first homepage, in page order. Used by `/` (gated) and by
  *  `/dev-preview` (always). */
 export default async function DecisionHome({ locale }: { locale: string }) {
   const faqs = getDecisionFaqs(locale)
-  const [mealCount, liveMeals, rating] = await Promise.all([getMealCount(), getRecentPublicMeals(), getAppStoreRating()])
+  const [mealCount, liveMeals, rating, placeStats] = await Promise.all([
+    getMealCount(),
+    getRecentPublicMeals(),
+    getAppStoreRating(),
+    getPlaceStats(),
+  ])
   return (
     <main id="main-content" className="overflow-x-clip pt-20">
       <SiteSchema locale={locale} />
@@ -35,7 +40,7 @@ export default async function DecisionHome({ locale }: { locale: string }) {
         </div>
         <div aria-hidden className="hidden md:armed:block md:armed:h-screen" />
       </div>
-      <ForRestaurants />
+      <ForRestaurants stats={placeStats} />
       <FaqSchema items={faqs} />
       <FAQ items={faqs} />
       <FinalAsk />

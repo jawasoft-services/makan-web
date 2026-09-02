@@ -51,9 +51,9 @@ const VISITS = [
 ] as const
 
 // Scroll budget per beat, in viewport heights (see EatOrYeetScene). The
-// Maitre'D slip is the beat with the most to read, so it holds longest.
+// Maître d' slip is the beat with the most to read, so it holds longest.
 //  0 setting · 1 the place · 2 what Makan knows / friends · 3 three plates
-//  4 the ring · 5 the Maitre'D · 6 the place nobody has tried
+//  4 the ring · 5 the Maître d' · 6 the place nobody has tried
 const HOLD_VH = [40, 50, 60, 80, 60, 170, 90]
 const TRAVEL_VH = HOLD_VH.reduce((a, b) => a + b, 0)
 const STAGES = HOLD_VH.map((_, i) => HOLD_VH.slice(0, i).reduce((a, b) => a + b, 0) / TRAVEL_VH)

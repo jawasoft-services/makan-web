@@ -4,12 +4,12 @@ Every meal photo in `public/meals/story/` was public on Makan when copied; the a
 
 | file | dish | account | public | date | source |
 |---|---|---|---|---|---|
-| card-30.jpg | ROS BEEEEF | (share card, live meal strip) | yes | — | live strip |
+| card-30.jpg | Roast beef (owner's caption: ROS BEEEEF) | (share card, live meal strip) | yes | — | live strip |
 | card-40.jpg | Sushi | (share card, live meal strip) | yes | — | live strip |
 | card-46.jpg | Fish Sando | (share card, live meal strip) | yes | — | live strip |
 | IMG_6959.jpg | Hangover Tom yum | (share card, live meal strip) | yes | — | live strip |
 | card-05.jpg | Bacon and Brie | (share card, live meal strip) | yes | — | live strip |
-| card-15.jpg | Date night | (share card, live meal strip) | yes | — | live strip |
+| card-15.jpg | Chilli prawns (owner's caption: Date night) | (share card, live meal strip) | yes | — | live strip |
 | lucky-plaza-chicken-rice-1.jpg | Chicken rice, Lucky Plaza | uid 644Yh… | yes | 2026-08-10 | meals/1UwpCJ9znTJSH7LFKOoM |
 | lucky-plaza-chicken-rice-2.jpg | Chicken rice, Lucky Plaza | uid 644Yh… | yes | 2026-08-12 | meals/H20DLnOGp5Ew72sDdu6u |
 | lucky-plaza-chicken-rice-3.jpg | Chicken rice, Lucky Plaza | uid 644Yh… | yes | 2026-08-21 | meals/fySk8AxebZPdxNbEBLWK |

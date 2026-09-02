@@ -1,4 +1,6 @@
 import 'server-only'
+import { unstable_cache } from 'next/cache'
+import { Timestamp } from 'firebase-admin/firestore'
 import { getDb } from '@/lib/firebase-admin'
 
 // Shown if Firestore is unreachable at render time. The previous hardcoded
@@ -37,6 +39,55 @@ function clamp(value: number, fallback: number): number {
   return Math.floor(value)
 }
 
+/** The two numbers a restaurant owner asks for: how many places already have
+ *  meals on Makan, and how much gets saved in a month. */
+export interface PlaceStats {
+  /** Distinct venues (Google Place ids) with at least one meal saved. */
+  places: number
+  /** Meals saved in the trailing 30 days. */
+  recentMeals: number
+}
+
+// Safe floors if Firestore is unreachable: below what was measured on
+// 2026-09-02 (666 places, 692 meals in 30 days), never above it.
+export const FALLBACK_PLACE_STATS: PlaceStats = { places: 600, recentMeals: 500 }
+
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000
+
+/**
+ * Distinct places need one read per meal doc (no distinct-count aggregation
+ * in Firestore), so the result is held in Next's data cache for a day and
+ * shared across instances. The 30-day figure is a count() aggregation.
+ * Falls back to FALLBACK_PLACE_STATS on any failure.
+ */
+export const getPlaceStats = unstable_cache(
+  async (): Promise<PlaceStats> => {
+    try {
+      const db = getDb()
+      if (!db) return FALLBACK_PLACE_STATS
+      const cutoff = Timestamp.fromMillis(Date.now() - THIRTY_DAYS_MS)
+      const [placesSnap, recentSnap] = await Promise.all([
+        db.collection('meals').select('placeProviderId').get(),
+        db.collection('meals').where('createdAt', '>=', cutoff).count().get(),
+      ])
+      const ids = new Set<string>()
+      for (const doc of placesSnap.docs) {
+        const id = str(doc.data().placeProviderId)
+        if (id) ids.add(id)
+      }
+      return {
+        places: clamp(ids.size, FALLBACK_PLACE_STATS.places),
+        recentMeals: clamp(recentSnap.data().count, FALLBACK_PLACE_STATS.recentMeals),
+      }
+    } catch {
+      console.error('makan-stats: failed to fetch place stats; using fallback.')
+      return FALLBACK_PLACE_STATS
+    }
+  },
+  ['makan-place-stats'],
+  { revalidate: 86400 },
+)
+
 /** One homepage share-card "post" — the app's export-as-a-post format. */
 export interface PublicMeal {
   src: string
@@ -57,7 +108,18 @@ export const HOME_MEAL_STRIP_TARGET = 12
 // "remembered at <place>"), with 1 in 5 venue-less for texture. ~38% of recent
 // public meals carry a venue, so a 6× overfetch reliably fills the venue bucket.
 const VENUE_SHARE = 0.8
-const OVERFETCH = 6
+const OVERFETCH = 10
+// A card with no caption, or a caption that is just the meal type, reads as
+// an empty post on a page whose whole claim is "people remember meals here".
+const GENERIC_CAPTION = /^(breakfast|lunch|dinner|snack|brunch|supper|food|meal|yum|yummy)[.!]*$/i
+// Accounts that never chose a handle get an auto one (user_xxxx). Real proof
+// has a name on it.
+const AUTO_HANDLE = /^user_/i
+// The pitch is places you sit down in. A delivery-branch tag proves the
+// opposite of "know what to order at the table".
+const DELIVERY_VENUE = /\b(delivery|gofood|grabfood|shopeefood|deliveroo|uber ?eats)\b/i
+// Candidates over the target so the handle filter below still leaves a full strip.
+const HANDLE_FILTER_SLACK = 4
 
 /**
  * Returns up to `limit` of the most recent PUBLIC meal posts for the homepage
@@ -72,6 +134,9 @@ const OVERFETCH = 6
  *
  * Usernames: recent meal docs carry only uid/userID (the legacy `userName`
  * field is sparse), so handles are joined from `users/<uid>.username`.
+ *
+ * Only meals with a real caption and a chosen handle make the strip: a card
+ * that says "Dinner" by "@user_V3DL…" is not proof of anything.
  *
  * Returns [] on any failure — the component falls back to bundled photos.
  */
@@ -113,9 +178,12 @@ export async function getRecentPublicMeals(
       const src = typeof d.imageURL === 'string' ? d.imageURL : ''
       if (!src.startsWith('https://firebasestorage.googleapis.com/')) continue
       const locationName = str(d.locationName)
+      const caption = str(d.caption)
+      if (!caption || GENERIC_CAPTION.test(caption)) continue
+      if (DELIVERY_VENUE.test(locationName)) continue
       const raw: Raw = {
         src,
-        caption: str(d.caption),
+        caption,
         locationName,
         mealType: str(d.mealType),
         uid: str(d.userID) || str(d.uid),
@@ -126,7 +194,7 @@ export async function getRecentPublicMeals(
       else plain.push(raw)
     }
 
-    const raws = interleaveByShare(venue, plain, limit, VENUE_SHARE)
+    const raws = interleaveByShare(venue, plain, limit + HANDLE_FILTER_SLACK, VENUE_SHARE)
 
     // Join @usernames for meals that don't carry the legacy field.
     const uids = [...new Set(raws.filter((r) => !r.legacyName && r.uid).map((r) => r.uid))]
@@ -142,17 +210,20 @@ export async function getRecentPublicMeals(
       }
     }
 
-    return raws.map((r) => {
-      const username = r.legacyName || nameByUid.get(r.uid) || ''
-      return {
-        src: r.src,
-        caption: r.caption,
-        locationName: r.locationName,
-        mealType: r.mealType,
-        username,
-        alt: mealAlt(r.caption, r.locationName),
-      }
-    })
+    return raws
+      .map((r) => {
+        const username = r.legacyName || nameByUid.get(r.uid) || ''
+        return {
+          src: r.src,
+          caption: r.caption,
+          locationName: r.locationName,
+          mealType: r.mealType,
+          username,
+          alt: mealAlt(r.caption, r.locationName),
+        }
+      })
+      .filter((m) => m.username && !AUTO_HANDLE.test(m.username))
+      .slice(0, limit)
   } catch {
     console.error('makan-stats: failed to fetch public meals; using bundled fallback.')
     return []
