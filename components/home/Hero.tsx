@@ -119,14 +119,19 @@ export default async function Hero({
             className="mt-8 inline-flex min-h-11 items-center gap-2 text-[1rem] font-semibold text-brand-ink underline decoration-brand-orange decoration-2 underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
           >
             {t("secondary")}
-            {/* The cue: flits about like something alive for a couple of
-                seconds, then lands under the words and nudges down on a loop
+            {/* The cue: a shaft and a head, so the length can move. It flits
+                about like something alive for a couple of seconds (the shaft
+                wiggling long and short), lands under the words, then on a loop
+                stretches downward and springs back: the plain "scroll down".
+                The box is fixed so the stretch never shifts the text
                 (app/globals.css .scroll-cue). Reduced motion: a still arrow. */}
-            <span aria-hidden className="scroll-cue ml-1 inline-flex h-[1.25em] w-[1.25em] items-center justify-center text-brand-orange">
-              <svg viewBox="0 0 20 24" className="h-full w-full" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M10 3v17" />
-                <path d="M4 14l6 6 6-6" />
-              </svg>
+            <span aria-hidden className="scroll-cue relative ml-1 inline-block h-[1.45em] w-[1.25em] text-brand-orange">
+              <span className="scroll-cue-arrow absolute left-1/2 top-0 flex -translate-x-1/2 flex-col items-center">
+                <span className="scroll-cue-shaft block w-[2.6px] rounded-full bg-current" />
+                <svg viewBox="0 0 20 12" className="-mt-[1px] h-[0.6em] w-[1.1em]" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 2l7 8 7-8" />
+                </svg>
+              </span>
             </span>
           </a>
         </div>
