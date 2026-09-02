@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import SiteSchema from "@/components/SiteSchema"
 import { setRequestLocale } from 'next-intl/server'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
@@ -50,6 +51,7 @@ export default async function ManifestoPage({
 
   return (
     <>
+      <SiteSchema locale={locale} />
       {locale === 'id' ? (
         <ManifestoIndonesian />
       ) : (

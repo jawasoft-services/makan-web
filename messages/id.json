@@ -538,7 +538,7 @@
     "colRate": "Rasio Eat",
     "colSince": "Di Makan sejak",
     "belowFloor": "{count, plural, =0 {Semua restoran yang punya pertandingan sudah tercantum.} other {# restoran lagi punya kurang dari {floor} pertandingan dan belum masuk peringkat.}}",
-    "updated": "Diperbarui setiap jam.",
+    "updated": "Disegarkan setiap jam.",
     "empty": "Belum ada restoran yang mencapai {floor} pertandingan. Simpan makanan dengan tempatnya ditandai dan main Eat or Yeet, dan nama pertama akan muncul di sini.",
     "howTitle": "Cara menghitungnya",
     "how1": "Eat or Yeet hanya membandingkan makanan tersimpan milik orang itu sendiri. Tidak ada yang menilai restoran yang tidak pernah mereka datangi.",
@@ -547,6 +547,7 @@
     "how4": "Tidak ada biaya dan Eat tidak bisa dibeli. Peringkat ini adalah pilihan tamu, dijumlahkan.",
     "partnerCta": "Untuk restoran",
     "colWhere": "Lokasi",
-    "countries": "Saat ini itu mencakup {count} negara."
+    "countries": "Saat ini itu mencakup {count} negara.",
+    "updatedOn": "Diperbarui {date}."
   }
 }

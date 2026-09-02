@@ -538,7 +538,7 @@
     "colRate": "Eat rate",
     "colSince": "On Makan since",
     "belowFloor": "{count, plural, =0 {Every restaurant with a matchup is listed.} one {# more restaurant has fewer than {floor} matchups and isn't ranked yet.} other {# more restaurants have fewer than {floor} matchups and aren't ranked yet.}}",
-    "updated": "Updated every hour.",
+    "updated": "Refreshed every hour.",
     "empty": "No restaurant has reached {floor} matchups yet. Save meals with the place tagged and play Eat or Yeet, and the first names appear here.",
     "howTitle": "How it's counted",
     "how1": "Eat or Yeet only ever compares a person's own saved meals. Nobody votes on a restaurant they didn't eat at.",
@@ -547,6 +547,7 @@
     "how4": "Nothing to pay and no way to buy an Eat. The standings are diners' picks, added up.",
     "partnerCta": "For restaurants",
     "colWhere": "Where",
-    "countries": "Right now that's {count, plural, one {# country} other {# countries}}."
+    "countries": "Right now that's {count, plural, one {# country} other {# countries}}.",
+    "updatedOn": "Updated {date}."
   }
 }

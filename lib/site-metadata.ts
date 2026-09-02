@@ -8,6 +8,9 @@ interface PageMetadataOptions {
   path?: string
   type?: "website" | "article"
   locale?: string
+  /** Share image; defaults to the locale's home card. A segment's own
+   *  opengraph-image file takes precedence over this. */
+  image?: string
 }
 
 /**
@@ -21,8 +24,13 @@ export function createPageMetadata({
   path = "",
   type = "website",
   locale,
+  image,
 }: PageMetadataOptions): Metadata {
   const url = `${SITE_URL}${path}`
+  // English lives unprefixed in production, so the card URL must too:
+  // crawlers that don't follow redirects would otherwise see nothing.
+  const shareImage = image ?? (locale === "id" ? `${SITE_URL}/id/opengraph-image` : `${SITE_URL}/opengraph-image`)
+  const images = [{ url: shareImage, width: 1200, height: 630, alt: title }]
   const englishPath = path.replace(/^\/id(?=\/|$)/, "") || "/"
   const indonesianPath =
     englishPath === "/" ? "/id" : `/id${englishPath}`
@@ -49,6 +57,7 @@ export function createPageMetadata({
       url,
       siteName: "Makan",
       type,
+      images,
       ...(locale
         ? {
             locale: locale === "id" ? "id_ID" : "en_GB",
@@ -61,6 +70,7 @@ export function createPageMetadata({
       title,
       description,
       site: "@app_makan",
+      images: [shareImage],
     },
   }
 }

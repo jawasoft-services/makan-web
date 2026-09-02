@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 import AppLanding from "./AppLanding"
 import { createPageMetadata } from "@/lib/site-metadata"
+import SiteSchema from "@/components/SiteSchema"
 
 export async function generateMetadata({
   params,
@@ -12,12 +13,22 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "AppPage" })
   return createPageMetadata({
     title: t("metaTitle"),
-    description: t("metaDescription"),
+    // The store page says what the home page says once the gate is on.
+    description:
+      process.env.DECISION_HOME === "1"
+        ? (await getTranslations({ locale, namespace: "Decision.Metadata" }))("description")
+        : t("metaDescription"),
     path: locale === "id" ? "/id/app" : "/app",
     locale,
   })
 }
 
-export default function AppPage() {
-  return <AppLanding />
+export default async function AppPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  return (
+    <>
+      <SiteSchema locale={locale} />
+      <AppLanding />
+    </>
+  )
 }

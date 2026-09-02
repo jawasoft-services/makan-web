@@ -1,9 +1,10 @@
 import { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Footer from '@/components/Footer'
+import SiteSchema from '@/components/SiteSchema'
 import PartnerForm from './PartnerForm'
 import Image from 'next/image'
-import { createPageMetadata } from '@/lib/site-metadata'
+import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
 import Link from 'next/link'
 import { getMealCount, getPlaceStats } from '@/lib/makan-stats'
 import { localizePath } from '@/i18n/paths'
@@ -24,6 +25,7 @@ export async function generateMetadata({
     description: t('metaDescription'),
     path: locale === 'id' ? '/id/partner' : '/partner',
     locale,
+    image: `${SITE_URL}${locale === 'id' ? '/id' : ''}/partner/opengraph-image`,
   })
 }
 
@@ -44,6 +46,7 @@ export default async function PartnerPage({
 
   return (
     <div className="min-h-screen bg-brand-cream">
+      <SiteSchema locale={locale} />
       <main
         id="main-content"
         className="mx-auto max-w-2xl px-5 sm:px-8 pt-24 sm:pt-32 pb-16 sm:pb-24"

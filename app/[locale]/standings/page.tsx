@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
+import SiteSchema from '@/components/SiteSchema'
+import { SITE_URL } from '@/lib/site-metadata'
 import { createPageMetadata } from '@/lib/site-metadata'
 import { EVIDENCE_FLOOR, getEatStandings } from '@/lib/eat-standings'
 import { localizePath } from '@/i18n/paths'
@@ -21,6 +23,7 @@ export async function generateMetadata({
     description: t('metaDescription'),
     path: locale === 'id' ? '/id/standings' : '/standings',
     locale,
+    image: `${SITE_URL}${locale === 'id' ? '/id' : ''}/standings/opengraph-image`,
   })
 }
 
@@ -34,10 +37,45 @@ export default async function StandingsPage({
   const t = await getTranslations('Standings')
   const standings = await getEatStandings()
   const monthYear = new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-GB', { month: 'short', year: 'numeric' })
+  const dayMonthYear = new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+  const computedAt = standings.computedAt ? new Date(standings.computedAt) : new Date()
+  const pageUrl = `${SITE_URL}${locale === 'id' ? '/id' : ''}/standings`
+  // The list as a machine reads it: ranked restaurants with where they are.
+  // Eats are given as the ListItem description rather than an invented
+  // rating property, so nothing here is misread as a star score.
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': pageUrl,
+    name: t('metaTitle'),
+    description: t('metaDescription'),
+    dateModified: computedAt.toISOString(),
+    inLanguage: locale === 'id' ? 'id' : 'en',
+    mainEntity: {
+      '@type': 'ItemList',
+      name: t('title'),
+      itemListOrder: 'https://schema.org/ItemListOrderDescending',
+      numberOfItems: standings.rows.length,
+      itemListElement: standings.rows.map((row, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        description: `${row.eats} Eats, ${row.yeets} Yeets, ${row.matchups} matchups`,
+        item: {
+          '@type': 'Restaurant',
+          name: row.name,
+          ...(row.where
+            ? { address: { '@type': 'PostalAddress', addressLocality: row.where.city, addressCountry: row.where.country } }
+            : {}),
+        },
+      })),
+    },
+  }
   const percent = new Intl.NumberFormat(locale === 'id' ? 'id-ID' : 'en-GB', { style: 'percent', maximumFractionDigits: 0 })
 
   return (
     <div className="min-h-screen bg-brand-cream">
+      <SiteSchema locale={locale} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <main id="main-content" className="mx-auto max-w-3xl px-5 pb-16 pt-24 sm:px-8 sm:pb-24 sm:pt-32">
         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-orange">{t('eyebrow')}</p>
         <h1 className="mt-4 text-3xl font-bold text-brand-ink sm:text-4xl lg:text-5xl" style={{ letterSpacing: '-0.02em' }}>
@@ -94,7 +132,8 @@ export default async function StandingsPage({
               </table>
             </div>
             <p className="mt-4 text-sm leading-[1.6] text-brand-muted">
-              {t('belowFloor', { count: standings.belowFloor, floor: EVIDENCE_FLOOR })} {t('updated')}
+              {t('belowFloor', { count: standings.belowFloor, floor: EVIDENCE_FLOOR })}{' '}
+              <time dateTime={computedAt.toISOString()}>{t('updatedOn', { date: dayMonthYear.format(computedAt) })}</time> {t('updated')}
             </p>
           </>
         ) : (
