@@ -62,8 +62,11 @@ export default async function EatOrYeetScene() {
 
   return (
     <ScrollScene thresholds={STAGES} className="relative bg-brand-card md:staged:h-[520vh]">
-      <div className="md:staged:sticky md:staged:top-0 md:staged:h-screen">
-        <div className="mx-auto max-w-5xl px-6 py-16 md:px-10 md:pt-24">
+      {/* Pinned, and vertically centred in whatever slack a tall viewport
+          leaves; the top padding is the nav's clearance, so short viewports
+          behave exactly as before. */}
+      <div className="md:staged:sticky md:staged:top-0 md:staged:flex md:staged:h-screen md:staged:flex-col md:staged:justify-center md:staged:pt-24">
+        <div className="mx-auto w-full max-w-5xl px-6 py-16 md:px-10 md:staged:py-0">
           <h2
             data-scene="0"
             className="max-w-[18ch] text-[clamp(2rem,4vw,3.4rem)] font-bold leading-[1.02] tracking-[-0.02em] text-brand-ink"
