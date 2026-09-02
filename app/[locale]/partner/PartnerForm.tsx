@@ -130,14 +130,14 @@ export default function PartnerForm() {
                 />
               </motion.div>
 
-              <motion.h1
+              <motion.h2
                 className="mt-6 text-xl font-bold text-brand-ink sm:text-2xl"
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
                 {t('title')}
-              </motion.h1>
+              </motion.h2>
 
               <motion.p
                 className="mt-2 text-sm leading-relaxed text-brand-muted"

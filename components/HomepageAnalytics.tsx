@@ -19,24 +19,32 @@ export default function HomepageAnalytics() {
   const locale = useLocale()
   useEffect(() => {
     const seen = new Set<string>()
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting || seen.has(entry.target.id)) continue
-          seen.add(entry.target.id)
-          track('Homepage Section Viewed', { section: entry.target.id, locale })
-          observer.unobserve(entry.target)
-        }
-      },
-      { threshold: 0.25 },
-    )
+    const onIntersect: IntersectionObserverCallback = (entries, observer) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting || seen.has(entry.target.id)) continue
+        seen.add(entry.target.id)
+        track('Homepage Section Viewed', { section: entry.target.id, locale })
+        observer.unobserve(entry.target)
+      }
+    }
+
+    const shortObserver = new IntersectionObserver(onIntersect, { threshold: 0.25 })
+    const tallObserver = new IntersectionObserver(onIntersect, { threshold: 0.05 })
 
     for (const id of sections) {
       const section = document.getElementById(id)
-      if (section) observer.observe(section)
+      if (!section) continue
+      if (section.offsetHeight <= window.innerHeight * 2) {
+        shortObserver.observe(section)
+      } else {
+        tallObserver.observe(section)
+      }
     }
 
-    return () => observer.disconnect()
+    return () => {
+      shortObserver.disconnect()
+      tallObserver.disconnect()
+    }
   }, [locale])
 
   return null

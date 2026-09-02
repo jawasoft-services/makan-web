@@ -26,14 +26,14 @@ export default async function SeeTheApp() {
         </h2>
         <div className="mt-12 grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-16">
           {SHOTS.map((shot, i) => (
-            <figure key={shot.src} data-beat style={{ "--beat": 2 + i } as React.CSSProperties} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] items-center gap-6">
+            <figure key={shot.src} data-beat style={{ "--beat": 2 + i } as React.CSSProperties} className="grid grid-cols-1 items-center gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
               {/* Phone frame: ink bezel, rounded, the screenshot inside. */}
               <div className="mx-auto w-full max-w-[15rem] rounded-[2.2rem] border-[6px] border-brand-ink bg-brand-ink shadow-[0_1px_2px_rgba(43,21,3,0.08),0_16px_32px_-18px_rgba(43,21,3,0.5)]">
                 <div className="overflow-hidden rounded-[1.8rem]">
                   <Image src={shot.src} alt={t(shot.altKey)} width={720} height={1565} sizes="(min-width: 768px) 240px, 60vw" className="block h-auto w-full" />
                 </div>
               </div>
-              <figcaption>
+              <figcaption className="text-center md:text-left">
                 <p className="text-[1.25rem] font-bold tracking-[-0.01em] text-brand-ink">{t(shot.titleKey)}</p>
                 <p className="mt-2 text-[1rem] leading-[1.55] text-brand-ink">{t(shot.bodyKey)}</p>
               </figcaption>

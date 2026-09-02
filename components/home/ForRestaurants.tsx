@@ -61,7 +61,7 @@ export default async function ForRestaurants() {
           <p data-beat style={{ "--beat": 8 } as React.CSSProperties} className="mt-10 text-[1.05rem] font-bold text-brand-ink">{t("doTitle")}</p>
           <ol className="mt-3 max-w-[52ch] space-y-2">
             {(["do1", "do2", "do3"] as const).map((k, i) => (
-              <li key={k} data-beat style={{ "--beat": 9 + i } as React.CSSProperties} className="flex items-baseline gap-3 text-[1rem] leading-[1.5] text-brand-ink">
+              <li key={k} data-beat style={{ "--beat": 9 + i } as React.CSSProperties} className="flex items-baseline gap-3 text-[1rem] font-semibold leading-[1.5] text-brand-ink">
                 <span className="text-[0.8rem] font-bold text-brand-orange">{i + 1}.</span>
                 {t(k)}
               </li>
@@ -69,7 +69,7 @@ export default async function ForRestaurants() {
           </ol>
           <a
             data-beat
-            style={{ "--beat": 13 } as React.CSSProperties}
+            style={{ "--beat": 12 } as React.CSSProperties}
             href={localizePath(locale, "/partner")}
             className="mt-8 inline-flex min-h-12 items-center rounded-full border-2 border-brand-ink px-7 text-sm font-bold text-brand-ink transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink active:translate-y-0"
           >

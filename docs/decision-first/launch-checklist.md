@@ -2,6 +2,8 @@
 
 Devon gives the go. Until then the page lives at `/dev-preview` (404 in production) and `/` keeps the legacy home.
 
+Merging this branch to main changes /partner (now a full restaurant page) and the shared FAQ answer for "What is Eat or Yeet?" immediately, whether or not DECISION_HOME is set. Confirm those two are wanted live before merging.
+
 - [ ] `npm run lint` passes (founder decisions, i18n parity, contrast, photo credits)
 - [ ] `npm run check:scenes` passes against the dev server (`BASE=http://localhost:3456`)
 - [ ] Production-build audit: `DECISION_HOME=1 npm run build && npx next start -p 3457`, then Lighthouse mobile against `http://localhost:3457/en` meets perf ≥ 80, a11y ≥ 95, best practices ≥ 95, seo ≥ 95 (the dev server scores perf 67 from compile overhead; only the production build counts)

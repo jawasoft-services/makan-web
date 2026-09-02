@@ -13,5 +13,7 @@ Every photo in `public/meals/story/` was public on Makan when copied. Source ids
 | lucky-plaza-chicken-rice-1.jpg | Chicken rice, Lucky Plaza | uid 644Yh… | yes | 2026-08-10 | meals/1UwpCJ9znTJSH7LFKOoM |
 | lucky-plaza-chicken-rice-2.jpg | Chicken rice, Lucky Plaza | uid 644Yh… | yes | 2026-08-12 | meals/H20DLnOGp5Ew72sDdu6u |
 | lucky-plaza-chicken-rice-3.jpg | Chicken rice, Lucky Plaza | uid 644Yh… | yes | 2026-08-21 | meals/fySk8AxebZPdxNbEBLWK |
+| eat-or-yeet.webp | App screenshot (Eat or Yeet) | founder's own account, signed-in screenshot | yes | 2026-09-02 | Projects/MAKAN/02-eat-or-yeet-comparison-signed-in.png.png |
+| diary.webp | App screenshot (diary) | founder's own account, signed-in screenshot | yes | 2026-09-02 | Projects/MAKAN/01-diary-calendar-signed-in.png.png |
 
 Handle to print on the card: **pending Devon** (the username lookup is out of scope for the agent; Devon names the account or it stays "Saved at Lucky Plaza").
