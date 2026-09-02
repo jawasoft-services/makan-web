@@ -11,6 +11,7 @@
     "check:i18n": "node scripts/check-i18n.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",
     "check:photo-credits": "node scripts/check-photo-credits.mjs",
+    "check:scenes": "node scripts/check-scenes.mjs",
     "check:decision-gate": "node scripts/check-decision-gate.mjs",
     "prebuild": "npm run check:decision-gate",
     "images:static": "node scripts/generate-static-images.mjs",
@@ -38,6 +39,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "playwright": "^1.62.1",
     "qrcode": "^1.5.4",
     "tailwindcss": "^4",
     "typescript": "^5"
