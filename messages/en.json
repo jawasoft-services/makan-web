@@ -352,10 +352,10 @@
       "legal": "V vegetarian · VG vegan · GF gluten free. Prices in thousands of rupiah, subject to 21% government tax & service.",
       "answerMark": "A good match for you",
       "thought": "How does Makan know?",
-      "proofLead": "Every time someone plays Eat or Yeet, Makan learns.",
+      "proofLead": "Eat or Yeet is a tiny game. Two meals you've saved. Which would you eat again first?",
       "proofTally": "Your picks teach Makan what you like.",
       "hook": "Everything sounds good.",
-      "eoyQuestion": "Two saved meals. Which would you eat again first?",
+      "eoyQuestion": "Every pick teaches Makan something.",
       "eoyOr": "or",
       "eoyPicked": "picked",
       "learnLabel": "Makan learned",
@@ -363,7 +363,8 @@
       "learn2": "Fresh and spicy beats fried.",
       "learn3": "Chilli beats cheese.",
       "crowdTally": "Everyone's picks teach it what wins here. At Bright Palm, that's the barramundi.",
-      "crowdPrivacy": "Makan counts everyone together, not by name."
+      "crowdPrivacy": "Makan counts everyone together, not by name.",
+      "openLine": "Open Makan at the table. It says what to order here."
     },
     "FirstDay": {
       "intro": "Now somewhere new.",
@@ -386,13 +387,13 @@
       "house": "Soi 5",
       "meta": "Jl. Batu Bolong · 12pm – 10pm",
       "legal": "V vegetarian · VG vegan. Prices in thousands of rupiah, subject to 21% government tax & service.",
-      "maitredIntro": "And every place has a Maitre'D.",
+      "maitredIntro": "And every place has a Maitre'D: whoever has eaten there most.",
       "maitredWho": "Mali has eaten here on 23 different days. Nobody on Makan knows Soi 5 better. Until someone eats here more."
     },
     "Landing": {
       "title": "Know what to order.",
       "titleAccent": "what to order",
-      "sub": "Makan learns what you like from meals you've really eaten, and what everyone else liked here. Then it tells you what to order.",
+      "sub": "Take a photo of what you eat. Makan learns what you like, and what other people liked where you are. Then it tells you what to order.",
       "cta": "Get Makan",
       "platform": "Free on iPhone",
       "secondary": "See how it works",
@@ -418,7 +419,7 @@
     "Final": {
       "eyebrow": "Free on iPhone",
       "title": "Next time you don't know what to order.",
-      "body": "Save a few meals. Play Eat or Yeet. Makan does the rest.",
+      "body": "Snap what you eat. Play Eat or Yeet. Makan does the rest.",
       "cta": "Get Makan"
     }
   }

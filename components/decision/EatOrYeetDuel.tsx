@@ -93,12 +93,21 @@ export function EatOrYeetDuel({
             </div>
           </figure>
         ))}
-        <span className="pointer-events-none absolute left-1/2 top-[32%] z-20 -translate-x-1/2 bg-brand-cream px-2 py-0.5 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-brand-muted">
+        {/* Windowed with the loser: at handoff only the flying winner remains,
+            so the next pair's "or" never lands on top of this one. */}
+        <span
+          {...(outStage !== undefined ? { "data-scene": inStage, "data-scene-until": outStage } : {})}
+          className="pointer-events-none absolute left-1/2 top-[32%] z-20 -translate-x-1/2 rounded-full border border-brand-muted/25 bg-brand-cream px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-brand-muted"
+        >
           {or}
         </span>
       </div>
       {learnStage !== undefined && learned ? (
-        <p data-scene={learnStage} className="mt-3 text-[0.85rem] leading-[1.5]">
+        <p
+          data-scene={learnStage}
+          {...(outStage !== undefined ? { "data-scene-until": outStage } : {})}
+          className="mt-3 text-[0.85rem] leading-[1.5]"
+        >
           <span className="mr-2 text-[0.66rem] font-bold uppercase tracking-[0.14em] text-brand-muted">
             {learnLabel}
           </span>

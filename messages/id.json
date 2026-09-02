@@ -352,10 +352,10 @@
       "legal": "V vegetarian · VG vegan · GF bebas gluten. Harga dalam ribuan rupiah, belum termasuk pajak dan layanan 21%.",
       "answerMark": "Cocok untuk kamu",
       "thought": "Dari mana Makan tahu?",
-      "proofLead": "Setiap kali ada yang main Eat or Yeet, Makan belajar.",
+      "proofLead": "Eat or Yeet itu permainan kecil. Dua makanan yang pernah kamu simpan. Mana yang mau kamu makan lagi duluan?",
       "proofTally": "Pilihanmu mengajari Makan apa yang kamu suka.",
       "hook": "Semua kelihatan enak.",
-      "eoyQuestion": "Dua makanan tersimpan. Mana yang mau kamu makan lagi duluan?",
+      "eoyQuestion": "Setiap pilihan mengajari Makan sesuatu.",
       "eoyOr": "atau",
       "eoyPicked": "dipilih",
       "learnLabel": "Makan belajar",
@@ -363,7 +363,8 @@
       "learn2": "Segar dan pedas menang dari gorengan.",
       "learn3": "Cabai menang dari keju.",
       "crowdTally": "Pilihan semua orang mengajari Makan apa yang menang di sini. Di Bright Palm, itu barramundi.",
-      "crowdPrivacy": "Makan menghitung semua orang bersama-sama, tanpa nama."
+      "crowdPrivacy": "Makan menghitung semua orang bersama-sama, tanpa nama.",
+      "openLine": "Buka Makan di meja. Dia kasih tahu apa yang harus dipesan di sini."
     },
     "FirstDay": {
       "intro": "Sekarang di tempat baru.",
@@ -386,13 +387,13 @@
       "house": "Soi 5",
       "meta": "Jl. Batu Bolong · 12.00 – 22.00",
       "legal": "V vegetarian · VG vegan. Harga dalam ribuan rupiah, belum termasuk pajak dan layanan 21%.",
-      "maitredIntro": "Dan setiap tempat punya Maitre'D.",
+      "maitredIntro": "Dan setiap tempat punya Maitre'D: siapa pun yang paling sering makan di sana.",
       "maitredWho": "Mali sudah makan di sini pada 23 hari berbeda. Tidak ada yang lebih tahu Soi 5 di Makan. Sampai ada yang makan di sini lebih sering."
     },
     "Landing": {
       "title": "Tahu mau pesan apa.",
       "titleAccent": "mau pesan apa",
-      "sub": "Makan belajar apa yang kamu suka dari makanan yang benar-benar pernah kamu makan, dan apa yang disukai orang lain di sini. Lalu dia kasih tahu kamu mau pesan apa.",
+      "sub": "Foto apa yang kamu makan. Makan belajar apa yang kamu suka, dan apa yang disukai orang lain di tempat kamu berada. Lalu dia kasih tahu kamu mau pesan apa.",
       "cta": "Unduh Makan",
       "platform": "Gratis di iPhone",
       "secondary": "Lihat cara kerjanya",
@@ -418,7 +419,7 @@
     "Final": {
       "eyebrow": "Gratis di iPhone",
       "title": "Lain kali kamu tidak tahu mau pesan apa.",
-      "body": "Simpan beberapa makanan. Main Eat or Yeet. Sisanya Makan yang urus.",
+      "body": "Foto apa yang kamu makan. Main Eat or Yeet. Sisanya Makan yang urus.",
       "cta": "Unduh Makan"
     }
   }

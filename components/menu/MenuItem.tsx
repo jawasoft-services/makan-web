@@ -23,8 +23,12 @@ export type MenuEntry = {
  * DOM text and is never hidden.
  */
 export default function MenuItem({ name, description, price, diet, circled }: MenuEntry) {
+  // A ringed line takes extra air above it so the label sits on blank paper,
+  // never across the previous line's description or a section rule. The
+  // margin collapses with the previous item's, so it is sized as the whole
+  // gap, not as an addition.
   return (
-    <li className="mb-[0.8em] list-none">
+    <li className={`mb-[0.8em] list-none ${circled ? "mt-[2.4rem]" : ""}`}>
       <div className="flex items-baseline justify-between gap-5">
         <span className="text-[1.05rem] font-semibold text-brand-ink">
           {circled ? (
