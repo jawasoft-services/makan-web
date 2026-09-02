@@ -6,6 +6,7 @@ Mark a row `fix` in the last column and write the better line under it. Rows wit
 |---|---|---|---|
 | `Metadata.title` | Makan — Know what to order | Makan — Tahu mau pesan apa | |
 | `Metadata.description` | Take a photo of what you eat. Makan works out what you like, and what people keep ordering where you are. Then it tells you what to order. Free on iPhone. | Foto apa yang kamu makan. Makan mencari tahu apa yang kamu suka, dan apa yang terus dipesan orang di tempat kamu berada. Lalu dia kasih tahu kamu mau pesan apa. Gratis di iPhone. | |
+| `Metadata.ogSub` | Take a photo of what you eat. Makan tells you what to order. | Foto apa yang kamu makan. Makan kasih tahu kamu mau pesan apa. | |
 | `Hero.headline` | You still don't know what to order. | Kamu masih belum tahu mau pesan apa. | |
 | `Hero.cta` | Get Makan | Unduh Makan | |
 | `Hero.platform` | Free on iPhone | Gratis di iPhone | |
@@ -60,6 +61,9 @@ Mark a row `fix` in the last column and write the better line under it. Rows wit
 | `Landing.platform` | Free on iPhone | Gratis di iPhone | |
 | `Landing.secondary` | See how it works | Lihat cara kerjanya | |
 | `Landing.cardsAlt` | Three meals saved on Makan | Tiga makanan yang disimpan di Makan | |
+| `Landing.trustMeals` | {meals}+ real meals saved on Makan | {meals}+ makanan sungguhan tersimpan di Makan | |
+| `Landing.trustRating` | Rated {rating} on the App Store ({count, plural, one {# rating} other {# ratings}}) | Dinilai {rating} di App Store ({count} penilaian) | |
+| `Landing.badgeAlt` | Download on the App Store | Unduh di App Store | |
 | `Not.eyebrow` | What Makan won't do | Yang tidak akan Makan lakukan | |
 | `Not.title` | Six things Makan leaves out on purpose. | Enam hal yang sengaja Makan tinggalkan. | |
 | `Not.n1` | No star ratings. | Tanpa bintang. | |
@@ -80,22 +84,20 @@ Mark a row `fix` in the last column and write the better line under it. Rows wit
 | `Final.body` | Snap what you eat. Play Eat or Yeet now and then. Next time you sit down with a menu, Makan has an answer. | Foto apa yang kamu makan. Sesekali main Eat or Yeet. Lain kali kamu duduk dengan menu, Makan sudah punya jawaban. | |
 | `Final.cta` | Get Makan | Unduh Makan | |
 | `Restaurants.eyebrow` | For restaurants | Untuk restoran | |
-| `Restaurants.title` | Your best regular, with a title. | Pelanggan terbaikmu, dengan gelar. | |
-| `Restaurants.body` | Whoever eats at your place most on Makan becomes its Maitre'D. Two visits inside 60 days to qualify, and whoever comes most holds it. Earned by showing up, never bought, and they can lose it to someone who comes more. They leave the notes every new diner reads. | Siapa pun yang paling sering makan di tempatmu di Makan menjadi Maitre'D-nya. Dua kunjungan dalam 60 hari untuk memenuhi syarat, dan yang paling sering datang memegangnya. Didapat dengan datang, tidak pernah dibeli, dan bisa hilang ke orang yang datang lebih sering. Merekalah yang menulis catatan yang dibaca setiap tamu baru. | |
-| `Restaurants.p1` | Being on Makan is free. No fee to appear, no cut of the bill. | Ada di Makan itu gratis. Tanpa biaya untuk tampil, tanpa potongan dari tagihan. | |
-| `Restaurants.p2` | Reward your Maitre'D however you like. A saved table, a coffee on the house. Cheap for you, big for them. | Beri Maitre'D-mu apa saja yang kamu mau. Meja yang disimpan, kopi gratis. Murah buatmu, berarti buat mereka. | |
-| `Restaurants.p3` | Nobody can buy the pick. A deal for first-timers sits next to the honest answer, marked as a deal. | Tidak ada yang bisa membeli pilihan. Promo untuk tamu pertama muncul di samping jawaban jujur, ditandai sebagai promo. | |
-| `Restaurants.cta` | Read the restaurant page | Baca halaman restoran | |
+| `Restaurants.title` | Your regulars are already telling people what to order. | Pelangganmu sudah memberi tahu orang lain apa yang harus dipesan. | |
+| `Restaurants.body` | Every meal someone saves at your place carries your name. Their friends see it in their feed. If they crave it, it goes in their Cravings, and when they're nearby Makan shows them one good option from that list, with the distance. | Setiap makanan yang disimpan orang di tempatmu membawa namamu. Teman-teman mereka melihatnya di feed. Kalau mereka menginginkannya lagi, masuk ke Cravings mereka, dan saat mereka di dekat situ Makan menunjukkan satu pilihan bagus dari daftar itu, lengkap dengan jaraknya. | |
+| `Restaurants.p1` | Nothing to pay. No fee to appear, no cut of the bill. | Tidak ada biaya. Tanpa biaya untuk tampil, tanpa potongan dari tagihan. | |
+| `Restaurants.p2` | A QR for your table. Scan it and Makan opens with your name on it. Live at Cellar Door and FIIK in Durham. | QR untuk mejamu. Dipindai, dan Makan terbuka dengan namamu di dalamnya. Sudah jalan di Cellar Door dan FIIK di Durham. | |
+| `Restaurants.p3` | Eat or Yeet ranks your dish against everything else they've eaten. Win, and you're in their top three, on their profile, with your name on it. | Eat or Yeet mengadu hidanganmu dengan semua yang pernah mereka makan. Kalau menang, kamu masuk tiga teratas mereka, di profil mereka, dengan namamu. | |
+| `Restaurants.maitredTitle` | And every place gets a Maitre'D. | Dan setiap tempat punya Maitre'D. | |
+| `Restaurants.maitredBody` | Whoever eats at your place most on Makan becomes its Maitre'D. Two visits inside 60 days to qualify, and whoever comes most holds it. Earned by showing up, never bought, and they can lose it to someone who comes more. They leave the notes every new diner reads. | Siapa pun yang paling sering makan di tempatmu di Makan menjadi Maitre'D-nya. Dua kunjungan dalam 60 hari untuk memenuhi syarat, dan yang paling sering datang memegangnya. Didapat dengan datang, tidak pernah dibeli, dan bisa hilang ke orang yang datang lebih sering. Merekalah yang menulis catatan yang dibaca setiap tamu baru. | |
 | `Restaurants.stat1` | 60% | 60% | |
 | `Restaurants.stat1Body` | of restaurant revenue comes from repeat guests. | pendapatan restoran datang dari tamu yang kembali. | |
 | `Restaurants.stat1Src` | Olo, 100 million guest records, 2024 | Olo, 100 juta catatan tamu, 2024 | |
 | `Restaurants.stat2` | 48% | 48% | |
 | `Restaurants.stat2Body` | of guests say being remembered matters more than points. | tamu bilang diingat lebih penting daripada poin. | |
 | `Restaurants.stat2Src` | Toast & Resy, The Regulars Report, 2026 | Toast & Resy, The Regulars Report, 2026 | |
-| `Restaurants.doTitle` | What you have to do: almost nothing. | Yang harus kamu lakukan: hampir tidak ada. | |
-| `Restaurants.do1` | Sign up once. Confirm you're the real place. | Daftar sekali. Konfirmasi kamu tempat yang asli. | |
-| `Restaurants.do2` | When a new diner redeems an offer, staff glance at their code and tap once. | Saat tamu baru menukar promo, staf melihat kodenya dan ketuk sekali. | |
-| `Restaurants.do3` | You don't track anything. Makan works out who your Maitre'D is. | Kamu tidak perlu mencatat apa pun. Makan yang menentukan siapa Maitre'D-mu. | |
+| `Restaurants.cta` | Read the restaurant page | Baca halaman restoran | |
 | `App.eyebrow` | This is Makan | Ini Makan | |
 | `App.title` | Two screens you'll use most. | Dua layar yang paling sering kamu pakai. | |
 | `App.shot1Title` | Eat or Yeet | Eat or Yeet | |

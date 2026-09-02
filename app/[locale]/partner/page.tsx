@@ -48,6 +48,26 @@ export default async function PartnerPage({
           {t('heroBody')}
         </p>
 
+        {/* What happens today — every line verified live: Discover RM18642,
+            Cravings/Want to Try RM19115 + RM17819, Eat or Yeet, venue QR
+            RM18720 at Cellar Door and FIIK. */}
+        <section className="mt-12 border-t border-brand-line pt-10">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
+            {t('liveEyebrow')}
+          </p>
+          <h2 className="mt-3 text-2xl font-bold text-brand-ink sm:text-3xl" style={{ letterSpacing: '-0.02em' }}>
+            {t('liveTitle')}
+          </h2>
+          <ul className="mt-5 space-y-3">
+            {(['live1', 'live2', 'live3', 'live4'] as const).map((k) => (
+              <li key={k} className="flex items-baseline gap-3 text-[15px] leading-[1.75] text-brand-ink">
+                <span aria-hidden className="text-[0.55rem] text-brand-orange">●</span>
+                {t(k)}
+              </li>
+            ))}
+          </ul>
+        </section>
+
         {/* Maître d' — statements 2, 3, 4. */}
         <section className="mt-12 border-t border-brand-line pt-10">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
@@ -105,31 +125,6 @@ export default async function PartnerPage({
           </p>
         </section>
 
-        {/* What you do — statement 7. */}
-        <section className="mt-12 border-t border-brand-line pt-10">
-          <h2 className="text-xl sm:text-2xl font-bold text-brand-ink">
-            {t('doTitle')}
-          </h2>
-          <ol className="mt-4 space-y-3">
-            {(['do1', 'do2', 'do3'] as const).map((k, i) => (
-              <li key={k} className="flex items-baseline gap-3 text-[15px] leading-[1.65] text-brand-muted">
-                <span className="shrink-0 text-[13px] font-bold text-brand-orange">{i + 1}.</span>
-                <span>{t(k)}</span>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        {/* New customers — statement 8. */}
-        <section className="mt-12 border-t border-brand-line pt-10">
-          <h2 className="text-xl sm:text-2xl font-bold text-brand-ink">
-            {t('newTitle')}
-          </h2>
-          <p className="mt-4 text-[15px] leading-[1.75] text-brand-muted">
-            {t('newBody')}
-          </p>
-        </section>
-
         {/* Costs — statement 9. */}
         <section className="mt-12 border-t border-brand-line pt-10">
           <h2 className="text-xl sm:text-2xl font-bold text-brand-ink">
@@ -137,15 +132,6 @@ export default async function PartnerPage({
           </h2>
           <p className="mt-4 text-[15px] leading-[1.75] text-brand-muted">
             {t('costsFree')}
-          </p>
-          <p className="mt-4 text-[15px] leading-[1.75] text-brand-muted">
-            {t('costsPerk')}
-          </p>
-          <p className="mt-4 text-[15px] leading-[1.75] text-brand-muted">
-            {t('costsDiscount')}
-          </p>
-          <p className="mt-4 text-[15px] leading-[1.75] text-brand-muted">
-            {t('costsFlat')}
           </p>
           <p className="mt-6 text-[15px] font-semibold text-brand-ink">
             {t('costsNeverTitle')}
