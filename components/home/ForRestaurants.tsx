@@ -143,6 +143,14 @@ export default async function ForRestaurants({ stats }: { stats: PlaceStats }) {
           >
             {t("cta")}
           </a>
+          <a
+            data-beat
+            style={{ "--beat": 2 } as React.CSSProperties}
+            href={localizePath(locale, "/standings")}
+            className="ml-3 mt-8 inline-flex min-h-12 items-center text-base font-bold text-brand-ink underline decoration-brand-orange decoration-2 underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
+          >
+            {t("standingsCta")}
+          </a>
         </div>
         <div
           data-beat

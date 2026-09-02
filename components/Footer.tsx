@@ -19,6 +19,7 @@ export default function Footer() {
     { label: t('story'), href: localizePath(locale, '/story') },
     { label: t('reviews'), href: '/blog' },
     { label: t('restaurants'), href: localizePath(locale, '/partner') },
+    { label: t('standings'), href: localizePath(locale, '/standings') },
     { label: t('support'), href: localizePath(locale, '/support') },
     { label: t('contact'), href: localizePath(locale, '/contact') },
     { label: t('deleteAccount'), href: localizePath(locale, '/account-deletion') },

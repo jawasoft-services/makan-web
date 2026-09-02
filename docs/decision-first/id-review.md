@@ -91,6 +91,7 @@ Mark a row `fix` in the last column and write the better line under it. Rows wit
 | `Restaurants.feedAlt` | The Friends feed in Makan: a friend's ribeye, with the restaurant's name under the photo | Feed Friends di Makan: ribeye milik teman, dengan nama restorannya di bawah foto | |
 | `Restaurants.topPlacesLabel` | Most meals saved | Makanan tersimpan terbanyak | |
 | `Restaurants.topPlacesMeals` | {count, plural, one {# meal} other {# meals}} | {count} makanan | |
+| `Restaurants.standingsCta` | See the standings | Lihat peringkat | |
 | `App.eyebrow` | This is Makan | Ini Makan | |
 | `App.title` | Three screens you'll use most. | Tiga layar yang paling sering kamu pakai. | |
 | `App.shot1Title` | Discover | Discover | |

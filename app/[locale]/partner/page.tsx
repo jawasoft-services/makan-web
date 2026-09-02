@@ -4,7 +4,9 @@ import Footer from '@/components/Footer'
 import PartnerForm from './PartnerForm'
 import Image from 'next/image'
 import { createPageMetadata } from '@/lib/site-metadata'
+import Link from 'next/link'
 import { getMealCount, getPlaceStats } from '@/lib/makan-stats'
+import { localizePath } from '@/i18n/paths'
 
 // The numbers below are live from Firestore; refresh them hourly rather than
 // freezing them at build.
@@ -150,6 +152,12 @@ export default async function PartnerPage({
               </li>
             ))}
           </ul>
+          <Link
+            href={localizePath(locale, '/standings')}
+            className="mt-6 inline-flex min-h-11 items-center text-base font-bold text-brand-ink underline decoration-brand-orange decoration-2 underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
+          >
+            {t('standingsCta')}
+          </Link>
         </section>
 
         {/* What happens today — every line verified live: Discover RM18642,

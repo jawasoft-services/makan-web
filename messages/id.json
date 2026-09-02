@@ -43,7 +43,8 @@
     "terms": "Ketentuan",
     "madeWithLove": "Dibuat dengan sepenuh hati di",
     "londonMap": "Peta London",
-    "rights": "Hak cipta dilindungi."
+    "rights": "Hak cipta dilindungi.",
+    "standings": "Peringkat"
   },
   "Home": {
     "Hero": {
@@ -286,7 +287,8 @@
     "topPlacesTitle": "Tempat dengan makanan tersimpan terbanyak",
     "topPlacesMeals": "{count} makanan",
     "maitreDTell": "Kamu bisa melihat siapa Maître d'-mu di aplikasi, dengan nama depannya, jadi kopinya sampai ke orang yang tepat.",
-    "cityError": "Restoranmu di kota mana? Peringkatnya per kota."
+    "cityError": "Restoranmu di kota mana? Peringkatnya per kota.",
+    "standingsCta": "Lihat peringkat"
   },
   "Support": {
     "metaTitle": "Bantuan — Makan",
@@ -498,7 +500,8 @@
       "cta": "Baca halaman restoran",
       "feedAlt": "Feed Friends di Makan: ribeye milik teman, dengan nama restorannya di bawah foto",
       "topPlacesLabel": "Makanan tersimpan terbanyak",
-      "topPlacesMeals": "{count} makanan"
+      "topPlacesMeals": "{count} makanan",
+      "standingsCta": "Lihat peringkat"
     },
     "App": {
       "eyebrow": "Ini Makan",
@@ -513,5 +516,27 @@
       "shot3Body": "Semua foto yang kamu ambil, per hari, dengan tempatnya. Jawaban di menu datang dari sini.",
       "shot3Alt": "Layar jurnal di Makan: kalender makanan tersimpan dengan nama restorannya"
     }
+  },
+  "Standings": {
+    "metaTitle": "Peringkat Eat or Yeet — Makan",
+    "metaDescription": "Restoran diurutkan berdasarkan Eat: setiap kali tamu memilih makanan dari satu tempat daripada makanan dari tempat lain di Eat or Yeet, pemenangnya dapat satu Eat.",
+    "eyebrow": "Peringkat",
+    "title": "Restoran yang terus dipilih tamu.",
+    "intro": "Setiap kali seseorang di Makan memilih makanan dari satu restoran daripada makanan dari restoran lain di Eat or Yeet, pemenangnya dapat satu Eat dan yang kalah dapat satu Yeet. Ini restoran dengan {floor} pertandingan atau lebih, diurutkan berdasarkan Eat.",
+    "colRank": "#",
+    "colRestaurant": "Restoran",
+    "colEats": "Eat",
+    "colYeets": "Yeet",
+    "colRate": "Rasio Eat",
+    "colSince": "Di Makan sejak",
+    "belowFloor": "{count, plural, =0 {Semua restoran yang punya pertandingan sudah tercantum.} other {# restoran lagi punya kurang dari {floor} pertandingan dan belum masuk peringkat.}}",
+    "updated": "Diperbarui setiap jam.",
+    "empty": "Belum ada restoran yang mencapai {floor} pertandingan. Simpan makanan dengan tempatnya ditandai dan main Eat or Yeet, dan nama pertama akan muncul di sini.",
+    "howTitle": "Cara menghitungnya",
+    "how1": "Eat or Yeet hanya membandingkan makanan tersimpan milik orang itu sendiri. Tidak ada yang menilai restoran yang tidak pernah mereka datangi.",
+    "how2": "Satu pertandingan dihitung kalau kedua makanan ditandai ke restoran dan restorannya berbeda. Dua makanan dari tempat yang sama tidak membuktikan apa-apa, jadi dilewati.",
+    "how3": "Restoran perlu {floor} pertandingan sebelum masuk peringkat. Di bawah itu, angkanya terlalu tipis untuk berarti.",
+    "how4": "Tidak ada biaya dan Eat tidak bisa dibeli. Peringkat ini adalah pilihan tamu, dijumlahkan.",
+    "partnerCta": "Untuk restoran"
   }
 }

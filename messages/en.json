@@ -43,7 +43,8 @@
     "terms": "Terms",
     "madeWithLove": "Made with love in",
     "londonMap": "London map",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "standings": "Standings"
   },
   "Home": {
     "Hero": {
@@ -286,7 +287,8 @@
     "topPlacesTitle": "Places with the most meals saved",
     "topPlacesMeals": "{count, plural, one {# meal} other {# meals}}",
     "maitreDTell": "You see who your Maître d' is in the app, by first name, so the coffee goes to the right person.",
-    "cityError": "Which city is your restaurant in? The standings are by city."
+    "cityError": "Which city is your restaurant in? The standings are by city.",
+    "standingsCta": "See the standings"
   },
   "Support": {
     "metaTitle": "Support — Makan",
@@ -498,7 +500,8 @@
       "cta": "Read the restaurant page",
       "feedAlt": "The Friends feed in Makan: a friend's ribeye, with the restaurant's name under the photo",
       "topPlacesLabel": "Most meals saved",
-      "topPlacesMeals": "{count, plural, one {# meal} other {# meals}}"
+      "topPlacesMeals": "{count, plural, one {# meal} other {# meals}}",
+      "standingsCta": "See the standings"
     },
     "App": {
       "eyebrow": "This is Makan",
@@ -513,5 +516,27 @@
       "shot3Body": "Every photo you've taken, by day, with the place. The answer on the menu comes from here.",
       "shot3Alt": "The diary screen in Makan: a calendar of saved meals with the restaurant named"
     }
+  },
+  "Standings": {
+    "metaTitle": "Eat or Yeet standings — Makan",
+    "metaDescription": "Restaurants ranked by Eats: every time a diner picks a meal from one place over a meal from another in Eat or Yeet, the winner gets an Eat.",
+    "eyebrow": "Standings",
+    "title": "The restaurants diners keep picking.",
+    "intro": "Every time someone on Makan picks a meal from one restaurant over a meal from another in Eat or Yeet, the winner gets an Eat and the loser gets a Yeet. These are the restaurants with {floor} or more matchups, ranked by Eats.",
+    "colRank": "#",
+    "colRestaurant": "Restaurant",
+    "colEats": "Eats",
+    "colYeets": "Yeets",
+    "colRate": "Eat rate",
+    "colSince": "On Makan since",
+    "belowFloor": "{count, plural, =0 {Every restaurant with a matchup is listed.} one {# more restaurant has fewer than {floor} matchups and isn't ranked yet.} other {# more restaurants have fewer than {floor} matchups and aren't ranked yet.}}",
+    "updated": "Updated every hour.",
+    "empty": "No restaurant has reached {floor} matchups yet. Save meals with the place tagged and play Eat or Yeet, and the first names appear here.",
+    "howTitle": "How it's counted",
+    "how1": "Eat or Yeet only ever compares a person's own saved meals. Nobody votes on a restaurant they didn't eat at.",
+    "how2": "A matchup counts when both meals are tagged to a restaurant and the restaurants differ. Two meals from the same place prove nothing about it, so they're skipped.",
+    "how3": "A restaurant needs {floor} matchups before it's ranked. Below that, the numbers are too thin to mean anything.",
+    "how4": "Nothing to pay and no way to buy an Eat. The standings are diners' picks, added up.",
+    "partnerCta": "For restaurants"
   }
 }
