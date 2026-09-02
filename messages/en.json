@@ -15,10 +15,6 @@
     "home": {
       "title": "Makan — Remember every meal",
       "description": "Makan is the food diary you keep with friends. Save what you ate, where you ate it and who was there — free on iPhone."
-    },
-    "decisionHome": {
-      "title": "Makan — Know what to order",
-      "description": "Take a photo of what you eat. Makan works out what you like, and what people keep ordering where you are. Then it tells you what to order. Free on iPhone."
     }
   },
   "Nav": {
@@ -386,6 +382,10 @@
     "backHome": "Back to home"
   },
   "Decision": {
+    "Metadata": {
+      "title": "Makan — Know what to order",
+      "description": "Take a photo of what you eat. Makan works out what you like, and what people keep ordering where you are. Then it tells you what to order. Free on iPhone."
+    },
     "Hero": {
       "headline": "You still don't know what to order.",
       "cta": "Get Makan",

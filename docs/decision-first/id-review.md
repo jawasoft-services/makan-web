@@ -4,6 +4,8 @@ Mark a row `fix` in the last column and write the better line under it. Rows wit
 
 | key | en | id | fix? |
 |---|---|---|---|
+| `Metadata.title` | Makan — Know what to order | Makan — Tahu mau pesan apa | |
+| `Metadata.description` | Take a photo of what you eat. Makan works out what you like, and what people keep ordering where you are. Then it tells you what to order. Free on iPhone. | Foto apa yang kamu makan. Makan mencari tahu apa yang kamu suka, dan apa yang terus dipesan orang di tempat kamu berada. Lalu dia kasih tahu kamu mau pesan apa. Gratis di iPhone. | |
 | `Hero.headline` | You still don't know what to order. | Kamu masih belum tahu mau pesan apa. | |
 | `Hero.cta` | Get Makan | Unduh Makan | |
 | `Hero.platform` | Free on iPhone | Gratis di iPhone | |

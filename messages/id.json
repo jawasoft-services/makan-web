@@ -15,10 +15,6 @@
     "home": {
       "title": "Makan — Ingat setiap momen makan",
       "description": "Makan adalah jurnal makanan yang kamu isi bersama teman. Simpan apa yang kamu makan, di mana, dan bersama siapa — gratis di iPhone."
-    },
-    "decisionHome": {
-      "title": "Makan — Tahu mau pesan apa",
-      "description": "Foto apa yang kamu makan. Makan mencari tahu apa yang kamu suka, dan apa yang terus dipesan orang di tempat kamu berada. Lalu dia kasih tahu kamu mau pesan apa. Gratis di iPhone."
     }
   },
   "Nav": {
@@ -386,6 +382,10 @@
     "backHome": "Kembali ke beranda"
   },
   "Decision": {
+    "Metadata": {
+      "title": "Makan — Tahu mau pesan apa",
+      "description": "Foto apa yang kamu makan. Makan mencari tahu apa yang kamu suka, dan apa yang terus dipesan orang di tempat kamu berada. Lalu dia kasih tahu kamu mau pesan apa. Gratis di iPhone."
+    },
     "Hero": {
       "headline": "Kamu masih belum tahu mau pesan apa.",
       "cta": "Unduh Makan",

@@ -29,7 +29,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>
 }): Promise<Metadata> {
   const { locale } = await params
-  const t = await getTranslations({ locale, namespace: DECISION_HOME ? "Metadata.decisionHome" : "Metadata.home" })
+  const t = await getTranslations({ locale, namespace: DECISION_HOME ? "Decision.Metadata" : "Metadata.home" })
   return createPageMetadata({
     title: t("title"),
     description: t("description"),
