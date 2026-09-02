@@ -103,3 +103,23 @@ export const FAQS_ID: FaqItem[] = [
 export function getFaqs(locale: string) {
   return locale === 'id' ? FAQS_ID : FAQS
 }
+
+// The decision-first homepage asks fewer questions, and leads with the one
+// the whole page is about. Curated from the list above (same truths, same
+// wording) plus one new entry; the live FAQ is untouched.
+const DECISION_FAQ_EN: FaqItem = {
+  q: 'How does Makan know what to order?',
+  a: "From real meals. Your Eat or Yeet picks teach Makan what you like. Everyone's picks, counted together without names, teach it what people order again at each place. If it doesn't know enough, it says so.",
+}
+const DECISION_FAQ_ID: FaqItem = {
+  q: 'Dari mana Makan tahu apa yang harus dipesan?',
+  a: 'Dari makanan sungguhan. Pilihanmu di Eat or Yeet mengajari Makan apa yang kamu suka. Pilihan semua orang, dihitung bersama tanpa nama, mengajari Makan apa yang dipesan lagi di tiap tempat. Kalau belum cukup tahu, Makan bilang begitu.',
+}
+// Indexes into FAQS / FAQS_ID (both lists share an order): free, Eat or Yeet,
+// who can see, AI.
+const DECISION_PICKS = [1, 5, 3, 7]
+
+export function getDecisionFaqs(locale: string) {
+  const [lead, source] = locale === 'id' ? [DECISION_FAQ_ID, FAQS_ID] : [DECISION_FAQ_EN, FAQS]
+  return [lead, ...DECISION_PICKS.map((i) => source[i])]
+}

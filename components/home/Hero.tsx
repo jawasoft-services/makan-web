@@ -1,6 +1,8 @@
 import Image from "next/image"
 import { getTranslations } from "next-intl/server"
 import Reveal from "@/components/motion/Reveal"
+import PenRing from "@/components/decision/PenRing"
+import { APP_STORE_URL } from "@/lib/links"
 
 // Real saved meals (share cards already published on the live meal strip):
 // the three Eat or Yeet winners from the story below, fanned like a hand of
@@ -34,7 +36,7 @@ export default async function Hero() {
                   <span className="relative inline-block">
                     <span className="relative z-[1]">{accent}</span>
                     <svg
-                      className="absolute -bottom-[0.2em] left-[-3%] z-0 h-[0.34em] w-[106%] overflow-visible"
+                      className="hand-underline absolute -bottom-[0.2em] left-[-3%] z-0 h-[0.34em] w-[106%] overflow-visible text-brand-orange"
                       viewBox="0 0 300 24"
                       preserveAspectRatio="none"
                       aria-hidden
@@ -46,8 +48,8 @@ export default async function Hero() {
                         </filter>
                       </defs>
                       <g filter={`url(#${penId})`}>
-                        <path className="hand-underline-1" stroke="#FF9932" fill="none" strokeWidth="6" strokeLinecap="round" vectorEffect="non-scaling-stroke" d="M8,11 C80,5 222,5 292,10" />
-                        <path className="hand-underline-2" stroke="#FF9932" fill="none" strokeWidth="3.5" strokeLinecap="round" vectorEffect="non-scaling-stroke" opacity="0.9" d="M14,19 C92,14 212,14 286,17" />
+                        <path className="hand-underline-1" d="M8,11 C80,5 222,5 292,10" />
+                        <path className="hand-underline-2" d="M14,19 C92,14 212,14 286,17" />
                       </g>
                     </svg>
                   </span>
@@ -70,9 +72,12 @@ export default async function Hero() {
             style={{ "--beat": 2 } as React.CSSProperties}
             className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3"
           >
-            <span className="inline-flex items-center rounded-full bg-brand-orange px-8 py-4 text-base font-bold text-white shadow-[0_10px_24px_-10px_rgba(255,153,50,0.6)]">
+            <a
+              href={APP_STORE_URL}
+              className="inline-flex min-h-14 items-center rounded-full bg-brand-orange px-8 text-base font-bold text-white shadow-[0_10px_24px_-10px_rgba(255,153,50,0.6)] transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink active:translate-y-0"
+            >
               {t("cta")}
-            </span>
+            </a>
             <span className="text-[0.74rem] font-semibold uppercase tracking-[0.14em] text-brand-muted">
               {t("platform")}
             </span>
@@ -81,35 +86,35 @@ export default async function Hero() {
             data-beat
             style={{ "--beat": 3 } as React.CSSProperties}
             href="#story"
-            className="mt-8 inline-flex items-center gap-2 text-[0.9rem] font-semibold text-brand-ink underline decoration-brand-orange decoration-2 underline-offset-4"
+            className="mt-8 inline-flex min-h-11 items-center gap-2 text-[0.9rem] font-semibold text-brand-ink underline decoration-brand-orange decoration-2 underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
           >
             {t("secondary")} <span aria-hidden>↓</span>
           </a>
         </div>
 
         {/* A hand of real meals. Rotations and offsets are deliberate: this is
-            a pile on a table, not a grid. */}
+            a pile on a table, not a grid. All three are above the fold, so all
+            three load eagerly — a card popping in late is the first thing a
+            visitor would notice. */}
         <div
           data-beat
           style={{ "--beat": 2 } as React.CSSProperties}
           className="relative mx-auto h-[19rem] w-[22rem] max-w-full md:h-[24rem] md:w-[26rem]"
+          role="group"
           aria-label={t("cardsAlt")}
         >
           {CARDS.map((card, i) => (
             <figure
               key={card.name}
-              className="absolute left-0 top-0 w-[13.5rem] rounded-xl border border-brand-muted/20 bg-brand-card shadow-[0_18px_40px_-18px_rgba(43,21,3,0.45)] md:w-[15.5rem]"
+              className="meal-card absolute left-0 top-0 w-[13.5rem] md:w-[15.5rem]"
               style={{ transform: `translate(${card.x}, ${card.y}) rotate(${card.rotate})`, zIndex: i }}
             >
               <div className="overflow-hidden rounded-xl">
                 <div className="relative aspect-[3/2]">
-                  <Image src={card.src} alt={card.name} fill sizes="248px" className="object-cover object-top" priority={i === 2} />
+                  <Image src={card.src} alt={card.name} fill sizes="248px" className="object-cover object-top" priority />
                   {i === 2 ? (
                     <span aria-hidden className="pointer-events-none absolute -inset-[6%] block">
-                      <svg className="hand-ring h-full w-full -rotate-1 overflow-visible" viewBox="0 0 300 90" preserveAspectRatio="none">
-                        <path className="hand-ring-lap1" d="M31,54 C25,30 74,13 149,9 C221,5 289,17 286,42 C283,67 209,86 141,84 C71,82 22,73 33,45" />
-                        <path className="hand-ring-lap2" d="M33,45 C40,27 78,18 131,13 C167,9 205,10 231,15" />
-                      </svg>
+                      <PenRing className="-rotate-1" />
                     </span>
                   ) : null}
                 </div>

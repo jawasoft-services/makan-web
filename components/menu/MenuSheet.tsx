@@ -11,6 +11,11 @@ type MenuSheetProps = {
   className?: string
 }
 
+/**
+ * A printed menu. It is an artefact on the page, not part of the document
+ * outline: the house name and section names are styled text, never headings,
+ * so the story's own headings keep a clean H1 → H2 order around it.
+ */
 export default function MenuSheet({
   house,
   meta,
@@ -21,9 +26,9 @@ export default function MenuSheet({
   return (
     <div className={className}>
       <header className="mb-[1.6em] text-center">
-        <h3 className="text-[1.3rem] font-bold uppercase tracking-[0.3em] text-brand-ink">
+        <p className="text-[1.3rem] font-bold uppercase tracking-[0.3em] text-brand-ink">
           {house}
-        </h3>
+        </p>
         <div className="mx-auto my-[0.75em] h-px w-[3.4em] bg-brand-muted opacity-50" />
         <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-brand-muted">
           {meta}

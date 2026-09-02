@@ -7,6 +7,7 @@ import {
   type Duel,
 } from "@/components/decision/EatOrYeetDuel"
 import ScrollScene from "@/components/motion/ScrollScene"
+import { APP_STORE_URL } from "@/lib/links"
 
 // A Western Berawa menu is a genuinely incoherent decision — brunch, poke,
 // pizza and wagyu with no cuisine logic tying them together. That is the real
@@ -45,8 +46,10 @@ const SECTIONS: MenuSection[] = [
 ]
 
 // Real saved meals (share cards already published on the live meal strip).
-// Three comparisons, each teaching one taste fact that adds up to the
-// barramundi: fish over beef, fresh spice over fried, chilli over creamy.
+// They are shown as what they are — other people's Eat or Yeet picks, the
+// evidence Makan learns from — never as the reader's own. Three comparisons,
+// each teaching one taste fact that adds up to the barramundi: fish over
+// beef, fresh spice over fried, chilli over creamy.
 const DUELS: Duel[] = [
   {
     a: { name: "ROS BEEEEF", src: "/meals/card-30.jpg" },
@@ -69,12 +72,11 @@ const DUELS: Duel[] = [
 // good." → the problem → the ring on the menu → the doubt → three Eat or
 // Yeet comparisons, each with its own rhythm — pair in, the pen circles,
 // the ring SETTLES while Makan says what it just learned, then the winner
-// flies to the receipts — → what the pile means → the ask.
+// flies to the receipts — → what the pile means, yours AND everyone's → the ask.
 // Pacing: the settle (learn -> handoff) gets the longest gaps — the ring
 // holds ~2x as long as any other beat before the next pair arrives.
 // Stage 0 IS the landing state: the problem reads with zero action (NN/g:
-// ~57% of viewing time never leaves the first viewport). Hook and headline
-// rise as a load entrance; everything after is earned by scroll.
+// ~57% of viewing time never leaves the first viewport).
 const STAGES = [0, 0, 0.16, 0.225, 0.28, 0.34, 0.395, 0.5, 0.555, 0.61, 0.715, 0.77, 0.825, 0.93, 0.975]
 
 export default async function HeroDiptych() {
@@ -83,11 +85,14 @@ export default async function HeroDiptych() {
 
   return (
     <div id="story" className="scroll-mt-20">
-    <ScrollScene thresholds={STAGES} className="relative md:h-[600vh]">
-      <div className="md:sticky md:top-0 md:h-screen">
+    {/* `staged:` = only once ScrollScene has armed the region. Without JS, or
+        under reduced motion, the region is its natural height and every beat
+        sits in flow — no pin, no absolute slot, nothing superimposed. */}
+    <ScrollScene thresholds={STAGES} className="relative md:staged:h-[600vh]">
+      <div className="md:staged:sticky md:staged:top-0 md:staged:h-screen">
         <PaperSheet fold className="h-full w-full">
           <div className="relative grid h-full grid-cols-1 md:grid-cols-2">
-            <div className="order-2 relative md:order-none md:max-h-full md:overflow-hidden">
+            <div className="order-2 relative md:order-none md:staged:max-h-full md:staged:overflow-hidden">
               <MenuSheet
                 house={t("house")}
                 meta={t("meta")}
@@ -104,7 +109,7 @@ export default async function HeroDiptych() {
               />
               <div
                 aria-hidden
-                className="absolute inset-x-0 bottom-0 hidden h-24 bg-gradient-to-b from-transparent to-brand-cream md:block"
+                className="absolute inset-x-0 bottom-0 hidden h-24 bg-gradient-to-b from-transparent to-brand-cream md:staged:block"
               />
             </div>
 
@@ -116,14 +121,14 @@ export default async function HeroDiptych() {
               >
                 {t("hook")}
               </p>
-              <h1
+              <h2
                 data-scene="1"
                 className="mt-2 max-w-[16ch] text-[clamp(2.4rem,4.6vw,4rem)] font-bold leading-[0.99] tracking-[-0.02em] text-brand-ink"
               >
                 {t("headline")}
-              </h1>
-              {/* The reader's doubt, then the receipts: the Eat or Yeet picks
-                  that taught Makan the taste the answer just claimed. */}
+              </h2>
+              {/* The reader's doubt, then the evidence: other people's Eat or
+                  Yeet picks, the thing Makan learns taste from. */}
               <p
                 data-scene="3"
                 data-scene-until="7"
@@ -137,7 +142,7 @@ export default async function HeroDiptych() {
               <p data-scene="4" className="mt-2 text-[0.95rem] font-bold text-brand-ink">
                 {t("eoyQuestion")}
               </p>
-              <div className="mt-3 md:relative md:h-[17rem] md:max-w-[30rem]">
+              <div className="mt-3 md:relative md:staged:h-[17rem] md:max-w-[30rem]">
                 <EatOrYeetDuel
                   duel={DUELS[0]}
                   or={t("eoyOr")}
@@ -149,7 +154,7 @@ export default async function HeroDiptych() {
                   learned={t("learn1")}
                   outStage={7}
                   shrinkTo={{ x: "-16.5rem", y: "13rem" }}
-                  className="md:absolute md:inset-x-0 md:top-0"
+                  className="md:staged:absolute md:staged:inset-x-0 md:staged:top-0"
                 />
                 <EatOrYeetDuel
                   duel={DUELS[1]}
@@ -162,7 +167,7 @@ export default async function HeroDiptych() {
                   learned={t("learn2")}
                   outStage={10}
                   shrinkTo={{ x: "-7.3rem", y: "13rem" }}
-                  className="mt-6 md:absolute md:inset-x-0 md:top-0 md:mt-0"
+                  className="mt-6 md:staged:absolute md:staged:inset-x-0 md:staged:top-0 md:staged:mt-0"
                 />
                 <EatOrYeetDuel
                   duel={DUELS[2]}
@@ -175,14 +180,14 @@ export default async function HeroDiptych() {
                   learned={t("learn3")}
                   outStage={13}
                   shrinkTo={{ x: "1.9rem", y: "13rem" }}
-                  className="mt-6 md:absolute md:inset-x-0 md:top-0 md:mt-0"
+                  className="mt-6 md:staged:absolute md:staged:inset-x-0 md:staged:top-0 md:staged:mt-0"
                 />
                 {/* Once the duels have vacated the slot, the payoff takes it
                     over — nothing stacks below an empty stage. */}
-                <div className="md:absolute md:inset-0 md:flex md:flex-col md:justify-start md:pt-1">
-                  {/* The payoff recaps the three extractions, so the vacated
-                      slot is filled by the data — not by empty paper. */}
-                  <ul data-scene="13" style={{ transitionDelay: "0.4s" }} className="mt-6 hidden max-w-[30rem] space-y-1.5 md:mt-0 md:block">
+                <div className="md:staged:absolute md:staged:inset-0 md:staged:flex md:staged:flex-col md:staged:justify-start md:staged:pt-1">
+                  {/* The payoff recaps the three extractions (staged only —
+                      in flow the duels themselves are still on the page). */}
+                  <ul data-scene="13" style={{ transitionDelay: "0.4s" }} className="mt-6 hidden max-w-[30rem] space-y-1.5 md:mt-0 md:staged:block">
                     {[t("learn1"), t("learn2"), t("learn3")].map((fact) => (
                       <li key={fact} className="flex items-baseline gap-2 text-[0.85rem] font-semibold text-brand-ink">
                         <span aria-hidden className="text-[0.6rem] text-brand-orange">●</span>
@@ -190,24 +195,33 @@ export default async function HeroDiptych() {
                       </li>
                     ))}
                   </ul>
+                  {/* Two kinds of evidence, said plainly: what your picks
+                      teach, and what everyone's picks at this place teach —
+                      grouped, privacy-safe (doctrine's fourth rung). */}
                   <p data-scene="13" style={{ transitionDelay: "0.5s" }} className="mt-6 max-w-[30rem] text-[0.85rem] font-semibold leading-[1.5] text-brand-ink md:mt-4">
-                    {t("proofTally")}
+                    {t("proofTally")} {t("crowdTally")}
                   </p>
-                  <div data-scene="14" className="mt-4 flex items-center gap-4">
-                <span className="inline-flex items-center rounded-full bg-brand-orange px-7 py-3.5 text-sm font-bold text-white shadow-[0_7px_16px_-7px_rgba(255,153,50,0.55)]">
-                  {t("cta")}
-                </span>
-                <span className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-brand-muted">
-                  {t("platform")}
-                </span>
+                  <p data-scene="13" style={{ transitionDelay: "0.6s" }} className="mt-1.5 max-w-[30rem] text-[0.8rem] leading-[1.5] text-brand-muted">
+                    {t("crowdPrivacy")}
+                  </p>
+                  <div data-scene="14" className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+                    <a
+                      href={APP_STORE_URL}
+                      className="inline-flex min-h-12 items-center rounded-full bg-brand-orange px-7 text-sm font-bold text-white shadow-[0_7px_16px_-7px_rgba(255,153,50,0.55)] transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink active:translate-y-0"
+                    >
+                      {t("cta")}
+                    </a>
+                    <span className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-brand-muted">
+                      {t("platform")}
+                    </span>
                   </div>
                 </div>
               </div>
               {/* The receipts pile up — Makan learns from all of them together. */}
-              <div className="mt-3 hidden max-w-full flex-wrap items-center gap-2.5 md:flex">
-                <SettledDuel duel={DUELS[0]} appearStage={7} />
-                <SettledDuel duel={DUELS[1]} appearStage={10} />
-                <SettledDuel duel={DUELS[2]} appearStage={13} />
+              <div className="mt-3 hidden max-w-full flex-wrap items-center gap-2.5 md:staged:flex">
+                <SettledDuel duel={DUELS[0]} appearStage={7} pickedLabel={t("eoyPicked")} />
+                <SettledDuel duel={DUELS[1]} appearStage={10} pickedLabel={t("eoyPicked")} />
+                <SettledDuel duel={DUELS[2]} appearStage={13} pickedLabel={t("eoyPicked")} />
               </div>
             </div>
           </div>

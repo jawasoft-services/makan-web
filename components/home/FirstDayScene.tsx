@@ -38,8 +38,9 @@ const SECTIONS: MenuSection[] = [
   },
 ]
 
-// The story: a new place → the objection said out loud → Holly's real meal →
-// the pen rings her dish on this menu → the note from someone who really
+// The story: a new place → the objection said out loud → a friend's real
+// meal (offered as an example, never as a claim about the reader's friends)
+// → the pen rings her dish on this menu → the note from someone who really
 // knows the place → and the honest state where nobody's been.
 const STAGES = [0.05, 0.16, 0.28, 0.4, 0.52, 0.62, 0.78]
 
@@ -47,8 +48,8 @@ export default async function FirstDayScene() {
   const t = await getTranslations("Decision.FirstDay")
 
   return (
-    <ScrollScene thresholds={STAGES} className="relative md:h-[340vh]">
-      <div className="md:sticky md:top-0 md:h-screen">
+    <ScrollScene thresholds={STAGES} className="relative md:staged:h-[340vh]">
+      <div className="md:staged:sticky md:staged:top-0 md:staged:h-screen">
         <PaperSheet fold className="h-full w-full">
           <div className="relative grid h-full grid-cols-1 md:grid-cols-2">
             {/* Text page LEFT this time — the spread turned. */}
@@ -67,17 +68,17 @@ export default async function FirstDayScene() {
               </h2>
 
               {/* One slot, three tenants: the turn + Holly's meal make way
-                  for Mali's note. Absolute on md so retired beats leave no
-                  hole in the flow; stacked naturally on mobile. */}
-              <div className="mt-6 md:relative md:h-[18rem]">
-              <p data-scene="2" data-scene-until="5" className="text-[0.95rem] font-bold text-brand-ink md:absolute md:top-0">
+                  for Mali's note. Absolute only once staged, so retired beats
+                  leave no hole; stacked naturally in flow. */}
+              <div className="mt-6 md:relative md:staged:h-[18rem]">
+              <p data-scene="2" data-scene-until="5" className="text-[0.95rem] font-bold text-brand-ink md:staged:absolute md:staged:top-0">
                 {t("turn")}
               </p>
               <figure
                 data-scene="3"
                 data-scene-until="5"
                 data-place
-                className="mt-3 w-[13rem] rounded-xl border border-brand-muted/20 bg-brand-card shadow-[0_12px_28px_-14px_rgba(43,21,3,0.4)] md:absolute md:top-8 md:mt-0"
+                className="meal-card mt-3 w-[13rem] md:staged:absolute md:staged:top-8 md:staged:mt-0"
               >
                 <div className="overflow-hidden rounded-xl">
                   <div className="relative aspect-[3/2]">
@@ -98,16 +99,19 @@ export default async function FirstDayScene() {
 
               <p
                 data-scene="5"
-                className="mt-6 text-[0.95rem] font-bold text-brand-ink md:absolute md:top-0 md:mt-0"
+                className="mt-6 text-[0.95rem] font-bold text-brand-ink md:staged:absolute md:staged:top-0 md:staged:mt-0"
               >
                 {t("maitredIntro")}
               </p>
+              {/* The slip: every label is ink. Saffron is reserved for the pen
+                  and the answer on the menu, and no meaning here rides on
+                  colour alone (D11). */}
               <div
                 data-scene="5"
                 data-place
-                className="mt-3 w-[21rem] max-w-full -rotate-1 rounded-[3px] border border-brand-muted/25 bg-brand-card p-4 shadow-[0_12px_28px_-14px_rgba(43,21,3,0.4)] md:absolute md:top-8 md:mt-0"
+                className="mt-3 w-[21rem] max-w-full -rotate-1 rounded-[3px] border border-brand-muted/25 bg-brand-card p-4 shadow-[0_1px_2px_rgba(43,21,3,0.08),0_10px_24px_-16px_rgba(43,21,3,0.35)] md:staged:absolute md:staged:top-8 md:staged:mt-0"
               >
-                <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-brand-orange">
+                <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-brand-ink">
                   {t("slipFrom")}
                 </p>
                 <p className="mt-1.5 text-[0.8rem] leading-[1.5] text-brand-muted">
@@ -120,7 +124,7 @@ export default async function FirstDayScene() {
                     [t("knowKey"), t("slipKnow")],
                   ].map(([key, value]) => (
                     <div key={key} className="contents">
-                      <dt className="text-[0.66rem] font-extrabold uppercase tracking-[0.12em] text-brand-orange">
+                      <dt className="text-[0.66rem] font-extrabold uppercase tracking-[0.12em] text-brand-ink">
                         {key}
                       </dt>
                       <dd className="text-[0.82rem] font-medium leading-[1.45] text-brand-ink">{value}</dd>
@@ -135,14 +139,14 @@ export default async function FirstDayScene() {
               </p>
               <div
                 data-scene="6"
-                className="mt-3 w-[19rem] rounded-[3px] border border-dashed border-brand-muted/35 bg-white/30 p-4"
+                className="mt-3 w-[19rem] max-w-full rounded-[3px] border border-dashed border-brand-muted/35 bg-white/30 p-4"
               >
                 <p className="text-[0.9rem] font-semibold text-brand-ink">{t("emptyState")}</p>
                 <p className="mt-1.5 text-[0.8rem] leading-[1.5] text-brand-muted">{t("emptySub")}</p>
               </div>
             </div>
 
-            <div className="relative order-1 md:order-2 md:max-h-full md:overflow-hidden">
+            <div className="relative order-1 md:order-2 md:staged:max-h-full md:staged:overflow-hidden">
               <MenuSheet
                 house={t("house")}
                 meta={t("meta")}
@@ -159,7 +163,7 @@ export default async function FirstDayScene() {
               />
               <div
                 aria-hidden
-                className="absolute inset-x-0 bottom-0 hidden h-24 bg-gradient-to-b from-transparent to-brand-cream md:block"
+                className="absolute inset-x-0 bottom-0 hidden h-24 bg-gradient-to-b from-transparent to-brand-cream md:staged:block"
               />
             </div>
           </div>
