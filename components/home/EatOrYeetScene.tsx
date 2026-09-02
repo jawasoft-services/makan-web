@@ -35,9 +35,17 @@ const DUELS: Duel[] = [
 //  2 pair 1 in · 3 pick · 4 learn · 5 hand off (+ pair 2 in, receipt 1)
 //  6 pick · 7 learn · 8 hand off (+ pair 3 in, receipt 2) · 9 pick · 10 learn
 // 11 hand off (+ receipt 3, recap) · 12 the two kinds of evidence · 13 the ask
-// The settle (learn → hand off) is the longest hold; the ring sits on the
-// winner while Makan says what it learned.
-const STAGES = [0, 0.06, 0.13, 0.19, 0.25, 0.36, 0.42, 0.48, 0.59, 0.65, 0.71, 0.82, 0.89, 0.95]
+//
+// Pacing is a scroll budget per beat, in viewport heights — how far the
+// reader scrolls while that beat is on screen before the next arrives. The
+// settle (the ring on the winner while Makan says what it learned) is the
+// point of the whole section, so it holds two and a half times as long as
+// any other beat. Long beats read; short beats skim. Prefer long.
+const HOLD_VH = [50, 60, 60, 60, 150, 60, 60, 150, 60, 60, 150, 80, 90, 60]
+const TRAVEL_VH = HOLD_VH.reduce((a, b) => a + b, 0)
+const STAGES = HOLD_VH.map((_, i) => HOLD_VH.slice(0, i).reduce((a, b) => a + b, 0) / TRAVEL_VH)
+// The pinned region is the travel plus the one viewport that stays on screen.
+const SCENE_VARS = { "--scene-h": `${TRAVEL_VH + 100}vh` } as React.CSSProperties
 
 // The slot is as wide as the viewport height allows (two 3:2 cards plus
 // heading, learn line and receipts must fit above the fold), capped at the
@@ -69,7 +77,7 @@ export default async function EatOrYeetScene() {
   const t = await getTranslations("Decision.Hero")
 
   return (
-    <ScrollScene thresholds={STAGES} className="relative bg-brand-card md:staged:h-[520vh]">
+    <ScrollScene thresholds={STAGES} style={SCENE_VARS} className="relative bg-brand-card md:staged:h-[var(--scene-h)]">
       {/* Pinned, and vertically centred in whatever slack a tall viewport
           leaves; the top padding is the nav's clearance, so short viewports
           behave exactly as before. */}
