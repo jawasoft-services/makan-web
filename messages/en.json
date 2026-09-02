@@ -435,6 +435,17 @@
       "p3": "Nobody can buy the pick. A deal for first-timers sits next to the honest answer, marked as a deal.",
       "honest": "The Maitre'D and the restaurant tools are designed and not built yet. We're building them with a handful of Bali places first.",
       "cta": "Read the restaurant page"
+    },
+    "App": {
+      "eyebrow": "This is Makan",
+      "title": "Two screens you'll use most.",
+      "shot1Title": "Eat or Yeet",
+      "shot1Body": "Two meals you saved. Tap the one you'd eat again first. Ten seconds, when you're bored.",
+      "shot1Alt": "The Eat or Yeet screen in Makan: two saved meals side by side",
+      "shot2Title": "Your meals",
+      "shot2Body": "Every photo you've taken, by day. The answer on the menu comes from here.",
+      "shot2Alt": "The diary screen in Makan: a calendar of saved meals",
+      "soon": "The menu that gets answered is being built now. These two screens are in the app today."
     }
   }
 }

@@ -435,6 +435,17 @@
       "p3": "Tidak ada yang bisa membeli pilihan. Promo untuk tamu pertama muncul di samping jawaban jujur, ditandai sebagai promo.",
       "honest": "Maitre'D dan alat untuk restoran sudah dirancang tapi belum dibangun. Kami membangunnya bersama beberapa tempat di Bali dulu.",
       "cta": "Baca halaman restoran"
+    },
+    "App": {
+      "eyebrow": "Ini Makan",
+      "title": "Dua layar yang paling sering kamu pakai.",
+      "shot1Title": "Eat or Yeet",
+      "shot1Body": "Dua makanan yang kamu simpan. Ketuk yang mau kamu makan lagi duluan. Sepuluh detik, saat kamu bosan.",
+      "shot1Alt": "Layar Eat or Yeet di Makan: dua makanan tersimpan berdampingan",
+      "shot2Title": "Makananmu",
+      "shot2Body": "Semua foto yang kamu ambil, per hari. Jawaban di menu datang dari sini.",
+      "shot2Alt": "Layar jurnal di Makan: kalender makanan tersimpan",
+      "soon": "Menu yang dijawab sedang dibangun sekarang. Dua layar ini sudah ada di aplikasi hari ini."
     }
   }
 }

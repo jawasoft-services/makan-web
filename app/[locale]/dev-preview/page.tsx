@@ -3,6 +3,7 @@ import { setRequestLocale } from "next-intl/server"
 import Hero from "@/components/home/Hero"
 import HeroDiptych from "@/components/home/HeroDiptych"
 import EatOrYeetScene from "@/components/home/EatOrYeetScene"
+import SeeTheApp from "@/components/home/SeeTheApp"
 import FirstDayScene from "@/components/home/FirstDayScene"
 import WontDo from "@/components/home/WontDo"
 import FinalAsk from "@/components/home/FinalAsk"
@@ -34,6 +35,7 @@ export default async function DevPreview({
       <Hero />
       <HeroDiptych />
       <EatOrYeetScene />
+      <SeeTheApp />
       <FirstDayScene />
       {/* Curtain: these two sections already sit under the last spread and
           are revealed as it lifts away. The block is pulled up one viewport
