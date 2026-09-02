@@ -361,9 +361,7 @@
       "learnLabel": "Makan belajar",
       "learn1": "Buat kamu, ikan menang dari daging.",
       "learn2": "Segar dan pedas menang dari gorengan.",
-      "learn3": "Cabai menang dari keju.",
-      "headlineAccent": "mau pesan apa",
-      "scrollCue": "Gulir"
+      "learn3": "Cabai menang dari keju."
     },
     "Ladder": {
       "eyebrow": "Dari mana jawabannya",
@@ -429,6 +427,15 @@
       "legal": "V vegetarian · VG vegan. Harga dalam ribuan rupiah, belum termasuk pajak dan layanan 21%.",
       "maitredIntro": "Dan setiap tempat punya Maitre'D.",
       "maitredWho": "Mali sudah makan di sini pada 23 hari berbeda. Tidak ada yang lebih tahu Soi 5 di Makan — sampai ada yang makan di sini lebih sering."
+    },
+    "Landing": {
+      "title": "Tahu mau pesan apa.",
+      "titleAccent": "mau pesan apa",
+      "sub": "Makan belajar apa yang kamu suka dari yang benar-benar pernah kamu makan. Lalu dia kasih tahu kamu mau pesan apa, di menu mana pun.",
+      "cta": "Unduh Makan",
+      "platform": "Gratis di iPhone",
+      "secondary": "Lihat cara kerjanya",
+      "cardsAlt": "Tiga makanan yang disimpan di Makan"
     }
   }
 }

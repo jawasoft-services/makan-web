@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
+import Hero from "@/components/home/Hero"
 import HeroDiptych from "@/components/home/HeroDiptych"
 import FirstDayScene from "@/components/home/FirstDayScene"
 
@@ -17,6 +18,7 @@ export default async function DevPreview({
   setRequestLocale(locale)
   return (
     <main className="pt-20">
+      <Hero />
       <HeroDiptych />
       <FirstDayScene />
     </main>

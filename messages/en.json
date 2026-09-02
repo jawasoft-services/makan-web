@@ -361,9 +361,7 @@
       "learnLabel": "Makan learned",
       "learn1": "Fish beats beef, for you.",
       "learn2": "Fresh and spicy beats fried.",
-      "learn3": "Chilli beats cheese.",
-      "headlineAccent": "what to order",
-      "scrollCue": "Scroll"
+      "learn3": "Chilli beats cheese."
     },
     "Ladder": {
       "eyebrow": "Where the answer comes from",
@@ -429,6 +427,15 @@
       "legal": "V vegetarian · VG vegan. Prices in thousands of rupiah, subject to 21% government tax & service.",
       "maitredIntro": "And every place has a Maitre'D.",
       "maitredWho": "Mali has eaten here on 23 different days. Nobody on Makan knows Soi 5 better — until someone eats here more."
+    },
+    "Landing": {
+      "title": "Know what to order.",
+      "titleAccent": "what to order",
+      "sub": "Makan learns what you like from what you've really eaten. Then it tells you what to pick, on any menu.",
+      "cta": "Get Makan",
+      "platform": "Free on iPhone",
+      "secondary": "See how it works",
+      "cardsAlt": "Three meals saved on Makan"
     }
   }
 }

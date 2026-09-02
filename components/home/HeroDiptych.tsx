@@ -78,16 +78,11 @@ const DUELS: Duel[] = [
 const STAGES = [0, 0, 0.16, 0.225, 0.28, 0.34, 0.395, 0.5, 0.555, 0.61, 0.715, 0.77, 0.825, 0.93, 0.975]
 
 export default async function HeroDiptych() {
+  // Anchored: the landing hero's "See how it works" points here.
   const t = await getTranslations("Decision.Hero")
-  // Static id: hooks are invalid in async server components, and this
-  // underline renders exactly once per page.
-  const penId = "hero-underline-pen"
-  const headline = t("headline")
-  const accent = t("headlineAccent")
-  const hasAccent = headline.includes(accent)
-  const [before, after] = hasAccent ? headline.split(accent) : [headline, ""]
 
   return (
+    <div id="story" className="scroll-mt-20">
     <ScrollScene thresholds={STAGES} className="relative md:h-[600vh]">
       <div className="md:sticky md:top-0 md:h-screen">
         <PaperSheet fold className="h-full w-full">
@@ -125,36 +120,7 @@ export default async function HeroDiptych() {
                 data-scene="1"
                 className="mt-2 max-w-[16ch] text-[clamp(2.4rem,4.6vw,4rem)] font-bold leading-[0.99] tracking-[-0.02em] text-brand-ink"
               >
-                {hasAccent ? (
-                  <>
-                    {before}
-                    <span className="whitespace-nowrap">
-                    <span className="relative inline-block">
-                      <span className="relative z-[1]">{accent}</span>
-                      <svg
-                        className="hand-underline absolute -bottom-[0.22em] left-[-3%] z-0 h-[0.34em] w-[106%] overflow-visible"
-                        viewBox="0 0 300 24"
-                        preserveAspectRatio="none"
-                        aria-hidden
-                      >
-                        <defs>
-                          <filter id={penId} x="-10%" y="-80%" width="120%" height="260%">
-                            <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="7" result="n" />
-                            <feDisplacementMap in="SourceGraphic" in2="n" scale="4" xChannelSelector="R" yChannelSelector="G" />
-                          </filter>
-                        </defs>
-                        <g filter={`url(#${penId})`}>
-                          <path className="hand-underline-1" stroke="#FF9932" fill="none" strokeWidth="5" strokeLinecap="round" vectorEffect="non-scaling-stroke" d="M8,11 C80,5 222,5 292,10" />
-                          <path className="hand-underline-2" stroke="#FF9932" fill="none" strokeWidth="3" strokeLinecap="round" vectorEffect="non-scaling-stroke" opacity="0.9" d="M14,19 C92,14 212,14 286,17" />
-                        </g>
-                      </svg>
-                    </span>
-                    {after}
-                    </span>
-                  </>
-                ) : (
-                  t("headline")
-                )}
+                {t("headline")}
               </h1>
               {/* The reader's doubt, then the receipts: the Eat or Yeet picks
                   that taught Makan the taste the answer just claimed. */}
@@ -244,16 +210,10 @@ export default async function HeroDiptych() {
                 <SettledDuel duel={DUELS[2]} appearStage={13} />
               </div>
             </div>
-            <div
-              data-scene="0"
-              data-scene-until="2"
-              className="pointer-events-none absolute bottom-5 left-1/2 hidden -translate-x-1/2 items-center gap-2 text-[0.68rem] font-bold uppercase tracking-[0.22em] text-brand-muted md:flex"
-            >
-              {t("scrollCue")} <span aria-hidden>↓</span>
-            </div>
           </div>
         </PaperSheet>
       </div>
     </ScrollScene>
+    </div>
   )
 }
