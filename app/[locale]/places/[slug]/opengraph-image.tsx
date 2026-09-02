@@ -23,7 +23,8 @@ export default async function Image({ params }: { params: Promise<{ locale: stri
         ? fill(t.rankGlobal, { rank: row.rank })
         : fill(t.cardUnranked, { matchups: row.matchups })
   const eats = row.rank !== null ? ` · ${row.eats} ${t.eats}` : ""
-  const where = row.where ? ` · ${row.where.city}` : ""
+  // The city rides in the rank line when there is one; otherwise it is the only place cue.
+  const where = row.where && !(row.cityRank !== null && city) ? ` · ${row.where.city}` : ""
   const size = row.name.length > 24 ? 64 : row.name.length > 14 ? 84 : 108
   return createDecisionSocialImage(row.name, `${line}${eats}${where}`, size)
 }
