@@ -1,7 +1,0 @@
-{
-  "note": "Release condition from docs/superpowers/specs/2026-09-01-decision-first-website-design.md D1. Update statuses from Redmine before flipping DECISION_HOME.",
-  "RM19664": { "title": "Dish-level decision surface", "live": false },
-  "RM19665": { "title": "Decision fallback ladder", "live": false },
-  "RM19505": { "title": "Maitre'D — restaurant loyalty status", "live": false },
-  "maitredRungOnSite": true
-}
