@@ -5,7 +5,7 @@ import {
   type Duel,
 } from "@/components/decision/EatOrYeetDuel"
 import ScrollScene from "@/components/motion/ScrollScene"
-import { APP_STORE_URL } from "@/lib/links"
+import StoreLink from "@/components/home/StoreLink"
 
 // Real saved meals (share cards already published on the live meal strip).
 // They are shown as what they are — other people's Eat or Yeet picks, the
@@ -77,7 +77,7 @@ export default async function EatOrYeetScene() {
   const t = await getTranslations("Decision.Hero")
 
   return (
-    <ScrollScene thresholds={STAGES} style={SCENE_VARS} className="relative bg-brand-card md:staged:h-[var(--scene-h)]">
+    <ScrollScene id="proof" thresholds={STAGES} style={SCENE_VARS} className="relative bg-brand-card md:staged:h-[var(--scene-h)]">
       {/* Pinned, and vertically centred in whatever slack a tall viewport
           leaves; the top padding is the nav's clearance, so short viewports
           behave exactly as before. */}
@@ -157,12 +157,12 @@ export default async function EatOrYeetScene() {
                 {t("crowdPrivacy")}
               </p>
               <div data-scene="13" className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
-                <a
-                  href={APP_STORE_URL}
+                <StoreLink
+                  location="proof"
                   className="inline-flex min-h-14 items-center rounded-full bg-brand-orange px-8 text-base font-bold text-white shadow-[0_10px_24px_-10px_rgba(255,153,50,0.6)] transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink active:translate-y-0"
                 >
                   {t("cta")}
-                </a>
+                </StoreLink>
                 <span className="text-[0.78rem] font-semibold uppercase tracking-[0.14em] text-brand-orange md:text-[0.74rem]">
                   {t("platform")}
                 </span>

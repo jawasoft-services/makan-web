@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server"
 import Reveal from "@/components/motion/Reveal"
 import AndroidWaitlist from "@/components/AndroidWaitlist"
-import { APP_STORE_URL } from "@/lib/links"
+import StoreLink from "@/components/home/StoreLink"
 
 /**
  * The page's closing ask, on saffron ground. One promise, one button, and the
@@ -32,14 +32,17 @@ export default async function FinalAsk() {
         >
           {t("body")}
         </p>
-        <a
-          data-beat
-          style={{ "--beat": 3 } as React.CSSProperties}
-          href={APP_STORE_URL}
-          className="mt-9 inline-flex min-h-14 items-center rounded-full bg-white px-9 text-base font-bold text-brand-orange transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white active:translate-y-0"
-        >
-          {t("cta")}
-        </a>
+        {/* StoreLink's props are location/className/children only, so the
+            beat-rise entrance animation lives on this wrapper instead of on
+            the anchor itself. */}
+        <span data-beat style={{ "--beat": 3 } as React.CSSProperties} className="block">
+          <StoreLink
+            location="final"
+            className="mt-9 inline-flex min-h-14 items-center rounded-full bg-white px-9 text-base font-bold text-brand-orange transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white active:translate-y-0"
+          >
+            {t("cta")}
+          </StoreLink>
+        </span>
         <div
           data-beat
           style={{ "--beat": 4 } as React.CSSProperties}

@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
+import DecisionHome from "@/components/home/DecisionHome"
 import Hero from "@/components/Hero"
 import MemoryThesis from "@/components/MemoryThesis"
 import HowItWorks from "@/components/HowItWorks"
@@ -18,13 +19,17 @@ import { getFaqs } from "@/lib/faq"
 import { getMealCount, getRecentPublicMeals } from "@/lib/makan-stats"
 import { createPageMetadata } from "@/lib/site-metadata"
 
+// Deploy-time gate: DecisionHome ships on the real route only once this is
+// set. Off, `/` keeps the legacy composition below and its own metadata.
+const DECISION_HOME = process.env.DECISION_HOME === "1"
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string }>
 }): Promise<Metadata> {
   const { locale } = await params
-  const t = await getTranslations({ locale, namespace: "Metadata.home" })
+  const t = await getTranslations({ locale, namespace: DECISION_HOME ? "Metadata.decisionHome" : "Metadata.home" })
   return createPageMetadata({
     title: t("title"),
     description: t("description"),
@@ -47,6 +52,7 @@ export default async function Home({
 }) {
   const { locale } = await params
   setRequestLocale(locale)
+  if (DECISION_HOME) return <DecisionHome locale={locale} />
   const faqs = getFaqs(locale)
   // Fetch each live homepage data source once, then share it between proof and
   // conversion sections. Firestore failures still fall back independently.

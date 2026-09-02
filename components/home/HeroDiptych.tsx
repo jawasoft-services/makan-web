@@ -52,7 +52,7 @@ export default async function HeroDiptych() {
   const t = await getTranslations("Decision.Hero")
 
   return (
-    <div id="story" className="scroll-mt-20">
+    <div id="how-it-works" className="scroll-mt-20">
     {/* `staged:` = only once ScrollScene has armed the region. Without JS, or
         under reduced motion, the region is its natural height and every beat
         sits in flow — no pin, no absolute slot, nothing superimposed. */}

@@ -4,7 +4,16 @@ import { useEffect } from 'react'
 import { useLocale } from 'next-intl'
 import { track } from '@vercel/analytics'
 
-const sections = ['how-it-works', 'features', 'faq', 'android-waitlist']
+const sections = [
+  'how-it-works',
+  'features',
+  'proof',
+  'first-day',
+  'wont-do',
+  'for-restaurants',
+  'faq',
+  'android-waitlist',
+]
 
 export default function HomepageAnalytics() {
   const locale = useLocale()

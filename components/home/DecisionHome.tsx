@@ -1,0 +1,46 @@
+import Hero from "@/components/home/Hero"
+import HeroDiptych from "@/components/home/HeroDiptych"
+import EatOrYeetScene from "@/components/home/EatOrYeetScene"
+import SeeTheApp from "@/components/home/SeeTheApp"
+import FirstDayScene from "@/components/home/FirstDayScene"
+import WontDo from "@/components/home/WontDo"
+import ForRestaurants from "@/components/home/ForRestaurants"
+import FinalAsk from "@/components/home/FinalAsk"
+import LatestOnMakan from "@/components/LatestOnMakan"
+import FAQ from "@/components/FAQ"
+import FaqSchema from "@/components/FaqSchema"
+import Footer from "@/components/Footer"
+import SiteSchema from "@/components/SiteSchema"
+import HomepageAnalytics from "@/components/HomepageAnalytics"
+import { getDecisionFaqs } from "@/lib/faq"
+import { getMealCount, getRecentPublicMeals } from "@/lib/makan-stats"
+
+/** The decision-first homepage, in page order. Used by `/` (gated) and by
+ *  `/dev-preview` (always). */
+export default async function DecisionHome({ locale }: { locale: string }) {
+  const faqs = getDecisionFaqs(locale)
+  const [mealCount, liveMeals] = await Promise.all([getMealCount(), getRecentPublicMeals()])
+  return (
+    <main id="main-content" className="pt-20">
+      <SiteSchema locale={locale} />
+      <HomepageAnalytics />
+      <Hero />
+      <HeroDiptych />
+      <EatOrYeetScene />
+      <SeeTheApp />
+      <FirstDayScene />
+      <div className="relative z-0 md:armed:-mt-[100vh]">
+        <div className="md:armed:sticky md:armed:top-0">
+          <WontDo />
+          <LatestOnMakan mealCount={mealCount} liveMeals={liveMeals} />
+        </div>
+        <div aria-hidden className="hidden md:armed:block md:armed:h-screen" />
+      </div>
+      <ForRestaurants />
+      <FaqSchema items={faqs} />
+      <FAQ items={faqs} />
+      <FinalAsk />
+      <Footer />
+    </main>
+  )
+}

@@ -19,6 +19,7 @@ export default function ScrollScene({
   thresholds,
   className = "",
   style,
+  id,
 }: {
   children: ReactNode
   /** Scroll progress (0..1) at which each scene index switches on. */
@@ -26,6 +27,7 @@ export default function ScrollScene({
   className?: string
   /** For CSS variables the region's layout derives from (its pinned height). */
   style?: React.CSSProperties
+  id?: string
 }) {
   const ref = useRef<HTMLDivElement>(null)
 
@@ -115,7 +117,7 @@ export default function ScrollScene({
   }, [thresholds])
 
   return (
-    <div ref={ref} className={className} style={style}>
+    <div ref={ref} id={id} className={className} style={style}>
       {children}
     </div>
   )

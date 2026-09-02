@@ -2,7 +2,7 @@ import Image from "next/image"
 import { getTranslations } from "next-intl/server"
 import Reveal from "@/components/motion/Reveal"
 import PenRing from "@/components/decision/PenRing"
-import { APP_STORE_URL } from "@/lib/links"
+import StoreLink from "@/components/home/StoreLink"
 
 // Real saved meals (share cards already published on the live meal strip):
 // the three Eat or Yeet winners from the story below, fanned like a hand of
@@ -72,12 +72,12 @@ export default async function Hero() {
             style={{ "--beat": 2 } as React.CSSProperties}
             className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3"
           >
-            <a
-              href={APP_STORE_URL}
+            <StoreLink
+              location="hero"
               className="inline-flex min-h-14 items-center rounded-full bg-brand-orange px-8 text-base font-bold text-white shadow-[0_10px_24px_-10px_rgba(255,153,50,0.6)] transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink active:translate-y-0"
             >
               {t("cta")}
-            </a>
+            </StoreLink>
             <span className="text-[0.78rem] font-semibold uppercase tracking-[0.14em] text-brand-orange md:text-[0.74rem]">
               {t("platform")}
             </span>
@@ -85,7 +85,7 @@ export default async function Hero() {
           <a
             data-beat
             style={{ "--beat": 3 } as React.CSSProperties}
-            href="#story"
+            href="#how-it-works"
             className="mt-8 inline-flex min-h-11 items-center gap-2 text-[0.9rem] font-semibold text-brand-ink underline decoration-brand-orange decoration-2 underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
           >
             {t("secondary")} <span aria-hidden>↓</span>

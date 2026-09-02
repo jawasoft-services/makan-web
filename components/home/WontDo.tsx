@@ -12,7 +12,7 @@ export default async function WontDo() {
   const items = [1, 2, 3, 4, 5].map((n) => ({ no: t(`n${n}`), line: t(`l${n}`) }))
 
   return (
-    <section className="w-full bg-brand-card px-6 py-20 md:px-10 md:py-28">
+    <section id="wont-do" className="w-full bg-brand-card px-6 py-20 md:px-10 md:py-28">
       <Reveal className="mx-auto max-w-4xl">
         <p data-beat className="text-[0.74rem] font-semibold uppercase tracking-[0.16em] text-brand-orange">
           {t("eyebrow")}

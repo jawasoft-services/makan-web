@@ -63,7 +63,7 @@ export default async function FirstDayScene() {
   const t = await getTranslations("Decision.FirstDay")
 
   return (
-    <ScrollScene thresholds={STAGES} style={SCENE_VARS} className="relative z-10 md:staged:h-[var(--scene-h)]">
+    <ScrollScene id="first-day" thresholds={STAGES} style={SCENE_VARS} className="relative z-10 md:staged:h-[var(--scene-h)]">
       <div className="md:staged:sticky md:staged:top-0 md:staged:h-screen">
         <PaperSheet fold className="h-full w-full">
           <div className="relative grid h-full grid-cols-1 md:grid-cols-2 md:staged:grid-rows-[minmax(0,1fr)]">
