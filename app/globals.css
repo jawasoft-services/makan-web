@@ -321,7 +321,11 @@
     .scene-armed [data-scene][data-eoy-shrink].scene-on {
       opacity: 0;
       transform: translate(var(--shx, -16rem), var(--shy, 11rem)) scale(var(--shs, 0.24)) rotate(-2deg);
-      transition-duration: 0.65s;
+      /* Fly first, fade last: the card stays visible for most of the flight
+         and fades in the final stretch as its receipt appears (0.45s). */
+      transition:
+        transform 0.65s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.3s ease-out 0.4s;
     }
   }
 
@@ -349,10 +353,11 @@
     }
   }
 
-  /* One card treatment for every saved meal on the page: a printed card laid
-     on the table. Hairline border, a whisper of lift — the photograph is the
-     point, not the container. */
-  .meal-card {
+  /* One card treatment for every saved meal in the decision story: a printed
+     card laid on the table. Hairline border, a whisper of lift — the
+     photograph is the point, not the container. (Not .meal-card: that name
+     belongs to the live meal carousel and carries its hover transition.) */
+  .saved-card {
     @apply rounded-xl border border-brand-muted/20 bg-brand-card;
     box-shadow:
       0 1px 2px rgba(43, 21, 3, 0.08),

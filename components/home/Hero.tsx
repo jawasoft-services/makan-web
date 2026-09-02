@@ -106,7 +106,7 @@ export default async function Hero() {
           {CARDS.map((card, i) => (
             <figure
               key={card.name}
-              className="meal-card absolute left-0 top-0 w-[13.5rem] md:w-[15.5rem]"
+              className="saved-card absolute left-0 top-0 w-[13.5rem] md:w-[15.5rem]"
               style={{ transform: `translate(${card.x}, ${card.y}) rotate(${card.rotate})`, zIndex: i }}
             >
               <div className="overflow-hidden rounded-xl">

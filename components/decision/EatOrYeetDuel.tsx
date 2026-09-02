@@ -67,7 +67,7 @@ export function EatOrYeetDuel({
             {...(!isWin && outStage !== undefined
               ? { "data-scene": inStage, "data-scene-until": outStage }
               : {})}
-            className="meal-card relative w-full"
+            className="saved-card relative w-full"
           >
             <div
               {...(isWin ? {} : { "data-scene": pickStage, "data-eoy-dim": "" })}

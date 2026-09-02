@@ -79,7 +79,7 @@ export default async function FirstDayScene() {
                 data-scene="3"
                 data-scene-until="5"
                 data-place
-                className="meal-card mt-3 w-[13rem] md:staged:absolute md:staged:top-14 md:staged:mt-0"
+                className="saved-card mt-3 w-[13rem] md:staged:absolute md:staged:top-14 md:staged:mt-0"
               >
                 <div className="overflow-hidden rounded-xl">
                   <div className="relative aspect-[3/2]">
