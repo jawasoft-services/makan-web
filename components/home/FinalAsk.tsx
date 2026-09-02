@@ -1,7 +1,6 @@
 import { getTranslations } from "next-intl/server"
 import Image from "next/image"
 import Reveal from "@/components/motion/Reveal"
-import { APP_STORE_URL } from "@/lib/links"
 import AndroidWaitlist from "@/components/AndroidWaitlist"
 import StoreLink from "@/components/home/StoreLink"
 
@@ -35,29 +34,20 @@ export default async function FinalAsk() {
         >
           {t("body")}
         </p>
-        {/* StoreLink's props are location/className/children only, so the
-            beat-rise entrance animation lives on this wrapper instead of on
-            the anchor itself. */}
-        <span data-beat style={{ "--beat": 3 } as React.CSSProperties} className="block">
+        {/* One button, Apple's own: the store badge is the ask here, tracked
+            like every other store link. The beat lives on the wrapper because
+            StoreLink takes only location/className/children. */}
+        <span data-beat style={{ "--beat": 3 } as React.CSSProperties} className="mt-9 block">
           <StoreLink
             location="final"
-            className="mt-9 inline-flex min-h-14 items-center rounded-full bg-white px-9 text-base font-bold text-brand-orange transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white active:translate-y-0"
+            className="inline-block rounded-[10px] transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white active:translate-y-0"
           >
-            {t("cta")}
+            <Image src="/app-store-badge.svg" alt={landing("badgeAlt")} width={180} height={60} className="h-14 w-auto" />
           </StoreLink>
         </span>
-        {/* Apple's own badge, unmodified, as the secondary path to the store. */}
-        <a
-          data-beat
-          style={{ "--beat": 4 } as React.CSSProperties}
-          href={APP_STORE_URL}
-          className="mt-5 inline-block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
-        >
-          <Image src="/app-store-badge.svg" alt={landing("badgeAlt")} width={180} height={60} className="h-[3.25rem] w-auto" />
-        </a>
         <div
           data-beat
-          style={{ "--beat": 5 } as React.CSSProperties}
+          style={{ "--beat": 4 } as React.CSSProperties}
           className="mt-9 rounded-2xl bg-white p-6 text-left md:p-8"
         >
           <p className="text-base font-semibold text-brand-ink">{home("android")}</p>

@@ -24,6 +24,9 @@ export default async function Hero({
 }) {
   const t = await getTranslations("Decision.Landing")
   const meals = Math.max(100, Math.floor(mealCount / 100) * 100)
+  // A rating from a handful of people reads as thin; show it once it has weight.
+  const MIN_RATINGS = 10
+  const showRating = rating !== null && rating.count >= MIN_RATINGS
   const penId = "landing-underline-pen"
   const title = t("title")
   const accent = t("titleAccent")
@@ -96,15 +99,14 @@ export default async function Hero({
           <p
             data-beat
             style={{ "--beat": 3 } as React.CSSProperties}
-            className="mt-4 text-[0.9rem] font-semibold text-brand-ink"
+            className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.85rem] font-semibold text-brand-muted"
           >
-            {t("trustMeals", { meals: meals.toLocaleString() })}
-            {rating ? (
-              <>
-                <span aria-hidden className="mx-2 text-brand-orange">·</span>
+            <span className="whitespace-nowrap">{t("trustMeals", { meals: meals.toLocaleString() })}</span>
+            {showRating && rating ? (
+              <span className="whitespace-nowrap">
                 <span aria-hidden className="text-brand-orange">★ </span>
                 {t("trustRating", { rating: rating.rating.toFixed(1), count: rating.count })}
-              </>
+              </span>
             ) : null}
           </p>
           <a

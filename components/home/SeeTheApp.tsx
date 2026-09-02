@@ -14,27 +14,27 @@ export default async function SeeTheApp() {
   const t = await getTranslations("Decision.App")
   return (
     <section id="features" className="w-full bg-brand-cream px-6 py-20 md:px-10 md:py-28">
-      <Reveal className="mx-auto max-w-5xl">
+      <Reveal className="mx-auto max-w-5xl text-center">
         <p data-beat className="text-[0.78rem] font-semibold uppercase tracking-[0.16em] text-brand-orange md:text-[0.74rem]">
           {t("eyebrow")}
         </p>
         <h2
           data-beat
           style={{ "--beat": 1 } as React.CSSProperties}
-          className="mt-4 max-w-[18ch] text-[clamp(2rem,4vw,3.4rem)] font-bold leading-[1.02] tracking-[-0.02em] text-brand-ink"
+          className="mx-auto mt-4 max-w-[18ch] text-balance text-[clamp(2rem,4vw,3.4rem)] font-bold leading-[1.02] tracking-[-0.02em] text-brand-ink"
         >
           {t("title")}
         </h2>
-        <div className="mt-12 grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-16">
+        <div className="mx-auto mt-14 grid max-w-3xl grid-cols-1 gap-14 md:grid-cols-2 md:gap-12">
           {SHOTS.map((shot, i) => (
             <figure key={shot.titleKey} data-beat style={{ "--beat": 2 + i } as React.CSSProperties}>
               {/* Phone frame: ink bezel, rounded, the screen inside. */}
-              <div className="mx-auto w-full max-w-[15rem] rounded-[2.2rem] border-[6px] border-brand-ink bg-brand-ink shadow-[0_1px_2px_rgba(43,21,3,0.08),0_16px_32px_-18px_rgba(43,21,3,0.5)]">
+              <div className="mx-auto w-full max-w-[17rem] rounded-[2.4rem] border-[6px] border-brand-ink bg-brand-ink shadow-[0_1px_2px_rgba(43,21,3,0.08),0_16px_32px_-18px_rgba(43,21,3,0.5)]">
                 <div className="overflow-hidden rounded-[1.8rem]">
                   <Image src={shot.src} alt={t(shot.altKey)} width={720} height={1565} sizes="(min-width: 768px) 240px, 60vw" className="block h-auto w-full" />
                 </div>
               </div>
-              <figcaption className="mx-auto mt-5 max-w-[22rem] text-center">
+              <figcaption className="mx-auto mt-6 max-w-[22rem]">
                 <p className="text-[1.15rem] font-bold tracking-[-0.01em] text-brand-ink">{t(shot.titleKey)}</p>
                 <p className="mt-1.5 text-[0.95rem] leading-[1.5] text-brand-ink">{t(shot.bodyKey)}</p>
               </figcaption>
