@@ -353,17 +353,17 @@
       "answerMark": "A good match for you",
       "thought": "How does Makan know?",
       "proofLead": "Eat or Yeet is a tiny game. Two meals you've saved. Which would you eat again first?",
-      "proofTally": "Your picks teach Makan what you like.",
+      "proofTally": "Your picks tell Makan what you like.",
       "hook": "Everything sounds good.",
-      "eoyQuestion": "Every pick teaches Makan something.",
+      "eoyQuestion": "Each pick tells Makan one thing about your taste.",
       "eoyOr": "or",
       "eoyPicked": "picked",
       "learnLabel": "Makan learned",
       "learn1": "Fish beats beef.",
       "learn2": "Fresh and spicy beats fried.",
       "learn3": "Chilli beats cheese.",
-      "crowdTally": "Everyone's picks teach it what wins here. At Bright Palm, that's the barramundi.",
-      "crowdPrivacy": "Makan counts everyone together, not by name.",
+      "crowdTally": "Other people's picks tell it what gets ordered again at Bright Palm. Put together, that's the barramundi.",
+      "crowdPrivacy": "Nobody sees your picks and you don't see theirs. Makan only uses the totals.",
       "openLine": "Open Makan at the table. It says what to order here."
     },
     "FirstDay": {
@@ -383,17 +383,17 @@
       "slipKnow": "Cash only after 9.",
       "nowhereQ": "And a place nobody has tried yet?",
       "emptyState": "Not enough meals here yet to help you choose.",
-      "emptySub": "Makan says so. It never makes it up.",
+      "emptySub": "Makan tells you that instead of guessing. Save what you order, and the next person gets an answer.",
       "house": "Soi 5",
       "meta": "Jl. Batu Bolong · 12pm – 10pm",
       "legal": "V vegetarian · VG vegan. Prices in thousands of rupiah, subject to 21% government tax & service.",
       "maitredIntro": "And every place has a Maitre'D: whoever has eaten there most.",
-      "maitredWho": "Mali has eaten here on 23 different days. Nobody on Makan knows Soi 5 better. Until someone eats here more."
+      "maitredWho": "Mali has eaten here on 23 different days, more than anyone else on Makan. If someone beats that, the notes become theirs."
     },
     "Landing": {
       "title": "Know what to order.",
       "titleAccent": "what to order",
-      "sub": "Take a photo of what you eat. Makan learns what you like, and what other people liked where you are. Then it tells you what to order.",
+      "sub": "Take a photo of what you eat. Makan works out what you like, and what people keep ordering at the place you're in. Then it tells you what to order.",
       "cta": "Get Makan",
       "platform": "Free on iPhone",
       "secondary": "See how it works",
@@ -401,25 +401,25 @@
     },
     "Not": {
       "eyebrow": "What Makan won't do",
-      "title": "Some things would spoil the answer.",
+      "title": "Six things Makan leaves out on purpose.",
       "n1": "No star ratings.",
       "l1": "A meal isn't 4.2 out of 5.",
       "n2": "No paid answers.",
       "l2": "A restaurant can't pay to be the pick. Ever.",
       "n3": "No popularity contest.",
-      "l3": "Famous doesn't win. Ordered again does.",
+      "l3": "A dish gets picked because people order it again, not because it has the most photos.",
       "n4": "No calorie counting.",
-      "l4": "Makan remembers what you ate, not what it cost you.",
+      "l4": "No calories, no scores. Just the photo and what you called it.",
       "n5": "No homework.",
       "l5": "You don't have to save every meal. Save the ones worth remembering.",
       "climaxEyebrow": "And the one that matters most",
       "climax": "No guessing.",
-      "climaxBody": "If Makan doesn't know enough, it says so. It never invents an answer."
+      "climaxBody": "When Makan hasn't seen enough meals at a place, it says so on the menu instead of picking one at random."
     },
     "Final": {
       "eyebrow": "Free on iPhone",
       "title": "Next time you don't know what to order.",
-      "body": "Snap what you eat. Play Eat or Yeet. Makan does the rest.",
+      "body": "Snap what you eat. Play Eat or Yeet now and then. Next time you sit down with a menu, Makan has an answer.",
       "cta": "Get Makan"
     }
   }

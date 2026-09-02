@@ -109,11 +109,11 @@ export function getFaqs(locale: string) {
 // wording) plus one new entry; the live FAQ is untouched.
 const DECISION_FAQ_EN: FaqItem = {
   q: 'How does Makan know what to order?',
-  a: "From real meals. Your Eat or Yeet picks teach Makan what you like. Everyone's picks, counted together without names, teach it what people order again at each place. If it doesn't know enough, it says so.",
+  a: "From real meals. Your Eat or Yeet picks tell Makan what you like. Other people's picks tell it which dishes get ordered again at each place, as totals, never as names. If a place has too few meals, Makan says so instead of guessing.",
 }
 const DECISION_FAQ_ID: FaqItem = {
   q: 'Dari mana Makan tahu apa yang harus dipesan?',
-  a: 'Dari makanan sungguhan. Pilihanmu di Eat or Yeet mengajari Makan apa yang kamu suka. Pilihan semua orang, dihitung bersama tanpa nama, mengajari Makan apa yang dipesan lagi di tiap tempat. Kalau belum cukup tahu, Makan bilang begitu.',
+  a: 'Dari makanan sungguhan. Pilihanmu di Eat or Yeet memberi tahu Makan apa yang kamu suka. Pilihan orang lain memberi tahu Makan hidangan mana yang dipesan lagi di tiap tempat, sebagai jumlah total, bukan nama. Kalau makanan di suatu tempat masih terlalu sedikit, Makan bilang begitu daripada menebak.',
 }
 // Indexes into FAQS / FAQS_ID (both lists share an order): free, Eat or Yeet,
 // who can see, AI.

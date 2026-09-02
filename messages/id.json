@@ -353,17 +353,17 @@
       "answerMark": "Cocok untuk kamu",
       "thought": "Dari mana Makan tahu?",
       "proofLead": "Eat or Yeet itu permainan kecil. Dua makanan yang pernah kamu simpan. Mana yang mau kamu makan lagi duluan?",
-      "proofTally": "Pilihanmu mengajari Makan apa yang kamu suka.",
+      "proofTally": "Pilihanmu memberi tahu Makan apa yang kamu suka.",
       "hook": "Semua kelihatan enak.",
-      "eoyQuestion": "Setiap pilihan mengajari Makan sesuatu.",
+      "eoyQuestion": "Tiap pilihan memberi tahu Makan satu hal tentang seleramu.",
       "eoyOr": "atau",
       "eoyPicked": "dipilih",
       "learnLabel": "Makan belajar",
       "learn1": "Ikan menang dari daging.",
       "learn2": "Segar dan pedas menang dari gorengan.",
       "learn3": "Cabai menang dari keju.",
-      "crowdTally": "Pilihan semua orang mengajari Makan apa yang menang di sini. Di Bright Palm, itu barramundi.",
-      "crowdPrivacy": "Makan menghitung semua orang bersama-sama, tanpa nama.",
+      "crowdTally": "Pilihan orang lain memberi tahu Makan apa yang dipesan lagi di Bright Palm. Digabung, hasilnya barramundi.",
+      "crowdPrivacy": "Tidak ada yang melihat pilihanmu, dan kamu tidak melihat pilihan mereka. Makan hanya memakai jumlah totalnya.",
       "openLine": "Buka Makan di meja. Dia kasih tahu apa yang harus dipesan di sini."
     },
     "FirstDay": {
@@ -383,17 +383,17 @@
       "slipKnow": "Setelah jam 9 cuma terima tunai.",
       "nowhereQ": "Kalau tempat yang belum ada yang coba?",
       "emptyState": "Belum cukup makanan di sini untuk membantumu memilih.",
-      "emptySub": "Makan bilang begitu. Dia tidak pernah mengarang.",
+      "emptySub": "Makan bilang begitu daripada menebak. Simpan yang kamu pesan, dan orang berikutnya dapat jawaban.",
       "house": "Soi 5",
       "meta": "Jl. Batu Bolong · 12.00 – 22.00",
       "legal": "V vegetarian · VG vegan. Harga dalam ribuan rupiah, belum termasuk pajak dan layanan 21%.",
       "maitredIntro": "Dan setiap tempat punya Maitre'D: siapa pun yang paling sering makan di sana.",
-      "maitredWho": "Mali sudah makan di sini pada 23 hari berbeda. Tidak ada yang lebih tahu Soi 5 di Makan. Sampai ada yang makan di sini lebih sering."
+      "maitredWho": "Mali sudah makan di sini pada 23 hari berbeda, lebih banyak dari siapa pun di Makan. Kalau ada yang melampauinya, catatannya jadi milik orang itu."
     },
     "Landing": {
       "title": "Tahu mau pesan apa.",
       "titleAccent": "mau pesan apa",
-      "sub": "Foto apa yang kamu makan. Makan belajar apa yang kamu suka, dan apa yang disukai orang lain di tempat kamu berada. Lalu dia kasih tahu kamu mau pesan apa.",
+      "sub": "Foto apa yang kamu makan. Makan mencari tahu apa yang kamu suka, dan apa yang terus dipesan orang di tempat kamu berada. Lalu dia kasih tahu kamu mau pesan apa.",
       "cta": "Unduh Makan",
       "platform": "Gratis di iPhone",
       "secondary": "Lihat cara kerjanya",
@@ -401,25 +401,25 @@
     },
     "Not": {
       "eyebrow": "Yang tidak akan Makan lakukan",
-      "title": "Beberapa hal akan merusak jawabannya.",
+      "title": "Enam hal yang sengaja Makan tinggalkan.",
       "n1": "Tanpa bintang.",
       "l1": "Makanan bukan 4,2 dari 5.",
       "n2": "Tanpa jawaban berbayar.",
       "l2": "Restoran tidak bisa bayar untuk jadi pilihan. Tidak pernah.",
       "n3": "Tanpa kontes popularitas.",
-      "l3": "Terkenal tidak menang. Dipesan lagi yang menang.",
+      "l3": "Sebuah hidangan dipilih karena orang memesannya lagi, bukan karena fotonya paling banyak.",
       "n4": "Tanpa hitung kalori.",
-      "l4": "Makan mengingat apa yang kamu makan, bukan berapa kalorinya.",
+      "l4": "Tanpa kalori, tanpa skor. Cuma foto dan nama yang kamu tulis.",
       "n5": "Tanpa PR.",
       "l5": "Kamu tidak harus menyimpan setiap makanan. Simpan yang layak diingat.",
       "climaxEyebrow": "Dan yang paling penting",
       "climax": "Tanpa menebak.",
-      "climaxBody": "Kalau Makan belum cukup tahu, dia bilang. Dia tidak pernah mengarang jawaban."
+      "climaxBody": "Kalau Makan belum melihat cukup banyak makanan di suatu tempat, dia bilang begitu di menu, bukan asal memilih."
     },
     "Final": {
       "eyebrow": "Gratis di iPhone",
       "title": "Lain kali kamu tidak tahu mau pesan apa.",
-      "body": "Foto apa yang kamu makan. Main Eat or Yeet. Sisanya Makan yang urus.",
+      "body": "Foto apa yang kamu makan. Sesekali main Eat or Yeet. Lain kali kamu duduk dengan menu, Makan sudah punya jawaban.",
       "cta": "Unduh Makan"
     }
   }
