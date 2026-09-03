@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server"
 import AppLanding from "./AppLanding"
 import { createPageMetadata } from "@/lib/site-metadata"
 import SiteSchema from "@/components/SiteSchema"
+import { DECISION_HOME } from "@/lib/decision-home"
 
 export async function generateMetadata({
   params,
@@ -15,7 +16,7 @@ export async function generateMetadata({
     title: t("metaTitle"),
     // The store page says what the home page says once the gate is on.
     description:
-      process.env.DECISION_HOME === "1"
+      DECISION_HOME
         ? (await getTranslations({ locale, namespace: "Decision.Metadata" }))("description")
         : t("metaDescription"),
     path: locale === "id" ? "/id/app" : "/app",

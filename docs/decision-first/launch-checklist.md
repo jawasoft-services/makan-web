@@ -1,6 +1,6 @@
 # Decision home — launch checklist
 
-Devon gives the go. Until then the page lives at `/dev-preview` (404 in production) and `/` keeps the legacy home.
+Devon gives the go by merging to `main`. The decision home ships by default (2026-09-03: gate inverted; `DECISION_HOME=0` is the only way back to the legacy home). `/dev-preview` still 404s in production.
 
 Merging this branch to main changes these immediately, whether or not DECISION_HOME is set: /partner (now a full restaurant page), /standings (new, en and id, in the sitemap and footer), the shared FAQ answer for "What is Eat or Yeet?", the 18px base type size on every page, the meal-strip filters, and the llms.txt page list. Only the homepage itself and the llms.txt tagline are behind the gate. Confirm those are wanted live before merging.
 
@@ -20,6 +20,6 @@ Merging this branch to main changes these immediately, whether or not DECISION_H
   ```
 
   Places API (New) is already enabled on the project.
-- [ ] Devon says go: set `DECISION_HOME=1` on Vercel production, deploy
+- [ ] Devon says go: merge `docs/decision-first-site-rebuild` to `main` (auto-deploys). No variable to set. The sender stays on Resend's test address by decision (2026-09-03).
 - [ ] Post-deploy: `App Store CTA Clicked` events arrive with locations `hero`, `proof`, `final`
 - [ ] Then Task 11 of the plan: retire the legacy homepage sections

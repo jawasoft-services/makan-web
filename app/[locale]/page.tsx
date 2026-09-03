@@ -21,7 +21,7 @@ import { createPageMetadata } from "@/lib/site-metadata"
 
 // Deploy-time gate: DecisionHome ships on the real route only once this is
 // set. Off, `/` keeps the legacy composition below and its own metadata.
-const DECISION_HOME = process.env.DECISION_HOME === "1"
+import { DECISION_HOME } from "@/lib/decision-home"
 
 export async function generateMetadata({
   params,

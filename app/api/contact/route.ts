@@ -88,7 +88,7 @@ export async function POST(request: Request) {
     const resend = new Resend(process.env.RESEND_API_KEY)
     const toAddress = process.env.CONTACT_EMAIL ?? "team@makanofficial.com"
     const fromAddress =
-      process.env.RESEND_FROM ?? "Makan <hello@makanofficial.com>"
+      process.env.RESEND_FROM ?? "Makan Website <onboarding@resend.dev>"
 
     const isAndroidWaitlist = source === "android-waitlist"
     const heading = isAndroidWaitlist

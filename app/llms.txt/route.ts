@@ -1,5 +1,6 @@
 import { getAllReviews } from "@/lib/reviews"
 import { APP_STORE_URL } from "@/lib/links"
+import { DECISION_HOME } from "@/lib/decision-home"
 import { BOILERPLATE_SHORT } from "@/lib/press"
 
 export const dynamic = "force-static"
@@ -13,7 +14,7 @@ export function GET() {
   const lines = [
     "# Makan",
     "",
-    process.env.DECISION_HOME === "1"
+    DECISION_HOME
       ? "> The app you open when you don't know what to order. Take a photo of what you eat; Makan works out what you like and what people keep ordering where you are. Free on iPhone and at makanofficial.com."
       : "> A social food journal — remember every meal. Free on the iOS App Store and at makanofficial.com.",
     "",
