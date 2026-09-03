@@ -599,7 +599,8 @@
     "directions": "Directions",
     "standingBand": "Standing",
     "recentMeals": "Recent meals",
-    "postMeal": "Post a meal here"
+    "postMeal": "Post a meal here",
+    "photoCredit": "Photo: {author} · Google Maps"
   },
   "Meal": {
     "savedAt": "Saved at",

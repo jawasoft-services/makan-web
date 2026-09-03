@@ -599,7 +599,8 @@
     "directions": "Petunjuk arah",
     "standingBand": "Peringkat",
     "recentMeals": "Makanan terbaru",
-    "postMeal": "Posting makanan di sini"
+    "postMeal": "Posting makanan di sini",
+    "photoCredit": "Foto: {author} · Google Maps"
   },
   "Meal": {
     "savedAt": "Disimpan di",

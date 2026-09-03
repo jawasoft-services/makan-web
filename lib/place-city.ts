@@ -79,7 +79,8 @@ function pick(components: { longText?: string; types?: string[] }[], types: stri
   return ''
 }
 
-async function accessToken(): Promise<string | null> {
+/** An OAuth token for Google APIs billed to the project: the site's service account on Vercel, ADC locally. */
+export async function accessToken(): Promise<string | null> {
   const scopes = ['https://www.googleapis.com/auth/cloud-platform']
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL
   const privateKey = process.env.FIREBASE_PRIVATE_KEY

@@ -10,6 +10,7 @@ import PlacesMapLoader from '@/components/map/PlacesMapLoader'
 import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
 import { CITY_FLOOR, EVIDENCE_FLOOR, getEatStandings, type StandingRow } from '@/lib/eat-standings'
 import { getDirectoryPlace, getPlaceDirectory, type DirectoryPlace } from '@/lib/place-directory'
+import { getPlacePhoto } from '@/lib/place-photo'
 import { localizePath } from '@/i18n/paths'
 
 /**
@@ -85,7 +86,9 @@ export default async function PlacePage({ params }: Props) {
   const directionsUrl = hasGeo
     ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(place.name)}&destination_place_id=${encodeURIComponent(place.placeId)}`
     : null
-  const hero = place.meals[0]
+  // The hero is the place's Google photo, as in the app; a public meal if none.
+  const googlePhoto = await getPlacePhoto(place.placeId)
+  const hero = googlePhoto ? { src: googlePhoto.uri, alt: place.name } : place.meals[0] ? { src: place.meals[0].src, alt: place.meals[0].caption ? `${place.meals[0].caption}, ${place.name}` : t('mealAlt', { name: place.name }) } : null
 
   const schema = {
     '@context': 'https://schema.org',
@@ -96,7 +99,7 @@ export default async function PlacePage({ params }: Props) {
     ...(place.address ? { address: { '@type': 'PostalAddress', streetAddress: place.address, ...(place.where ? { addressLocality: place.where.city, addressCountry: place.where.country } : {}) } } : {}),
     ...(hasGeo ? { geo: { '@type': 'GeoCoordinates', latitude: place.lat, longitude: place.lng } } : {}),
     ...(place.cuisine.length ? { servesCuisine: place.cuisine } : {}),
-    ...(place.meals.length ? { image: place.meals.slice(0, 6).map((m) => m.src) } : {}),
+    ...(googlePhoto || place.meals.length ? { image: [...(googlePhoto ? [googlePhoto.uri] : []), ...place.meals.slice(0, 6).map((m) => m.src)] } : {}),
     ...(directionsUrl ? { hasMap: directionsUrl } : {}),
     description: ranked && row
       ? `${row.eats} Eats, ${row.yeets} Yeets from ${row.matchups} Eat or Yeet matchups on Makan. ${place.meals.length} public meals saved here.`
@@ -137,17 +140,20 @@ export default async function PlacePage({ params }: Props) {
       <main id="main-content" className="pb-28">
         {/* Hero: the latest public meal, full-bleed, as the app does. */}
         <div className="relative h-[16rem] w-full bg-brand-card pt-20 sm:h-[22rem]">
-          {hero ? (
-            <Image
-              src={hero.src}
-              alt={hero.caption ? `${hero.caption}, ${place.name}` : t('mealAlt', { name: place.name })}
-              fill
-              sizes="100vw"
-              priority
-              className="object-cover"
-            />
-          ) : null}
+          {hero ? <Image src={hero.src} alt={hero.alt} fill sizes="100vw" priority className="object-cover" /> : null}
           <div aria-hidden className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-brand-cream/70" />
+          {/* Google requires the photographer's credit beside a Places photo. */}
+          {googlePhoto ? (
+            <p className="absolute bottom-2 right-3 z-[1] rounded-full bg-brand-ink/60 px-2.5 py-1 text-[0.68rem] text-white/90">
+              {googlePhoto.authorUri ? (
+                <a href={googlePhoto.authorUri} rel="noopener" target="_blank" className="hover:underline">
+                  {t('photoCredit', { author: googlePhoto.author || 'Google Maps' })}
+                </a>
+              ) : (
+                t('photoCredit', { author: googlePhoto.author || 'Google Maps' })
+              )}
+            </p>
+          ) : null}
         </div>
 
         {/* Info sheet: overlaps the hero with rounded corners and a handle. */}

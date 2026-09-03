@@ -11,7 +11,9 @@ const contentSecurityPolicy = [
   // Framer Motion and React style props require inline styles. Script execution
   // remains strict in production; styles cannot execute JavaScript.
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' blob: data: https://firebasestorage.googleapis.com",
+  // Meal photos (Firebase), OpenStreetMap tiles for the maps, and Google
+  // Places photos for restaurant heroes (lh3.googleusercontent.com).
+  "img-src 'self' blob: data: https://firebasestorage.googleapis.com https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://lh3.googleusercontent.com",
   "font-src 'self' data:",
   "connect-src 'self' https://firebasestorage.googleapis.com",
   "object-src 'none'",

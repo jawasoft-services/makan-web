@@ -6,6 +6,7 @@ import id from "@/messages/id.json"
 import { createDecisionSocialImage } from "../../_social-image"
 import { getEatStandings } from "@/lib/eat-standings"
 import { getDirectoryPlace } from "@/lib/place-directory"
+import { getPlacePhoto } from "@/lib/place-photo"
 
 export const alt = "On Makan"
 export const size = { width: 1200, height: 630 }
@@ -50,7 +51,8 @@ export default async function Image({ params }: { params: Promise<{ locale: stri
   // Meal photos are WebP, which the card renderer cannot decode: fetch and
   // transcode to a JPEG data URI, cropped to the card's left half. Any
   // failure falls back to the text card rather than a blank one.
-  const photo = await cardPhoto(place.meals[0]?.src)
+  const google = await getPlacePhoto(place.placeId)
+  const photo = (await cardPhoto(google?.uri)) ?? (await cardPhoto(place.meals[0]?.src))
   if (!photo) {
     const sizeFor = place.name.length > 24 ? 64 : place.name.length > 14 ? 84 : 108
     return createDecisionSocialImage(place.name, `${line}${eats}${where}`, sizeFor)
