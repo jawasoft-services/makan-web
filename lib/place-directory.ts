@@ -21,6 +21,8 @@ import { placeSlug, shortHash } from '@/lib/slug'
 export interface DirectoryMeal {
   id: string
   src: string
+  /** A smaller copy for grids, when the app made one. */
+  thumb: string
   caption: string
   mealType: string
   username: string
@@ -57,10 +59,10 @@ export const getPlaceDirectory = unstable_cache(
       if (!db) return []
       const snap = await db
         .collection('meals')
-        .select('placeProviderId', 'locationName', 'createdAt', 'isPublic', 'moderationStatus', 'imageURL', 'caption', 'mealType', 'userID', 'uid', 'userName')
+        .select('placeProviderId', 'locationName', 'createdAt', 'isPublic', 'moderationStatus', 'imageURL', 'thumbnailUrl', 'caption', 'mealType', 'userID', 'uid', 'userName')
         .get()
 
-      type Raw = { id: string; src: string; caption: string; mealType: string; uid: string; legacyName: string; at: number }
+      type Raw = { id: string; src: string; thumb: string; caption: string; mealType: string; uid: string; legacyName: string; at: number }
       const byPlace = new Map<string, { name: Map<string, number>; first: number; meals: Raw[] }>()
       for (const doc of snap.docs) {
         const d = doc.data()
@@ -74,9 +76,11 @@ export const getPlaceDirectory = unstable_cache(
         const isPublic = d.isPublic === true && (d.moderationStatus === undefined || d.moderationStatus === 'active')
         const src = str(d.imageURL)
         if (isPublic && src.startsWith('https://firebasestorage.googleapis.com/')) {
+          const thumb = str(d.thumbnailUrl)
           entry.meals.push({
             id: doc.id,
             src,
+            thumb: thumb.startsWith('https://firebasestorage.googleapis.com/') ? thumb : '',
             caption: str(d.caption),
             mealType: str(d.mealType),
             uid: str(d.userID) || str(d.uid),
@@ -129,6 +133,7 @@ export const getPlaceDirectory = unstable_cache(
             .map((m) => ({
               id: m.id,
               src: m.src,
+              thumb: m.thumb,
               caption: isCleanCaption(m.caption) ? m.caption : '',
               mealType: m.mealType,
               username: (m.legacyName && !/^user_/i.test(m.legacyName) ? m.legacyName : handle.get(m.uid)) ?? '',
@@ -155,7 +160,7 @@ export const getPlaceDirectory = unstable_cache(
       return []
     }
   },
-  ['makan-place-directory', 'v1'],
+  ['makan-place-directory', 'v2'],
   { revalidate: 3600 },
 )
 

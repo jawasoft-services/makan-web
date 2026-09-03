@@ -261,7 +261,7 @@ export default async function PlacePage({ params }: Props) {
                 <li key={m.id}>
                   <Link href={`/meal/${m.id}`} className="group block overflow-hidden rounded-2xl bg-brand-card focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink">
                     <Image
-                      src={m.src}
+                      src={m.thumb || m.src}
                       alt={m.caption ? `${m.caption}, ${place.name}` : t('mealAlt', { name: place.name })}
                       width={480}
                       height={480}

@@ -32,7 +32,7 @@ export const getPlacePhoto = unstable_cache(
       const json = (await place.json()) as { photos?: { name: string; authorAttributions?: { displayName?: string; uri?: string }[] }[] }
       const photo = json.photos?.[0]
       if (!photo?.name) return null
-      const media = await fetch(`https://places.googleapis.com/v1/${photo.name}/media?maxWidthPx=1600&skipHttpRedirect=true`, { headers })
+      const media = await fetch(`https://places.googleapis.com/v1/${photo.name}/media?maxWidthPx=1000&skipHttpRedirect=true`, { headers })
       if (!media.ok) return null
       const { photoUri } = (await media.json()) as { photoUri?: string }
       if (!photoUri) return null
@@ -42,6 +42,7 @@ export const getPlacePhoto = unstable_cache(
       return null
     }
   },
-  ['makan-place-photo', 'v1'],
+  // 1000px: a phone hero at full width, not a 1600px download on 3G.
+  ['makan-place-photo', 'v2'],
   { revalidate: THIRTY_DAYS },
 )
