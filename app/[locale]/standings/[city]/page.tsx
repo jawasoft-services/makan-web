@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Footer from '@/components/Footer'
 import SiteSchema from '@/components/SiteSchema'
 import StandingsTable from '@/components/standings/StandingsTable'
+import PlacesMapLoader from '@/components/map/PlacesMapLoader'
 import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
 import { CITY_FLOOR, getCityStanding, getEatStandings } from '@/lib/eat-standings'
 import { localizePath } from '@/i18n/paths'
@@ -116,6 +117,27 @@ export default async function CityStandingsPage({ params }: Props) {
         <p className="mt-4 text-sm leading-[1.6] text-brand-muted">
           <time dateTime={computedAt.toISOString()}>{t('updatedOn', { date: dayMonthYear.format(computedAt) })}</time> {t('updated')}
         </p>
+
+        {city.rows.some((r) => r.lat !== null && r.lng !== null) ? (
+          <section className="mt-12 border-t border-brand-line pt-10">
+            <h2 className="text-xl font-bold text-brand-ink sm:text-2xl">{t('mapTitle')}</h2>
+            <p className="mt-3 max-w-[60ch] text-base leading-[1.7] text-brand-muted">{t('mapBody')}</p>
+            <PlacesMapLoader
+              className="mt-6 h-[22rem] sm:h-[26rem]"
+              label={t('mapLabel')}
+              markers={city.rows
+                .filter((r) => r.lat !== null && r.lng !== null)
+                .map((r, i) => ({
+                  slug: r.slug,
+                  name: r.name,
+                  lat: r.lat as number,
+                  lng: r.lng as number,
+                  line: `#${i + 1} · ${r.eats} ${t('colEats')}`,
+                  href: localizePath(locale, `/places/${r.slug}`),
+                }))}
+            />
+          </section>
+        ) : null}
 
         <section className="mt-12 border-t border-brand-line pt-10">
           <h2 className="text-xl font-bold text-brand-ink sm:text-2xl">{t('howTitle')}</h2>

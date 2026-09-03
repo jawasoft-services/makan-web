@@ -1,7 +1,7 @@
 import 'server-only'
 import { unstable_cache } from 'next/cache'
 import { getDb } from '@/lib/firebase-admin'
-import { getPlaceWhere, hasSeededWhere, type PlaceWhere } from '@/lib/place-city'
+import { getPlaceSeed, getPlaceWhere, hasSeededWhere, type PlaceWhere } from '@/lib/place-city'
 import { isCleanCaption } from '@/lib/makan-stats'
 import { placeSlug, slugify } from '@/lib/slug'
 
@@ -38,6 +38,9 @@ export interface StandingRow {
   since: string | null
   /** City and country, or null when the place can't be located. */
   where: PlaceWhere | null
+  /** Coordinates from the place seed, for the map. */
+  lat: number | null
+  lng: number | null
   /** Public, active meals tagged to the place. */
   publicMeals: number
   /** Up to three recent, clean public captions saved here, newest first. */
@@ -205,6 +208,8 @@ export const getEatStandings = unstable_cache(
           eatRate: n ? t.eats / n : 0,
           since: since ? new Date(since).toISOString() : null,
           where: null,
+          lat: getPlaceSeed(id)?.lat ?? null,
+          lng: getPlaceSeed(id)?.lng ?? null,
           publicMeals: publicMeals.get(id) ?? 0,
           recentCaptions,
           rank: null,
@@ -247,7 +252,7 @@ export const getEatStandings = unstable_cache(
   },
   // Bump when the row shape or the place-label rule changes: labels are
   // computed inside this cache.
-  ['makan-eat-standings', 'v4'],
+  ['makan-eat-standings', 'v5'],
   { revalidate: 3600 },
 )
 

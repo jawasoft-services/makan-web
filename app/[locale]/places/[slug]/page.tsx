@@ -6,14 +6,21 @@ import Link from 'next/link'
 import Footer from '@/components/Footer'
 import SiteSchema from '@/components/SiteSchema'
 import StoreLink from '@/components/home/StoreLink'
+import PlacesMapLoader from '@/components/map/PlacesMapLoader'
 import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
 import { CITY_FLOOR, EVIDENCE_FLOOR, getEatStandings, type StandingRow } from '@/lib/eat-standings'
 import { getDirectoryPlace, getPlaceDirectory, type DirectoryPlace } from '@/lib/place-directory'
 import { localizePath } from '@/i18n/paths'
 
-// One restaurant on Makan, as the app's place screen shows it: name,
-// address, the public meals saved there, and its standing if it has one.
-// The page an owner links to and the page Google finds.
+/**
+ * One restaurant on Makan, laid out like the app's place screen
+ * (app/(modals)/restaurantPage.tsx): a hero photo with the info sheet
+ * overlapping it; name; a meta row (cuisine · meals · city); the address as
+ * a directions link; then the bands (the app shows YOU and FRIENDS, which
+ * need a signed-in user, so the web shows the place's standing instead);
+ * "RECENT MEALS" as a two-column grid, each card opening the meal's page;
+ * and a sticky "Post a meal here" pill, which on the web is the App Store.
+ */
 export const revalidate = 3600
 export const dynamicParams = true
 
@@ -74,9 +81,11 @@ export default async function PlacePage({ params }: Props) {
   const standings = await getEatStandings()
   const city = place.where ? standings.cities.find((c) => c.city === place.where?.city) : undefined
   const ranked = Boolean(row && row.rank !== null)
-  const mapUrl = place.lat !== null && place.lng !== null
-    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name)}&query_place_id=${encodeURIComponent(place.placeId)}`
+  const hasGeo = place.lat !== null && place.lng !== null
+  const directionsUrl = hasGeo
+    ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(place.name)}&destination_place_id=${encodeURIComponent(place.placeId)}`
     : null
+  const hero = place.meals[0]
 
   const schema = {
     '@context': 'https://schema.org',
@@ -85,10 +94,10 @@ export default async function PlacePage({ params }: Props) {
     name: place.name,
     url: pageUrl,
     ...(place.address ? { address: { '@type': 'PostalAddress', streetAddress: place.address, ...(place.where ? { addressLocality: place.where.city, addressCountry: place.where.country } : {}) } } : {}),
-    ...(place.lat !== null && place.lng !== null ? { geo: { '@type': 'GeoCoordinates', latitude: place.lat, longitude: place.lng } } : {}),
+    ...(hasGeo ? { geo: { '@type': 'GeoCoordinates', latitude: place.lat, longitude: place.lng } } : {}),
     ...(place.cuisine.length ? { servesCuisine: place.cuisine } : {}),
     ...(place.meals.length ? { image: place.meals.slice(0, 6).map((m) => m.src) } : {}),
-    ...(mapUrl ? { hasMap: mapUrl } : {}),
+    ...(directionsUrl ? { hasMap: directionsUrl } : {}),
     description: ranked && row
       ? `${row.eats} Eats, ${row.yeets} Yeets from ${row.matchups} Eat or Yeet matchups on Makan. ${place.meals.length} public meals saved here.`
       : `${place.meals.length} public meals saved here on Makan.`,
@@ -119,138 +128,190 @@ export default async function PlacePage({ params }: Props) {
       ? [{ value: `${row.matchups}/${EVIDENCE_FLOOR}`, label: t('matchupsToward') }]
       : []
 
+  const eyebrow = 'text-[0.72rem] font-extrabold uppercase tracking-[0.16em] text-brand-orange'
+
   return (
     <div className="min-h-screen bg-brand-cream">
       <SiteSchema locale={locale} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      <main id="main-content" className="mx-auto max-w-3xl px-5 pb-16 pt-24 sm:px-8 sm:pb-24 sm:pt-32">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-orange">
-          <Link href={localizePath(locale, '/standings')} className="hover:underline">
-            {t('standings')}
-          </Link>
-          {city ? (
-            <>
-              <span aria-hidden> · </span>
-              <Link href={localizePath(locale, `/standings/${city.slug}`)} className="hover:underline">
-                {city.city}
-              </Link>
-            </>
-          ) : place.where ? (
-            <>
-              <span aria-hidden> · </span>
-              {place.where.city}
-            </>
+      <main id="main-content" className="pb-28">
+        {/* Hero: the latest public meal, full-bleed, as the app does. */}
+        <div className="relative h-[16rem] w-full bg-brand-card pt-20 sm:h-[22rem]">
+          {hero ? (
+            <Image
+              src={hero.src}
+              alt={hero.caption ? `${hero.caption}, ${place.name}` : t('mealAlt', { name: place.name })}
+              fill
+              sizes="100vw"
+              priority
+              className="object-cover"
+            />
           ) : null}
-        </p>
-        <h1 className="mt-4 text-3xl font-bold text-brand-ink sm:text-4xl lg:text-5xl" style={{ letterSpacing: '-0.02em' }}>
-          {place.name}
-        </h1>
-        <p className="mt-3 text-base leading-[1.6] text-brand-muted">
-          {place.address ? (
-            mapUrl ? (
-              <a href={mapUrl} rel="noopener" target="_blank" className="underline decoration-brand-orange/50 underline-offset-4 hover:decoration-brand-orange">
-                {place.address}
-              </a>
-            ) : (
-              place.address
-            )
-          ) : place.where ? (
-            `${place.where.city}, ${place.where.country}`
-          ) : (
-            t('somewhere')
-          )}
-          {place.cuisine.length ? ` · ${place.cuisine.join(', ')}` : ''}
-          {place.since ? ` · ${t('since', { date: monthYear.format(new Date(place.since)) })}` : ''}
-        </p>
+          <div aria-hidden className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-brand-cream/70" />
+        </div>
 
-        {/* The one line an owner will quote. */}
-        {row && (ranked || row.cityRank !== null) ? (
-          <p className="mt-8 text-2xl font-bold leading-[1.15] text-brand-ink sm:text-3xl" style={{ letterSpacing: '-0.02em' }}>
-            {row.cityRank !== null && city
-              ? t('rankCity', { rank: row.cityRank, city: city.city })
-              : t('rankGlobal', { rank: row.rank ?? 0 })}
-            {row.cityRank !== null && city && ranked ? (
-              <span className="block text-lg font-semibold text-brand-muted sm:text-xl">{t('rankGlobal', { rank: row.rank ?? 0 })}</span>
+        {/* Info sheet: overlaps the hero with rounded corners and a handle. */}
+        <div className="relative z-10 mx-auto -mt-8 max-w-3xl rounded-t-[1.75rem] bg-brand-cream px-5 pt-3 sm:px-8">
+          <div aria-hidden className="mx-auto mb-5 h-1.5 w-12 rounded-full bg-brand-line" />
+          <p className={eyebrow}>
+            <Link href={localizePath(locale, '/standings')} className="hover:underline">
+              {t('standings')}
+            </Link>
+            {city ? (
+              <>
+                <span aria-hidden> · </span>
+                <Link href={localizePath(locale, `/standings/${city.slug}`)} className="hover:underline">
+                  {city.city}
+                </Link>
+              </>
+            ) : place.where ? (
+              <>
+                <span aria-hidden> · </span>
+                {place.where.city}
+              </>
             ) : null}
           </p>
-        ) : row && row.matchups > 0 ? (
-          <p className="mt-8 max-w-[52ch] text-xl font-bold leading-[1.3] text-brand-ink">
-            {t('underFloor', { matchups: row.matchups, floor: EVIDENCE_FLOOR, cityFloor: CITY_FLOOR })}
+          <h1 className="mt-2 text-3xl font-bold text-brand-ink sm:text-4xl" style={{ letterSpacing: '-0.02em' }}>
+            {place.name}
+          </h1>
+
+          {/* Meta row: cuisine · meals · since. */}
+          <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-brand-muted">
+            {place.cuisine.length ? <span>{place.cuisine.join(', ')}</span> : null}
+            {place.cuisine.length ? <span aria-hidden>·</span> : null}
+            <span>{t('mealsShort', { count: place.meals.length })}</span>
+            {place.since ? (
+              <>
+                <span aria-hidden>·</span>
+                <span>{t('since', { date: monthYear.format(new Date(place.since)) })}</span>
+              </>
+            ) : null}
           </p>
-        ) : null}
 
-        {stats.length ? (
-          <dl className={`mt-8 grid gap-6 ${ranked ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-1'}`}>
-            {stats.map((s) => (
-              <div key={s.label}>
-                <dt className="text-3xl font-bold leading-none tracking-[-0.02em] text-brand-orange tabular-nums">{s.value}</dt>
-                <dd className="mt-2 text-sm font-semibold uppercase tracking-[0.12em] text-brand-muted">{s.label}</dd>
-              </div>
-            ))}
-          </dl>
-        ) : null}
+          {/* Address row, tappable for directions, as in the app. */}
+          {place.address ? (
+            <p className="mt-4 flex items-start gap-2 text-base leading-[1.5] text-brand-ink">
+              <svg aria-hidden viewBox="0 0 24 24" className="mt-1 h-4 w-4 shrink-0 text-brand-muted" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              {directionsUrl ? (
+                <a href={directionsUrl} rel="noopener" target="_blank" className="underline decoration-brand-orange/50 underline-offset-4 hover:decoration-brand-orange">
+                  {place.address}
+                  <span className="ml-2 text-sm font-semibold text-brand-orange">{t('directions')} ↗</span>
+                </a>
+              ) : (
+                <span>{place.address}</span>
+              )}
+            </p>
+          ) : null}
 
-        {/* Every public meal saved here, newest first, each linking to its own page. */}
-        <section className="mt-12 border-t border-brand-line pt-10">
-          <h2 className="text-xl font-bold text-brand-ink sm:text-2xl">{t('savedTitle')}</h2>
-          <p className="mt-3 text-base leading-[1.7] text-brand-muted">{t('savedCount', { count: place.meals.length })}</p>
-          <ul className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
-            {place.meals.map((m) => (
-              <li key={m.id}>
-                <Link href={`/meal/${m.id}`} className="group block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink">
-                  <span className="block overflow-hidden rounded-xl bg-brand-card">
+          {hasGeo ? (
+            <PlacesMapLoader
+              className="mt-5 h-[13rem] sm:h-[15rem]"
+              label={t('mapLabel', { name: place.name })}
+              zoom={16}
+              markers={[{ slug: place.slug, name: place.name, lat: place.lat as number, lng: place.lng as number, href: pageUrl }]}
+            />
+          ) : null}
+
+          {/* The band the app fills with YOU and FRIENDS; on the web, the place's standing. */}
+          {row && (ranked || row.cityRank !== null || row.matchups > 0) ? (
+            <section className="mt-8 rounded-2xl border border-brand-line bg-brand-card p-5">
+              <p className={eyebrow}>{t('standingBand')}</p>
+              {ranked || row.cityRank !== null ? (
+                <p className="mt-2 text-xl font-bold leading-[1.2] text-brand-ink sm:text-2xl" style={{ letterSpacing: '-0.015em' }}>
+                  {row.cityRank !== null && city ? t('rankCity', { rank: row.cityRank, city: city.city }) : t('rankGlobal', { rank: row.rank ?? 0 })}
+                  {row.cityRank !== null && city && ranked ? (
+                    <span className="block text-base font-semibold text-brand-muted">{t('rankGlobal', { rank: row.rank ?? 0 })}</span>
+                  ) : null}
+                </p>
+              ) : (
+                <p className="mt-2 text-base font-semibold leading-[1.4] text-brand-ink">
+                  {t('underFloor', { matchups: row.matchups, floor: EVIDENCE_FLOOR, cityFloor: CITY_FLOOR })}
+                </p>
+              )}
+              {stats.length ? (
+                <dl className={`mt-4 grid gap-4 ${ranked ? 'grid-cols-4' : 'grid-cols-1'}`}>
+                  {stats.map((s) => (
+                    <div key={s.label}>
+                      <dt className="text-2xl font-bold leading-none tracking-[-0.02em] text-brand-orange tabular-nums">{s.value}</dt>
+                      <dd className="mt-1 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-brand-muted">{s.label}</dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : null}
+            </section>
+          ) : null}
+
+          {/* RECENT MEALS, two columns, as the app lays them out. */}
+          <section className="mt-10">
+            <div className="flex items-center justify-between border-t border-brand-line pt-6">
+              <h2 className={eyebrow}>{t('recentMeals')}</h2>
+              <span className="text-sm text-brand-muted">{t('savedCount', { count: place.meals.length })}</span>
+            </div>
+            <ul className="mt-5 grid grid-cols-2 gap-3 sm:gap-4">
+              {place.meals.map((m) => (
+                <li key={m.id}>
+                  <Link href={`/meal/${m.id}`} className="group block overflow-hidden rounded-2xl bg-brand-card focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink">
                     <Image
                       src={m.src}
                       alt={m.caption ? `${m.caption}, ${place.name}` : t('mealAlt', { name: place.name })}
                       width={480}
                       height={480}
-                      sizes="(min-width: 640px) 220px, 45vw"
+                      sizes="(min-width: 640px) 330px, 45vw"
                       className="aspect-square h-auto w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                       loading="lazy"
                     />
-                  </span>
-                  <span className="mt-2 block truncate text-sm font-semibold text-brand-ink">{m.caption || m.mealType || t('mealFallback')}</span>
-                  <span className="block truncate text-xs text-brand-muted">
-                    {m.username ? `@${m.username} · ` : ''}
-                    <time dateTime={m.at}>{dayMonthYear.format(new Date(m.at))}</time>
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
+                    <span className="block px-3 py-2.5">
+                      <span className="block truncate text-sm font-semibold text-brand-ink">{m.caption || m.mealType || t('mealFallback')}</span>
+                      <span className="block truncate text-xs text-brand-muted">
+                        {m.username ? `@${m.username} · ` : ''}
+                        <time dateTime={m.at}>{dayMonthYear.format(new Date(m.at))}</time>
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
 
-        <section className="mt-12 border-t border-brand-line pt-10">
-          <h2 className="text-xl font-bold text-brand-ink sm:text-2xl">{t('howTitle')}</h2>
-          <ul className="mt-4 space-y-3">
-            {(['how1', 'how2', 'how3'] as const).map((k) => (
-              <li key={k} className="flex items-baseline gap-3 text-base leading-[1.7] text-brand-ink">
-                <span aria-hidden className="text-[0.55rem] text-brand-orange">●</span>
-                <span>{t(k, { floor: EVIDENCE_FLOOR })}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
+          <section className="mt-10 border-t border-brand-line pt-8">
+            <h2 className={eyebrow}>{t('howTitle')}</h2>
+            <ul className="mt-3 space-y-2">
+              {(['how1', 'how2', 'how3'] as const).map((k) => (
+                <li key={k} className="flex items-baseline gap-3 text-sm leading-[1.6] text-brand-ink">
+                  <span aria-hidden className="text-[0.5rem] text-brand-orange">●</span>
+                  <span>{t(k, { floor: EVIDENCE_FLOOR })}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
 
-        <section className="mt-12 grid grid-cols-1 gap-8 border-t border-brand-line pt-10 sm:grid-cols-2">
-          <div>
-            <h2 className="text-xl font-bold text-brand-ink">{t('ownerTitle')}</h2>
-            <p className="mt-3 text-base leading-[1.7] text-brand-muted">{t('ownerBody')}</p>
+          <section className="mt-10 rounded-2xl border border-brand-line bg-brand-card p-5">
+            <p className={eyebrow}>{t('ownerTitle')}</p>
+            <p className="mt-2 text-base leading-[1.6] text-brand-ink">{t('ownerBody')}</p>
             <Link
               href={localizePath(locale, '/partner')}
-              className="mt-5 inline-flex min-h-12 items-center rounded-full border-2 border-brand-ink px-7 text-base font-bold text-brand-ink transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink active:translate-y-0"
+              className="mt-4 inline-flex min-h-11 items-center rounded-full border-2 border-brand-ink px-6 text-sm font-bold text-brand-ink transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink active:translate-y-0"
             >
               {t('ownerCta')}
             </Link>
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-brand-ink">{t('dinerTitle')}</h2>
-            <p className="mt-3 text-base leading-[1.7] text-brand-muted">{t('dinerBody', { name: place.name })}</p>
-            <StoreLink location="place" className="mt-5 inline-block rounded-[10px] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink">
-              <Image src="/app-store-badge.svg" alt={t('badgeAlt')} width={180} height={60} className="h-12 w-auto" />
+          </section>
+        </div>
+
+        {/* Sticky "Post a meal here", the app's always-reachable verb. On the web it is the app. */}
+        <div className="pointer-events-none fixed inset-x-0 bottom-0 z-20 bg-gradient-to-t from-brand-cream to-transparent pb-5 pt-10">
+          <div className="mx-auto flex max-w-3xl justify-center px-5">
+            <StoreLink
+              location="place"
+              className="pointer-events-auto inline-flex min-h-12 items-center gap-2 rounded-full bg-brand-orange px-7 text-base font-bold text-white shadow-[0_10px_24px_-10px_rgba(255,153,50,0.7)] transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink active:translate-y-0"
+            >
+              <span aria-hidden className="text-xl leading-none">+</span>
+              {t('postMeal', { name: place.name })}
             </StoreLink>
           </div>
-        </section>
+        </div>
       </main>
       <Footer />
     </div>

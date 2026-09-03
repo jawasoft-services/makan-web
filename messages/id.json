@@ -557,7 +557,10 @@
     "byCityTitle": "Per kota",
     "byCityBody": "Peringkat yang sama di dalam satu kota, mulai dari {floor} pertandingan. Sebuah kota mendapat halaman begitu dua restoran mencapai angka itu.",
     "cityRows": "{count} restoran",
-    "allStandings": "Semua peringkat"
+    "allStandings": "Semua peringkat",
+    "mapLabel": "Peta restoran yang masuk peringkat",
+    "mapTitle": "Di peta",
+    "mapBody": "Setiap restoran di daftar ini, di mana lokasinya. Ketuk salah satu untuk membuka halamannya."
   },
   "Places": {
     "metaTitle": "{name} di Makan",
@@ -590,6 +593,17 @@
     "metaDescriptionMeals": "{name} di {where}, di Makan: {count} makanan publik yang disimpan orang yang makan di sana, lengkap dengan foto.",
     "cardMeals": "{count} makanan tersimpan di Makan",
     "mealAlt": "Makanan yang disimpan di {name} di Makan",
-    "mealFallback": "Sebuah makanan"
+    "mealFallback": "Sebuah makanan",
+    "mapLabel": "Peta yang menunjukkan {name}",
+    "mealsShort": "{count} makanan",
+    "directions": "Petunjuk arah",
+    "standingBand": "Peringkat",
+    "recentMeals": "Makanan terbaru",
+    "postMeal": "Posting makanan di sini"
+  },
+  "Meal": {
+    "savedAt": "Disimpan di",
+    "openPlace": "Lihat semua makanan yang disimpan di {name}",
+    "standings": "Peringkat Eat or Yeet"
   }
 }

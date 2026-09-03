@@ -557,7 +557,10 @@
     "byCityTitle": "By city",
     "byCityBody": "The same ranking inside one city, from {floor} matchups. A city gets a page once two restaurants have reached that.",
     "cityRows": "{count, plural, one {# restaurant} other {# restaurants}}",
-    "allStandings": "All standings"
+    "allStandings": "All standings",
+    "mapLabel": "Map of the ranked restaurants",
+    "mapTitle": "On the map",
+    "mapBody": "Every restaurant on this list, where it is. Tap one to open its page."
   },
   "Places": {
     "metaTitle": "{name} on Makan",
@@ -590,6 +593,17 @@
     "metaDescriptionMeals": "{name} in {where}, on Makan: {count, plural, one {# public meal} other {# public meals}} saved by people who ate there, with photos.",
     "cardMeals": "{count, plural, one {# meal saved on Makan} other {# meals saved on Makan}}",
     "mealAlt": "A meal saved at {name} on Makan",
-    "mealFallback": "A meal"
+    "mealFallback": "A meal",
+    "mapLabel": "Map showing {name}",
+    "mealsShort": "{count, plural, one {# meal} other {# meals}}",
+    "directions": "Directions",
+    "standingBand": "Standing",
+    "recentMeals": "Recent meals",
+    "postMeal": "Post a meal here"
+  },
+  "Meal": {
+    "savedAt": "Saved at",
+    "openPlace": "See every meal saved at {name}",
+    "standings": "Eat or Yeet standings"
   }
 }

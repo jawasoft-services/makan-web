@@ -3,11 +3,15 @@ import { Metadata } from "next"
 import { getDb } from "@/lib/firebase-admin"
 import Image from "next/image"
 import Footer from "@/components/Footer"
+import Link from "next/link"
+import { getTranslations } from "next-intl/server"
+import { getPlaceDirectory } from "@/lib/place-directory"
+import { localizePath } from "@/i18n/paths"
 
 export const dynamic = "force-dynamic"
 
 interface PageProps {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string; locale: string }>
 }
 
 interface MealData {
@@ -20,6 +24,7 @@ interface MealData {
   userID?: string
   username?: string
   isPublic?: boolean | null
+  placeProviderId?: string
 }
 
 async function getMeal(id: string): Promise<MealData | null> {
@@ -71,7 +76,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function MealPage({ params }: PageProps) {
-  const { id } = await params
+  const { id, locale } = await params
   const meal = await getMeal(id)
 
   // Privacy gate is centralized in getMeal (returns null for non-public).
@@ -85,6 +90,10 @@ export default async function MealPage({ params }: PageProps) {
     : `A ${meal.mealType || "Meal"} on Makan`
 
   if (!imageUrl) redirect("/")
+
+  // The way back into the site: the restaurant this meal was saved at.
+  const t = await getTranslations("Meal")
+  const place = meal.placeProviderId ? (await getPlaceDirectory()).find((p) => p.placeId === meal.placeProviderId) ?? null : null
 
   return (
     <div className="min-h-screen bg-brand-cream">
@@ -105,6 +114,20 @@ export default async function MealPage({ params }: PageProps) {
             height={683}
             className="w-full h-auto rounded-2xl shadow-2xl shadow-black/40"
           />
+          {place ? (
+            <p className="mt-6 text-center text-base leading-[1.6] text-brand-muted">
+              {t("savedAt")}{" "}
+              <Link
+                href={localizePath(locale ?? "en", `/places/${place.slug}`)}
+                className="font-semibold text-brand-ink underline decoration-brand-orange decoration-2 underline-offset-4"
+              >
+                {place.name}
+              </Link>
+              <span className="mt-1 block text-sm">{t("openPlace", { name: place.name })}</span>
+            </p>
+          ) : meal.locationName ? (
+            <p className="mt-6 text-center text-base text-brand-muted">{t("savedAt")} {meal.locationName}</p>
+          ) : null}
         </div>
       </main>
       <Footer />
