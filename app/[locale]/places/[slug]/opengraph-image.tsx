@@ -11,6 +11,20 @@ export const alt = "On Makan"
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
+async function cardPhoto(src: string | undefined): Promise<string | null> {
+  if (!src) return null
+  try {
+    const res = await fetch(src, { next: { revalidate: 86400 } })
+    if (!res.ok) return null
+    const input = Buffer.from(await res.arrayBuffer())
+    const sharp = (await import("sharp")).default
+    const jpeg = await sharp(input).rotate().resize(560, 630, { fit: "cover" }).jpeg({ quality: 82 }).toBuffer()
+    return `data:image/jpeg;base64,${jpeg.toString("base64")}`
+  } catch {
+    return null
+  }
+}
+
 // The card an owner posts: a real meal photo from the place on the left,
 // the name and the rank line on the right. Falls back to the text card
 // when there is no photo.
@@ -33,7 +47,10 @@ export default async function Image({ params }: { params: Promise<{ locale: stri
           : fill(t.cardMeals, { count: place.meals.length })
   const eats = row && row.rank !== null ? ` · ${row.eats} ${t.eats}` : ""
   const where = place.where && !(row && row.cityRank !== null && city) ? ` · ${place.where.city}` : ""
-  const photo = place.meals[0]?.src
+  // Meal photos are WebP, which the card renderer cannot decode: fetch and
+  // transcode to a JPEG data URI, cropped to the card's left half. Any
+  // failure falls back to the text card rather than a blank one.
+  const photo = await cardPhoto(place.meals[0]?.src)
   if (!photo) {
     const sizeFor = place.name.length > 24 ? 64 : place.name.length > 14 ? 84 : 108
     return createDecisionSocialImage(place.name, `${line}${eats}${where}`, sizeFor)
