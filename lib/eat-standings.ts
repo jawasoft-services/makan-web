@@ -3,7 +3,7 @@ import { unstable_cache } from 'next/cache'
 import { getDb } from '@/lib/firebase-admin'
 import { getPlaceWhere, hasSeededWhere, type PlaceWhere } from '@/lib/place-city'
 import { isCleanCaption } from '@/lib/makan-stats'
-import { shortHash, slugify } from '@/lib/slug'
+import { placeSlug, slugify } from '@/lib/slug'
 
 /**
  * The Eat or Yeet standings (D-033, docs/superpowers/specs/2026-09-02-eats-standings-design.md).
@@ -196,7 +196,7 @@ export const getEatStandings = unstable_cache(
         }
         return {
           placeId: id,
-          slug: `${slugify(name)}-${shortHash(id)}`,
+          slug: placeSlug(name, id),
           name,
           eats: t.eats,
           yeets: t.yeets,
@@ -228,7 +228,7 @@ export const getEatStandings = unstable_cache(
       for (const r of all) {
         if (!r.where || r.matchups < CITY_FLOOR) continue
         const slug = slugify(r.where.city)
-        const c = cityMap.get(slug) ?? { slug, city: r.where.city, country: r.where.country, rows: [] }
+        const c: CityStanding = cityMap.get(slug) ?? { slug, city: r.where.city, country: r.where.country, rows: [] }
         c.rows.push(r)
         cityMap.set(slug, c)
       }
@@ -247,7 +247,7 @@ export const getEatStandings = unstable_cache(
   },
   // Bump when the row shape or the place-label rule changes: labels are
   // computed inside this cache.
-  ['makan-eat-standings', 'v3'],
+  ['makan-eat-standings', 'v4'],
   { revalidate: 3600 },
 )
 

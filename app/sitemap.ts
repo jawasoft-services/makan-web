@@ -1,10 +1,12 @@
 import type { MetadataRoute } from "next"
 import { getAllReviews } from "@/lib/reviews"
 import { getEatStandings } from "@/lib/eat-standings"
+import { getPlaceDirectory } from "@/lib/place-directory"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = "https://www.makanofficial.com"
-  const standings = await getEatStandings()
+  const [standings, places] = await Promise.all([getEatStandings(), getPlaceDirectory()])
+  const matchupIds = new Set(standings.all.filter((r) => r.matchups > 0).map((r) => r.placeId))
   const reviews = getAllReviews()
   const blogLastMod = reviews[0] ? new Date(reviews[0].dateModified) : new Date()
 
@@ -41,7 +43,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...localized("/partner", "monthly", 0.8),
     ...localized("/standings", "weekly", 0.8),
     ...standings.cities.flatMap((c) => localized(`/standings/${c.slug}`, "weekly", 0.7)),
-    ...standings.all.flatMap((r) => localized(`/places/${r.slug}`, "weekly", 0.6)),
+    // Only the pages worth a result: two or more public meals, or any matchup.
+    ...places.filter((p) => p.indexable || matchupIds.has(p.placeId)).flatMap((p) => localized(`/places/${p.slug}`, "weekly", 0.6)),
     ...localized("/contact", "monthly", 0.8),
     ...localized("/support", "monthly", 0.7),
     ...localized("/manifesto", "monthly", 0.6),

@@ -586,6 +586,10 @@
     "ownerCta": "For restaurants",
     "dinerTitle": "Eaten here?",
     "dinerBody": "Save what you ordered at {name} and it counts. The next person who sits down here gets an answer.",
-    "badgeAlt": "Download on the App Store"
+    "badgeAlt": "Download on the App Store",
+    "metaDescriptionMeals": "{name} in {where}, on Makan: {count, plural, one {# public meal} other {# public meals}} saved by people who ate there, with photos.",
+    "cardMeals": "{count, plural, one {# meal saved on Makan} other {# meals saved on Makan}}",
+    "mealAlt": "A meal saved at {name} on Makan",
+    "mealFallback": "A meal"
   }
 }

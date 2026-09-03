@@ -24,10 +24,15 @@ export interface PlaceWhere {
   country: string
 }
 
-interface RawComponents {
+export interface RawComponents {
   /** locality (seed rows also carry `city`: locality, else postal_town, else the first admin area) */
   loc: string
   city?: string
+  /** Google's formatted address, coordinates and place types (seed rows resolved with them). */
+  address?: string
+  lat?: number | null
+  lng?: number | null
+  types?: string[]
   /** administrative_area_level_1..3 */
   a1: string
   a2: string
@@ -119,6 +124,24 @@ const lookup = unstable_cache(
   ['makan-place-city', 'v1'],
   { revalidate: 30 * 24 * 60 * 60 },
 )
+
+/** The raw seed row for a place, if known. */
+export function getPlaceSeed(placeId: string): RawComponents | null {
+  return SEED[placeId] ?? null
+}
+
+// A page is only made for somewhere people eat. Google's own types decide,
+// so a meal tagged to a street address or a home never becomes a public
+// page with photos on it.
+const FOOD_TYPE = /restaurant|cafe|coffee|\bbar$|_bar$|\bpub$|bakery|food|meal_|dessert|ice_cream|tea_house|juice|deli|market|wine|night_club|cafeteria|sandwich|pizza|donut|bagel|confection|brunch|breakfast|diner|steak|sushi|ramen|noodle|hotel|resort|catering|buffet|bistro|brasserie|gastropub|winery|brewery|distillery|hawker|warung/
+const NOT_A_VENUE = /^(premise|subpremise|street_address|route|locality|postal_code|political|neighborhood|natural_feature)$/
+export function isFoodVenue(types: string[] | undefined): boolean {
+  if (!types || !types.length) return false
+  // A food type is required: "establishment" alone lets in gyms, marinas
+  // and barbers that someone once ate a sandwich at.
+  if (types.some((t) => NOT_A_VENUE.test(t)) && !types.some((t) => FOOD_TYPE.test(t))) return false
+  return types.some((t) => FOOD_TYPE.test(t))
+}
 
 /** True when the seed already knows this place (no lookup needed). */
 export function hasSeededWhere(placeId: string): boolean {

@@ -586,6 +586,10 @@
     "ownerCta": "Untuk restoran",
     "dinerTitle": "Pernah makan di sini?",
     "dinerBody": "Simpan apa yang kamu pesan di {name}, dan itu dihitung. Orang berikutnya yang duduk di sini dapat jawaban.",
-    "badgeAlt": "Unduh di App Store"
+    "badgeAlt": "Unduh di App Store",
+    "metaDescriptionMeals": "{name} di {where}, di Makan: {count} makanan publik yang disimpan orang yang makan di sana, lengkap dengan foto.",
+    "cardMeals": "{count} makanan tersimpan di Makan",
+    "mealAlt": "Makanan yang disimpan di {name} di Makan",
+    "mealFallback": "Sebuah makanan"
   }
 }
