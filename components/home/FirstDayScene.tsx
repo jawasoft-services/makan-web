@@ -1,4 +1,5 @@
 import Image from "next/image"
+import { storyBlur } from "@/lib/story-blur"
 import { getTranslations } from "next-intl/server"
 import PaperSheet from "@/components/paper/PaperSheet"
 import MenuSheet, { type MenuSection } from "@/components/menu/MenuSheet"
@@ -108,6 +109,9 @@ export default async function FirstDayScene() {
                       <div className="relative aspect-[4/3]">
                         <Image
                           src={visit.src}
+                          placeholder="blur"
+                          blurDataURL={storyBlur(visit.src)}
+                          loading="eager"
                           alt={t("friendMealAlt", { date: t(visit.dateKey) })}
                           fill
                           sizes="(min-width: 768px) 180px, 30vw"

@@ -76,14 +76,14 @@ export default function Navbar() {
             alt=""
             width={32}
             height={32}
-            className="h-8 w-8"
+            className="h-7 w-7 sm:h-8 sm:w-8"
           />
           <Image
             src="/makan-logo-white.svg"
             alt="Makan"
             width={104}
             height={24}
-            className="h-6 w-auto"
+            className="h-5 w-auto sm:h-6"
             priority
           />
         </Link>
@@ -118,7 +118,7 @@ export default function Navbar() {
           <Link
             href={APP_STORE_URL}
             onClick={() => track('App Store CTA Clicked', { location: 'navigation', locale })}
-            className="flex h-11 items-center rounded-full bg-white px-5 text-sm font-semibold text-brand-orange transition-shadow hover:shadow-lg hover:shadow-black/10"
+            className="flex h-11 shrink-0 items-center whitespace-nowrap rounded-full bg-white px-5 text-sm font-semibold text-brand-orange transition-shadow hover:shadow-lg hover:shadow-black/10"
           >
             {t('getApp')}
           </Link>
@@ -129,7 +129,7 @@ export default function Navbar() {
           <Link
             href={APP_STORE_URL}
             onClick={() => track('App Store CTA Clicked', { location: 'navigation', locale })}
-            className="flex h-11 items-center rounded-full bg-white px-4 text-sm font-semibold text-brand-orange"
+            className="flex h-11 shrink-0 items-center whitespace-nowrap rounded-full bg-white px-3.5 text-sm font-semibold text-brand-orange sm:px-4"
           >
             {t('getAppShort')}
           </Link>

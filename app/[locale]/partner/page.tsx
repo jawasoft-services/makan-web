@@ -4,6 +4,7 @@ import Footer from '@/components/Footer'
 import SiteSchema from '@/components/SiteSchema'
 import PartnerForm from './PartnerForm'
 import Image from 'next/image'
+import { storyBlur } from '@/lib/story-blur'
 import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
 import Link from 'next/link'
 import { getMealCount, getPlaceStats } from '@/lib/makan-stats'
@@ -122,6 +123,8 @@ export default async function PartnerPage({
               <figure key={shot.src} className="flex flex-col items-center">
                 <Image
                   src={shot.src}
+                  placeholder="blur"
+                  blurDataURL={storyBlur(shot.src)}
                   alt={shot.alt}
                   width={760}
                   height={1572}

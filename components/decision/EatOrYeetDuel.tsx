@@ -1,4 +1,5 @@
 import Image from "next/image"
+import { storyBlur } from "@/lib/story-blur"
 import PenRing from "./PenRing"
 
 export type DuelMeal = { name: string; src: string }
@@ -76,6 +77,9 @@ export function EatOrYeetDuel({
               <div className="relative aspect-[3/2]">
                 <Image
                   src={meal.src}
+                  placeholder="blur"
+                  blurDataURL={storyBlur(meal.src)}
+                  loading="eager"
                   alt={meal.name}
                   fill
                   sizes="(min-width: 768px) 260px, 46vw"
@@ -152,6 +156,9 @@ export function SettledDuel({
         >
           <Image
             src={meal.src}
+            placeholder="blur"
+            blurDataURL={storyBlur(meal.src)}
+            loading="eager"
             alt=""
             fill
             sizes="64px"

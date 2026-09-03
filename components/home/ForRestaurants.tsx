@@ -1,5 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server"
 import Image from "next/image"
+import { storyBlur } from "@/lib/story-blur"
 import Reveal from "@/components/motion/Reveal"
 import { localizePath } from "@/i18n/paths"
 import type { PlaceStats } from "@/lib/makan-stats"
@@ -86,6 +87,9 @@ export default async function ForRestaurants({ stats }: { stats: PlaceStats }) {
             data-beat
             style={{ "--beat": 2 } as React.CSSProperties}
             src="/app-screens/story/feed.webp"
+            placeholder="blur"
+            blurDataURL={storyBlur("/app-screens/story/feed.webp")}
+            loading="eager"
             alt={t("feedAlt")}
             width={760}
             height={1572}

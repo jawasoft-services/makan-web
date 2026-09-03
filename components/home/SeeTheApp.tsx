@@ -1,4 +1,5 @@
 import Image from "next/image"
+import { storyBlur } from "@/lib/story-blur"
 import { getTranslations } from "next-intl/server"
 import Reveal from "@/components/motion/Reveal"
 
@@ -15,7 +16,7 @@ const SHOTS = [
 export default async function SeeTheApp() {
   const t = await getTranslations("Decision.App")
   return (
-    <section id="features" className="w-full bg-brand-cream px-6 py-20 md:px-10 md:py-28">
+    <section id="features" className="w-full bg-brand-cream px-6 pb-12 pt-20 md:px-10 md:py-28">
       <Reveal className="mx-auto max-w-5xl text-center">
         <p data-beat className="text-[0.86rem] font-semibold uppercase tracking-[0.16em] text-brand-orange md:text-[0.82rem]">
           {t("eyebrow")}
@@ -32,6 +33,9 @@ export default async function SeeTheApp() {
             <figure key={shot.src} data-beat style={{ "--beat": 2 + i } as React.CSSProperties}>
               <Image
                 src={shot.src}
+                placeholder="blur"
+                blurDataURL={storyBlur(shot.src)}
+                loading="eager"
                 alt={t(shot.altKey)}
                 width={760}
                 height={1572}

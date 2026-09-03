@@ -1,4 +1,5 @@
 import Image from "next/image"
+import { storyBlur } from "@/lib/story-blur"
 import { getTranslations } from "next-intl/server"
 import Reveal from "@/components/motion/Reveal"
 import PenRing from "@/components/decision/PenRing"
@@ -168,7 +169,7 @@ export default async function Hero({
             >
               <div className="overflow-hidden rounded-xl">
                 <div className="relative aspect-[3/2]">
-                  <Image src={card.src} alt={card.name} fill sizes="248px" className="object-cover object-top" priority />
+                  <Image src={card.src} alt={card.name} fill sizes="248px" className="object-cover object-top" priority placeholder="blur" blurDataURL={storyBlur(card.src)} />
                   {i === 2 ? (
                     <span aria-hidden className="pointer-events-none absolute -inset-[6%] block">
                       <PenRing className="-rotate-1" />
