@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { motion, useInView } from 'framer-motion'
 import StatTicker from './StatTicker'
 import StaticPicture from './StaticPicture'
+import { thumbUrl } from '@/lib/thumb'
 
 // Shape mirrors PublicMeal in lib/makan-stats.ts — redeclared here because
 // that module is `server-only` and this is a client component.
@@ -136,7 +137,7 @@ function MealPostCard({ meal, fallbackLabel }: { meal: Meal; fallbackLabel: stri
           />
         ) : (
           <Image
-            src={meal.src}
+            src={thumbUrl(meal.src, 720)}
             alt={meal.alt}
             width={360}
             height={247}

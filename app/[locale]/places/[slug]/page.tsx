@@ -12,6 +12,7 @@ import { CITY_FLOOR, EVIDENCE_FLOOR, getEatStandings, type StandingRow } from '@
 import { getDirectoryPlace, getPlaceDirectory, type DirectoryPlace } from '@/lib/place-directory'
 import { getPlacePhoto } from '@/lib/place-photo'
 import { localizePath } from '@/i18n/paths'
+import { thumbUrl } from '@/lib/thumb'
 
 /**
  * One restaurant on Makan, laid out like the app's place screen
@@ -261,7 +262,7 @@ export default async function PlacePage({ params }: Props) {
                 <li key={m.id}>
                   <Link href={`/meal/${m.id}`} className="group block overflow-hidden rounded-2xl bg-brand-card focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink">
                     <Image
-                      src={m.thumb || m.src}
+                      src={m.thumb || thumbUrl(m.src, 480)}
                       alt={m.caption ? `${m.caption}, ${place.name}` : t('mealAlt', { name: place.name })}
                       width={480}
                       height={480}
