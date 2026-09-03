@@ -12,7 +12,14 @@ Merging this branch to main changes these immediately, whether or not DECISION_H
 - [ ] Chicken rice card credit decided (handle printed, or "Saved at Lucky Plaza" kept)
 - [x] `DECISION_HOME=1 npm run build` succeeds; `<title>` reads "Makan — Know what to order" — 2026-09-02; /standings prerendered in both locales; /dev-preview 404s in the production build
 - [x] Gated-copy leak with the gate off (0 on 2026-09-02): `grep -c "No guessing" .next/server/app/en/story.html` → 0
-- [ ] Vercel production env has `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY` (the standings, place numbers and meal strip read Firestore at build and revalidate); the service account can call the Places API for any restaurant that reaches the standings floor after today (see the handoff doc)
+- [x] Vercel production env has `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY` — confirmed 2026-09-02 (`vercel env ls production`; project `makan-web`, account `makan-website@munchies-expo.iam.gserviceaccount.com`; the live site already shows a real Firestore meal count)
+- [ ] The service account can be billed for a Places lookup (needed only for a restaurant that first appears after the 2026-09-02 seed of all 607 places; otherwise a dash shows for its city). It holds `roles/datastore.viewer` only. One command, run as the project owner:
+
+  ```bash
+  gcloud projects add-iam-policy-binding munchies-expo --member="serviceAccount:makan-website@munchies-expo.iam.gserviceaccount.com" --role="roles/serviceusage.serviceUsageConsumer" --condition=None
+  ```
+
+  Places API (New) is already enabled on the project.
 - [ ] Devon says go: set `DECISION_HOME=1` on Vercel production, deploy
 - [ ] Post-deploy: `App Store CTA Clicked` events arrive with locations `hero`, `proof`, `final`
 - [ ] Then Task 11 of the plan: retire the legacy homepage sections
