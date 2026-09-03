@@ -13,7 +13,7 @@ Merging this branch to main changes these immediately, whether or not DECISION_H
 - [x] `DECISION_HOME=1 npm run build` succeeds; `<title>` reads "Makan — Know what to order" — 2026-09-02; /standings prerendered in both locales; /dev-preview 404s in the production build
 - [x] Gated-copy leak with the gate off (0 on 2026-09-02): `grep -c "No guessing" .next/server/app/en/story.html` → 0
 - [x] Vercel production env has `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY` — confirmed 2026-09-02 (`vercel env ls production`; project `makan-web`, account `makan-website@munchies-expo.iam.gserviceaccount.com`; the live site already shows a real Firestore meal count)
-- [ ] The service account can be billed for a Places lookup (needed only for a restaurant that first appears after the 2026-09-02 seed of all 607 places; otherwise a dash shows for its city). It holds `roles/datastore.viewer` only. One command, run as the project owner:
+- [x] (granted by Devon 2026-09-02, verified: `datastore.viewer` + `serviceusage.serviceUsageConsumer`) The service account can be billed for a Places lookup (needed only for a restaurant that first appears after the 2026-09-02 seed of all 607 places; otherwise a dash shows for its city). It holds `roles/datastore.viewer` only. One command, run as the project owner:
 
   ```bash
   gcloud projects add-iam-policy-binding munchies-expo --member="serviceAccount:makan-website@munchies-expo.iam.gserviceaccount.com" --role="roles/serviceusage.serviceUsageConsumer" --condition=None
