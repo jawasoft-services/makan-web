@@ -34,6 +34,16 @@ export function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
+  // English is served unprefixed, so /en/... is only ever an old link or an
+  // old index entry. next-intl would strip the prefix with a 307, which tells
+  // Google to keep the prefixed URL and keep crawling it (Search Console,
+  // 2026-09-05: six "Page with redirect"). 308 consolidates it instead.
+  if (pathname === "/en" || pathname.startsWith("/en/")) {
+    const url = request.nextUrl.clone()
+    url.pathname = stripLocalePrefix(pathname)
+    return NextResponse.redirect(url, 308)
+  }
+
   // Editorial, legal, restaurant and meal pages have not been translated yet.
   // A manually entered /id URL falls back to the canonical English route
   // instead of presenting English content under an Indonesian URL.
