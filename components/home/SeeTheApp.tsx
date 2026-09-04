@@ -16,7 +16,7 @@ const SHOTS = [
 export default async function SeeTheApp() {
   const t = await getTranslations("Decision.App")
   return (
-    <section id="features" className="w-full bg-brand-cream px-6 pb-12 pt-20 md:px-10 md:py-28">
+    <section id="features" className="scroll-mt-[86px] w-full bg-brand-cream px-6 pb-12 pt-20 md:px-10 md:py-28">
       <Reveal className="mx-auto max-w-5xl text-center">
         <p data-beat className="text-[0.86rem] font-semibold uppercase tracking-[0.16em] text-brand-orange md:text-[0.82rem]">
           {t("eyebrow")}

@@ -23,7 +23,7 @@ export default async function ForRestaurants({ stats }: { stats: PlaceStats }) {
   ]
 
   return (
-    <section id="for-restaurants" className="w-full bg-brand-card px-6 py-20 md:px-10 md:py-28">
+    <section id="for-restaurants" className="scroll-mt-[86px] w-full bg-brand-card px-6 py-20 md:px-10 md:py-28">
       <Reveal className="mx-auto grid max-w-5xl grid-cols-1 items-start gap-12 md:grid-cols-[1.15fr_0.85fr] md:gap-16">
         <div>
           <p data-beat className="text-[0.78rem] font-semibold uppercase tracking-[0.16em] text-brand-orange md:text-[0.82rem]">

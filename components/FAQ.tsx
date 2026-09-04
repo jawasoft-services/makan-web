@@ -12,7 +12,7 @@ export default function FAQ({ items }: { items: FaqItem[] }) {
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section id="faq" ref={ref} className="bg-brand-cream py-20 sm:py-32 px-5 sm:px-8">
+    <section id="faq" ref={ref} className="scroll-mt-[86px] bg-brand-cream py-20 sm:py-32 px-5 sm:px-8">
       <div className="mx-auto max-w-4xl">
         {/* Editorial heading — left-aligned, bold */}
         <motion.div

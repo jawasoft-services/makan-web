@@ -21,7 +21,7 @@ export default async function StandingsPreview() {
   const percent = new Intl.NumberFormat(locale === "id" ? "id-ID" : "en-GB", { style: "percent", maximumFractionDigits: 0 })
 
   return (
-    <section id="standings" className="w-full bg-brand-cream px-6 py-20 md:px-10 md:py-28">
+    <section id="standings" className="scroll-mt-[86px] w-full bg-brand-cream px-6 py-20 md:px-10 md:py-28">
       <Reveal className="mx-auto grid max-w-5xl grid-cols-1 items-start gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
         <div>
           <p data-beat className="text-[0.82rem] font-semibold uppercase tracking-[0.16em] text-brand-orange">
