@@ -4,6 +4,7 @@ import PenRing from '@/components/decision/PenRing'
 import { getEatStandings } from '@/lib/eat-standings'
 import { getPlaceDirectory } from '@/lib/place-directory'
 import { thumbUrl } from '@/lib/thumb'
+import { MICHELIN_STAR } from './michelinStar'
 
 const MOSAIC = 12
 const RINGED = [1, 6, 10]
@@ -50,17 +51,9 @@ export default async function GuideStory({ locale, compact = false }: { locale: 
       {/* A Michelin star, alone. */}
       <figure className={panel}>
         <div className="flex aspect-[4/3] items-center justify-center rounded-xl bg-brand-cream">
-          {/* The Michelin-style rosette: six petals around a centre, drawn here
-              rather than taken from anyone's brand files. */}
-          <svg viewBox="0 0 100 100" className="h-16 w-16 text-brand-orange" fill="currentColor" aria-hidden>
-            {[0, 60, 120, 180, 240, 300].map((deg) => (
-              <path
-                key={deg}
-                transform={`rotate(${deg} 50 50)`}
-                d="M50 54 C 28 46, 24 14, 50 6 C 76 14, 72 46, 50 54 Z"
-              />
-            ))}
-            <circle cx="50" cy="50" r="9" />
+          {/* The Michelin star itself, 1:1 from the vector (see michelinStar.ts). */}
+          <svg viewBox={MICHELIN_STAR.viewBox} className="h-20 w-20 text-brand-orange" fill="currentColor" aria-hidden>
+            <path d={MICHELIN_STAR.d} />
           </svg>
         </div>
         <figcaption>
