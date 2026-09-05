@@ -1,3 +1,5 @@
+// RM19740 — PUBLISH ONLY with the RM19738 analytics opt-out release: section 7 describes a Settings switch
+// and section 2.3 a narrowed event payload that production 1.0.9 does not yet have. Set both dates at publication.
 import { Metadata } from 'next'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
@@ -94,7 +96,7 @@ export default function PrivacyPolicy() {
                 <h3 className="font-medium text-brand-ink">2.3 Technical, usage, and security data (App and Site)</h3>
                 <ul className="mt-2 list-disc pl-5 space-y-1">
                   <li>Device and app information required to operate the Services, such as device type, operating system, and app version</li>
-                  <li>Usage and analytics events, collected to understand and improve the Services. These record which screens are opened and which features are used. Where an action involves another person — for example liking or commenting on someone else&apos;s meal — the event also records the account identifier of that other person, so we can tell what kind of interaction took place</li>
+                  <li>Usage and analytics events, collected to understand and improve the Services. These record which screens are opened and which features are used. Where an action involves another person — for example liking or commenting on someone else&apos;s meal — the event records only the kind of interaction, never who the other person was</li>
                   <li>Crash reports and diagnostic data, including a device identifier and the actions leading up to a crash, used to find and fix faults</li>
                   <li>Approximate location derived from your IP address, used for aggregate analytics</li>
                   <li>Security, abuse-prevention, and diagnostic logs used to protect users and the Services</li>
@@ -413,8 +415,13 @@ export default function PrivacyPolicy() {
                 used, and Sentry, which uses a device identifier to report crashes. We rely on our
                 legitimate interests in understanding usage and fixing faults, as described in section
                 4.2. We never use these technologies for advertising, for cross-app tracking, or to
-                build the picture of your taste described in section 2.7. If you would prefer that we
-                did not process your usage data in this way, tell us at{' '}
+                build the picture of your taste described in section 2.7. Usage measurement is on by
+                default. We use what it collects only to understand how the App is used so we can
+                improve it, and we share it with no one for any other purpose. If you would prefer
+                that we did not measure your usage, turn off <strong className="font-semibold text-brand-ink">App usage analytics</strong> under
+                Settings › Privacy in the App. The switch takes effect immediately and stays off on
+                that device until you turn it back on, including after you sign out. You can also tell
+                us at{' '}
                 <a href="mailto:support@makanofficial.com" className="text-brand-orange hover:underline">
                   support@makanofficial.com
                 </a>{' '}
@@ -617,6 +624,12 @@ export default function PrivacyPolicy() {
                 than as something you switch on, and legitimate interests replaces consent as its
                 lawful basis. Your right to object is explained in sections 3 and 11. Photographs you
                 saved before the feature existed are still excluded from it unless you opt them in.
+              </p>
+              <p>
+                {/* RM19740: set this date, and "Last updated" above, at publication with the RM19738 release. */}
+                The change made on [PUBLICATION DATE] added the in-App switch for usage analytics to
+                section 7 and narrowed section 2.3: interaction events no longer record who the other
+                person was, only what kind of interaction took place.
               </p>
             </div>
           </section>
