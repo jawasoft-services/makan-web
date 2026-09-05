@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Footer from '@/components/Footer'
 import SiteSchema from '@/components/SiteSchema'
+import GuideStory from '@/components/standings/GuideStory'
 import PartnerForm from './PartnerForm'
 import Image from 'next/image'
 import { storyBlur } from '@/lib/story-blur'
@@ -148,6 +149,9 @@ export default async function PartnerPage({
             {t('eatsTitle')}
           </h2>
           <p className="mt-4 text-lg font-bold leading-[1.4] text-brand-ink">{t('eatsLine')}</p>
+          <div className="mt-6">
+            <GuideStory locale={locale} compact />
+          </div>
           <p className="mt-3 text-base leading-[1.75] text-brand-ink">
             {t('eatsBody')}
           </p>

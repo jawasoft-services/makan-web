@@ -562,7 +562,16 @@
     "mapLabel": "Peta restoran yang masuk peringkat",
     "mapTitle": "Di peta",
     "mapBody": "Setiap restoran di daftar ini, di mana lokasinya. Ketuk salah satu untuk membuka halamannya.",
-    "guideLine": "Michelin mengirim satu inspektur setahun sekali. Yang ini ditulis oleh semua orang yang makan di sana, setiap hari."
+    "guideLine": "Michelin mengirim satu inspektur setahun sekali. Yang ini ditulis oleh semua orang yang makan di sana, setiap hari.",
+    "storyOne": "Satu inspektur, setahun sekali.",
+    "storyOneSub": "Anonim. Diberikan.",
+    "storyAll": "Semua orang yang makan di sana, setiap hari.",
+    "storyAllSub": "Makanan sungguhan, pilihan sungguhan.",
+    "storySum": "Hasil akhirnya.",
+    "storySumSub": "Diperoleh, tidak pernah dibeli.",
+    "storyAlt": "Makanan yang disimpan di Makan oleh orang yang makan di restoran-restoran yang masuk peringkat",
+    "storyScreenAlt": "Layar Eat or Yeet: dua makanan tersimpan, pilih yang mau kamu makan lagi duluan",
+    "eats": "Eat · {rate}"
   },
   "Places": {
     "metaTitle": "{name} di Makan",

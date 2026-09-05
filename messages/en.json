@@ -562,7 +562,16 @@
     "mapLabel": "Map of the ranked restaurants",
     "mapTitle": "On the map",
     "mapBody": "Every restaurant on this list, where it is. Tap one to open its page.",
-    "guideLine": "Michelin sends an inspector once a year. This is written by everyone who ate there, every day."
+    "guideLine": "Michelin sends an inspector once a year. This is written by everyone who ate there, every day.",
+    "storyOne": "One inspector, once a year.",
+    "storyOneSub": "Anonymous. Awarded.",
+    "storyAll": "Everyone who ate there, every day.",
+    "storyAllSub": "Real meals, real picks.",
+    "storySum": "What it adds up to.",
+    "storySumSub": "Earned, never bought.",
+    "storyAlt": "Meals saved on Makan by people who ate at the ranked restaurants",
+    "storyScreenAlt": "The Eat or Yeet screen: two saved meals, pick the one you'd eat again first",
+    "eats": "Eats · {rate}"
   },
   "Places": {
     "metaTitle": "{name} on Makan",

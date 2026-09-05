@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Footer from '@/components/Footer'
 import SiteSchema from '@/components/SiteSchema'
 import StandingsTable from '@/components/standings/StandingsTable'
+import GuideStory from '@/components/standings/GuideStory'
 import PlacesMapLoader from '@/components/map/PlacesMapLoader'
 import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
 import { CITY_FLOOR, EVIDENCE_FLOOR, getEatStandings } from '@/lib/eat-standings'
@@ -94,6 +95,9 @@ export default async function StandingsPage({
         {/* The position, said once: a guide with no inspectors. Body copy only;
             the name stays out of titles, metadata and schema. */}
         <p className="mt-6 max-w-[40ch] text-xl font-bold leading-[1.3] text-brand-ink">{t('guideLine')}</p>
+        <div className="mt-8">
+          <GuideStory locale={locale} />
+        </div>
         <p className="mt-4 max-w-[60ch] text-base leading-[1.75] text-brand-muted">
           {t('intro', { floor: EVIDENCE_FLOOR })}
           {standings.countries > 1 ? ' ' + t('countries', { count: standings.countries }) : ''}
