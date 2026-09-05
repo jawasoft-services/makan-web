@@ -47,11 +47,20 @@ export default async function GuideStory({ locale, compact = false }: { locale: 
 
   return (
     <div className={`grid grid-cols-1 gap-4 ${compact ? 'sm:grid-cols-2' : 'md:grid-cols-3'}`}>
-      {/* One star, alone. */}
+      {/* A Michelin star, alone. */}
       <figure className={panel}>
         <div className="flex aspect-[4/3] items-center justify-center rounded-xl bg-brand-cream">
-          <svg viewBox="0 0 24 24" className="h-14 w-14 text-brand-orange" fill="currentColor" aria-hidden>
-            <path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z" />
+          {/* The Michelin-style rosette: six petals around a centre, drawn here
+              rather than taken from anyone's brand files. */}
+          <svg viewBox="0 0 100 100" className="h-16 w-16 text-brand-orange" fill="currentColor" aria-hidden>
+            {[0, 60, 120, 180, 240, 300].map((deg) => (
+              <path
+                key={deg}
+                transform={`rotate(${deg} 50 50)`}
+                d="M50 54 C 28 46, 24 14, 50 6 C 76 14, 72 46, 50 54 Z"
+              />
+            ))}
+            <circle cx="50" cy="50" r="9" />
           </svg>
         </div>
         <figcaption>
