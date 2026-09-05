@@ -289,7 +289,8 @@
     "topPlacesMeals": "{count} makanan",
     "maitreDTell": "Kamu bisa melihat siapa Maître d'-mu di aplikasi, dengan nama depannya, jadi kopinya sampai ke orang yang tepat.",
     "cityError": "Restoranmu di kota mana? Peringkatnya per kota.",
-    "standingsCta": "Lihat peringkat"
+    "standingsCta": "Lihat peringkat",
+    "eatsLine": "Bintang itu diberikan. Eat itu diperoleh, satu tamu setiap kali."
   },
   "Support": {
     "metaTitle": "Bantuan — Makan",
@@ -520,7 +521,7 @@
     "Standings": {
       "eyebrow": "Peringkat",
       "title": "Restoran yang terus dipilih tamu.",
-      "body": "Setiap kali seseorang memilih makanan dari satu restoran daripada makanan dari restoran lain di Eat or Yeet, pemenangnya dapat satu Eat. Lima dengan Eat terbanyak, di antara restoran dengan {floor} pertandingan atau lebih.",
+      "body": "Michelin mengirim satu inspektur setahun sekali. Yang ini ditulis oleh semua orang yang makan di sana. Setiap kali seseorang memilih makanan dari satu restoran daripada makanan dari restoran lain di Eat or Yeet, pemenangnya dapat satu Eat. Lima dengan Eat terbanyak, di antara restoran dengan {floor} pertandingan atau lebih.",
       "cta": "Lihat peringkat lengkap",
       "eats": "Eat · {rate}"
     }
@@ -560,7 +561,8 @@
     "allStandings": "Semua peringkat",
     "mapLabel": "Peta restoran yang masuk peringkat",
     "mapTitle": "Di peta",
-    "mapBody": "Setiap restoran di daftar ini, di mana lokasinya. Ketuk salah satu untuk membuka halamannya."
+    "mapBody": "Setiap restoran di daftar ini, di mana lokasinya. Ketuk salah satu untuk membuka halamannya.",
+    "guideLine": "Michelin mengirim satu inspektur setahun sekali. Yang ini ditulis oleh semua orang yang makan di sana, setiap hari."
   },
   "Places": {
     "metaTitle": "{name} di Makan",

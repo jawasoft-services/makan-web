@@ -91,7 +91,10 @@ export default async function StandingsPage({
         <h1 className="mt-4 text-3xl font-bold text-brand-ink sm:text-4xl lg:text-5xl" style={{ letterSpacing: '-0.02em' }}>
           {t('title')}
         </h1>
-        <p className="mt-6 max-w-[60ch] text-base leading-[1.75] text-brand-muted">
+        {/* The position, said once: a guide with no inspectors. Body copy only;
+            the name stays out of titles, metadata and schema. */}
+        <p className="mt-6 max-w-[40ch] text-xl font-bold leading-[1.3] text-brand-ink">{t('guideLine')}</p>
+        <p className="mt-4 max-w-[60ch] text-base leading-[1.75] text-brand-muted">
           {t('intro', { floor: EVIDENCE_FLOOR })}
           {standings.countries > 1 ? ' ' + t('countries', { count: standings.countries }) : ''}
         </p>

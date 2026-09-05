@@ -147,7 +147,8 @@ export default async function PartnerPage({
           <h2 className="mt-3 text-2xl font-bold text-brand-ink sm:text-3xl" style={{ letterSpacing: '-0.02em' }}>
             {t('eatsTitle')}
           </h2>
-          <p className="mt-4 text-base leading-[1.75] text-brand-ink">
+          <p className="mt-4 text-lg font-bold leading-[1.4] text-brand-ink">{t('eatsLine')}</p>
+          <p className="mt-3 text-base leading-[1.75] text-brand-ink">
             {t('eatsBody')}
           </p>
           <ul className="mt-5 space-y-3">

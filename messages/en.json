@@ -289,7 +289,8 @@
     "topPlacesMeals": "{count, plural, one {# meal} other {# meals}}",
     "maitreDTell": "You see who your Maître d' is in the app, by first name, so the coffee goes to the right person.",
     "cityError": "Which city is your restaurant in? The standings are by city.",
-    "standingsCta": "See the standings"
+    "standingsCta": "See the standings",
+    "eatsLine": "A star is awarded. An Eat is earned, one diner at a time."
   },
   "Support": {
     "metaTitle": "Support — Makan",
@@ -520,7 +521,7 @@
     "Standings": {
       "eyebrow": "The standings",
       "title": "The restaurants diners keep picking.",
-      "body": "Every time someone picks a meal from one restaurant over a meal from another in Eat or Yeet, the winner gets an Eat. The five with the most, among restaurants with {floor} or more matchups.",
+      "body": "Michelin sends an inspector once a year. This is written by everyone who ate there. Every time someone picks a meal from one restaurant over a meal from another in Eat or Yeet, the winner gets an Eat. The five with the most, among restaurants with {floor} or more matchups.",
       "cta": "See the full standings",
       "eats": "Eats · {rate}"
     }
@@ -560,7 +561,8 @@
     "allStandings": "All standings",
     "mapLabel": "Map of the ranked restaurants",
     "mapTitle": "On the map",
-    "mapBody": "Every restaurant on this list, where it is. Tap one to open its page."
+    "mapBody": "Every restaurant on this list, where it is. Tap one to open its page.",
+    "guideLine": "Michelin sends an inspector once a year. This is written by everyone who ate there, every day."
   },
   "Places": {
     "metaTitle": "{name} on Makan",
