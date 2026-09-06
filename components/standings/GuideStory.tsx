@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { getTranslations } from 'next-intl/server'
 import PenRing from '@/components/decision/PenRing'
 import { getEatStandings } from '@/lib/eat-standings'
-import { getPlaceDirectory } from '@/lib/place-directory'
+import { getDirectoryPlaceById, getPlaceIndex, type DirectoryPlace } from '@/lib/place-directory'
 import { thumbUrl } from '@/lib/thumb'
 import { MICHELIN_STAR } from './michelinStar'
 
@@ -20,8 +20,17 @@ const RINGED = [1, 6, 10]
  */
 export default async function GuideStory({ locale, compact = false }: { locale: string; compact?: boolean }) {
   const t = await getTranslations('Standings')
-  const [standings, directory] = await Promise.all([getEatStandings(), getPlaceDirectory()])
-  const byId = new Map(directory.map((p) => [p.placeId, p]))
+  const [standings, index] = await Promise.all([getEatStandings(), getPlaceIndex()])
+  // The ranked places plus the busiest few: a dozen documents, not the directory.
+  const wanted = [...standings.rows.map((r) => r.placeId), ...index.slice(0, MOSAIC).map((p) => p.placeId)]
+  const unique = [...new Set(wanted)].slice(0, MOSAIC * 2)
+  const loaded = await Promise.all(unique.map((id) => getDirectoryPlaceById(id)))
+  const byId = new Map<string, DirectoryPlace>()
+  unique.forEach((id, i) => {
+    const p = loaded[i]
+    if (p) byId.set(id, p)
+  })
+  const directory = index.map((p) => byId.get(p.placeId)).filter((p): p is DirectoryPlace => Boolean(p))
 
   // Meals from the ranked places first, two each, then the busiest places.
   const thumbs: { id: string; src: string; alt: string }[] = []

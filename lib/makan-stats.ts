@@ -1,7 +1,10 @@
 import 'server-only'
 import { unstable_cache } from 'next/cache'
-import { Timestamp } from 'firebase-admin/firestore'
 import { getDb } from '@/lib/firebase-admin'
+import { computePlaceStats } from '@/lib/aggregates/compute'
+import { MAX_AGE_MS, readLastRun, readStats } from '@/lib/aggregates/store'
+import { FALLBACK_PLACE_STATS, type PlaceStats } from '@/lib/aggregates/types'
+import { isCleanCaption } from '@/lib/captions'
 
 // Shown if Firestore is unreachable at render time. The previous hardcoded
 // copy value — a safe floor that's never "worse than today".
@@ -39,69 +42,31 @@ function clamp(value: number, fallback: number): number {
   return Math.floor(value)
 }
 
-/** The two numbers a restaurant owner asks for: how many places already have
- *  meals on Makan, and how much gets saved in a month. */
-export interface PlaceStats {
-  /** Distinct venues (Google Place ids) with at least one meal saved. */
-  places: number
-  /** Meals saved in the trailing 30 days. */
-  recentMeals: number
-  /** The venues with the most meals saved, most first. Real names, as tagged. */
-  topPlaces: { name: string; meals: number }[]
-}
-
-export const TOP_PLACES = 6
-
-// Safe floors if Firestore is unreachable: below what was measured on
-// 2026-09-02 (666 places, 692 meals in 30 days), never above it.
-export const FALLBACK_PLACE_STATS: PlaceStats = { places: 600, recentMeals: 500, topPlaces: [] }
-
-const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000
+export { FALLBACK_PLACE_STATS, TOP_PLACES } from '@/lib/aggregates/types'
+export type { PlaceStats } from '@/lib/aggregates/types'
 
 /**
- * Distinct places need one read per meal doc (no distinct-count aggregation
- * in Firestore), so the result is held in Next's data cache for a day and
- * shared across instances. The 30-day figure is a count() aggregation.
- * Falls back to FALLBACK_PLACE_STATS on any failure.
+ * The two numbers a restaurant owner asks for, read from the aggregate the
+ * hourly cron writes (webAggregates/stats). The scan runs only when the
+ * aggregate is missing or stale, which is logged.
  */
 export const getPlaceStats = unstable_cache(
   async (): Promise<PlaceStats> => {
+    const db = getDb()
+    if (!db) return FALLBACK_PLACE_STATS
     try {
-      const db = getDb()
-      if (!db) return FALLBACK_PLACE_STATS
-      const cutoff = Timestamp.fromMillis(Date.now() - THIRTY_DAYS_MS)
-      const [placesSnap, recentSnap] = await Promise.all([
-        db.collection('meals').select('placeProviderId', 'locationName').get(),
-        db.collection('meals').where('createdAt', '>=', cutoff).count().get(),
-      ])
-      const byPlace = new Map<string, { name: string; meals: number }>()
-      for (const doc of placesSnap.docs) {
-        const d = doc.data()
-        const id = str(d.placeProviderId)
-        if (!id) continue
-        const entry = byPlace.get(id) ?? { name: str(d.locationName), meals: 0 }
-        entry.meals += 1
-        if (!entry.name) entry.name = str(d.locationName)
-        byPlace.set(id, entry)
-      }
-      const topPlaces = [...byPlace.values()]
-        .filter((p) => p.name)
-        .sort((a, b) => b.meals - a.meals)
-        .slice(0, TOP_PLACES)
-      return {
-        places: clamp(byPlace.size, FALLBACK_PLACE_STATS.places),
-        recentMeals: clamp(recentSnap.data().count, FALLBACK_PLACE_STATS.recentMeals),
-        topPlaces,
-      }
+      const [stored, lastRun] = await Promise.all([readStats(db), readLastRun(db)])
+      const fresh = lastRun !== null && Date.now() - lastRun.getTime() < MAX_AGE_MS
+      if (stored && fresh) return stored
+      console.warn(`makan-stats: aggregate ${stored ? 'stale' : 'missing'}; falling back to a live scan.`)
+      return await computePlaceStats(db)
     } catch {
-      console.error('makan-stats: failed to fetch place stats; using fallback.')
+      console.error('makan-stats: failed to read or compute place stats; using fallback.')
       return FALLBACK_PLACE_STATS
     }
   },
-  // Version the key whenever PlaceStats changes shape: a cached value from an
-  // older build must never be read through the new type.
-  ['makan-place-stats', 'v2'],
-  { revalidate: 86400 },
+  ['makan-place-stats', 'v3'],
+  { revalidate: 3600 },
 )
 
 /** One homepage share-card "post" — the app's export-as-a-post format. */
@@ -311,13 +276,7 @@ function perHandleCap(max: number) {
   }
 }
 
-/** A caption fit for the front of the site: real words, no auto handles, no swearing. */
-export function isCleanCaption(caption: string): boolean {
-  if (!caption || GENERIC_CAPTION.test(caption)) return false
-  if (caption.split(/\s+/).filter((w) => /\p{L}|\p{N}/u.test(w)).length < MIN_CAPTION_WORDS) return false
-  if (AUTO_HANDLE_MENTION.test(caption) || ROUGH_CAPTION.test(caption)) return false
-  return true
-}
+export { isCleanCaption }
 
 function str(v: unknown): string {
   return typeof v === 'string' ? v.trim() : ''
