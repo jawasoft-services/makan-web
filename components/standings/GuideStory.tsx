@@ -16,7 +16,9 @@ const RINGED = [1, 6, 10]
  * screen over the current leader's row. Everything real: the mosaic is
  * public meals from the ranked restaurants, the row is live.
  *
- * `compact` drops the third panel for the homepage and partner page.
+ * `compact` drops the third panel for the homepage and partner page. The
+ * first two are pitted against each other, Michelin vs Makan, with a VS
+ * badge on the seam between them.
  */
 export default async function GuideStory({ locale, compact = false }: { locale: string; compact?: boolean }) {
   const t = await getTranslations('Standings')
@@ -55,41 +57,55 @@ export default async function GuideStory({ locale, compact = false }: { locale: 
   const caption = 'mt-4 text-base font-bold leading-[1.3] text-brand-ink'
   const sub = 'mt-1 text-sm text-brand-muted'
 
-  return (
-    <div className={`grid grid-cols-1 gap-4 ${compact ? 'sm:grid-cols-2' : 'md:grid-cols-3'}`}>
-      {/* A Michelin star, alone. */}
-      <figure className={panel}>
-        <div className="flex aspect-[4/3] items-center justify-center rounded-xl bg-brand-cream">
-          {/* The Michelin star itself, 1:1 from the vector (see michelinStar.ts). */}
-          <svg viewBox={MICHELIN_STAR.viewBox} className="h-20 w-20 text-brand-orange" fill="currentColor" aria-hidden>
-            <path d={MICHELIN_STAR.d} />
-          </svg>
-        </div>
-        <figcaption>
-          <p className={caption}>{t('storyOne')}</p>
-          <p className={sub}>{t('storyOneSub')}</p>
-        </figcaption>
-      </figure>
+  const tag = 'text-[0.7rem] font-bold uppercase tracking-[0.18em] text-brand-orange'
 
-      {/* Everyone who ate there. */}
-      <figure className={panel}>
-        <div className="relative grid aspect-[4/3] grid-cols-4 gap-1.5 overflow-hidden rounded-xl" role="img" aria-label={t('storyAlt')}>
-          {thumbs.map((m, i) => (
-            <span key={m.id} className="relative block overflow-hidden rounded-md bg-brand-cream">
-              <Image src={m.src} alt="" width={240} height={240} sizes="90px" className="h-full w-full object-cover" loading="lazy" />
-              {RINGED.includes(i) ? (
-                <span aria-hidden className="pointer-events-none absolute -inset-[8%] block">
-                  <PenRing className={i % 2 ? 'rotate-3' : '-rotate-2'} />
-                </span>
-              ) : null}
-            </span>
-          ))}
-        </div>
-        <figcaption>
-          <p className={caption}>{t('storyAll')}</p>
-          <p className={sub}>{t('storyAllSub')}</p>
-        </figcaption>
-      </figure>
+  return (
+    <div className={`grid grid-cols-1 gap-4 ${compact ? '' : 'md:grid-cols-3'}`}>
+      {/* Michelin vs Makan: the star alone against everyone who ate there. */}
+      <div className={`relative grid grid-cols-1 gap-4 sm:grid-cols-2 ${compact ? '' : 'md:col-span-2'}`}>
+        <figure className={panel}>
+          <div className="flex aspect-[4/3] items-center justify-center rounded-xl bg-brand-cream">
+            {/* The Michelin star itself, 1:1 from the vector (see michelinStar.ts). */}
+            <svg viewBox={MICHELIN_STAR.viewBox} className="h-20 w-20 text-brand-orange" fill="currentColor" aria-hidden>
+              <path d={MICHELIN_STAR.d} />
+            </svg>
+          </div>
+          <figcaption>
+            <p className={`mt-4 ${tag}`}>{t('storyOneTag')}</p>
+            <p className={caption.replace('mt-4', 'mt-1')}>{t('storyOne')}</p>
+            <p className={sub}>{t('storyOneSub')}</p>
+          </figcaption>
+        </figure>
+
+        {/* The VS badge sits on the seam between the two cards: between them
+            side by side, and between them stacked on narrow screens. */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-1/2 z-10 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-4 border-brand-cream bg-brand-ink text-sm font-black tracking-[0.08em] text-white shadow-[0_8px_20px_-8px_rgba(43,21,3,0.45)]"
+        >
+          {t('storyVs')}
+        </span>
+
+        <figure className={panel}>
+          <div className="relative grid aspect-[4/3] grid-cols-4 gap-1.5 overflow-hidden rounded-xl" role="img" aria-label={t('storyAlt')}>
+            {thumbs.map((m, i) => (
+              <span key={m.id} className="relative block overflow-hidden rounded-md bg-brand-cream">
+                <Image src={m.src} alt="" width={240} height={240} sizes="90px" className="h-full w-full object-cover" loading="lazy" />
+                {RINGED.includes(i) ? (
+                  <span aria-hidden className="pointer-events-none absolute -inset-[8%] block">
+                    <PenRing className={i % 2 ? 'rotate-3' : '-rotate-2'} />
+                  </span>
+                ) : null}
+              </span>
+            ))}
+          </div>
+          <figcaption>
+            <p className={`mt-4 ${tag}`}>{t('storyAllTag')}</p>
+            <p className={caption.replace('mt-4', 'mt-1')}>{t('storyAll')}</p>
+            <p className={sub}>{t('storyAllSub')}</p>
+          </figcaption>
+        </figure>
+      </div>
 
       {/* What it adds up to. */}
       {!compact ? (
