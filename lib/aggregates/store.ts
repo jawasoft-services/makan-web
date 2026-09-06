@@ -122,9 +122,20 @@ export async function writeAggregates(
   const placeHash = new Map<string, string>()
   for (const d of existingPlaces.docs) placeHash.set(d.id, String(d.data()?.contentHash ?? ''))
 
+  // BulkWriter reports a failed write only through onWriteError and the
+  // per-write promise; without both, a rejected write (for instance a
+  // service account that can only read) leaves close() resolving and the
+  // run looking successful. Collect the failures and throw after the flush.
   const writer = db.bulkWriter()
+  const failures: string[] = []
+  writer.onWriteError((err) => {
+    if (err.failedAttempts < 3) return true
+    failures.push(`${err.documentRef.path}: ${err.message}`)
+    return false
+  })
+  const swallow = (p: Promise<unknown>) => void p.catch(() => undefined)
   const put = (ref: FirebaseFirestore.DocumentReference, payload: unknown, hash: string) => {
-    writer.set(ref, { payload, contentHash: hash, updatedAt: now })
+    swallow(writer.set(ref, { payload, contentHash: hash, updatedAt: now }))
     summary.written += 1
   }
 
@@ -145,11 +156,11 @@ export async function writeAggregates(
   else {
     const shards = Math.ceil(data.index.length / SHARD_SIZE)
     for (let i = 0; i < shards; i += 1) {
-      writer.set(root.doc('placeIndex').collection('shards').doc(String(i)), { entries: data.index.slice(i * SHARD_SIZE, (i + 1) * SHARD_SIZE), updatedAt: now })
+      swallow(writer.set(root.doc('placeIndex').collection('shards').doc(String(i)), { entries: data.index.slice(i * SHARD_SIZE, (i + 1) * SHARD_SIZE), updatedAt: now }))
     }
     const previous = Number(indexMetaSnap.data()?.shards ?? 0)
-    for (let i = shards; i < previous; i += 1) writer.delete(root.doc('placeIndex').collection('shards').doc(String(i)))
-    writer.set(root.doc('placeIndex'), { shards, count: data.index.length, contentHash: indexHash, updatedAt: now })
+    for (let i = shards; i < previous; i += 1) swallow(writer.delete(root.doc('placeIndex').collection('shards').doc(String(i))))
+    swallow(writer.set(root.doc('placeIndex'), { shards, count: data.index.length, contentHash: indexHash, updatedAt: now }))
     summary.written += 1
   }
 
@@ -164,11 +175,12 @@ export async function writeAggregates(
   }
   for (const id of placeHash.keys()) {
     if (keep.has(id)) continue
-    writer.delete(root.doc('places').collection('items').doc(id))
+    swallow(writer.delete(root.doc('places').collection('items').doc(id)))
     summary.removed += 1
   }
 
-  writer.set(root.doc('meta'), { lastRunAt: now, places: data.directory.length, standingsRows: data.standings.rows.length })
+  swallow(writer.set(root.doc('meta'), { lastRunAt: now, places: data.directory.length, standingsRows: data.standings.rows.length }))
   await writer.close()
+  if (failures.length > 0) throw new Error(`${failures.length} of ${summary.written + 1} writes failed; first: ${failures[0]}`)
   return summary
 }

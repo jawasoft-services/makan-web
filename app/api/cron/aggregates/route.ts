@@ -50,6 +50,7 @@ export async function GET(request: Request) {
     return NextResponse.json(body)
   } catch (err) {
     console.error('aggregates: run failed', err)
-    return NextResponse.json({ ok: false, error: 'Aggregate run failed.', ms: Date.now() - started }, { status: 500 })
+    const message = err instanceof Error ? err.message : 'Aggregate run failed.'
+    return NextResponse.json({ ok: false, error: message, ms: Date.now() - started }, { status: 500 })
   }
 }

@@ -200,4 +200,12 @@ Branch `cost/firestore-places`, merged to `main` at `1469182` on 2026-09-06. **T
 
 QUERY reads were 100–220k/day from the app alone, then 1.2–1.5M/day once the site went live; GetPhotoMedia tracked GetPlace one-to-one, which is the two-calls-per-place pattern in §2.2. The 2026-09-06 row includes the local seeding runs and test renders from the dev server against production.
 
+**Production writes were failing silently (found 2026-09-06 07:25 UTC).** The Vercel service account `makan-website@munchies-expo` holds `roles/datastore.viewer` only, so the cron's BulkWriter writes (and the R1 photo-cache writes) are rejected in production; BulkWriter surfaced nothing and the route returned `ok:true`. The route now throws on any failed write and returns 500 with the reason. The aggregates the site reads are the ones seeded from the dev server at 06:43 UTC; readers accept them for 36 hours, then fall back to scans. To unblock, grant the account write access (a human runs this; the CLI grant is blocked for the agent):
+
+```bash
+gcloud projects add-iam-policy-binding munchies-expo --member=serviceAccount:makan-website@munchies-expo.iam.gserviceaccount.com --role=roles/datastore.user --condition=None
+```
+
+then trigger the route once (`curl -H "Authorization: Bearer $CRON_SECRET" https://www.makanofficial.com/api/cron/aggregates`) and confirm `ok:true` and a fresh `webAggregates/meta.lastRunAt`.
+
 Still to do by hand: run `npm run monitor:cost` on 2026-09-07 and again on 2026-09-08 (the pass condition needs a day with at least two deployments), and confirm the spend in Billing → Reports by SKU.
