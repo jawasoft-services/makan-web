@@ -140,27 +140,15 @@ The route may stay `force-dynamic`. The defect is the scan, not the rendering mo
 
 ## 7. Verification
 
-Every claim in §1 came from Cloud Monitoring, and the same queries prove the fix. Run these before the change and again 24 hours after it is live.
+Every claim in §1 came from Cloud Monitoring, and the same queries prove the fix. Run them before the change and again 24 hours after it is live.
 
-Firestore reads per day, by type:
-
-```bash
-gcloud monitoring time-series list \
-  --project=munchies-expo \
-  --filter='metric.type="firestore.googleapis.com/document/read_count"' \
-  --interval-start-time="$(date -u -v-7d +%Y-%m-%dT%H:%M:%SZ)" \
-  --interval-end-time="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-```
-
-Places calls by method:
+The installed gcloud has no `monitoring time-series` command, so the queries call the Monitoring API directly. `scripts/cost-monitor.mjs` does both in one go, aligned to whole days, and marks each day against the pass condition below:
 
 ```bash
-gcloud monitoring time-series list \
-  --project=munchies-expo \
-  --filter='metric.type="serviceruntime.googleapis.com/api/request_count" AND resource.label.service="places.googleapis.com"' \
-  --interval-start-time="$(date -u -v-7d +%Y-%m-%dT%H:%M:%SZ)" \
-  --interval-end-time="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+npm run monitor:cost          # last 8 days; `npm run monitor:cost -- 30` for 30
 ```
+
+It needs an application-default credential (`gcloud auth application-default login`, once) with `monitoring.viewer` on `munchies-expo`. Under the hood it is two `GET /v3/projects/munchies-expo/timeSeries` calls with `alignmentPeriod=86400s`, `perSeriesAligner=ALIGN_SUM`, `crossSeriesReducer=REDUCE_SUM`: Firestore `firestore.googleapis.com/document/read_count` grouped by `metric.label.type` (LOOKUP vs QUERY), and `serviceruntime.googleapis.com/api/request_count` filtered to `resource.label.service="places.googleapis.com"` grouped by `resource.label.method`.
 
 **Pass condition:** Firestore `type=QUERY` reads at or below 200,000/day, and Places `GetPhotoMedia` at or below 100/day, sustained over 24 hours that include at least two deployments.
 
@@ -190,11 +178,26 @@ R1 and R2 are separately shippable and separately verifiable. Do not batch them 
 
 ## 10. Implementation status (2026-09-06)
 
-Branch `cost/firestore-places`, three commits, not deployed (deployment is Devon's call).
+Branch `cost/firestore-places`, merged to `main` at `1469182` on 2026-09-06 and deployed by Vercel (cron route answers 401 without the secret; standings and meal pages render from the aggregates).
 
 - **R1** `lib/place-photo.ts`: photos cached at `webCache/placePhotos/places/{placeId}` with `fetchedAt` (30 days), stale value served on a Google error. Verified: one place render wrote the document. *(Firestore paths alternate collection and document, so the per-item documents sit one level under a `placePhotos` document; same for `webAggregates/places/items/{placeId}`.)*
 - **R2** `lib/aggregates/{types,compute,store}.ts`, `app/api/cron/aggregates/route.ts`, `vercel.json` (hourly). Readers keep their names and types. New `getPlaceIndex` and `getDirectoryPlaceById` read one or two documents; the sitemap, `generateStaticParams` and the guide story use them. A heartbeat document (`webAggregates/meta`) is written every run so an unchanged hour still counts as fresh; readers fall back to the scan, with a log line, when it is missing or older than six hours. Measured on the dev server: a run is 17 s (under the 60 s function limit); a second run wrote only the heartbeat and skipped 591 documents. `CRON_SECRET` is set in Vercel production. The aggregates were seeded from the dev server on 2026-09-06, so the first production render after deploy reads documents.
 - **R3** `app/[locale]/meal/[id]/page.tsx` reads `getDirectoryPlaceById(placeProviderId)`: one document.
 - **R4** recorded as a comment beside the second `getPlacePhoto` call in the share card.
 
-Still to do by hand after deploy: run the §7 monitoring queries 24 hours later, and confirm the spend in Billing → Reports by SKU.
+### Baseline before the fix (`npm run monitor:cost`, run 2026-09-06 just after the deploy)
+
+| day | Firestore LOOKUP | Firestore QUERY | Places GetPlace | Places GetPhotoMedia |
+|---|---:|---:|---:|---:|
+| 2026-08-30 | 10,719 | 121,346 | – | – |
+| 2026-08-31 | 25,901 | 218,160 | – | – |
+| 2026-09-01 | 46,746 | 141,578 | – | – |
+| 2026-09-02 | 10,227 | 109,666 | – | – |
+| 2026-09-03 (site live) | 27,912 | 622,498 | 699 | – |
+| 2026-09-04 | 113,974 | 1,389,619 | 1,710 | 1,710 |
+| 2026-09-05 | 76,680 | 1,230,744 | 2,158 | 1,503 |
+| 2026-09-06 (partial) | 57,920 | 1,518,289 | 880 | 880 |
+
+QUERY reads were 100–220k/day from the app alone, then 1.2–1.5M/day once the site went live; GetPhotoMedia tracked GetPlace one-to-one, which is the two-calls-per-place pattern in §2.2. The 2026-09-06 row includes the local seeding runs and test renders from the dev server against production.
+
+Still to do by hand: run `npm run monitor:cost` on 2026-09-07 and again on 2026-09-08 (the pass condition needs a day with at least two deployments), and confirm the spend in Billing → Reports by SKU.
