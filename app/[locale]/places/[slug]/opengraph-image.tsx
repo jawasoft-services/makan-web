@@ -51,6 +51,10 @@ export default async function Image({ params }: { params: Promise<{ locale: stri
   // Meal photos are WebP, which the card renderer cannot decode: fetch and
   // transcode to a JPEG data URI, cropped to the card's left half. Any
   // failure falls back to the text card rather than a blank one.
+  // The page calls getPlacePhoto too. With the Firestore cache in front of
+  // Google (lib/place-photo.ts) this second call is a document read, not a
+  // Places call; it is deliberate, so the card carries the same photo. Do
+  // not remove it to "save" a call.
   const google = await getPlacePhoto(place.placeId)
   const photo = (await cardPhoto(google?.uri)) ?? (await cardPhoto(place.meals[0]?.src))
   if (!photo) {

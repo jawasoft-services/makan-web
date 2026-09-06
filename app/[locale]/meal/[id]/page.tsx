@@ -5,7 +5,7 @@ import Image from "next/image"
 import Footer from "@/components/Footer"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"
-import { getPlaceDirectory } from "@/lib/place-directory"
+import { getDirectoryPlaceById } from "@/lib/place-directory"
 import { localizePath } from "@/i18n/paths"
 
 export const dynamic = "force-dynamic"
@@ -91,9 +91,11 @@ export default async function MealPage({ params }: PageProps) {
 
   if (!imageUrl) redirect("/")
 
-  // The way back into the site: the restaurant this meal was saved at.
+  // The way back into the site: the restaurant this meal was saved at. One
+  // aggregate document, not the directory: this route is force-dynamic and
+  // is hit by every shared meal link.
   const t = await getTranslations("Meal")
-  const place = meal.placeProviderId ? (await getPlaceDirectory()).find((p) => p.placeId === meal.placeProviderId) ?? null : null
+  const place = meal.placeProviderId ? await getDirectoryPlaceById(meal.placeProviderId) : null
 
   return (
     <div className="min-h-screen bg-brand-cream">
