@@ -1,11 +1,11 @@
 import type { MetadataRoute } from "next"
 import { getAllReviews } from "@/lib/reviews"
 import { getEatStandings } from "@/lib/eat-standings"
-import { getPlaceDirectory } from "@/lib/place-directory"
+import { getPlaceIndex } from "@/lib/place-directory"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = "https://www.makanofficial.com"
-  const [standings, places] = await Promise.all([getEatStandings(), getPlaceDirectory()])
+  const [standings, places] = await Promise.all([getEatStandings(), getPlaceIndex()])
   const matchupIds = new Set(standings.all.filter((r) => r.matchups > 0).map((r) => r.placeId))
   const reviews = getAllReviews()
   const blogLastMod = reviews[0] ? new Date(reviews[0].dateModified) : new Date()

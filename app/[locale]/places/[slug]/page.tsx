@@ -9,7 +9,7 @@ import StoreLink from '@/components/home/StoreLink'
 import PlacesMapLoader from '@/components/map/PlacesMapLoader'
 import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
 import { CITY_FLOOR, EVIDENCE_FLOOR, getEatStandings, type StandingRow } from '@/lib/eat-standings'
-import { getDirectoryPlace, getPlaceDirectory, type DirectoryPlace } from '@/lib/place-directory'
+import { getDirectoryPlace, getPlaceIndex, type DirectoryPlace } from '@/lib/place-directory'
 import { getPlacePhoto } from '@/lib/place-photo'
 import { localizePath } from '@/i18n/paths'
 import { thumbUrl } from '@/lib/thumb'
@@ -32,7 +32,7 @@ interface Props {
 
 // Prerender the places worth a search result; the rest render on demand.
 export async function generateStaticParams() {
-  const all = await getPlaceDirectory()
+  const all = await getPlaceIndex()
   return all.filter((p) => p.indexable).map((p) => ({ slug: p.slug }))
 }
 
