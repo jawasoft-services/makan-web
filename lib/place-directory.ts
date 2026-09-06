@@ -10,10 +10,10 @@ export type { DirectoryMeal, DirectoryPlace, PlaceIndexEntry } from '@/lib/aggre
 
 /**
  * Every restaurant on Makan that has public meals, as the app's place screen
- * would show it. Read from the aggregate documents the hourly cron writes:
+ * would show it. Read from the aggregate documents the daily cron writes:
  * a small sharded index for lists, and one document per place for a page.
  * The full scan (lib/aggregates/compute.ts) runs only when the aggregate is
- * missing or the cron has been silent for six hours, which is logged.
+ * missing or the cron has been silent for 36 hours, which is logged.
  */
 
 async function aggregateIsFresh(): Promise<boolean> {

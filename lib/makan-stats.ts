@@ -47,7 +47,7 @@ export type { PlaceStats } from '@/lib/aggregates/types'
 
 /**
  * The two numbers a restaurant owner asks for, read from the aggregate the
- * hourly cron writes (webAggregates/stats). The scan runs only when the
+ * daily cron writes (webAggregates/stats). The scan runs only when the
  * aggregate is missing or stale, which is logged.
  */
 export const getPlaceStats = unstable_cache(

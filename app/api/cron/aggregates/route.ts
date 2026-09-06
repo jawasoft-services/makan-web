@@ -9,7 +9,10 @@ export const maxDuration = 60
 
 /**
  * The one place the site scans `meals` and `rankingComparisons`. Vercel
- * Cron calls it hourly (vercel.json) with `Authorization: Bearer $CRON_SECRET`;
+ * Cron calls it daily at 03:00 UTC (vercel.json; Hobby plans reject anything
+ * more frequent) and the GitHub Actions workflow in
+ * .github/workflows/aggregates.yml can call it hourly once the repository has
+ * a CRON_SECRET secret. Both send `Authorization: Bearer $CRON_SECRET`;
  * without the secret it is a 401, so it cannot be triggered from outside.
  * It writes to webAggregates/* only, and only the documents whose content
  * changed (lib/aggregates/store.ts); most hours write just the heartbeat.

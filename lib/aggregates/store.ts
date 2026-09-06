@@ -25,7 +25,14 @@ import type { DirectoryPlace, EatStandings, PlaceIndexEntry, PlaceStats } from '
 const ROOT = 'webAggregates'
 const SHARD_SIZE = 500
 /** Aggregates older than this are treated as missing (the cron has stopped). */
-export const MAX_AGE_MS = 6 * 60 * 60 * 1000
+/**
+ * How old the heartbeat may be before readers fall back to a live scan.
+ * The Vercel cron runs once a day (Hobby plans allow no more; an hourly
+ * schedule rejects the whole deployment), and Hobby crons fire "within the
+ * hour", so 36 hours tolerates one late run. Stale-by-a-day aggregates cost
+ * nothing; a fallback scan is the cost this module exists to remove.
+ */
+export const MAX_AGE_MS = 36 * 60 * 60 * 1000
 
 export function hashOf(payload: unknown): string {
   return createHash('sha1').update(JSON.stringify(payload)).digest('hex')

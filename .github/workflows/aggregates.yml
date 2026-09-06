@@ -1,0 +1,26 @@
+# Hourly refresh of the website aggregates (webAggregates/* in Firestore).
+# Vercel's Hobby plan only runs crons once a day, so this workflow calls the
+# same route more often. It does nothing until the repository has a
+# CRON_SECRET secret equal to the Vercel production CRON_SECRET:
+#   gh secret set CRON_SECRET --repo Ridorichard04/makan-web
+name: Refresh website aggregates
+on:
+  schedule:
+    - cron: "10 * * * *"
+  workflow_dispatch:
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      CRON_SECRET: ${{ secrets.CRON_SECRET }}
+    steps:
+      - name: Call the aggregates route
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "CRON_SECRET secret not set; skipping."
+            exit 0
+          fi
+          curl --fail --silent --show-error --max-time 120 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            https://www.makanofficial.com/api/cron/aggregates

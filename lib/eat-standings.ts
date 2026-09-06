@@ -11,11 +11,11 @@ export type { CityStanding, EatStandings, StandingRow } from '@/lib/aggregates/t
 /**
  * The Eat or Yeet standings (D-033, docs/superpowers/specs/2026-09-02-eats-standings-design.md).
  *
- * Read from the aggregate document the hourly cron writes
+ * Read from the aggregate document the daily cron writes
  * (webAggregates/standings): a handful of document reads, never a
  * collection scan. The scan itself lives in lib/aggregates/compute.ts and
  * runs here only when no aggregate exists or the cron has been silent for
- * six hours, which is logged.
+ * 36 hours, which is logged.
  */
 export const getEatStandings = unstable_cache(
   async (): Promise<EatStandings> => {

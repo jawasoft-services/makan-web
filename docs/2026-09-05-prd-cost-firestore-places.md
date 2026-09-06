@@ -95,7 +95,7 @@ Replace the deploy-scoped `unstable_cache` in `lib/place-photo.ts` with a Firest
 
 Add a scheduled route that performs the collection scan **once per interval** and writes the result to Firestore. Every page then reads documents, not collections.
 
-- New route `app/api/cron/aggregates/route.ts`, invoked by Vercel Cron **hourly**, protected by a bearer secret in `CRON_SECRET` (return 401 without it — the route must not be publicly triggerable).
+- New route `app/api/cron/aggregates/route.ts`, invoked by Vercel Cron **daily** (Hobby plans reject anything more frequent; hourly via GitHub Actions once the repo secret is set), protected by a bearer secret in `CRON_SECRET` (return 401 without it — the route must not be publicly triggerable).
 - The route scans `meals` and `rankingComparisons` **once**, then writes:
   - `webAggregates/standings` — the `EatStandings` payload that `getEatStandings` returns today.
   - `webAggregates/placeIndex` — place id, slug, name and city for every place; this backs `sitemap.ts` and `generateStaticParams`.
@@ -160,7 +160,7 @@ It needs an application-default credential (`gcloud auth application-default log
 
 | Risk | Mitigation |
 |---|---|
-| Aggregates go stale if the cron stops | Log the aggregate's age on every page read; fall back to the live scan when the document is missing or older than 6 hours |
+| Aggregates go stale if the cron stops | Log the aggregate's age on every page read; fall back to the live scan when the document is missing or older than 36 hours (one missed daily run) |
 | Cron route is discovered and hammered | Bearer secret in `CRON_SECRET`, 401 without it; the route writes only, and writes are hash-gated |
 | A 1 MB document limit is hit as Makan grows | `placeIndex` holds four fields per place and shards at 500; per-place payloads are separate documents |
 | Photo cache returns a URI Google has expired | `photoUri` is refreshed on the same 30-day cycle; on fetch failure the stale value is served rather than a blank hero, which is the better failure |
@@ -178,10 +178,10 @@ R1 and R2 are separately shippable and separately verifiable. Do not batch them 
 
 ## 10. Implementation status (2026-09-06)
 
-Branch `cost/firestore-places`, merged to `main` at `1469182` on 2026-09-06 and deployed by Vercel (cron route answers 401 without the secret; standings and meal pages render from the aggregates).
+Branch `cost/firestore-places`, merged to `main` at `1469182` on 2026-09-06. **The first two pushes did not deploy:** Vercel rejected them outright (GitHub status "Deployment failed", no deployment record, the failure link resolving to the cron pricing page) because the Hobby plan allows crons once a day at most and `vercel.json` asked for hourly. Fixed by the follow-up commit: daily schedule, a 36-hour freshness window, and an optional hourly trigger from GitHub Actions (`.github/workflows/aggregates.yml`, active once `gh secret set CRON_SECRET` has been run on the repo).
 
 - **R1** `lib/place-photo.ts`: photos cached at `webCache/placePhotos/places/{placeId}` with `fetchedAt` (30 days), stale value served on a Google error. Verified: one place render wrote the document. *(Firestore paths alternate collection and document, so the per-item documents sit one level under a `placePhotos` document; same for `webAggregates/places/items/{placeId}`.)*
-- **R2** `lib/aggregates/{types,compute,store}.ts`, `app/api/cron/aggregates/route.ts`, `vercel.json` (hourly). Readers keep their names and types. New `getPlaceIndex` and `getDirectoryPlaceById` read one or two documents; the sitemap, `generateStaticParams` and the guide story use them. A heartbeat document (`webAggregates/meta`) is written every run so an unchanged hour still counts as fresh; readers fall back to the scan, with a log line, when it is missing or older than six hours. Measured on the dev server: a run is 17 s (under the 60 s function limit); a second run wrote only the heartbeat and skipped 591 documents. `CRON_SECRET` is set in Vercel production. The aggregates were seeded from the dev server on 2026-09-06, so the first production render after deploy reads documents.
+- **R2** `lib/aggregates/{types,compute,store}.ts`, `app/api/cron/aggregates/route.ts`, `vercel.json` (daily, 03:00 UTC). Readers keep their names and types. New `getPlaceIndex` and `getDirectoryPlaceById` read one or two documents; the sitemap, `generateStaticParams` and the guide story use them. A heartbeat document (`webAggregates/meta`) is written every run so an unchanged hour still counts as fresh; readers fall back to the scan, with a log line, when it is missing or older than 36 hours. Measured on the dev server: a run is 17 s (under the 60 s function limit); a second run wrote only the heartbeat and skipped 591 documents. `CRON_SECRET` is set in Vercel production. The aggregates were seeded from the dev server on 2026-09-06, so the first production render after deploy reads documents.
 - **R3** `app/[locale]/meal/[id]/page.tsx` reads `getDirectoryPlaceById(placeProviderId)`: one document.
 - **R4** recorded as a comment beside the second `getPlacePhoto` call in the share card.
 
