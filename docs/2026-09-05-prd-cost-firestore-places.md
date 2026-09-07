@@ -208,4 +208,8 @@ gcloud projects add-iam-policy-binding munchies-expo --member=serviceAccount:mak
 
 then trigger the route once (`curl -H "Authorization: Bearer $CRON_SECRET" https://www.makanofficial.com/api/cron/aggregates`) and confirm `ok:true` and a fresh `webAggregates/meta.lastRunAt`.
 
-Still to do by hand: run `npm run monitor:cost` on 2026-09-07 and again on 2026-09-08 (the pass condition needs a day with at least two deployments), and confirm the spend in Billing → Reports by SKU.
+### After the fix (`npm run monitor:cost --hourly`, read 2026-09-07 01:50 UTC)
+
+The IAM grant landed at 07:37 UTC on 2026-09-06 (the deploy itself at 07:20). Per hour, Firestore QUERY reads went from 17,000–48,000 before to 400–1,800 after (two hours at about 8,500), and Places GetPhotoMedia from 11–36 an hour to 0–3. The first calendar day after the fix is on track for roughly 30,000 QUERY reads and under 10 photo fetches, against pass lines of 200,000 and 100. The daily view now buckets by UTC calendar day; the 2026-09-06 row (1.14M) is dominated by the 06:00–07:00 UTC seeding runs from the dev server and the pre-fix morning. `--hourly` is the view to use in the first day after any deploy.
+
+Still to do by hand: run `npm run monitor:cost` on 2026-09-08 and again on 2026-09-08 (the pass condition needs a day with at least two deployments), and confirm the spend in Billing → Reports by SKU.

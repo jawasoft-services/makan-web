@@ -15,7 +15,7 @@ Mark a row `fix` in the last column and write the better line under it. Rows wit
 | `Hero.legal` | V vegetarian · VG vegan · GF gluten free. Prices in thousands of rupiah, subject to 21% government tax & service. | V vegetarian · VG vegan · GF bebas gluten. Harga dalam ribuan rupiah, belum termasuk pajak dan layanan 21%. | |
 | `Hero.answerMark` | A good match for you | Cocok untuk kamu | |
 | `Hero.thought` | How does Makan know? | Dari mana Makan tahu? | |
-| `Hero.proofLead` | Eat or Yeet is a tiny game. Two of your own meal photos. Which would you eat again first? | Eat or Yeet itu permainan kecil. Dua foto makananmu sendiri. Mana yang mau kamu makan lagi duluan? | |
+| `Hero.proofLead` | Eat or Yeet is a mini game. Two of your own meal photos. Which would you eat again first? | Eat or Yeet itu mini game. Dua foto makananmu sendiri. Mana yang mau kamu makan lagi duluan? | |
 | `Hero.proofTally` | Your picks tell Makan what you like. | Pilihanmu memberi tahu Makan apa yang kamu suka. | |
 | `Hero.hook` | Everything sounds good. | Semua kelihatan enak. | |
 | `Hero.eoyQuestion` | Each pick tells Makan one thing about your taste. | Tiap pilihan memberi tahu Makan satu hal tentang seleramu. | |
