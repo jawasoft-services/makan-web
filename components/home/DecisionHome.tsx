@@ -12,6 +12,7 @@ import FaqSchema from "@/components/FaqSchema"
 import Footer from "@/components/Footer"
 import SiteSchema from "@/components/SiteSchema"
 import HomepageAnalytics from "@/components/HomepageAnalytics"
+import HashScroll from "@/components/HashScroll"
 import { getDecisionFaqs } from "@/lib/faq"
 import { getMealCount, getPlaceStats, getRecentPublicMeals } from "@/lib/makan-stats"
 import { getAppStoreRating } from "@/lib/app-store"
@@ -30,6 +31,7 @@ export default async function DecisionHome({ locale }: { locale: string }) {
     <main id="main-content" className="overflow-x-clip pt-20">
       <SiteSchema locale={locale} />
       <HomepageAnalytics />
+      <HashScroll />
       <Hero mealCount={mealCount} rating={rating} />
       <HeroDiptych />
       <EatOrYeetScene />
