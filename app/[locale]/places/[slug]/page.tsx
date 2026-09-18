@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
+import PlaceMaitred from '@/components/PlaceMaitred'
 import SiteSchema from '@/components/SiteSchema'
 import StoreLink from '@/components/home/StoreLink'
 import PlacesMapLoader from '@/components/map/PlacesMapLoader'
@@ -221,6 +222,11 @@ export default async function PlacePage({ params }: Props) {
               markers={[{ slug: place.slug, name: place.name, lat: place.lat as number, lng: place.lng as number, href: pageUrl }]}
             />
           ) : null}
+
+          {/* Maître'D — the download hook, above the standing band. Empty-seat
+              (claim it) by default; the held state lights up when RM19505 ships a
+              public roster read. Ported 1:1 from the app's Maître'D UI. */}
+          <PlaceMaitred locale={locale} placeName={place.name} />
 
           {/* The band the app fills with YOU and FRIENDS; on the web, the place's standing. */}
           {row && (ranked || row.cityRank !== null || row.matchups > 0) ? (
