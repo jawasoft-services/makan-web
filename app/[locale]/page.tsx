@@ -15,6 +15,7 @@ import FinalCTA from "@/components/FinalCTA"
 import Footer from "@/components/Footer"
 import SiteSchema from "@/components/SiteSchema"
 import HomepageAnalytics from "@/components/HomepageAnalytics"
+import HashScroll from "@/components/HashScroll"
 import { getFaqs } from "@/lib/faq"
 import { getMealCount, getRecentPublicMeals } from "@/lib/makan-stats"
 import { createPageMetadata } from "@/lib/site-metadata"
@@ -65,6 +66,7 @@ export default async function Home({
     <main id="main-content">
       <SiteSchema locale={locale} />
       <HomepageAnalytics />
+      <HashScroll />
       <Hero />
       <MemoryThesis />
       <HowItWorks />

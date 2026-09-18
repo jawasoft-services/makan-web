@@ -23,6 +23,19 @@ export default function Navbar() {
   const isHome = stripLocalePrefix(pathname) === '/'
   const isInvite = stripLocalePrefix(pathname).startsWith('/invite/')
   const homeHref = localizePath(locale, '/')
+
+  // A homepage-section link (#how-it-works, #features, #faq) must work from
+  // every page, not only home. On home we keep the bare hash so the browser
+  // scrolls in place. Elsewhere we point at the localized home path WITH the
+  // hash (homeHref already carries the locale, e.g. '/' or '/id'), joined so
+  // there is never a '//' or a stray slash before the '#'. The homepage reads
+  // the hash on mount and scrolls to it (see app/[locale]/page.tsx), which is
+  // what fixes links landing at the top of home instead of the section.
+  const hashTarget = (hash: string) => {
+    if (isHome) return hash
+    const base = homeHref === '/' ? '' : homeHref
+    return `${base}/${hash}`
+  }
   const navLinks = [
     { label: t('howItWorks'), href: '#how-it-works' },
     { label: t('features'), href: '#features' },
@@ -107,7 +120,7 @@ export default function Navbar() {
             return (
               <a
                 key={link.href}
-                href={isHome ? link.href : `${homeHref === '/' ? '' : homeHref}/${link.href}`}
+                href={hashTarget(link.href)}
                 className="text-sm font-medium text-white/90 transition-colors hover:text-white"
               >
                 {link.label}
@@ -190,7 +203,7 @@ export default function Navbar() {
                     return (
                       <a
                         key={link.href}
-                        href={isHome ? link.href : `${homeHref === '/' ? '' : homeHref}/${link.href}`}
+                        href={hashTarget(link.href)}
                         onClick={() => setDrawerOpen(false)}
                         className={linkClassName}
                       >
