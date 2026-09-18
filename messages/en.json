@@ -611,7 +611,15 @@
     "standingBand": "Standing",
     "recentMeals": "Recent meals",
     "postMeal": "Post a meal here",
-    "photoCredit": "Photo: {author} · Google Maps"
+    "photoCredit": "Photo: {author} · Google Maps",
+    "maitredEyebrow": "The Maître'D seat",
+    "maitredEmptyHead": "Nobody runs {name} yet.",
+    "maitredEmptyBody": "The Maître'D is whoever eats here most. Save your meals at {name} and the seat is yours — with your own picks other diners see.",
+    "maitredReward": "Be {name}'s most loyal customer. Get treated like it.",
+    "maitredCta": "Claim the seat — get Makan free",
+    "maitredHeldEyebrow": "The Maître'D here",
+    "maitredHeldSub": "Eats here more than anyone on Makan",
+    "maitredHeldFooter": "Get Makan to see every pick — or become the next Maître'D."
   },
   "Meal": {
     "savedAt": "Saved at",

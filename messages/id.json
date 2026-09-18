@@ -611,7 +611,15 @@
     "standingBand": "Peringkat",
     "recentMeals": "Makanan terbaru",
     "postMeal": "Posting makanan di sini",
-    "photoCredit": "Foto: {author} · Google Maps"
+    "photoCredit": "Foto: {author} · Google Maps",
+    "maitredEyebrow": "Kursi Maître'D",
+    "maitredEmptyHead": "Belum ada yang pegang {name}.",
+    "maitredEmptyBody": "Maître'D itu yang paling sering makan di sini. Simpan makananmu di {name} dan kursinya jadi milikmu — dengan pilihanmu sendiri yang dilihat orang lain.",
+    "maitredReward": "Jadi pelanggan paling setia {name}. Diperlakukan seperti itu.",
+    "maitredCta": "Ambil kursinya — pakai Makan gratis",
+    "maitredHeldEyebrow": "Maître'D di sini",
+    "maitredHeldSub": "Paling sering makan di sini di Makan",
+    "maitredHeldFooter": "Pakai Makan buat lihat semua pilihannya — atau jadi Maître'D berikutnya."
   },
   "Meal": {
     "savedAt": "Disimpan di",
