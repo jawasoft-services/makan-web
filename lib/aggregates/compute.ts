@@ -321,6 +321,7 @@ export async function computePlaceStats(db: Firestore): Promise<PlaceStats> {
   return {
     places: clamp(byPlace.size, FALLBACK_PLACE_STATS.places),
     recentMeals: clamp(recentSnap.data().count, FALLBACK_PLACE_STATS.recentMeals),
+    mealCount: clamp(placesSnap.size, FALLBACK_PLACE_STATS.mealCount),
     topPlaces,
   }
 }

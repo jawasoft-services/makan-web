@@ -18,8 +18,10 @@ export const FALLBACK_MEAL_COUNT = 581
  * component imports this file, so the Firebase Admin credential cannot leak
  * into a browser bundle.
  *
- * On any error / missing env / unreachable Firebase, returns
- * FALLBACK_MEAL_COUNT. The homepage cannot break on this path.
+ * On any error / missing env / unreachable Firebase, falls back to the last
+ * count the daily cron persisted (webAggregates/stats, at most ~a day old and
+ * real), and only to FALLBACK_MEAL_COUNT if even that read fails. The homepage
+ * cannot break on this path.
  */
 export async function getMealCount(): Promise<number> {
   try {
@@ -29,7 +31,16 @@ export async function getMealCount(): Promise<number> {
     const snap = await db.collection('meals').count().get()
     return clamp(snap.data().count, FALLBACK_MEAL_COUNT)
   } catch {
-    console.error('makan-stats: failed to fetch meal count; using fallback.')
+    // Live count failed: reuse the persisted aggregate the cron wrote, so the
+    // fallback tracks live state instead of a frozen constant.
+    console.error('makan-stats: failed to fetch meal count; reading persisted stats.')
+    try {
+      const db = getDb()
+      const stored = db ? await readStats(db) : null
+      if (stored) return stored.mealCount
+    } catch {
+      // fall through to the constant floor
+    }
     return FALLBACK_MEAL_COUNT
   }
 }
