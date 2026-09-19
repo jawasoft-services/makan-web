@@ -36,6 +36,26 @@ export default function Navbar() {
     const base = homeHref === '/' ? '' : homeHref
     return `${base}/${hash}`
   }
+
+  // On the homepage a section link (#how-it-works, #features, #faq) must scroll
+  // through Lenis, NOT the browser's native hash jump: several sections sit in
+  // pinned/sticky `h-screen` scroll containers (HeroDiptych's how-it-works), so
+  // their scroll length differs from their visual position and a native jump
+  // lands at the BOTTOM of the pinned block. Lenis knows the real layout and
+  // scrolls to the element's true position. Off-home we let the link navigate
+  // to /#hash and HashScroll handles it after the sections mount.
+  const handleHashClick = (hash: string) => (e: React.MouseEvent) => {
+    if (!isHome) return // cross-page: let the <a> navigate; HashScroll finishes it
+    const id = hash.replace(/^#/, '')
+    const el = typeof document !== 'undefined' ? document.getElementById(id) : null
+    if (!el) return // element not found: fall back to the browser's default
+    e.preventDefault()
+    if (window.__lenis) window.__lenis.scrollTo(el, { offset: 0 })
+    else el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    // Reflect the section in the URL without a jump.
+    history.replaceState(null, '', hash)
+    setDrawerOpen(false)
+  }
   const navLinks = [
     { label: t('howItWorks'), href: '#how-it-works' },
     { label: t('features'), href: '#features' },
@@ -121,6 +141,7 @@ export default function Navbar() {
               <a
                 key={link.href}
                 href={hashTarget(link.href)}
+                onClick={handleHashClick(link.href)}
                 className="text-sm font-medium text-white/90 transition-colors hover:text-white"
               >
                 {link.label}
@@ -204,7 +225,7 @@ export default function Navbar() {
                       <a
                         key={link.href}
                         href={hashTarget(link.href)}
-                        onClick={() => setDrawerOpen(false)}
+                        onClick={handleHashClick(link.href)}
                         className={linkClassName}
                       >
                         {link.label}
