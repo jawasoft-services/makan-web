@@ -120,6 +120,8 @@ export interface PlaceStats {
   places: number
   /** Meals saved in the trailing 30 days. */
   recentMeals: number
+  /** Total meals ever saved. The persisted value getMealCount falls back to. */
+  mealCount: number
   /** The venues with the most meals saved, most first. Real names, as tagged. */
   topPlaces: { name: string; meals: number }[]
 }
@@ -128,4 +130,4 @@ export const TOP_PLACES = 6
 
 // Safe floors if nothing can be read: below what was measured on
 // 2026-09-02 (666 places, 692 meals in 30 days), never above it.
-export const FALLBACK_PLACE_STATS: PlaceStats = { places: 600, recentMeals: 500, topPlaces: [] }
+export const FALLBACK_PLACE_STATS: PlaceStats = { places: 600, recentMeals: 500, mealCount: 581, topPlaces: [] }
