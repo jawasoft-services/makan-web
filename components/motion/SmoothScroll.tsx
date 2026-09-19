@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import Lenis from 'lenis'
 
 declare global {
@@ -25,6 +26,20 @@ declare global {
  * globals.css still applies.
  */
 export default function SmoothScroll() {
+  const pathname = usePathname()
+
+  // Reset the scroll to the top on a route change. next-view-transitions does a
+  // client-side navigation and Lenis keeps its own scroll position, so without
+  // this a link to another page (e.g. Standings) lands wherever the previous
+  // page was scrolled — on a short page, that's the footer. Skip when the new
+  // URL carries a hash, so an anchor landing (handled below) still wins.
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (location.hash) return
+    if (window.__lenis) window.__lenis.scrollTo(0, { immediate: true, force: true })
+    else window.scrollTo(0, 0)
+  }, [pathname])
+
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const lenis = new Lenis({ autoRaf: true, anchors: false })
