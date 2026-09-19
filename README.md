@@ -106,3 +106,5 @@ This is a marketing/content site — no secrets live in it (they're all environm
 *Made in Bali. Start with your next meal.* 🍜
 
 </div>
+
+<!-- deploy: repo public + Vercel reconnected to jawasoft-services/makan-web (2026-09-19) -->
