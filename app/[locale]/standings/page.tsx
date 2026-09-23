@@ -7,10 +7,10 @@ import StandingsTable from '@/components/standings/StandingsTable'
 import GuideStory from '@/components/standings/GuideStory'
 import PlacesMapLoader from '@/components/map/PlacesMapLoader'
 import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
-import { CITY_FLOOR, EVIDENCE_FLOOR, getEatStandings } from '@/lib/eat-standings'
+import { CITY_FLOOR, EVIDENCE_FLOOR, getEatStandingsSnapshot } from '@/lib/eat-standings'
 import { localizePath } from '@/i18n/paths'
 
-// Live standings, recomputed at most hourly (lib/eat-standings.ts).
+// Standings snapshot and its actual last-check time (lib/eat-standings.ts).
 export const revalidate = 3600
 
 export async function generateMetadata({
@@ -37,7 +37,7 @@ export default async function StandingsPage({
   const { locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations('Standings')
-  const standings = await getEatStandings()
+  const { standings, checkedAt } = await getEatStandingsSnapshot()
   const dayMonthYear = new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
   const computedAt = standings.computedAt ? new Date(standings.computedAt) : new Date()
   const pageUrl = `${SITE_URL}${locale === 'id' ? '/id' : ''}/standings`
@@ -108,7 +108,8 @@ export default async function StandingsPage({
             <StandingsTable rows={standings.rows} locale={locale} labels={labels} caption={t('title')} />
             <p className="mt-4 text-sm leading-[1.6] text-brand-muted">
               {t('belowFloor', { count: standings.belowFloor, floor: EVIDENCE_FLOOR })}{' '}
-              <time dateTime={computedAt.toISOString()}>{t('updatedOn', { date: dayMonthYear.format(computedAt) })}</time> {t('updated')}
+              <time dateTime={computedAt.toISOString()}>{t('scoresChangedOn', { date: dayMonthYear.format(computedAt) })}</time>{' '}
+              {checkedAt ? <time dateTime={checkedAt}>{t('checkedOn', { date: dayMonthYear.format(new Date(checkedAt)) })}</time> : t('checkUnavailable')}
             </p>
           </>
         ) : (
