@@ -7,7 +7,7 @@ import SiteSchema from '@/components/SiteSchema'
 import StandingsTable from '@/components/standings/StandingsTable'
 import PlacesMapLoader from '@/components/map/PlacesMapLoader'
 import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
-import { CITY_FLOOR, getCityStanding, getEatStandings } from '@/lib/eat-standings'
+import { CITY_FLOOR, getCityStanding, getEatStandings, getEatStandingsSnapshot } from '@/lib/eat-standings'
 import { localizePath } from '@/i18n/paths'
 
 // One city, the same rule, a smaller pool: ranked from CITY_FLOOR matchups.
@@ -42,9 +42,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CityStandingsPage({ params }: Props) {
   const { locale, city: slug } = await params
   setRequestLocale(locale)
-  const found = await getCityStanding(slug)
-  if (!found) notFound()
-  const { city, standings } = found
+  const { standings, checkedAt } = await getEatStandingsSnapshot()
+  const city = standings.cities.find((candidate) => candidate.slug === slug)
+  if (!city) notFound()
   const t = await getTranslations('Standings')
   const dayMonthYear = new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
   const computedAt = standings.computedAt ? new Date(standings.computedAt) : new Date()
@@ -115,7 +115,8 @@ export default async function CityStandingsPage({ params }: Props) {
 
         <StandingsTable rows={city.rows} locale={locale} labels={labels} showWhere={false} caption={t('cityTitle', { city: city.city })} />
         <p className="mt-4 text-sm leading-[1.6] text-brand-muted">
-          <time dateTime={computedAt.toISOString()}>{t('updatedOn', { date: dayMonthYear.format(computedAt) })}</time> {t('updated')}
+          <time dateTime={computedAt.toISOString()}>{t('scoresChangedOn', { date: dayMonthYear.format(computedAt) })}</time>{' '}
+          {checkedAt ? <time dateTime={checkedAt}>{t('checkedOn', { date: dayMonthYear.format(new Date(checkedAt)) })}</time> : t('checkUnavailable')}
         </p>
 
         {city.rows.some((r) => r.lat !== null && r.lng !== null) ? (

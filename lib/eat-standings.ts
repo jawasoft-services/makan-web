@@ -17,24 +17,39 @@ export type { CityStanding, EatStandings, StandingRow } from '@/lib/aggregates/t
  * runs here only when no aggregate exists or the cron has been silent for
  * 36 hours, which is logged.
  */
-export const getEatStandings = unstable_cache(
-  async (): Promise<EatStandings> => {
+export interface EatStandingsSnapshot {
+  standings: EatStandings
+  /** When this request last read a fresh aggregate or completed a fallback scan. */
+  checkedAt: string | null
+}
+
+const getCachedEatStandingsSnapshot = unstable_cache(
+  async (): Promise<EatStandingsSnapshot> => {
     const db = getDb()
-    if (!db) return EMPTY_STANDINGS
+    if (!db) return { standings: EMPTY_STANDINGS, checkedAt: null }
     try {
       const [stored, lastRun] = await Promise.all([readStandings(db), readLastRun(db)])
       const fresh = lastRun !== null && Date.now() - lastRun.getTime() < MAX_AGE_MS
-      if (stored && fresh) return stored
+      if (stored && fresh) return { standings: stored, checkedAt: lastRun.toISOString() }
       console.warn(`eat-standings: aggregate ${stored ? `stale (last run ${lastRun?.toISOString() ?? 'never'})` : 'missing'}; falling back to a live scan.`)
-      return await computeEatStandings(db)
+      const standings = await computeEatStandings(db)
+      return { standings, checkedAt: new Date().toISOString() }
     } catch (err) {
       console.error('eat-standings: failed to read or compute standings; page shows the empty state.', err)
-      return EMPTY_STANDINGS
+      return { standings: EMPTY_STANDINGS, checkedAt: null }
     }
   },
-  ['makan-eat-standings', 'v6'],
+  ['makan-eat-standings', 'v7'],
   { revalidate: 3600 },
 )
+
+export async function getEatStandingsSnapshot(): Promise<EatStandingsSnapshot> {
+  return getCachedEatStandingsSnapshot()
+}
+
+export async function getEatStandings(): Promise<EatStandings> {
+  return (await getEatStandingsSnapshot()).standings
+}
 
 /** One restaurant by its URL slug, or null. */
 export async function getPlaceStanding(slug: string): Promise<{ row: StandingRow; standings: EatStandings } | null> {
