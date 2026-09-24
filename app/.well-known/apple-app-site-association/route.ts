@@ -1,9 +1,20 @@
 export function GET() {
   return Response.json(
-    // Invite credentials live in URL fragments. HTTPS universal-link handoff
-    // does not preserve them reliably, so invite URLs must open the safe web
-    // landing first and enter Makan through its explicit custom-scheme CTA.
-    { applinks: { apps: [], details: [] } },
+    {
+      applinks: {
+        apps: [],
+        details: [{
+          appIDs: ["T3Z49Z9YUB.com.makanofficial.makanapp"],
+          // Claim only a complete fragment-bearing invite. If an intermediary
+          // removes the fragment, iOS leaves the existing web landing in charge.
+          components: [{
+            "/": `/invite/${"?".repeat(12)}`,
+            "#": `s=${"?".repeat(43)}`,
+            comment: "Open a complete table invite in Makan",
+          }],
+        }],
+      },
+    },
     {
       headers: {
         "Content-Type": "application/json",
