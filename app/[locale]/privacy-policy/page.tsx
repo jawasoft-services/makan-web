@@ -1,3 +1,5 @@
+// RM19740 — PUBLISH ONLY with the RM19738 analytics opt-out release: section 7 describes a Settings switch
+// and section 2.3 a narrowed event payload. Resolve docs/rm19740/PRD.md O-01–08 and recheck both dates before publication.
 import { Metadata } from 'next'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
@@ -21,7 +23,7 @@ export default function PrivacyPolicy() {
 
         {/* Title */}
         <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-brand-ink">Privacy Policy</h1>
-        <p className="mt-2 text-sm text-brand-muted">Last updated: 30 August 2026</p>
+        <p className="mt-2 text-sm text-brand-muted">Last updated: 6 September 2026</p>
 
         <div className="mt-10 space-y-10 text-[15px] leading-relaxed text-brand-ink/80">
 
@@ -94,8 +96,8 @@ export default function PrivacyPolicy() {
                 <h3 className="font-medium text-brand-ink">2.3 Technical, usage, and security data (App and Site)</h3>
                 <ul className="mt-2 list-disc pl-5 space-y-1">
                   <li>Device and app information required to operate the Services, such as device type, operating system, and app version</li>
-                  <li>Usage and analytics events, collected to understand and improve the Services. These record which screens are opened and which features are used. Where an action involves another person — for example liking or commenting on someone else&apos;s meal — the event also records the account identifier of that other person, so we can tell what kind of interaction took place</li>
-                  <li>Crash reports and diagnostic data, including a device identifier and the actions leading up to a crash, used to find and fix faults</li>
+                  <li>Usage and analytics events, collected to understand and improve the Services. These record which screens are opened and which features are used. Where an action involves another person — for example liking or commenting on someone else&apos;s meal — the event records only the kind of interaction, never who the other person was</li>
+                  <li>Crash and performance diagnostics, including app and device information, diagnostic context and your account identifier while signed in, used to find and fix faults</li>
                   <li>Approximate location derived from your IP address, used for aggregate analytics</li>
                   <li>Security, abuse-prevention, and diagnostic logs used to protect users and the Services</li>
                 </ul>
@@ -408,17 +410,41 @@ export default function PrivacyPolicy() {
                 page does not send your details to a font provider.
               </p>
               <p>
-                <strong className="font-semibold text-brand-ink">The App.</strong> The App uses
-                Firebase Analytics, which relies on a device identifier to measure how features are
-                used, and Sentry, which uses a device identifier to report crashes. We rely on our
-                legitimate interests in understanding usage and fixing faults, as described in section
-                4.2. We never use these technologies for advertising, for cross-app tracking, or to
-                build the picture of your taste described in section 2.7. If you would prefer that we
-                did not process your usage data in this way, tell us at{' '}
+                <strong className="font-semibold text-brand-ink">App usage analytics.</strong>{' '}
+                We use Firebase Analytics by Google to understand how the App&apos;s screens and
+                features are used so we can improve them. It uses an app-instance identifier. Usage
+                analytics is on by default on this device once you are signed in and your saved
+                preference has been checked. You can turn it off under Settings › Privacy ›{' '}
+                <strong className="font-semibold text-brand-ink">App usage analytics</strong>.
+                The switch stops future usage measurement on this device. Your choice is kept when
+                you sign out or delete your account; set it separately on other devices. Existing
+                opt-outs stay off. Turning off collection does not itself erase data already collected.
+              </p>
+              <p>
+                Usage events do not include your account ID, other people&apos;s account IDs, meal
+                content, place names, captions or precise location. Advertising storage and
+                personalisation are disabled. We use usage analytics solely to improve the App,
+                not for advertising, cross-app tracking or the personal taste picture described in
+                section 2.7. Our analytics provider must process this information only to help us
+                improve the App, not for its own separate purposes.
+              </p>
+              <p>
+                <strong className="font-semibold text-brand-ink">Crash and performance diagnostics.</strong>{' '}
+                We use Sentry to identify crashes and performance faults. Reports can include your
+                account identifier while signed in, app and device information, and diagnostic
+                context. The App usage analytics switch controls Firebase Analytics; it does not
+                turn off Sentry diagnostics. We do not use these diagnostics for advertising,
+                cross-app tracking or the personal taste picture.
+              </p>
+              <p>
+                We rely on legitimate interests for these purposes as described in section 4.2.
+                To object to processing based on legitimate interests, contact{' '}
                 <a href="mailto:support@makanofficial.com" className="text-brand-orange hover:underline">
                   support@makanofficial.com
-                </a>{' '}
-                and we will stop for your account.
+                </a>.
+                We will assess the affected processing, explain the action taken and confirm its
+                scope. The device analytics switch is not an account-wide control. Your rights,
+                including how to ask us to delete information already held, are explained in section 11.
               </p>
             </div>
           </section>
@@ -612,11 +638,19 @@ export default function PrivacyPolicy() {
                 example within the App or by email.
               </p>
               <p>
-                The most recent change, made on 30 August 2026, rewrote the dish recognition parts of
+                The previous update, made on 30 August 2026, rewrote the dish recognition parts of
                 sections 3, 4 and 13. That feature is now described as part of how the App works rather
                 than as something you switch on, and legitimate interests replaces consent as its
                 lawful basis. Your right to object is explained in sections 3 and 11. Photographs you
                 saved before the feature existed are still excluded from it unless you opt them in.
+              </p>
+              <p>
+                {/* RM19740: recheck this date and the header against the actual authorised publication. */}
+                The update dated 6 September 2026 describes the device-level App usage analytics
+                switch in section 7, distinguishes it from Sentry crash and performance diagnostics,
+                and clarifies how to object. Section 2.3 explains that usage interaction events no
+                longer record the other person&apos;s account identifier. This update also clarifies
+                that turning off future collection does not itself erase information already held.
               </p>
             </div>
           </section>

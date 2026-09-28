@@ -1,0 +1,20 @@
+# RM19740 — implementation and verification plan
+
+Version 1 · 6 September 2026 · Full standalone documentation/policy route.
+
+1. Reconcile the exact web worktree, remote main/branch, RM19740 history and dependency tickets. Bind the current instruction through WAIT_CODE_REVIEW. Preserve dirty work and all protected Redmine fields. Set Sprint Active and Develop/Rework when publishing this finished PRD/plan.
+2. Commit the reviewer packet under `docs/rm19740/`: PRD, this plan and three draft assessments. Preserve source provenance and outstanding publication obligations; the packet supplements the canonical workspace doctrine.
+3. Update only policy copy in `app/[locale]/privacy-policy/page.tsx`: distinguish Firebase Analytics and Sentry in §2.3 and §7; describe device-scoped persistent opt-out; remove blanket account-wide stop promise; retain the objection email; distinguish future collection from historical data; preserve other policy sections; replace the visible publication placeholder and candidate date. No new dependency, behavior, schema or UI system.
+4. Select PLAN and VERIFY gates from the actual diff. Keep mechanically selected gates visible; record explicit no-trigger SKIPs for Firestore/native/mobile gates activated by policy text. Add web compile/lint and rendered proof. Check all original acceptance requirements against AC-01–10.
+5. Run `npm run lint`, `npx tsc --noEmit`, and `npm run build -- --webpack`. Serve the production build locally on port 3474. Verify `/privacy-policy`, `/en/privacy-policy` and `/id/privacy-policy`; English policy remains the existing baseline. Read §2.3/§7/§14, inspect support/back link destinations, keyboard semantics and narrow/wide rendering. Do not send a support email or submit a form.
+6. Confirm the final diff contains only the policy and reviewer documents. Verify no history/photo/audience/roster contract loss. Commit, bind the final HEAD and current main, rerun identity-dependent integrity/gate receipts and preserve the focused build/browser evidence against unchanged source hashes.
+7. Complete LEARN and the refutation checklist before pushing. Push the feature branch once through an identity-bound intent. Verify canonical GitHub repository, branch tip, distinguishing source phrase and main ancestry with G39 review-only. Source review does not claim publication or mobile installability.
+8. Publish one current Code Review card to RM19740 with the full original history preserved, PRD/plan links, exact source SHA, test evidence, read-only reviewer steps and O-01–08. Assign Codex Ewan 291, preserve other fields, GET-verify and enter WAIT_CODE_REVIEW. Stop; no monitoring or downstream promotion.
+
+## Reviewer reproduction
+
+Checkout the exact SHA in the handoff. Use the committed package lock and supported local Node runtime. Run the checks in step 5 and `npm run start -- --hostname localhost --port 3474` after building. Open the policy routes locally. Expected: Firebase control applies to one device; legacy opt-outs persist; Sentry remains independent and can use account identifiers; objection email remains; no automatic account-wide-stop or historical-erasure promise in the revised analytics section; no date placeholder; all 14 policy sections and navigation remain.
+
+These steps issue local HTTP GETs and inspect links only. They must not change Firebase/GA4/BigQuery, send email, delete accounts, run analytics reporting SQL or publish the website. Browser checks verify source behavior. O-01–08 require separate evidence from their named owners before publication.
+
+The existing node_modules symlink points outside this checkout. The default Turbopack build rejects it; the supported webpack build completes without changing shared dependencies or application configuration. Use localhost for both the server hostname and browser URL to keep the existing locale rewrite origin consistent. `/en/privacy-policy` permanently redirects (308), and `/id/privacy-policy` falls back (307), to the canonical English `/privacy-policy`; the policy has not been translated.
