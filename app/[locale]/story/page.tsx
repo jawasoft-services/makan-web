@@ -1,9 +1,9 @@
+import StoreLink from "@/components/home/StoreLink"
 import type { Metadata } from "next"
 import { setRequestLocale } from "next-intl/server"
 import Footer from "@/components/Footer"
 import StorySchema from "@/components/story/StorySchema"
 import { getMealCount } from "@/lib/makan-stats"
-import { APP_STORE_URL } from "@/lib/links"
 import { BOILERPLATE_LONG, BOILERPLATE_SHORT, PRESS_EMAIL } from "@/lib/press"
 import { createPageMetadata } from "@/lib/site-metadata"
 import StoryIndonesian from "./StoryIndonesian"
@@ -183,15 +183,12 @@ export default async function StoryPage({
 
         {/* CTA */}
         <div className="mt-10">
-          <a
-            href={APP_STORE_URL}
+          <StoreLink
+            location="story"
             className="inline-flex h-12 items-center justify-center rounded-full bg-brand-orange px-7 text-sm font-semibold text-white transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
           >
             Start with your next meal
-          </a>
-          <p className="mt-3 text-sm leading-relaxed text-brand-muted">
-            Makan is on iPhone today. Android is coming. Leave your email and we&apos;ll tell you the day it lands.
-          </p>
+          </StoreLink>
         </div>
 
         {/* Press essentials */}
@@ -207,12 +204,12 @@ export default async function StoryPage({
             </a>
           </p>
 
-          <a
-            href={APP_STORE_URL}
+          <StoreLink
+            location="story"
             className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-brand-orange px-7 text-sm font-semibold text-white transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
           >
             Download on the App Store
-          </a>
+          </StoreLink>
         </div>
       </main>
       )}

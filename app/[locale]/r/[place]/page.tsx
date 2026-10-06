@@ -1,6 +1,6 @@
+import StoreLink from "@/components/home/StoreLink"
 import type { Metadata } from "next"
 import Image from "next/image"
-import { APP_STORE_URL } from "@/lib/links"
 import { getVenue } from "@/lib/venues"
 import Footer from "@/components/Footer"
 
@@ -103,12 +103,12 @@ export default async function VenueRedirectPage({ params }: PageProps) {
           {subcopy}
         </p>
 
-        <a
-          href={APP_STORE_URL}
+        <StoreLink
+          location="restaurant-qr"
           className="inline-flex h-14 items-center justify-center rounded-full bg-brand-orange px-9 text-base font-semibold text-white transition-all hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
         >
           Download on the App Store
-        </a>
+        </StoreLink>
 
         <a
           href={APP_SCHEME_URL}

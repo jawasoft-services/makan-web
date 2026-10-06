@@ -73,7 +73,7 @@ export default async function Home({
       <EatOrYeet />
       <ForYou />
       <AppShowcase />
-      <LatestOnMakan mealCount={mealCount} liveMeals={liveMeals} />
+      <LatestOnMakan liveMeals={liveMeals} />
       <WhyMakan mealCount={mealCount} />
       <FaqSchema items={faqs} />
       <FAQ items={faqs} />

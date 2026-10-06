@@ -1,0 +1,45 @@
+/* Full-width rating ticker. Mechanics after Cometeer's homepage marquee
+   (inspected 6 October 2026): one line repeated edge to edge, linear, about
+   40 px/s (115 s per loop at desktop size). Two identical groups; the track slides by exactly one group. */
+.band {
+  overflow: hidden;
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  animation: rating-band var(--band-duration, 115s) linear infinite;
+}
+
+.group {
+  display: flex;
+  flex: none;
+}
+
+/* Symmetric padding keeps both groups exactly equal widths. */
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-inline: 1.75rem;
+  white-space: nowrap;
+}
+
+@keyframes rating-band {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Reduced motion: one still, centred line. */
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+    width: auto;
+    justify-content: center;
+  }
+  .group + .group,
+  .item + .item {
+    display: none;
+  }
+}

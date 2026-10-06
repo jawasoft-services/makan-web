@@ -1,10 +1,11 @@
 "use client"
 
+import StoreLink from "@/components/home/StoreLink"
+
 import Image from "next/image"
 import Link from "next/link"
 import { track } from "@vercel/analytics"
 import { useEffect, useMemo, useState } from "react"
-import { APP_STORE_URL } from "@/lib/links"
 
 type InviteState = "active" | "expired" | "revoked" | "full" | "invalid"
 
@@ -159,13 +160,12 @@ export default function InviteLanding({ publicId }: { publicId: string }) {
         Open Makan to see the invite. Join to become Makan friends with {hostName} and everyone else who joins this table.
       </p>
       <button type="button" onClick={openApp} className="invite-primary">Open in Makan</button>
-      <a
-        href={APP_STORE_URL}
-        onClick={() => track("App Store CTA Clicked", { location: "table-invite" })}
+      <StoreLink
+        location="table-invite"
         className="inline-flex min-h-12 items-center justify-center px-5 font-semibold text-brand-muted underline decoration-brand-orange/50 underline-offset-4 hover:text-brand-ink"
       >
         Get Makan on the App Store
-      </a>
+      </StoreLink>
       <p className="max-w-sm text-sm leading-relaxed text-brand-muted">
         {attemptedOpen
           ? "If Makan didn’t open, install it below. Then come back to this link after setup."

@@ -1,0 +1,57 @@
+/* Slow meal strip (after Linear's and Family's marquees). The list renders
+   twice and the track slides by exactly one copy, so the loop is seamless;
+   both copies share image URLs, so each photo downloads once. */
+.viewport {
+  overflow: hidden;
+  padding-block: 1rem 1.5rem;
+  mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  animation: meal-strip var(--strip-duration, 72s) linear infinite;
+}
+
+/* Hold still while someone tabs into a card, or points at one with a mouse.
+   Hover is gated: touch screens fake :hover where a finger last landed. */
+.viewport:focus-within .track {
+  animation-play-state: paused;
+}
+@media (hover: hover) and (pointer: fine) {
+  .viewport:hover .track {
+    animation-play-state: paused;
+  }
+}
+
+.group {
+  display: flex;
+  flex: none;
+}
+
+/* Spacing lives inside each item so both copies are exactly equal widths. */
+.item {
+  flex: none;
+  padding-right: 1.25rem;
+}
+
+@keyframes meal-strip {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Reduced motion: a still, swipeable row of every meal, without the copy. */
+@media (prefers-reduced-motion: reduce) {
+  .viewport {
+    overflow-x: auto;
+    mask-image: none;
+    padding-inline: 1.25rem;
+  }
+  .track {
+    animation: none;
+  }
+  .group[aria-hidden="true"] {
+    display: none;
+  }
+}

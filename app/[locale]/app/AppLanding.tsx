@@ -1,5 +1,7 @@
 "use client"
 
+import StoreLink from "@/components/home/StoreLink"
+
 import Image from "next/image"
 import { useEffect } from "react"
 import { useTranslations } from "next-intl"
@@ -59,12 +61,13 @@ export default function AppLanding() {
         {t("body")}
       </p>
 
-      <a
-        href={APP_STORE_URL}
-        className="inline-flex h-14 items-center justify-center rounded-full bg-brand-orange px-9 text-base font-semibold text-white transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
+      <StoreLink
+        location="app-page"
+        size="large"
+        className="inline-flex min-h-11 items-center rounded-[10px] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
       >
-        {t("cta")}
-      </a>
+        <Image src="/app-store-badge.svg" alt={t("cta")} width={180} height={60} className="h-[clamp(2rem,10.8vw,2.25rem)] w-auto sm:h-14" />
+      </StoreLink>
     </main>
   )
 }

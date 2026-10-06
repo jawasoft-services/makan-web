@@ -8,3 +8,4 @@
 // THEIR storefront. The region-locked /us/ URL showed "App Not Available in
 // your country" to non-US users (e.g. UK), so this is the correct site link.
 export const APP_STORE_URL = "https://apps.apple.com/app/id6756131450"
+export const GOOGLE_PLAY_URL = "https://play.google.com/store/apps/details?id=com.makanofficial.makanapp"

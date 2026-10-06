@@ -7,7 +7,6 @@ import { usePathname } from 'next/navigation'
 import { Link } from 'next-view-transitions'
 import { Drawer } from 'vaul'
 import { track } from '@vercel/analytics'
-import { APP_STORE_URL } from '@/lib/links'
 import { localizePath } from '@/i18n/paths'
 import { stripLocalePrefix } from '@/i18n/availability'
 import LanguageSwitcher from './LanguageSwitcher'
@@ -150,8 +149,8 @@ export default function Navbar() {
           })}
           <LanguageSwitcher />
           <Link
-            href={APP_STORE_URL}
-            onClick={() => track('App Store CTA Clicked', { location: 'navigation', locale })}
+            href={localizePath(locale, '/app')}
+            onClick={() => track('Store CTA Clicked', { location: 'navigation', locale })}
             className="flex h-11 shrink-0 items-center whitespace-nowrap rounded-full bg-white px-5 text-sm font-semibold text-brand-orange transition-shadow hover:shadow-lg hover:shadow-black/10"
           >
             {t('getApp')}
@@ -161,8 +160,8 @@ export default function Navbar() {
         {/* Mobile: CTA + drawer */}
         <div className="flex items-center gap-3 lg:hidden">
           <Link
-            href={APP_STORE_URL}
-            onClick={() => track('App Store CTA Clicked', { location: 'navigation', locale })}
+            href={localizePath(locale, '/app')}
+            onClick={() => track('Store CTA Clicked', { location: 'navigation', locale })}
             className="flex h-11 shrink-0 items-center whitespace-nowrap rounded-full bg-white px-3.5 text-sm font-semibold text-brand-orange sm:px-4"
           >
             {t('getAppShort')}
@@ -236,9 +235,9 @@ export default function Navbar() {
                     <LanguageSwitcher compact />
                   </div>
                   <Link
-                    href={APP_STORE_URL}
+                    href={localizePath(locale, '/app')}
                     onClick={() => {
-                      track('App Store CTA Clicked', { location: 'navigation-menu', locale })
+                      track('Store CTA Clicked', { location: 'navigation-menu', locale })
                       setDrawerOpen(false)
                     }}
                     className="mt-4 rounded-full bg-white px-5 py-3.5 text-center text-base font-semibold text-brand-orange"

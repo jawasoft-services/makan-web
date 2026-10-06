@@ -1,13 +1,11 @@
 'use client'
 
+import StoreLink from "@/components/home/StoreLink"
+
 import { useRef } from 'react'
-import { useLocale, useTranslations } from 'next-intl'
-import { Link } from 'next-view-transitions'
+import { useTranslations } from 'next-intl'
 import { motion, useInView } from 'framer-motion'
-import { track } from '@vercel/analytics'
-import { APP_STORE_URL } from '@/lib/links'
 import StatTicker from './StatTicker'
-import AndroidWaitlist from './AndroidWaitlist'
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as const
 
@@ -18,7 +16,6 @@ interface FinalCTAProps {
 
 export default function FinalCTA({ mealCount }: FinalCTAProps) {
   const t = useTranslations('Home.Final')
-  const locale = useLocale()
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
@@ -65,29 +62,14 @@ export default function FinalCTA({ mealCount }: FinalCTAProps) {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.2, ease: EASE_OUT }}
         >
-          <Link
-            href={APP_STORE_URL}
-            onClick={() => track('App Store CTA Clicked', { location: 'final', locale })}
+          <StoreLink
+            location="legacy-final"
             className="relative inline-block overflow-hidden rounded-full bg-white px-9 py-4 text-base font-semibold text-brand-orange shadow-lg shadow-black/15 transition-all hover:shadow-xl hover:shadow-black/20 active:scale-[0.98]"
           >
             <span className="pointer-events-none absolute -inset-4 rounded-full bg-white/20 blur-xl" aria-hidden />
             <span className="cta-btn-glint" aria-hidden />
             <span className="relative">{t('cta')}</span>
-          </Link>
-        </motion.div>
-
-        <motion.div
-          id="android-waitlist"
-          className="mt-9 rounded-3xl bg-white p-6 sm:p-8"
-          initial={{ opacity: 0, y: 12 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.3, ease: EASE_OUT }}
-        >
-          <p className="text-base font-semibold text-brand-ink">{t('android')}</p>
-          <p className="mt-1 text-sm text-brand-muted">
-            {t('androidBody')}
-          </p>
-          <AndroidWaitlist />
+          </StoreLink>
         </motion.div>
       </div>
     </section>

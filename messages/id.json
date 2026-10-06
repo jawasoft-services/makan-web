@@ -5,7 +5,8 @@
     "english": "English",
     "indonesian": "Bahasa Indonesia",
     "downloadAppStore": "Unduh di App Store",
-    "backHome": "Kembali ke beranda"
+    "backHome": "Kembali ke beranda",
+    "downloadGooglePlay": "Dapatkan di Google Play"
   },
   "Metadata": {
     "site": {
@@ -55,7 +56,7 @@
       "body": "Simpan makanannya, tempatnya, dan siapa yang ada di sana.",
       "cta": "Mulai jurnal makananmu",
       "qrAlt": "Kode QR untuk mengunduh Makan",
-      "qr": "Pindai dengan iPhone",
+      "qr": "Pindai dengan ponselmu",
       "free": "Gratis di iPhone"
     },
     "Memory": {
@@ -140,9 +141,7 @@
     },
     "Latest": {
       "eyebrow": "Di Makan",
-      "count": "momen makan tersimpan, dan terus bertambah.",
-      "previous": "Lihat makanan sebelumnya",
-      "next": "Lihat makanan berikutnya",
+      "title": "Langsung dari jurnal Makan.",
       "fallbackMeal": "Momen makan di Makan"
     },
     "Why": {
@@ -159,8 +158,7 @@
       "principle3Body": "Foto, tanggal, jenis makanan, caption, tempat, dan teman yang ditandai tersimpan bersama."
     },
     "Faq": {
-      "titleLine1": "Mungkin kamu",
-      "titleLine2": "masih penasaran."
+      "title": "Pertanyaan umum"
     },
     "Final": {
       "live": "Sudah tersedia",
@@ -177,7 +175,7 @@
     "metaTitle": "Unduh Makan",
     "metaDescription": "Unduh Makan — jurnal makanan untuk mengingat setiap momen makan.",
     "title": "Unduh Makan",
-    "body": "Ingat setiap momen makan. Unduh gratis di App Store.",
+    "body": "Ingat setiap momen makan. Unduh gratis di App Store atau Google Play.",
     "cta": "Unduh di App Store"
   },
   "Contact": {
@@ -406,9 +404,9 @@
   },
   "Decision": {
     "Metadata": {
-      "title": "Makan — Tahu mau pesan apa",
-      "description": "Foto apa yang kamu makan. Makan mencari tahu apa yang kamu suka, dan apa yang terus dipesan orang di tempat kamu berada. Lalu dia kasih tahu kamu mau pesan apa. Gratis di iPhone.",
-      "ogSub": "Foto apa yang kamu makan. Makan kasih tahu kamu mau pesan apa."
+      "title": "Makan — Pesan seperti orang lokal",
+      "description": "Tempat langgananmu. Pesanan andalanmu. Catat makanan, raih gelar Maître d’, dan bantu orang berikutnya memilih pesanan. Gratis di iPhone.",
+      "ogSub": "Kenali tempatmu. Bagikan pesanan andalanmu."
     },
     "Hero": {
       "headline": "Kamu masih belum tahu mau pesan apa.",
@@ -418,20 +416,35 @@
       "meta": "Jl. Pantai Berawa · 07.00 – 23.00",
       "legal": "V vegetarian · VG vegan · GF bebas gluten. Harga dalam ribuan rupiah, belum termasuk pajak dan layanan 21%.",
       "answerMark": "Cocok untuk kamu",
-      "thought": "Dari mana Makan tahu?",
-      "proofLead": "Di Eat or Yeet, pilih di antara dua makanan yang kamu simpan. Mana yang ingin kamu makan lagi?",
-      "proofTally": "Makan memakai yang sudah dipelajari untuk menyarankan hidangan yang mungkin kamu suka.",
+      "thought": "Pilihanmu memberi restoran satu Eat.",
+      "proofLead": "Pilih antara dua makanan yang pernah kamu makan di restoran berbeda. Pemenangnya mendapat Eat; restoran lainnya mendapat Yeet.",
+      "proofTally": "Eat% = Eats ÷ jumlah perbandingan yang dihitung.",
       "hook": "Semua kelihatan enak.",
-      "eoyQuestion": "Setiap pilihan membantu Makan belajar makanan mana yang lebih kamu suka.",
+      "eoyQuestion": "Contoh skor.",
       "eoyOr": "atau",
       "eoyPicked": "dipilih",
-      "learnLabel": "Kamu memilih",
-      "learn1": "Sushi daripada roast beef.",
-      "learn2": "Tom yum daripada Fish Sando.",
-      "learn3": "Chilli prawns daripada Bacon and Brie.",
-      "crowdTally": "Kalau Makan belum cukup tahu seleramu, Makan bisa menunjukkan pilihan pengguna Makan lain di sana dan Eat% restoran itu.",
-      "crowdPrivacy": "Eat% menunjukkan seberapa sering pengguna memilih Eat saat membandingkan makanan di restoran itu. Kalau datanya belum cukup, Makan akan bilang.",
-      "openLine": "Gunakan pengalaman makanmu untuk membantu memilih pesanan."
+      "learnLabel": "Pilihan ini",
+      "learn1": "Roast beef di Heaney & Mill menang atas Sushi di NOBU Singapore.",
+      "learn2": "Tom yum di Fusha Asian Fusion – Durham menang atas Fish Sando di Fire Street Food.",
+      "learn3": "Chilli prawns di Kendal Street Kitchen menang atas Bacon and Brie di DISH.",
+      "crowdTally": "Hasil seri masuk hitungan total. Dua makanan dari restoran yang sama tidak mengubah Eat% restoran.",
+      "crowdPrivacy": "Pilihanmu juga membantu Makan mengenali seleramu. Restoran perlu setidaknya 10 perbandingan untuk tampil di peringkat global.",
+      "openLine": "Gunakan pengalaman makanmu untuk membantu memilih pesanan.",
+      "eatScoreLabel": "Eat%",
+      "atLabel": "di",
+      "eatsLabel": "Eats",
+      "matchupsLabel": "perbandingan",
+      "rankingTitle": "Peringkat",
+      "rankingBefore": "Sebelum Eat or Yeet",
+      "rankingRestaurant": "Restoran",
+      "rankingMovement": "Posisi",
+      "rankingUp": "Naik",
+      "rankingDown": "Turun",
+      "rankingUnchanged": "Tetap",
+      "rankingRules": "Cara kerjanya",
+      "rankingOrder": "Diurutkan berdasarkan Eat%, lalu Eats, lalu perbandingan tercatat paling awal.",
+      "rankingAfter": "Setelah Eat or Yeet",
+      "googlePlayBadgeAlt": "Dapatkan di Google Play"
     },
     "FirstDay": {
       "intro": "Liburan, malam pertama. Menu yang tidak kamu kenal.",
@@ -462,22 +475,33 @@
       "visit3": "21 Agu"
     },
     "Landing": {
-      "title": "Tahu mau pesan apa.",
-      "titleAccent": "mau pesan apa",
-      "sub": "Foto apa yang kamu makan. Makan mencari tahu apa yang kamu suka, dan apa yang terus dipesan orang di tempat kamu berada. Lalu dia kasih tahu kamu mau pesan apa.",
+      "title": "Kenal tempatmu? Buktikan.",
+      "titleAccent": "Buktikan.",
+      "sub": "Catat makanan di restoran favoritmu. Raih gelar Maître d’ dan bagikan pesanan andalanmu, supaya orang berikutnya tahu mau mencoba apa.",
       "cta": "Unduh Makan",
       "platform": "Gratis di iPhone",
       "secondary": "Lihat cara kerjanya",
-      "cardsAlt": "Tiga makanan yang disimpan di Makan",
-      "trustMeals": "{meals}+ makanan sungguhan tersimpan di Makan",
-      "trustRating": "Dinilai {rating} di App Store ({count} penilaian)",
+      "cardsAlt": "Makanan yang disimpan dan pesanan andalan Maître d’",
+      "trustMeals": "<num>{meals}+</num> makanan tersimpan",
+      "trustRating": "Dinilai {rating} di App Store",
       "badgeAlt": "Unduh di App Store",
-      "trustWhere": "Sebagian besar di Jakarta, Bali, dan Inggris, sejauh ini."
+      "trustWhere": "Sebagian besar di Jakarta, Bali, dan Inggris, sejauh ini.",
+      "regularsLabel": "Langganan",
+      "usualLabel": "Pesanan andalan",
+      "regularsAlt": "Langganan di Rumah Bakso AMNN, diurutkan berdasarkan hari makan dalam 60 hari terakhir.",
+      "usualAlt": "Reza Yudha Herdinal, Maître d’ di Rumah Bakso AMNN. Pesanan andalannya Bakso urat.",
+      "widgetLabel": "Maître d’ di Rumah Bakso AMNN",
+      "rulesLabel": "Cara kerja Maître d’",
+      "rulesTitle": "Maître d’",
+      "rulesQualify": "Simpan makanan yang memenuhi syarat di sini pada setidaknya dua hari berbeda dalam 60 hari terakhir.",
+      "rulesHolder": "Hari terhitung terbanyak menang. Saat seri, pemegang yang masih memenuhi syarat tetap memegang gelar.",
+      "rulesUsual": "Maître d’ bisa membagikan pesanan andalannya untuk membantu pengunjung berikutnya.",
+      "heroCardAlt": "Eggs Benedict dari Valesca, dibagikan dari Makan sebagai kartu makan."
     },
     "Final": {
-      "eyebrow": "Gratis di iPhone",
-      "title": "Lain kali kamu tidak tahu mau pesan apa.",
-      "body": "Foto apa yang kamu makan. Sesekali main Eat or Yeet. Lain kali kamu duduk dengan menu, Makan sudah punya jawaban.",
+      "eyebrow": "Gratis",
+      "title": "Kenali tempat langgananmu. Temukan favorit berikutnya.",
+      "body": "Bagikan pesanan andalanmu. Coba pesanan orang lain.",
       "cta": "Unduh Makan"
     },
     "Restaurants": {
@@ -507,21 +531,21 @@
     },
     "App": {
       "eyebrow": "Ini Makan",
-      "title": "Tiga layar yang paling sering kamu pakai.",
+      "title": "Tempat langgananmu. Seleramu. Makananmu.",
       "shot1Title": "Discover",
-      "shot1Body": "Crave makanan temanmu, dan makanan itu masuk daftar Cravings-mu. Saat kamu dekat tempatnya, Discover menunjukkannya, lengkap dengan jaraknya.",
-      "shot1Alt": "Layar Discover di Makan: satu pilihan bagus di dekatmu, dari Cravings, 1,2 km",
+      "shot1Body": "Temukan tempat favorit berikutnya. Simpan makanan yang ingin dicoba ke Cravings.",
+      "shot1Alt": "Discover di Makan, menampilkan Flat Iron Covent Garden di peta London",
       "shot2Title": "Eat or Yeet",
-      "shot2Body": "Dua makanan yang kamu simpan. Ketuk yang mau kamu makan lagi duluan. Sepuluh detik, saat kamu bosan.",
-      "shot2Alt": "Layar Eat or Yeet di Makan: dua makanan tersimpan, mana yang mau dimakan lagi duluan",
+      "shot2Body": "Mau makan yang mana lagi? Pilih di antara dua makanan dari jurnalmu.",
+      "shot2Alt": "Eat or Yeet membandingkan Chicken don dan sandwich Kinross Golf Club",
       "shot3Title": "Makananmu",
-      "shot3Body": "Semua foto yang kamu ambil, per hari, dengan tempatnya. Jawaban di menu datang dari sini.",
-      "shot3Alt": "Layar jurnal di Makan: kalender makanan tersimpan dengan nama restorannya"
+      "shot3Body": "Catat makanan, tempat, dan teman makanmu. Temukan lagi di jurnalmu.",
+      "shot3Alt": "Catatan Teriyaki chicken di The Cashew Tree dalam jurnal Makan"
     },
     "Standings": {
       "eyebrow": "Peringkat",
       "title": "Restoran yang terus dipilih tamu.",
-      "body": "Michelin mengirim inspektur. Yang ini ditulis oleh semua orang yang makan di sana: pilih makanan dari satu restoran daripada makanan dari restoran lain di Eat or Yeet, dan pemenangnya dapat satu Eat. Lima dengan Eat terbanyak, di antara restoran dengan {floor} pertandingan atau lebih.",
+      "body": "Eats restoran berasal dari pilihan pengguna antara makanan yang mereka simpan sendiri di Eat or Yeet. Ini lima restoran dengan Eats terbanyak, dari tempat dengan setidaknya {floor} perbandingan. Gelar Maître d’ dihitung terpisah, lewat hari makan yang dicatat.",
       "cta": "Lihat peringkat lengkap",
       "eats": "Eat · {rate}"
     }

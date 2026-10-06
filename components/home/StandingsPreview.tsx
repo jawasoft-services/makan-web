@@ -3,7 +3,6 @@ import Link from "next/link"
 import Reveal from "@/components/motion/Reveal"
 import { localizePath } from "@/i18n/paths"
 import { EVIDENCE_FLOOR, getEatStandings } from "@/lib/eat-standings"
-import GuideStory from "@/components/standings/GuideStory"
 
 const PREVIEW_ROWS = 5
 
@@ -38,9 +37,6 @@ export default async function StandingsPreview() {
           <p data-beat style={{ "--beat": 2 } as React.CSSProperties} className="mt-6 max-w-[44ch] text-[1.05rem] leading-[1.55] text-brand-ink">
             {t("body", { floor: EVIDENCE_FLOOR })}
           </p>
-          <div data-beat style={{ "--beat": 3 } as React.CSSProperties} className="mt-8">
-            <GuideStory locale={locale} compact />
-          </div>
           <a
             data-beat
             style={{ "--beat": 4 } as React.CSSProperties}

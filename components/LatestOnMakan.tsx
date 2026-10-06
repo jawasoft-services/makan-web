@@ -4,9 +4,9 @@ import { useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { motion, useInView } from 'framer-motion'
-import StatTicker from './StatTicker'
 import StaticPicture from './StaticPicture'
 import { thumbUrl } from '@/lib/thumb'
+import styles from './LatestOnMakan.module.css'
 
 // Shape mirrors PublicMeal in lib/makan-stats.ts — redeclared here because
 // that module is `server-only` and this is a client component.
@@ -30,9 +30,10 @@ const FALLBACK_MEALS: Meal[] = [
   { src: '/meals/IMG_6945.jpg', alt: 'Valentines brunch platter', caption: 'Valentines brunch platter', locationName: '', mealType: '', username: '' },
 ]
 const FALLBACK_IMAGE_WIDTHS = [480, 720] as const
+// About 25 px/s: slow enough to read a card as it passes.
+const SECONDS_PER_CARD = 12
 
 interface LatestOnMakanProps {
-  mealCount: number
   liveMeals: Meal[]
 }
 
@@ -133,7 +134,9 @@ function MealPostCard({ meal, fallbackLabel }: { meal: Meal; fallbackLabel: stri
             height={247}
             sizes="(min-width: 1024px) 360px, 240px"
             loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover"
+            // Bundled photos are themselves exported cards: anchor the crop to
+            // the top so their own saffron band is not shown twice.
+            className="absolute inset-0 h-full w-full object-cover object-top"
           />
         ) : (
           <Image
@@ -192,47 +195,17 @@ function MealPostCard({ meal, fallbackLabel }: { meal: Meal; fallbackLabel: stri
   )
 }
 
-function ArrowButton({
-  dir,
-  onClick,
-  label,
-}: {
-  dir: 'left' | 'right'
-  onClick: () => void
-  label: string
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      className={`absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-brand-line bg-brand-card text-brand-ink shadow-lg shadow-black/10 transition-transform hover:scale-105 active:scale-95 lg:flex ${
-        dir === 'left' ? 'left-2' : 'right-2'
-      }`}
-    >
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        {dir === 'left' ? <path d="M10 3 5 8l5 5" /> : <path d="m6 3 5 5-5 5" />}
-      </svg>
-    </button>
-  )
-}
-
-export default function LatestOnMakan({ mealCount, liveMeals }: LatestOnMakanProps) {
+export default function LatestOnMakan({ liveMeals }: LatestOnMakanProps) {
   const t = useTranslations('Home.Latest')
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
-  const scroller = useRef<HTMLDivElement>(null)
 
   // Eight real cards with names on them beat six bundled ones.
   const MIN_LIVE = 8
   const meals = liveMeals.length >= MIN_LIVE ? liveMeals : FALLBACK_MEALS
 
-  const scrollByCard = (dir: 1 | -1) => {
-    scroller.current?.scrollBy({ left: dir * 384, behavior: 'smooth' })
-  }
-
   return (
-    <section ref={ref} className="bg-brand-cream py-20 sm:py-32">
+    <section ref={ref} className="bg-brand-cream py-16 sm:py-24">
       {/* Header */}
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <motion.div
@@ -244,32 +217,27 @@ export default function LatestOnMakan({ mealCount, liveMeals }: LatestOnMakanPro
             {t('eyebrow')}
           </p>
           <h2 className="mt-3 text-2xl font-bold text-brand-ink sm:text-3xl lg:text-4xl" style={{ letterSpacing: '-0.02em' }}>
-            <StatTicker value={mealCount} inView={inView} /> {t('count')}
+            {t('title')}
           </h2>
         </motion.div>
       </div>
 
-      {/* One responsive carousel — avoids duplicating every card in hidden DOM. */}
-      <div className="relative mx-auto mt-10 max-w-7xl lg:mt-12">
-        <ArrowButton dir="left" label={t('previous')} onClick={() => scrollByCard(-1)} />
-        <ArrowButton dir="right" label={t('next')} onClick={() => scrollByCard(1)} />
-        <div
-          ref={scroller}
-          className="meal-carousel flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-4 sm:px-8 lg:gap-6 scrollbar-hide"
-        >
-          {meals.map((meal, i) => (
-            <motion.div
-              key={`${meal.src}-${i}`}
-              className="meal-card group w-[240px] flex-none snap-start overflow-hidden rounded-xl shadow-md shadow-black/[0.07] lg:w-[360px] lg:rounded-2xl lg:shadow-lg lg:shadow-black/[0.08]"
-              initial={{ opacity: 0, x: 32 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.1 + Math.min(i, 8) * 0.08 }}
-              whileHover={{ scale: 1.02, rotate: -0.4 }}
-            >
-              <MealPostCard meal={meal} fallbackLabel={t('fallbackMeal')} />
-            </motion.div>
+      <div className={`meal-carousel mt-8 lg:mt-10 ${styles.viewport}`}>
+        <div className={styles.track} style={{ '--strip-duration': `${meals.length * SECONDS_PER_CARD}s` } as React.CSSProperties}>
+          {[0, 1].map((copy) => (
+            <ul key={copy} className={styles.group} aria-hidden={copy === 1 || undefined}>
+              {meals.map((meal, i) => (
+                <li key={`${meal.src}-${i}`} className={styles.item}>
+                  <motion.div
+                    className="meal-card w-[240px] overflow-hidden rounded-xl shadow-md shadow-black/[0.07] lg:w-[360px] lg:rounded-2xl lg:shadow-lg lg:shadow-black/[0.08]"
+                    whileHover={{ scale: 1.02, rotate: -0.4 }}
+                  >
+                    <MealPostCard meal={meal} fallbackLabel={t('fallbackMeal')} />
+                  </motion.div>
+                </li>
+              ))}
+            </ul>
           ))}
-          <div className="w-2 flex-none sm:w-5" aria-hidden />
         </div>
       </div>
     </section>

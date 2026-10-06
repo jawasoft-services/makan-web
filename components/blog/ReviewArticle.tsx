@@ -1,8 +1,8 @@
+import StoreLink from "@/components/home/StoreLink"
 import Link from "next/link"
 import type { ReactNode } from "react"
 import type { Block, Review } from "@/lib/reviews/types"
 import { MealGallery } from "./MealGallery"
-import { APP_STORE_URL } from "@/lib/links"
 
 // Minimal inline renderer: supports [text](url) links and **bold** inside body strings.
 function renderInline(text: string): ReactNode[] {
@@ -111,12 +111,12 @@ function Cta() {
       <p className="mx-auto mt-2 max-w-sm text-sm text-brand-muted">
         Makan is a food journal for the meals that matter — free on the App Store.
       </p>
-      <Link
-        href={APP_STORE_URL}
+      <StoreLink
+        location="review"
         className="mt-5 inline-flex h-12 items-center justify-center rounded-full bg-brand-orange px-7 text-sm font-semibold text-white transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
       >
         Download on the App Store
-      </Link>
+      </StoreLink>
     </div>
   )
 }
