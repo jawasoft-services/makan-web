@@ -1,5 +1,5 @@
+import StoreLink from "@/components/home/StoreLink"
 import Link from "next/link"
-import { APP_STORE_URL } from "@/lib/links"
 import { PRESS_EMAIL } from "@/lib/press"
 
 export default function StoryIndonesian({
@@ -122,12 +122,12 @@ export default function StoryIndonesian({
             {PRESS_EMAIL}
           </a>
         </p>
-        <a
-          href={APP_STORE_URL}
+        <StoreLink
+          location="story"
           className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-brand-orange px-7 text-sm font-semibold text-white transition-shadow hover:shadow-lg hover:shadow-brand-orange/25"
         >
           Unduh di App Store
-        </a>
+        </StoreLink>
       </div>
     </main>
   )

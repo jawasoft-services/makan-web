@@ -5,7 +5,8 @@
     "english": "English",
     "indonesian": "Bahasa Indonesia",
     "downloadAppStore": "Download on the App Store",
-    "backHome": "Back to home"
+    "backHome": "Back to home",
+    "downloadGooglePlay": "Get it on Google Play"
   },
   "Metadata": {
     "site": {
@@ -55,7 +56,7 @@
       "body": "Save what you ate, where you ate it and who was there.",
       "cta": "Start your food diary",
       "qrAlt": "QR code to download Makan",
-      "qr": "Scan with your iPhone",
+      "qr": "Scan with your phone",
       "free": "Free on iPhone"
     },
     "Memory": {
@@ -140,9 +141,7 @@
     },
     "Latest": {
       "eyebrow": "On Makan",
-      "count": "meals saved, and counting.",
-      "previous": "Scroll to previous meals",
-      "next": "Scroll to more meals",
+      "title": "Straight from Makan diaries.",
       "fallbackMeal": "A meal on Makan"
     },
     "Why": {
@@ -159,8 +158,7 @@
       "principle3Body": "The photo, date, meal type, caption, place and tagged friends are saved together."
     },
     "Faq": {
-      "titleLine1": "You're probably",
-      "titleLine2": "wondering."
+      "title": "FAQ"
     },
     "Final": {
       "live": "Live now",
@@ -177,7 +175,7 @@
     "metaTitle": "Get Makan",
     "metaDescription": "Get Makan — a food journal. Remember every meal.",
     "title": "Get Makan",
-    "body": "Remember every meal. Download it free on the App Store.",
+    "body": "Remember every meal. Download it free on the App Store or Google Play.",
     "cta": "Download on the App Store"
   },
   "Contact": {
@@ -406,9 +404,9 @@
   },
   "Decision": {
     "Metadata": {
-      "title": "Makan — Know what to order",
-      "description": "Take a photo of what you eat. Makan works out what you like, and what people keep ordering where you are. Then it tells you what to order. Free on iPhone.",
-      "ogSub": "Take a photo of what you eat. Makan tells you what to order."
+      "title": "Makan — Order like a local",
+      "description": "Your regular spot. Your usual order. Save meals, earn its Maître d’ title and help the next diner choose what to order. Free on iPhone.",
+      "ogSub": "Know your place. Share your usual."
     },
     "Hero": {
       "headline": "You still don't know what to order.",
@@ -418,20 +416,35 @@
       "meta": "Jl. Pantai Berawa · 7am – 11pm",
       "legal": "V vegetarian · VG vegan · GF gluten free. Prices in thousands of rupiah, subject to 21% government tax & service.",
       "answerMark": "A good match for you",
-      "thought": "How does Makan know?",
-      "proofLead": "In Eat or Yeet, choose between two meals you’ve saved. Which would you eat again?",
-      "proofTally": "Makan uses what it has learned to suggest dishes you might enjoy.",
+      "thought": "Your pick gives the restaurant an Eat.",
+      "proofLead": "Choose between two meals you’ve eaten at different restaurants. The winner gets an Eat; the other restaurant gets a Yeet.",
+      "proofTally": "Eat% = Eats ÷ counted matchups.",
       "hook": "Everything sounds good.",
-      "eoyQuestion": "Each pick helps Makan learn which meals you like more.",
+      "eoyQuestion": "Example scores.",
       "eoyOr": "or",
       "eoyPicked": "picked",
-      "learnLabel": "You chose",
-      "learn1": "Sushi over roast beef.",
-      "learn2": "Tom yum over Fish Sando.",
-      "learn3": "Chilli prawns over Bacon and Brie.",
-      "crowdTally": "If Makan doesn’t know enough about your taste yet, it can show what other Makan diners picked there, along with the restaurant’s Eat%.",
-      "crowdPrivacy": "Eat% shows how often diners picked Eat in meal comparisons at this restaurant. If there isn’t enough data, Makan says so.",
-      "openLine": "Use your past meals to help choose what to order."
+      "learnLabel": "This pick",
+      "learn1": "Roast beef at Heaney & Mill beats Sushi at NOBU Singapore.",
+      "learn2": "Tom yum at Fusha Asian Fusion – Durham beats Fish Sando at Fire Street Food.",
+      "learn3": "Chilli prawns at Kendal Street Kitchen beats Bacon and Brie at DISH.",
+      "crowdTally": "Ties count in the total. Two meals from the same restaurant don’t change its Eat%.",
+      "crowdPrivacy": "Your picks also help Makan learn your taste. Restaurants need at least 10 counted matchups to appear in the global standings.",
+      "openLine": "Use your past meals to help choose what to order.",
+      "eatScoreLabel": "Eat%",
+      "atLabel": "at",
+      "eatsLabel": "Eats",
+      "matchupsLabel": "matchups",
+      "rankingTitle": "Standings",
+      "rankingBefore": "Before Eat or Yeet",
+      "rankingRestaurant": "Restaurant",
+      "rankingMovement": "Move",
+      "rankingUp": "Up",
+      "rankingDown": "Down",
+      "rankingUnchanged": "Unchanged",
+      "rankingRules": "How it works",
+      "rankingOrder": "Ranked by Eat%, then Eats, then earliest counted matchup.",
+      "rankingAfter": "After Eat or Yeet",
+      "googlePlayBadgeAlt": "Get it on Google Play"
     },
     "FirstDay": {
       "intro": "Holiday, night one. A menu you don't know.",
@@ -462,22 +475,33 @@
       "visit3": "21 Aug"
     },
     "Landing": {
-      "title": "Know what to order.",
-      "titleAccent": "what to order",
-      "sub": "Take a photo of what you eat. Makan works out what you like, and what people keep ordering at the place you're in. Then it tells you what to order.",
+      "title": "Know YOUR place? Prove it.",
+      "titleAccent": "Prove it.",
+      "sub": "Save meals at your favourite restaurant. Earn the Maître d’ title and share your usual order, so the next person knows what to try.",
       "cta": "Get Makan",
       "platform": "Free on iPhone",
       "secondary": "See how it works",
-      "cardsAlt": "Three meals saved on Makan",
-      "trustMeals": "{meals}+ real meals saved on Makan",
-      "trustRating": "Rated {rating} on the App Store ({count, plural, one {# rating} other {# ratings}})",
+      "cardsAlt": "Saved meals and a Maître d’ usual order",
+      "trustMeals": "<num>{meals}+</num> real meals saved on Makan",
+      "trustRating": "Rated {rating} on the App Store",
       "badgeAlt": "Download on the App Store",
-      "trustWhere": "Mostly Jakarta, Bali and the UK so far."
+      "trustWhere": "Mostly Jakarta, Bali and the UK so far.",
+      "regularsLabel": "Regulars",
+      "usualLabel": "Usual order",
+      "regularsAlt": "Regulars at Rumah Bakso AMNN, ranked by days eaten in the last 60 days.",
+      "usualAlt": "Reza Yudha Herdinal, Maître d’ at Rumah Bakso AMNN. His usual order is Bakso urat.",
+      "widgetLabel": "Maître d’ at Rumah Bakso AMNN",
+      "rulesLabel": "How Maître d’ works",
+      "rulesTitle": "Maître d’",
+      "rulesQualify": "Save eligible meals here on at least two different days in the last 60 days.",
+      "rulesHolder": "Most counted days wins. A qualifying holder keeps the title on a tie.",
+      "rulesUsual": "The Maître d’ can share their usual order to help the next diner.",
+      "heroCardAlt": "Valesca's Eggs Benedict, shared from Makan as a meal card."
     },
     "Final": {
-      "eyebrow": "Free on iPhone",
-      "title": "Next time you don't know what to order.",
-      "body": "Snap what you eat. Play Eat or Yeet now and then. Next time you sit down with a menu, Makan has an answer.",
+      "eyebrow": "Free",
+      "title": "Know your place. Find your next one.",
+      "body": "Share your usual order. Try someone else’s.",
       "cta": "Get Makan"
     },
     "Restaurants": {
@@ -507,21 +531,21 @@
     },
     "App": {
       "eyebrow": "This is Makan",
-      "title": "Three screens you'll use most.",
+      "title": "Your place. Your taste. Your meals.",
       "shot1Title": "Discover",
-      "shot1Body": "Crave a friend's meal and it goes on your Cravings list. When you're near that place, Discover shows it, with the distance.",
-      "shot1Alt": "The Discover screen in Makan: one good option nearby, from your Cravings, 1.2 km away",
+      "shot1Body": "Find your next favourite place. Save a meal you want to try to your Cravings.",
+      "shot1Alt": "Discover on Makan, showing Flat Iron Covent Garden on a map of London",
       "shot2Title": "Eat or Yeet",
-      "shot2Body": "Two meals you saved. Tap the one you'd eat again first. Ten seconds, when you're bored.",
-      "shot2Alt": "The Eat or Yeet screen in Makan: two saved meals, which would you eat again first",
+      "shot2Body": "Which would you eat again? Pick between two meals from your diary.",
+      "shot2Alt": "Eat or Yeet compares Chicken don and a Kinross Golf Club sandwich",
       "shot3Title": "Your meals",
-      "shot3Body": "Every photo you've taken, by day, with the place. The answer on the menu comes from here.",
-      "shot3Alt": "The diary screen in Makan: a calendar of saved meals with the restaurant named"
+      "shot3Body": "Save the meal, place and people. Find it again in your diary.",
+      "shot3Alt": "A saved Teriyaki chicken meal at The Cashew Tree in the Makan diary"
     },
     "Standings": {
       "eyebrow": "The standings",
       "title": "The restaurants diners keep picking.",
-      "body": "Michelin sends an inspector. This is written by everyone who ate there: pick a meal from one restaurant over a meal from another in Eat or Yeet, and the winner gets an Eat. The five with the most, among restaurants with {floor} or more matchups.",
+      "body": "Restaurant Eats come from diners picking between their own saved meals in Eat or Yeet. These are the five restaurants with the most Eats, among places with {floor} or more matchups. Maître d’ titles are earned separately, through saved dining days.",
       "cta": "See the full standings",
       "eats": "Eats · {rate}"
     }

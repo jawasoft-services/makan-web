@@ -1,12 +1,12 @@
 'use client'
 
+import StoreLink from "@/components/home/StoreLink"
+
 import { useRef, useEffect, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { track } from '@vercel/analytics'
-import { APP_STORE_URL } from '@/lib/links'
 import { localizePath } from '@/i18n/paths'
 import StaticPicture from './StaticPicture'
 
@@ -239,14 +239,13 @@ export default function Hero() {
 
               <div className="mt-5">
                 <div className="flex items-center justify-center gap-4">
-                  <Link
-                    href={APP_STORE_URL}
-                    onClick={() => track('App Store CTA Clicked', { location: 'hero', locale })}
+                  <StoreLink
+                    location="legacy-hero"
                     className="relative inline-flex min-h-11 items-center justify-center rounded-full bg-brand-orange px-6 py-3 text-sm font-semibold text-white transition-all hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98] sm:px-8 sm:py-3.5 sm:text-base"
                   >
                     <span className="pointer-events-none absolute -inset-3 rounded-full bg-brand-orange/10 blur-xl" aria-hidden />
                     <span className="relative">{t('cta')}</span>
-                  </Link>
+                  </StoreLink>
                   <Link
                     href={localizePath(locale, '/app')}
                     className="hidden items-center gap-2 rounded-2xl bg-white p-2 pr-3 text-left text-brand-ink shadow-lg shadow-black/20 lg:flex"

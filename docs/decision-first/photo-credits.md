@@ -21,3 +21,5 @@ Handle to print on the card: **pending Devon** (the username lookup is out of sc
 | diary.webp | App screenshot (diary) | founder's own account, signed-in screenshot in a device frame | yes | 2026-09-02 | Projects/MAKAN/NEW APP STORE SCREENSHOTS 17:8:26/diary.png |
 | profile.webp | App screenshot (profile, Your taste) | founder's own account, signed-in screenshot in a device frame | yes | 2026-09-02 | Projects/MAKAN/NEW APP STORE SCREENSHOTS 17:8:26/ss2.png |
 | eat-or-yeet.webp | App screenshot (Eat or Yeet) | founder's own account, signed-in screenshot in a device frame | yes | 2026-09-02 | Projects/MAKAN/NEW APP STORE SCREENSHOTS 17:8:26/mockuuups-or35sdqpq3e8d9x1nwcugh.png |
+
+| card-19.jpg | Tom yum | Fusha Asian Fusion - Durham | yes | — | Venue and dish read from the original share-card footer; example score is illustrative. |

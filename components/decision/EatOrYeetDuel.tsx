@@ -1,13 +1,14 @@
 import Image from "next/image"
 import { storyBlur } from "@/lib/story-blur"
-import PenRing from "./PenRing"
+import EatScoreTicker from "./EatScoreTicker"
+import { restaurantScore } from "@/lib/example-standings"
 
-export type DuelMeal = { name: string; src: string }
+export type DuelMeal = { name: string; restaurant: string; src: string; eats: number; matchups: number }
 export type Duel = { a: DuelMeal; b: DuelMeal; winner: "a" | "b" }
 
 /**
  * One Eat or Yeet comparison, staged: the pair settles in at `inStage`, the
- * pick lands at `pickStage` (the saffron pen rings the winner, the loser
+ * pick lands at `pickStage` (the orange border highlights the winner, the loser
  * dims), and on md+ the whole duel makes way at `outStage` for the next one.
  * On mobile — and whenever the scene is not armed — duels stack in flow and
  * the window is ignored.
@@ -16,18 +17,25 @@ export function EatOrYeetDuel({
   duel,
   or,
   pickedLabel,
+  scoreLabel,
+  eatsLabel,
+  matchupsLabel,
+  atLabel,
   inStage,
   pickStage,
   learnStage,
   learnLabel,
   learned,
   outStage,
-  shrinkTo,
   className = "",
 }: {
   duel: Duel
   or: string
   pickedLabel: string
+  scoreLabel: string
+  eatsLabel: string
+  matchupsLabel: string
+  atLabel: string
   inStage: number
   pickStage: number
   /** The settle beat: the ring holds and Makan says what it just learned. */
@@ -35,39 +43,23 @@ export function EatOrYeetDuel({
   learnLabel?: string
   learned?: string
   outStage?: number
-  /** Where the ringed winner flies at handoff — its receipt's position —
-   *  and how small it gets (scale, default 0.24). */
-  shrinkTo?: { x: string; y: string; scale?: number }
   className?: string
 }) {
   const cards = [
     { meal: duel.a, isWin: duel.winner === "a" },
     { meal: duel.b, isWin: duel.winner === "b" },
-  ]
-  // The wrapper lingers one stage past outStage so the winner's handoff
-  // flight is visible while the next duel arrives; the loser windows itself
-  // out at outStage.
+  ].map(card => ({ ...card, before: restaurantScore(card.meal), after: restaurantScore(card.meal, card.isWin) }))
   return (
     <div
       data-scene={inStage}
-      {...(outStage !== undefined ? { "data-scene-until": outStage + 1 } : {})}
+      {...(outStage !== undefined ? { "data-scene-until": outStage } : {})}
       data-place
       className={className}
     >
       <div className="relative grid grid-cols-2 gap-4">
-        {cards.map(({ meal, isWin }) => (
+        {cards.map(({ meal, isWin, before, after }) => (
           <figure
             key={meal.name}
-            {...(isWin && outStage !== undefined
-              ? {
-                  "data-scene": outStage,
-                  "data-eoy-shrink": "",
-                  style: { "--shx": shrinkTo?.x, "--shy": shrinkTo?.y, "--shs": shrinkTo?.scale } as React.CSSProperties,
-                }
-              : {})}
-            {...(!isWin && outStage !== undefined
-              ? { "data-scene": inStage, "data-scene-until": outStage }
-              : {})}
             className="saved-card relative w-full"
           >
             <div
@@ -80,26 +72,24 @@ export function EatOrYeetDuel({
                   placeholder="blur"
                   blurDataURL={storyBlur(meal.src)}
                   loading="eager"
-                  alt={meal.name}
+                  alt={`${meal.name} ${atLabel} ${meal.restaurant}`}
                   fill
                   sizes="(min-width: 768px) 260px, 46vw"
                   className="object-cover object-top"
                 />
-                {isWin ? (
-                  <span data-scene={pickStage} className="pointer-events-none absolute -inset-[6%] z-10 block">
-                    <PenRing className="-rotate-1" />
-                  </span>
-                ) : null}
               </div>
               <figcaption className="px-3 py-2.5 text-[0.92rem] font-bold text-brand-ink">
                 {meal.name}
+                <span className="block text-[0.78rem] font-semibold text-brand-muted">{meal.restaurant}</span>
                 {isWin ? <span className="sr-only">: {pickedLabel}</span> : null}
+                <EatScoreTicker before={before} after={after} scoreLabel={scoreLabel} eatsLabel={eatsLabel} matchupsLabel={matchupsLabel} />
               </figcaption>
             </div>
+            {isWin ? (
+              <span data-scene={pickStage} data-place data-winner-highlight aria-hidden="true" className="pointer-events-none absolute inset-0 z-10 rounded-xl border-[3px] border-brand-orange" />
+            ) : null}
           </figure>
         ))}
-        {/* Windowed with the loser: at handoff only the flying winner remains,
-            so the next pair's "or" never lands on top of this one. */}
         <span
           {...(outStage !== undefined ? { "data-scene": inStage, "data-scene-until": outStage } : {})}
           className="pointer-events-none absolute left-1/2 top-[32%] z-20 -translate-x-1/2 rounded-full border border-brand-orange/30 bg-brand-cream px-2.5 py-1 text-[0.72rem] font-bold uppercase tracking-[0.12em] text-brand-orange md:text-[0.68rem]"
@@ -124,56 +114,3 @@ export function EatOrYeetDuel({
   )
 }
 
-/**
- * A resolved comparison at receipt size: two thumbnails, winner ringed,
- * loser dimmed. These accumulate in a row as the big duels resolve — the
- * pile is the point: Makan learns from all of them together.
- */
-export function SettledDuel({
-  duel,
-  appearStage,
-  pickedLabel,
-}: {
-  duel: Duel
-  appearStage: number
-  pickedLabel: string
-}) {
-  const cards = [
-    { meal: duel.a, isWin: duel.winner === "a" },
-    { meal: duel.b, isWin: duel.winner === "b" },
-  ]
-  const winner = duel.winner === "a" ? duel.a : duel.b
-  return (
-    <span
-      data-scene={appearStage}
-      style={{ transitionDelay: "0.45s" }}
-      className="relative flex items-center gap-1.5"
-    >
-      {cards.map(({ meal, isWin }) => (
-        <span
-          key={meal.name}
-          className="relative block h-9 w-[3.4rem] overflow-hidden rounded-md border border-brand-muted/25"
-        >
-          <Image
-            src={meal.src}
-            placeholder="blur"
-            blurDataURL={storyBlur(meal.src)}
-            loading="eager"
-            alt=""
-            fill
-            sizes="64px"
-            className={`object-cover object-top ${isWin ? "" : "opacity-50 grayscale-[0.4]"}`}
-          />
-          {isWin ? (
-            <span className="pointer-events-none absolute -inset-[10%]">
-              <PenRing className="-rotate-1" />
-            </span>
-          ) : null}
-        </span>
-      ))}
-      <span className="sr-only">
-        {duel.a.name} / {duel.b.name}: {winner.name} {pickedLabel}
-      </span>
-    </span>
-  )
-}

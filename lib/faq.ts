@@ -21,7 +21,7 @@ export const FAQS: FaqItem[] = [
   },
   {
     q: 'Is Makan free?',
-    a: "Yes. Makan is free on the App Store and built for iPhone. Android is in the works, and we don't have a release date to share yet.",
+    a: "Yes. Makan is free to download on the App Store and Google Play.",
   },
   {
     q: 'What does “makan” mean?',
@@ -64,7 +64,7 @@ export const FAQS_ID: FaqItem[] = [
   },
   {
     q: 'Apakah Makan gratis?',
-    a: 'Ya. Makan gratis di App Store dan dibuat untuk iPhone. Versi Android sedang dikerjakan, tetapi kami belum punya tanggal rilis.',
+    a: 'Ya. Makan gratis untuk diunduh di App Store dan Google Play.',
   },
   {
     q: 'Apa arti kata “makan”?',
@@ -104,60 +104,54 @@ export function getFaqs(locale: string) {
   return locale === 'id' ? FAQS_ID : FAQS
 }
 
-// The decision-first homepage asks fewer questions, and leads with the one
-// the whole page is about. Curated from the list above (same truths, same
-// wording) plus one new entry; the live FAQ is untouched.
-const DECISION_FAQ_EN: FaqItem = {
-  q: 'How does Makan know what to order?',
-  a: "From real meals. Your Eat or Yeet picks tell Makan what you like. Other people's meals tell it what keeps getting saved at each place and what keeps winning in Eat or Yeet, as totals, never as names. If a place has too few meals, Makan says so instead of guessing.",
+// Five questions for the Maître d’ mockup; shared by the visible FAQ and its schema.
+const DECISION_FAQS: Record<string, FaqItem[]> = {
+  "en": [
+    {
+      "q": "How do I become a Maître d’?",
+      "a": "Save eligible meals at the same restaurant on at least two different days in the last 60 days. The person with the most counted days earns the title. A qualifying current holder keeps it on a tie."
+    },
+    {
+      "q": "What if a place has no Maître d’?",
+      "a": "You can still browse meals saved there. A usual order appears when a qualifying Maître d’ chooses to share one."
+    },
+    {
+      "q": "What does Eat% mean?",
+      "a": "The percentage of counted Eat or Yeet matchups a restaurant wins. Ties count in the total; comparing two meals from the same restaurant doesn’t change its score. A restaurant needs at least 10 counted matchups to enter the global standings."
+    },
+    {
+      "q": "Who can see my meals?",
+      "a": "Your first post is Friends Only. After that, choose Public or Friends Only for each meal. Makan remembers your last choice, and you can change it before posting."
+    },
+    {
+      "q": "Is Makan free?",
+      "a": "Yes. Makan is free to download and use on iPhone and Android. Find it on the App Store and Google Play."
+    }
+  ],
+  "id": [
+    {
+      "q": "Bagaimana cara menjadi Maître d’?",
+      "a": "Simpan makanan yang memenuhi syarat di restoran yang sama pada setidaknya dua hari berbeda dalam 60 hari terakhir. Orang dengan hari terhitung terbanyak meraih gelarnya. Saat seri, pemegang yang masih memenuhi syarat tetap memegang gelar."
+    },
+    {
+      "q": "Bagaimana kalau belum ada Maître d’?",
+      "a": "Kamu tetap bisa melihat makanan yang disimpan di sana. Pesanan andalan muncul saat Maître d’ yang memenuhi syarat memilih untuk membagikannya."
+    },
+    {
+      "q": "Apa arti Eat%?",
+      "a": "Persentase perbandingan Eat or Yeet terhitung yang dimenangkan restoran. Hasil seri masuk ke total; membandingkan dua makanan dari restoran yang sama tidak mengubah skornya. Restoran perlu setidaknya 10 perbandingan terhitung untuk masuk peringkat global."
+    },
+    {
+      "q": "Siapa yang bisa melihat makananku?",
+      "a": "Postingan pertamamu Friends Only. Setelah itu, pilih Public atau Friends Only untuk setiap makanan. Makan mengingat pilihan terakhirmu, dan kamu bisa menggantinya sebelum posting."
+    },
+    {
+      "q": "Apakah Makan gratis?",
+      "a": "Ya. Makan gratis untuk diunduh dan digunakan di iPhone dan Android. Tersedia di App Store dan Google Play."
+    }
+  ]
 }
-const DECISION_FAQ_ID: FaqItem = {
-  q: 'Dari mana Makan tahu apa yang harus dipesan?',
-  a: 'Dari makanan sungguhan. Pilihanmu di Eat or Yeet memberi tahu Makan apa yang kamu suka. Makanan orang lain memberi tahu Makan apa yang terus disimpan di tiap tempat dan apa yang terus menang di Eat or Yeet, sebagai jumlah total, bukan nama. Kalau makanan di suatu tempat masih terlalu sedikit, Makan bilang begitu daripada menebak.',
-}
-// Where it works: the numbers behind this are live in Firestore (666 places,
-// Jakarta/Bali/UK by place name, 2026-09-02); "anywhere with a menu" is the
-// product truth, and the honest empty state covers thin places.
-const WHERE_FAQ_EN: FaqItem = {
-  q: 'Where does Makan work?',
-  a: "Anywhere with a menu. Most of the meals saved are in Jakarta, Bali and the UK, and the answer at any place gets better as more meals are saved there. The first people to save meals in a new city are the ones who make it useful there.",
-}
-const WHERE_FAQ_ID: FaqItem = {
-  q: 'Makan bisa dipakai di mana?',
-  a: 'Di mana pun ada menu. Sebagian besar makanan yang tersimpan ada di Jakarta, Bali, dan Inggris, dan jawaban di tiap tempat makin bagus seiring makin banyak makanan yang disimpan di sana. Orang pertama yang menyimpan makanan di kota baru adalah yang membuatnya berguna di sana.',
-}
-// Two more decision-page entries, from the restaurant handout's Maitre d'
-// rule and cost page (two visit-days inside 60; free to be on; deals sit
-// beside the honest pick, never buy it).
-const MAITRED_FAQ_EN: FaqItem[] = [
-  {
-    q: "What is a Maître d'?",
-    a: "The person who has eaten at a place the most on Makan. You need two visits inside 60 days to qualify, and whoever comes most holds the title. It's earned by eating, never bought, and you can lose it to someone who comes more. The Maître d' leaves short notes for everyone else: always get this, try this if, good to know.",
-  },
-  {
-    q: 'Can a restaurant pay to be the pick?',
-    a: "No. Being on Makan is free for restaurants, with no fee to appear and no cut of the bill. A restaurant can offer a deal to first-time diners, and Makan shows it clearly marked as a deal, next to the honest pick, never instead of it.",
-  },
-]
-const MAITRED_FAQ_ID: FaqItem[] = [
-  {
-    q: "Apa itu Maître d'?",
-    a: "Orang yang paling sering makan di suatu tempat di Makan. Perlu dua kunjungan dalam 60 hari untuk memenuhi syarat, dan yang paling sering datang memegang gelarnya. Didapat dengan makan, tidak pernah dibeli, dan bisa hilang ke orang yang datang lebih sering. Maître d' menulis catatan singkat untuk yang lain: selalu pesan ini, coba ini kalau, perlu tahu.",
-  },
-  {
-    q: 'Bisakah restoran membayar supaya jadi pilihan?',
-    a: 'Tidak. Ada di Makan itu gratis untuk restoran, tanpa biaya untuk tampil dan tanpa potongan dari tagihan. Restoran boleh memberi promo untuk tamu pertama, dan Makan menampilkannya dengan jelas sebagai promo, di samping pilihan jujur, bukan menggantikannya.',
-  },
-]
-// Indexes into FAQS / FAQS_ID (both lists share an order): free, Eat or Yeet,
-// who can see.
-const DECISION_PICKS_A = [1, 5]
-const DECISION_PICKS_B = [3]
 
 export function getDecisionFaqs(locale: string) {
-  const id = locale === 'id'
-  const [lead, where, source, maitred] = id
-    ? [DECISION_FAQ_ID, WHERE_FAQ_ID, FAQS_ID, MAITRED_FAQ_ID]
-    : [DECISION_FAQ_EN, WHERE_FAQ_EN, FAQS, MAITRED_FAQ_EN]
-  return [lead, where, ...DECISION_PICKS_A.map((i) => source[i]), ...maitred, ...DECISION_PICKS_B.map((i) => source[i])]
+  return DECISION_FAQS[locale] ?? DECISION_FAQS.en
 }

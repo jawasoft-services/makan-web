@@ -1,5 +1,4 @@
 import Image from "next/image"
-import { storyBlur } from "@/lib/story-blur"
 import { getTranslations } from "next-intl/server"
 import Reveal from "@/components/motion/Reveal"
 
@@ -8,9 +7,9 @@ import Reveal from "@/components/motion/Reveal"
 // place), the game that teaches Makan taste, and the diary the answer is
 // drawn from.
 const SHOTS = [
-  { src: "/app-screens/story/discover.webp", titleKey: "shot1Title", bodyKey: "shot1Body", altKey: "shot1Alt" },
-  { src: "/app-screens/story/eat-or-yeet.webp", titleKey: "shot2Title", bodyKey: "shot2Body", altKey: "shot2Alt" },
-  { src: "/app-screens/story/diary.webp", titleKey: "shot3Title", bodyKey: "shot3Body", altKey: "shot3Alt" },
+  { src: "/mockup-assets/discovery-iphone.png", titleKey: "shot1Title", bodyKey: "shot1Body", altKey: "shot1Alt" },
+  { src: "/mockup-assets/eat-or-yeet-iphone.png", titleKey: "shot2Title", bodyKey: "shot2Body", altKey: "shot2Alt" },
+  { src: "/mockup-assets/diary-iphone.png", titleKey: "shot3Title", bodyKey: "shot3Body", altKey: "shot3Alt" },
 ] as const
 
 export default async function SeeTheApp() {
@@ -33,8 +32,6 @@ export default async function SeeTheApp() {
             <figure key={shot.src} data-beat style={{ "--beat": 2 + i } as React.CSSProperties}>
               <Image
                 src={shot.src}
-                placeholder="blur"
-                blurDataURL={storyBlur(shot.src)}
                 loading="eager"
                 alt={t(shot.altKey)}
                 width={760}

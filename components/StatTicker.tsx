@@ -6,10 +6,14 @@ import { animate, motion, useMotionValue, useReducedMotion, useTransform } from 
 interface StatTickerProps {
   /** Final numeric value to display. */
   value: number
+  /** Starting value, for a score changing after a pick. */
+  initialValue?: number
   /** When true, the count-up animation runs (parent controls via useInView). */
   inView: boolean
   /** Animation duration in seconds. Default 1.4. */
   duration?: number
+  /** Number-format locale, e.g. "id" for 5.500. Defaults to the existing format. */
+  locale?: string
 }
 
 /**
@@ -18,10 +22,10 @@ interface StatTickerProps {
  * value instantly. Screen readers get the final formatted number via aria-label,
  * not intermediate animation frames.
  */
-export default function StatTicker({ value, inView, duration = 1.4 }: StatTickerProps) {
+export default function StatTicker({ value, inView, duration = 1.4, initialValue = 0, locale }: StatTickerProps) {
   const prefersReducedMotion = useReducedMotion()
-  const count = useMotionValue(0)
-  const rounded = useTransform(count, (latest) => Math.round(latest).toLocaleString())
+  const count = useMotionValue(initialValue)
+  const rounded = useTransform(count, (latest) => Math.round(latest).toLocaleString(locale))
   const hasAnimated = useRef(false)
 
   useEffect(() => {
@@ -34,12 +38,15 @@ export default function StatTicker({ value, inView, duration = 1.4 }: StatTicker
     }
 
     const controls = animate(count, value, { duration, ease: 'easeOut' })
-    return () => controls.stop()
+    return () => {
+      controls.stop()
+      hasAnimated.current = false
+    }
   }, [inView, value, duration, prefersReducedMotion, count])
 
   return (
     <>
-      <span className="sr-only">{value.toLocaleString('en-GB')}</span>
+      <span className="sr-only">{value.toLocaleString(locale ?? 'en-GB')}</span>
       <motion.span aria-hidden="true">{rounded}</motion.span>
     </>
   )

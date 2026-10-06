@@ -1,18 +1,13 @@
 import Image from "next/image"
-import { storyBlur } from "@/lib/story-blur"
-import { getTranslations } from "next-intl/server"
+import { getLocale, getTranslations } from "next-intl/server"
 import Reveal from "@/components/motion/Reveal"
-import PenRing from "@/components/decision/PenRing"
+import AppQr from "@/components/home/AppQr"
+import MealCount from "@/components/home/MealCount"
+import RegularsWidget from "@/components/home/RegularsWidget"
 import StoreLink from "@/components/home/StoreLink"
-
-// Real saved meals (share cards already published on the live meal strip):
-// the three Eat or Yeet winners from the story below, fanned like a hand of
-// cards. The front card carries the pen ring — the site's one gesture, teased.
-const CARDS = [
-  { name: "Sushi", src: "/meals/story/card-40.jpg", rotate: "-8deg", x: "0rem", y: "1.2rem" },
-  { name: "Hangover Tom yum", src: "/meals/story/IMG_6959.jpg", rotate: "2deg", x: "4.5rem", y: "0rem" },
-  { name: "Chilli prawns", src: "/meals/story/card-15.jpg", rotate: "9deg", x: "9rem", y: "1.6rem" },
-]
+import StaticPicture from "@/components/StaticPicture"
+import RatingBand from "@/components/home/RatingBand"
+import { localizePath } from "@/i18n/paths"
 
 export default async function Hero({
   mealCount,
@@ -24,10 +19,9 @@ export default async function Hero({
   rating: { rating: number; count: number } | null
 }) {
   const t = await getTranslations("Decision.Landing")
+  const home = await getTranslations("Home.Hero")
+  const locale = await getLocale()
   const meals = Math.max(100, Math.floor(mealCount / 100) * 100)
-  // A rating from a handful of people reads as thin; show it once it has weight.
-  const MIN_RATINGS = 10
-  const showRating = rating !== null && rating.count >= MIN_RATINGS
   const penId = "landing-underline-pen"
   const title = t("title")
   const accent = t("titleAccent")
@@ -36,7 +30,8 @@ export default async function Hero({
 
   return (
     <section className="w-full bg-brand-card">
-      <Reveal className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-6 pb-16 pt-24 md:grid-cols-[1.1fr_0.9fr] md:px-10 md:pb-24 md:pt-32">
+      {rating ? <RatingBand text={t("trustRating", { rating: rating.rating.toFixed(1) })} rating={rating.rating} /> : null}
+      <Reveal className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-6 pb-16 pt-14 md:grid-cols-[1.1fr_0.9fr] md:px-10 md:pb-24 md:pt-16">
         <div>
           <h1
             data-beat
@@ -45,7 +40,7 @@ export default async function Hero({
             {hasAccent ? (
               <>
                 {before}
-                <span className="whitespace-nowrap">
+                <span className="whitespace-nowrap font-bold text-brand-orange">
                   <span className="relative inline-block">
                     <span className="relative z-[1]">{accent}</span>
                     <svg
@@ -76,42 +71,34 @@ export default async function Hero({
           <p
             data-beat
             style={{ "--beat": 1 } as React.CSSProperties}
-            className="mt-6 max-w-[34ch] text-[clamp(1.05rem,1.5vw,1.3rem)] font-semibold leading-[1.5] text-brand-orange"
+            className="mt-6 max-w-[34ch] text-[clamp(1.05rem,1.5vw,1.3rem)] font-bold leading-[1.5] text-brand-ink"
           >
             {t("sub")}
           </p>
           <div
             data-beat
             style={{ "--beat": 2 } as React.CSSProperties}
-            className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3"
+            className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-3"
           >
             <StoreLink
               location="hero"
-              className="inline-block rounded-[10px] transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink active:translate-y-0"
+              size="large"
+              className="inline-flex min-h-11 items-center rounded-[10px] transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink active:translate-y-0"
             >
-              <Image src="/app-store-badge.svg" alt={t("badgeAlt")} width={180} height={60} className="h-14 w-auto" />
+              <Image src="/app-store-badge.svg" alt={t("badgeAlt")} width={180} height={60} className="h-[clamp(2rem,10.8vw,2.25rem)] w-auto sm:h-14" />
             </StoreLink>
-            <span className="text-[0.86rem] font-semibold uppercase tracking-[0.14em] text-brand-orange md:text-[0.82rem]">
-              {t("platform")}
-            </span>
+            <AppQr href={localizePath(locale, "/app")} label={home("qr")} alt={home("qrAlt")} />
           </div>
-          {/* One trust signal beside the ask, both numbers real: the live
-              meal count, where those meals are, and the storefront rating (only when
-              it has one). */}
+          {/* The live meal count beside the ask; the rating moved to the pill above. */}
           <p
             data-beat
             style={{ "--beat": 3 } as React.CSSProperties}
-            className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.95rem] font-semibold text-brand-muted"
+            className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[clamp(1.05rem,1.4vw,1.2rem)] font-semibold text-brand-ink"
           >
-            <span className="whitespace-nowrap">{t("trustMeals", { meals: meals.toLocaleString() })}</span>
-            {/* Answers "is this a Bali thing?" before the Bali menu below does. */}
-            <span>{t("trustWhere")}</span>
-            {showRating && rating ? (
-              <span className="whitespace-nowrap">
-                <span aria-hidden className="text-brand-orange">★ </span>
-                {t("trustRating", { rating: rating.rating.toFixed(1), count: rating.count })}
-              </span>
-            ) : null}
+            {t.rich("trustMeals", {
+              meals: meals.toLocaleString(locale),
+              num: () => <MealCount value={meals} locale={locale} />,
+            })}
           </p>
           <a
             data-beat
@@ -135,36 +122,34 @@ export default async function Hero({
           </a>
         </div>
 
-        {/* A hand of real meals. Rotations and offsets are deliberate: this is
-            a pile on a table, not a grid. All three are above the fold, so all
-            three load eagerly — a card popping in late is the first thing a
-            visitor would notice. */}
-        <div
-          data-beat
-          style={{ "--beat": 2 } as React.CSSProperties}
-          className="relative mx-auto h-[19rem] w-[22rem] max-w-full md:h-[24rem] md:w-[26rem]"
-          role="group"
-          aria-label={t("cardsAlt")}
-        >
-          {CARDS.map((card, i) => (
-            <figure
-              key={card.name}
-              className="saved-card absolute left-0 top-0 w-[13.5rem] md:w-[15.5rem]"
-              style={{ transform: `translate(${card.x}, ${card.y}) rotate(${card.rotate})`, zIndex: i }}
-            >
-              <div className="overflow-hidden rounded-xl">
-                <div className="relative aspect-[3/2]">
-                  <Image src={card.src} alt={card.name} fill sizes="248px" className="object-cover object-top" priority placeholder="blur" blurDataURL={storyBlur(card.src)} />
-                  {i === 2 ? (
-                    <span aria-hidden className="pointer-events-none absolute -inset-[6%] block">
-                      <PenRing className="-rotate-1" />
-                    </span>
-                  ) : null}
-                </div>
-                <figcaption className="px-3 py-2.5 text-[0.95rem] font-bold text-brand-ink">{card.name}</figcaption>
-              </div>
-            </figure>
-          ))}
+        {/* Valesca's real Makan export card behind the widget (after Partiful's hero:
+            product UI floating over a real moment). The widget stays on top and
+            interactive; the card's own name, dish and meal-type band stays in view. */}
+        <div className="relative mx-auto w-full max-w-[32rem] md:aspect-[1/1.02]">
+          <div className="relative z-10 drop-shadow-[0_24px_28px_rgba(43,21,3,0.18)] md:absolute md:left-0 md:top-0 md:w-[80%]">
+            <RegularsWidget
+              labels={[t("regularsLabel"), t("usualLabel")]}
+              alts={[t("regularsAlt"), t("usualAlt")]}
+              label={t("widgetLabel")}
+              rulesLabel={t("rulesLabel")}
+              rules={{ title: t("rulesTitle"), qualify: t("rulesQualify"), holder: t("rulesHolder"), usual: t("rulesUsual") }}
+              key={locale}
+            />
+          </div>
+          {/* Reveal on the wrapper, tilt on the image: the reveal animation ends at
+              transform: none, which would otherwise flatten the tilt. */}
+          <div data-beat style={{ "--beat": 3 } as React.CSSProperties} className="relative -mt-[8%] ml-auto w-[62%] md:absolute md:right-0 md:top-[45%] md:mt-0 md:w-[56%]">
+            <StaticPicture
+              basePath="/static-images/v1/meals/IMG_6952"
+              widths={[480, 720]}
+              alt={t("heroCardAlt")}
+              width={600}
+              height={600}
+              sizes="(min-width: 768px) 290px, 62vw"
+              loading="eager"
+              className="block h-auto w-full rotate-[3deg] rounded-[14px] shadow-[0_18px_40px_-12px_rgba(43,21,3,0.35)]"
+            />
+          </div>
         </div>
       </Reveal>
     </section>
