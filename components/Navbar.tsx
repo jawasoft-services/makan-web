@@ -69,7 +69,12 @@ export default function Navbar() {
       const y = window.scrollY
       setScrolled(y > 40)
       // Hide when scrolling down past the fold; reveal on any upward scroll.
-      setHidden(y > 160 && y > lastY.current)
+      // Not while the pinned Eat or Yeet scene fills the screen: its layout is built
+      // around a visible bar, and keeping it there keeps the empty space above and
+      // below the scene's content equal in either scroll direction.
+      const scene = document.getElementById('proof')?.getBoundingClientRect()
+      const inScene = !!scene && scene.top <= 0 && scene.bottom >= window.innerHeight
+      setHidden(y > 160 && y > lastY.current && !inScene)
       lastY.current = y
     }
     window.addEventListener('scroll', onScroll, { passive: true })
