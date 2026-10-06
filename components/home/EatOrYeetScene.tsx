@@ -7,6 +7,7 @@ import {
 import ScrollScene from "@/components/motion/ScrollScene"
 import StoreLink from "@/components/home/StoreLink"
 import RankingExample from "@/components/decision/RankingExample"
+import SceneFit from "@/components/home/SceneFit"
 
 // Real saved meals and venues, simulated picks/totals. Kendal’s after-pick 8/14 (57%) matches the dated Makan standings capture; its 7/13 starting point is reconstructed. Other venue totals are mock data.
 const DUELS: Duel[] = [
@@ -81,9 +82,11 @@ const STAGES = HOLD_VH.map((_, i) => HOLD_VH.slice(0, i).reduce((a, b) => a + b,
 const SCENE_VARS = { "--scene-h": `${TRAVEL_VH + 100}vh` } as React.CSSProperties
 
 // Fit two 3:2 cards, heading and result above the fold, capped at the column width.
+// The slot's height is not declared: its layers share one grid cell, so it is as
+// tall as its tallest layer in any language. SceneFit centres that box below the nav
+// and scales it down as a whole when the window is too short.
 const SLOT_VARS = {
-  "--slot-w": "min(59rem, calc(100vw - 5rem), calc((100vh - 30rem) * 3))",
-  "--slot-h": "calc((var(--slot-w) - 1rem) / 3 + 8rem)",
+  "--slot-w": "min(59rem, calc(100vw - 5rem))",
 } as React.CSSProperties
 
 /**
@@ -97,10 +100,10 @@ export default async function EatOrYeetScene() {
   return (
     <ScrollScene id="proof" thresholds={STAGES} style={SCENE_VARS} className="relative bg-brand-card md:staged:h-[var(--scene-h)]">
       {/* Pinned, and vertically centred in whatever slack a tall viewport
-          leaves; the top padding is the nav's clearance, so short viewports
-          behave exactly as before. */}
-      <div id="how-it-works" className="md:staged:sticky md:staged:top-0 md:staged:flex md:staged:h-screen md:staged:flex-col md:staged:justify-center md:staged:pt-24">
-        <div className="mx-auto w-full max-w-5xl px-6 py-16 md:px-10 md:staged:py-0">
+          leaves; the top padding is the nav's exact height, so the empty space above
+          the content (measured from the nav) equals the space below it. */}
+      <div id="how-it-works" className="md:staged:sticky md:staged:top-0 md:staged:flex md:staged:h-screen md:staged:flex-col md:staged:justify-center md:staged:pt-[95px]">
+        <SceneFit className="mx-auto w-full max-w-5xl px-6 py-16 md:px-10 md:staged:py-0">
           <h2
             data-scene="0"
             className="max-w-[18ch] text-[clamp(2rem,4vw,3.4rem)] font-bold leading-[1.02] tracking-[-0.02em] text-brand-ink"
@@ -113,7 +116,7 @@ export default async function EatOrYeetScene() {
 
           {/* One slot, three tenants, then the payoff. Absolute only once
               staged; stacked naturally in flow. */}
-          <div style={SLOT_VARS} className="mt-8 md:relative md:max-w-[var(--slot-w)] md:staged:h-[var(--slot-h)]">
+          <div style={SLOT_VARS} className="mt-8 md:relative md:max-w-[var(--slot-w)] md:staged:grid md:staged:grid-cols-[minmax(0,1fr)]">
             <EatOrYeetDuel
               duel={DUELS[0]}
               or={t("eoyOr")}
@@ -128,7 +131,7 @@ export default async function EatOrYeetScene() {
               learnLabel={t("learnLabel")}
               learned={t("learn1")}
               outStage={5}
-              className="md:staged:absolute md:staged:inset-x-0 md:staged:top-0"
+              className="md:staged:[grid-area:1/1]"
             />
             <EatOrYeetDuel
               duel={DUELS[1]}
@@ -144,7 +147,7 @@ export default async function EatOrYeetScene() {
               learnLabel={t("learnLabel")}
               learned={t("learn2")}
               outStage={8}
-              className="mt-8 md:staged:absolute md:staged:inset-x-0 md:staged:top-0 md:staged:mt-0"
+              className="mt-8 md:staged:[grid-area:1/1] md:staged:mt-0"
             />
             <EatOrYeetDuel
               duel={DUELS[2]}
@@ -160,9 +163,9 @@ export default async function EatOrYeetScene() {
               learnLabel={t("learnLabel")}
               learned={t("learn3")}
               outStage={11}
-              className="mt-8 md:staged:absolute md:staged:inset-x-0 md:staged:top-0 md:staged:mt-0"
+              className="mt-8 md:staged:[grid-area:1/1] md:staged:mt-0"
             />
-            <div className="md:staged:absolute md:staged:inset-0 md:staged:flex md:staged:flex-col md:staged:justify-start md:staged:pt-1">
+            <div className="md:staged:[grid-area:1/1] md:staged:flex md:staged:flex-col md:staged:justify-between md:staged:gap-6">
               <div data-scene="11">
                 <RankingExample duels={DUELS} labels={{
                   title: t("rankingTitle"), before: t("rankingBefore"), after: t("rankingAfter"), restaurant: t("rankingRestaurant"),
@@ -170,7 +173,7 @@ export default async function EatOrYeetScene() {
                   up: t("rankingUp"), down: t("rankingDown"), unchanged: t("rankingUnchanged"),
                 }} />
               </div>
-              <div data-scene="13" className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
+              <div data-scene="13" className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 md:staged:mt-0">
                 <StoreLink
                   location="proof"
                   className="inline-flex min-h-11 items-center rounded-[10px] transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink active:translate-y-0"
@@ -180,7 +183,7 @@ export default async function EatOrYeetScene() {
               </div>
             </div>
           </div>
-        </div>
+        </SceneFit>
       </div>
     </ScrollScene>
   )
