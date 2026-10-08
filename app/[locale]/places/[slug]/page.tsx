@@ -52,13 +52,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { place, row, indexable } = found
   const t = await getTranslations({ locale, namespace: 'Places' })
   const path = `${locale === 'id' ? '/id' : ''}/places/${place.slug}`
-  const whereText = place.where ? `${place.where.city}, ${place.where.country}` : t('somewhere')
+  const placeText = place.where ? `${place.name}, ${place.where.city}, ${place.where.country}` : place.name
   const meta = createPageMetadata({
-    title: t('metaTitle', { name: place.name }),
+    title: place.where
+      ? t('metaTitleLocated', { name: place.name, city: place.where.city })
+      : t('metaTitle', { name: place.name }),
     description:
       row && row.rank !== null
-        ? t('metaDescriptionRanked', { name: place.name, where: whereText, eats: row.eats, rank: row.rank })
-        : t('metaDescriptionMeals', { name: place.name, where: whereText, count: place.meals.length }),
+        ? t('metaDescriptionRanked', { place: placeText, count: place.meals.length, eats: row.eats, rank: row.rank })
+        : place.meals.length
+          ? t('metaDescriptionMeals', { place: placeText, count: place.meals.length })
+          : t('metaDescriptionEmpty', { place: placeText }),
     path,
     locale,
     image: `${SITE_URL}${path}/opengraph-image`,

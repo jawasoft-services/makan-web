@@ -602,9 +602,9 @@
     "eats": "Eats · {rate}"
   },
   "Places": {
-    "metaTitle": "{name} on Makan",
+    "metaTitle": "{name} | Makan",
     "metaDescription": "{name} in {where}, on Makan. {matchups} Eat or Yeet matchups so far, from diners who ate there.",
-    "metaDescriptionRanked": "{name} in {where}: #{rank} in the Eat or Yeet standings with {eats} Eats, from diners who ate there.",
+    "metaDescriptionRanked": "{place}. {count, plural, one {# public meal photo} other {# public meal photos}}; #{rank} in Makan's Eat or Yeet standings with {eats} Eats.",
     "somewhere": "On Makan",
     "standings": "Standings",
     "since": "on Makan since {date}",
@@ -629,7 +629,7 @@
     "dinerTitle": "Eaten here?",
     "dinerBody": "Save what you ordered at {name} and it counts. The next person who sits down here gets an answer.",
     "badgeAlt": "Download on the App Store",
-    "metaDescriptionMeals": "{name} in {where}, on Makan: {count, plural, one {# public meal} other {# public meals}} saved by people who ate there, with photos.",
+    "metaDescriptionMeals": "{place}. See {count, plural, one {# public meal} other {# public meals}} saved by diners, with food photos.",
     "cardMeals": "{count, plural, one {# meal saved on Makan} other {# meals saved on Makan}}",
     "mealAlt": "A meal saved at {name} on Makan",
     "mealFallback": "A meal",
@@ -647,7 +647,9 @@
     "maitredCta": "Claim the seat — get Makan free",
     "maitredHeldEyebrow": "The Maître'D here",
     "maitredHeldSub": "Eats here more than anyone on Makan",
-    "maitredHeldFooter": "Get Makan to see every pick — or become the next Maître'D."
+    "maitredHeldFooter": "Get Makan to see every pick — or become the next Maître'D.",
+    "metaTitleLocated": "{name}, {city} | Makan",
+    "metaDescriptionEmpty": "{place}. No public meal photos are available yet."
   },
   "Meal": {
     "savedAt": "Saved at",
