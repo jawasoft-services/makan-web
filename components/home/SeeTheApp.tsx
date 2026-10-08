@@ -2,11 +2,9 @@ import Image from "next/image"
 import { getTranslations } from "next-intl/server"
 import Reveal from "@/components/motion/Reveal"
 
-// The three screens a diner actually uses, as real signed-in screenshots
-// already sitting in a device frame: Discover (the nudge back to a saved
-// place), the game that teaches Makan taste, and the diary the answer is
-// drawn from.
+// Supplied app screenshots, already sitting in device frames.
 const SHOTS = [
+  { src: "/app-screens/story/feed.webp", titleKey: "feedTitle", bodyKey: "feedBody", altKey: "feedAlt" },
   { src: "/mockup-assets/discovery-iphone.png", titleKey: "shot1Title", bodyKey: "shot1Body", altKey: "shot1Alt" },
   { src: "/mockup-assets/eat-or-yeet-iphone.png", titleKey: "shot2Title", bodyKey: "shot2Body", altKey: "shot2Alt" },
   { src: "/mockup-assets/diary-iphone.png", titleKey: "shot3Title", bodyKey: "shot3Body", altKey: "shot3Alt" },
@@ -16,7 +14,7 @@ export default async function SeeTheApp() {
   const t = await getTranslations("Decision.App")
   return (
     <section id="features" className="scroll-mt-[86px] w-full bg-brand-cream px-6 pb-12 pt-20 md:px-10 md:py-28">
-      <Reveal className="mx-auto max-w-5xl text-center">
+      <Reveal className="mx-auto max-w-7xl text-center">
         <p data-beat className="text-[0.86rem] font-semibold uppercase tracking-[0.16em] text-brand-orange md:text-[0.82rem]">
           {t("eyebrow")}
         </p>
@@ -27,7 +25,7 @@ export default async function SeeTheApp() {
         >
           {t("title")}
         </h2>
-        <div className="mx-auto mt-14 grid max-w-5xl grid-cols-1 gap-14 md:grid-cols-3 md:gap-8">
+        <div className="mx-auto mt-14 grid max-w-7xl grid-cols-1 gap-14 md:grid-cols-2 md:gap-8 xl:grid-cols-4">
           {SHOTS.map((shot, i) => (
             <figure key={shot.src} data-beat style={{ "--beat": 2 + i } as React.CSSProperties}>
               <Image
