@@ -602,9 +602,9 @@
     "eats": "Eat · {rate}"
   },
   "Places": {
-    "metaTitle": "{name} di Makan",
+    "metaTitle": "{name} | Makan",
     "metaDescription": "{name} di {where}, di Makan. {matchups} pertandingan Eat or Yeet sejauh ini, dari tamu yang makan di sana.",
-    "metaDescriptionRanked": "{name} di {where}: peringkat #{rank} di Eat or Yeet dengan {eats} Eat, dari tamu yang makan di sana.",
+    "metaDescriptionRanked": "{place}. Foto dari {count} makanan publik; peringkat #{rank} di Eat or Yeet Makan dengan {eats} Eat.",
     "somewhere": "Di Makan",
     "standings": "Peringkat",
     "since": "di Makan sejak {date}",
@@ -629,7 +629,7 @@
     "dinerTitle": "Pernah makan di sini?",
     "dinerBody": "Simpan apa yang kamu pesan di {name}, dan itu dihitung. Orang berikutnya yang duduk di sini dapat jawaban.",
     "badgeAlt": "Unduh di App Store",
-    "metaDescriptionMeals": "{name} di {where}, di Makan: {count} makanan publik yang disimpan orang yang makan di sana, lengkap dengan foto.",
+    "metaDescriptionMeals": "{place}. Lihat {count} makanan publik yang disimpan pengunjung, lengkap dengan foto.",
     "cardMeals": "{count} makanan tersimpan di Makan",
     "mealAlt": "Makanan yang disimpan di {name} di Makan",
     "mealFallback": "Sebuah makanan",
@@ -647,7 +647,9 @@
     "maitredCta": "Ambil kursinya — pakai Makan gratis",
     "maitredHeldEyebrow": "Maître'D di sini",
     "maitredHeldSub": "Paling sering makan di sini di Makan",
-    "maitredHeldFooter": "Pakai Makan buat lihat semua pilihannya — atau jadi Maître'D berikutnya."
+    "maitredHeldFooter": "Pakai Makan buat lihat semua pilihannya — atau jadi Maître'D berikutnya.",
+    "metaTitleLocated": "{name}, {city} | Makan",
+    "metaDescriptionEmpty": "{place}. Belum ada foto makanan publik."
   },
   "Meal": {
     "savedAt": "Disimpan di",
