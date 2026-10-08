@@ -4,7 +4,7 @@ import Reveal from "@/components/motion/Reveal"
 
 // Supplied app screenshots, already sitting in device frames.
 const SHOTS = [
-  { src: "/app-screens/story/feed.webp", titleKey: "feedTitle", bodyKey: "feedBody", altKey: "feedAlt" },
+  { src: "/mockup-assets/feed-seafood-risotto.webp", titleKey: "feedTitle", bodyKey: "feedBody", altKey: "feedAlt" },
   { src: "/mockup-assets/discovery-iphone.png", titleKey: "shot1Title", bodyKey: "shot1Body", altKey: "shot1Alt" },
   { src: "/mockup-assets/eat-or-yeet-iphone.png", titleKey: "shot2Title", bodyKey: "shot2Body", altKey: "shot2Alt" },
   { src: "/mockup-assets/diary-iphone.png", titleKey: "shot3Title", bodyKey: "shot3Body", altKey: "shot3Alt" },
@@ -32,8 +32,8 @@ export default async function SeeTheApp() {
                 src={shot.src}
                 loading="eager"
                 alt={t(shot.altKey)}
-                width={760}
-                height={1572}
+                width={1066}
+                height={2198}
                 sizes="(min-width: 768px) 280px, 70vw"
                 className="mx-auto block h-auto w-full max-w-[17.5rem] drop-shadow-[0_18px_28px_rgba(43,21,3,0.22)]"
               />
