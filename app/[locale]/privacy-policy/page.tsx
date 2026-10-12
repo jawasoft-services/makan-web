@@ -23,7 +23,7 @@ export default function PrivacyPolicy() {
 
         {/* Title */}
         <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-brand-ink">Privacy Policy</h1>
-        <p className="mt-2 text-sm text-brand-muted">Last updated: 6 September 2026</p>
+        <p className="mt-2 text-sm text-brand-muted">Last updated: 12 October 2026</p>
 
         <div className="mt-10 space-y-10 text-[15px] leading-relaxed text-brand-ink/80">
 
@@ -234,10 +234,10 @@ export default function PrivacyPolicy() {
                 <strong className="font-semibold text-brand-ink">contract</strong> covers your account
                 and the core features; <strong className="font-semibold text-brand-ink">legitimate
                 interests</strong> covers the private taste picture, dish recognition, usage
-                measurement, security, fault-fixing, and improving the Services; and{' '}
-                <strong className="font-semibold text-brand-ink">consent</strong> covers enquiries,
-                external marketing, and any analysis of photographs you saved before dish recognition
-                existed.
+                measurement, security, fault-fixing, improving the Services, and featuring meals you
+                have made public in our marketing; and{' '}
+                <strong className="font-semibold text-brand-ink">consent</strong> covers enquiries
+                and any analysis of photographs you saved before dish recognition existed.
               </p>
               <div>
                 <h3 className="font-medium text-brand-ink">4.1 Contract</h3>
@@ -277,6 +277,17 @@ export default function PrivacyPolicy() {
                   your account.
                 </p>
                 <p className="mt-2">
+                  <strong className="font-semibold text-brand-ink">Featuring public meals in our marketing (section 5).</strong>{' '}
+                  We rely on legitimate interests to feature meals you have set to a public audience,
+                  including the photo, your caption and your username or display name, in our own
+                  promotional materials and on our own channels, such as Instagram and TikTok. You
+                  chose to make the meal public; we only use public content, never friends-only; we
+                  credit you; and we do not feature photographs in which other people are clearly
+                  identifiable, or content from users we know to be under 18. You can object, or ask us
+                  to remove something we have featured, at any time using the contact details above,
+                  and we will.
+                </p>
+                <p className="mt-2">
                   <strong className="font-semibold text-brand-ink">Operating and improving the Services.</strong>{' '}
                   We also rely on legitimate interests for internal operations: measuring how the App
                   is used, security, abuse prevention, crash and fault diagnosis, and improving
@@ -287,10 +298,8 @@ export default function PrivacyPolicy() {
               <div>
                 <h3 className="font-medium text-brand-ink">4.3 Consent</h3>
                 <p className="mt-2">
-                  We rely on your consent when you submit an enquiry through the Site, before we
-                  feature content that identifies you on an external platform such as our Instagram
-                  (see section 5), and before we analyse any photograph you saved before dish
-                  recognition existed (section 3). We do not rely on consent for dish recognition
+                  We rely on your consent when you submit an enquiry through the Site, and before we
+                  analyse any photograph you saved before dish recognition existed (section 3). We do not rely on consent for dish recognition
                   itself; that is explained in section 4.2.
                 </p>
                 <p className="mt-2">
@@ -340,7 +349,7 @@ export default function PrivacyPolicy() {
                 </p>
                 <ul className="mt-2 list-disc pl-5 space-y-1">
                   <li>Only public content. We never use content you have set to friends-only.</li>
-                  <li>Lawful basis. Where we feature content that identifies you on an external platform, we rely on your consent, which we ask for beforehand and which you can withdraw at any time. For promotional surfaces we operate inside the Services, we may rely on our legitimate interests in promoting Makan, balanced against your rights, and you can object at any time.</li>
+                  <li>Lawful basis. We rely on our legitimate interests in promoting Makan, balanced against your rights (section 4.2). We do not ask before each feature; you can object, or ask us to remove featured content, at any time.</li>
                   <li>Other people in your photos. Before we feature anything externally we look at it first, and we do not publish photographs in which other people are clearly identifiable. If you appear in content we have featured and you did not agree to it, contact us and we will remove it from the channels we control.</li>
                   <li>Under-18s. We do not knowingly feature content from users under 18 in external marketing. We cannot verify age, so if this applies to you, contact us and we will remove it.</li>
                   <li>
