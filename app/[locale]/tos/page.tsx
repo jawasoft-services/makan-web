@@ -21,7 +21,7 @@ export default function TermsOfUse() {
 
         {/* Title */}
         <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-brand-ink">Terms of Use</h1>
-        <p className="mt-2 text-sm text-brand-muted">Last updated: 18 July 2026</p>
+        <p className="mt-2 text-sm text-brand-muted">Last updated: 12 October 2026</p>
 
         <div className="mt-10 space-y-10 text-[15px] leading-relaxed text-brand-ink/80">
 
@@ -139,7 +139,7 @@ export default function TermsOfUse() {
                 </p>
                 <ul className="mt-2 list-disc pl-5 space-y-1">
                   <li>We only ever use content you have set to a public audience — never private or friends-only content.</li>
-                  <li>Before we feature content that identifies you on an external platform (for example, our Instagram), we will ask you and rely on your agreement. You can decline, and you can ask us to remove it at any time by contacting support@makanofficial.com.</li>
+                  <li>We may feature it, including your username, without asking first. You can ask us not to feature your content, or to remove something we have featured, at any time by contacting support@makanofficial.com.</li>
                   <li>We will credit you (for example, by your username) unless you ask us not to.</li>
                   <li>We do not feature content from users we know to be under 18 in external marketing.</li>
                   <li>Once your content is on a third-party platform, that platform&apos;s own terms also apply to how others can view and share it.</li>
