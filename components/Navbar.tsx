@@ -95,7 +95,7 @@ export default function Navbar() {
           : 'bg-brand-orange'
       }`}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 sm:px-8 py-4 sm:py-5">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-y-[8px] px-[16px] py-[16px] sm:px-8 sm:py-[20px]">
         <Link
           href={homeHref}
           className="flex items-center gap-2"
@@ -113,20 +113,20 @@ export default function Navbar() {
             alt=""
             width={32}
             height={32}
-            className="h-7 w-7 sm:h-8 sm:w-8"
+            className="h-[28px] w-[28px] sm:h-[32px] sm:w-[32px]"
           />
           <Image
             src="/makan-logo-white.svg"
             alt="Makan"
             width={104}
             height={24}
-            className="h-5 w-auto sm:h-6"
+            className="h-[20px] w-auto sm:h-[24px]"
             priority
           />
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden lg:flex items-center gap-8">
+        <div className="hidden max-w-full flex-wrap items-center gap-x-[32px] gap-y-[12px] lg:flex">
           {navLinks.map((link) => {
             // Route links (start with "/") use the view-transition Link; hash
             // links use <a> and resolve to /#hash when not on the homepage.
@@ -156,18 +156,18 @@ export default function Navbar() {
           <Link
             href={localizePath(locale, '/app')}
             onClick={() => track('Store CTA Clicked', { location: 'navigation', locale })}
-            className="flex h-11 shrink-0 items-center whitespace-nowrap rounded-full bg-white px-5 text-sm font-semibold text-brand-orange transition-shadow hover:shadow-lg hover:shadow-black/10"
+            className="flex min-h-[44px] shrink-0 items-center whitespace-nowrap rounded-full bg-white px-5 py-[8px] text-sm font-semibold text-brand-orange transition-shadow hover:shadow-lg hover:shadow-black/10"
           >
             {t('getApp')}
           </Link>
         </div>
 
         {/* Mobile: CTA + drawer */}
-        <div className="flex items-center gap-3 lg:hidden">
+        <div className="flex max-w-full flex-wrap items-center gap-[12px] lg:hidden">
           <Link
             href={localizePath(locale, '/app')}
             onClick={() => track('Store CTA Clicked', { location: 'navigation', locale })}
-            className="flex h-11 shrink-0 items-center whitespace-nowrap rounded-full bg-white px-3.5 text-sm font-semibold text-brand-orange sm:px-4"
+            className="flex min-h-[44px] shrink-0 items-center whitespace-nowrap rounded-full bg-white px-[14px] py-[8px] text-sm font-semibold text-brand-orange"
           >
             {t('getAppShort')}
           </Link>
@@ -177,9 +177,9 @@ export default function Navbar() {
                 aria-label={drawerOpen ? t('closeMenu') : t('openMenu')}
                 aria-expanded={drawerOpen}
                 aria-controls="mobile-navigation"
-                className="flex h-11 w-11 items-center justify-center rounded-lg text-white"
+                className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-lg text-white"
               >
-                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                <svg className="h-[20px] w-[20px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
                   <line x1="3" y1="6" x2="17" y2="6" />
                   <line x1="3" y1="10" x2="17" y2="10" />
                   <line x1="3" y1="14" x2="17" y2="14" />
@@ -191,64 +191,66 @@ export default function Navbar() {
               <Drawer.Content
                 id="mobile-navigation"
                 aria-describedby={undefined}
-                className="fixed inset-x-0 bottom-0 z-[70] rounded-t-3xl bg-brand-orange px-6 pb-10 pt-3"
+                className="fixed inset-x-0 bottom-0 z-[70] rounded-t-3xl bg-brand-orange"
               >
-                <Drawer.Title className="sr-only">{t('menu')}</Drawer.Title>
-                <div className="relative mb-3 h-11">
-                  <div aria-hidden className="absolute left-1/2 top-1 -translate-x-1/2 h-1.5 w-10 rounded-full bg-white/50" />
-                  <Drawer.Close asChild>
-                    <button
-                      type="button"
-                      aria-label={t('closeMenu')}
-                      className="absolute right-0 top-0 flex h-11 w-11 items-center justify-center rounded-full text-white hover:bg-white/15"
-                    >
-                      <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-                        <line x1="5" y1="5" x2="15" y2="15" />
-                        <line x1="15" y1="5" x2="5" y2="15" />
-                      </svg>
-                    </button>
-                  </Drawer.Close>
-                </div>
-                <div className="flex flex-col">
-                  {navLinks.map((link) => {
-                    const linkClassName =
-                      'rounded-xl px-3 py-3.5 text-lg font-semibold text-white/90 transition-colors hover:bg-white/15 hover:text-white'
-                    if (link.href.startsWith('/')) {
+                <div className="max-h-[90dvh] overflow-y-auto px-6 pb-10 pt-3">
+                  <Drawer.Title className="sr-only">{t('menu')}</Drawer.Title>
+                  <div className="relative mb-3 h-11">
+                    <div aria-hidden className="absolute left-1/2 top-1 -translate-x-1/2 h-1.5 w-10 rounded-full bg-white/50" />
+                    <Drawer.Close asChild>
+                      <button
+                        type="button"
+                        aria-label={t('closeMenu')}
+                        className="absolute right-0 top-0 flex h-11 w-11 items-center justify-center rounded-full text-white hover:bg-white/15"
+                      >
+                        <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                          <line x1="5" y1="5" x2="15" y2="15" />
+                          <line x1="15" y1="5" x2="5" y2="15" />
+                        </svg>
+                      </button>
+                    </Drawer.Close>
+                  </div>
+                  <div className="flex flex-col">
+                    {navLinks.map((link) => {
+                      const linkClassName =
+                        'rounded-xl px-3 py-3.5 text-lg font-semibold text-white/90 transition-colors hover:bg-white/15 hover:text-white'
+                      if (link.href.startsWith('/')) {
+                        return (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            onClick={() => setDrawerOpen(false)}
+                            className={linkClassName}
+                          >
+                            {link.label}
+                          </Link>
+                        )
+                      }
                       return (
-                        <Link
+                        <a
                           key={link.href}
-                          href={link.href}
-                          onClick={() => setDrawerOpen(false)}
+                          href={hashTarget(link.href)}
+                          onClick={handleHashClick(link.href)}
                           className={linkClassName}
                         >
                           {link.label}
-                        </Link>
+                        </a>
                       )
-                    }
-                    return (
-                      <a
-                        key={link.href}
-                        href={hashTarget(link.href)}
-                        onClick={handleHashClick(link.href)}
-                        className={linkClassName}
-                      >
-                        {link.label}
-                      </a>
-                    )
-                  })}
-                  <div className="mt-4">
-                    <LanguageSwitcher compact />
+                    })}
+                    <div className="mt-4">
+                      <LanguageSwitcher compact />
+                    </div>
+                    <Link
+                      href={localizePath(locale, '/app')}
+                      onClick={() => {
+                        track('Store CTA Clicked', { location: 'navigation-menu', locale })
+                        setDrawerOpen(false)
+                      }}
+                      className="mt-4 rounded-full bg-white px-5 py-3.5 text-center text-base font-semibold text-brand-orange"
+                    >
+                      {t('getApp')}
+                    </Link>
                   </div>
-                  <Link
-                    href={localizePath(locale, '/app')}
-                    onClick={() => {
-                      track('Store CTA Clicked', { location: 'navigation-menu', locale })
-                      setDrawerOpen(false)
-                    }}
-                    className="mt-4 rounded-full bg-white px-5 py-3.5 text-center text-base font-semibold text-brand-orange"
-                  >
-                    {t('getApp')}
-                  </Link>
                 </div>
               </Drawer.Content>
             </Drawer.Portal>

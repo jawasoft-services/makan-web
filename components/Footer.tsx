@@ -31,10 +31,10 @@ export default function Footer() {
   return (
     // Compact footer (after Beli, Family and Linear): links flow into columns and
     // the legal lines share one band, instead of one tall column and a stacked bar.
-    <footer className="inverse-ground bg-brand-espresso px-5 sm:px-8 pt-10 pb-6">
+    <footer className="inverse-ground [overflow-wrap:anywhere] bg-brand-espresso px-5 sm:px-8 pt-10 pb-6">
       <div className="mx-auto max-w-7xl">
         {/* Top section — logo + link columns */}
-        <div className="flex flex-col gap-8 sm:flex-row sm:justify-between">
+        <div className="flex flex-col gap-8 sm:flex-row sm:flex-wrap sm:justify-between">
           {/* Logo + download */}
           <div className="flex flex-col gap-4">
             <Link href={localizePath(locale, '/')} className="flex min-h-11 items-center gap-2">
@@ -43,14 +43,14 @@ export default function Footer() {
                 alt=""
                 width={36}
                 height={36}
-                className="h-9 w-9 rounded-lg"
+                className="h-[36px] w-[36px] rounded-lg"
               />
               <Image
                 src="/makan-logo-white.svg"
                 alt="Makan"
                 width={86}
                 height={20}
-                className="h-5 w-auto"
+                className="h-[20px] w-auto"
               />
             </Link>
             <StoreLink location="footer" size="compact" className="inline-flex min-h-11 w-fit items-center rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current">
@@ -65,12 +65,12 @@ export default function Footer() {
           </div>
 
           {/* Link columns */}
-          <div className="flex flex-col gap-6 sm:flex-row sm:gap-16">
-            <div>
+          <div className="flex min-w-0 max-w-full flex-col gap-6 sm:flex-row sm:flex-wrap sm:gap-16">
+            <div className="min-w-0 max-w-full">
               <p className="text-xs font-medium uppercase tracking-[0.15em] text-brand-espresso-muted/70 mb-3">
                 {t('app')}
               </p>
-              <ul className="grid grid-flow-col grid-rows-6 gap-x-8 lg:grid-rows-4 lg:gap-x-12">
+              <ul className="grid auto-cols-fr grid-flow-col grid-rows-6 gap-x-8 lg:grid-rows-4 lg:gap-x-12">
                 {appLinks.map((link) => (
                   <li key={link.href}>
                     <Link
@@ -88,7 +88,7 @@ export default function Footer() {
               <p className="text-xs font-medium uppercase tracking-[0.15em] text-brand-espresso-muted/70 mb-3">
                 {t('follow')}
               </p>
-              <ul className="flex gap-6 sm:block">
+              <ul className="flex flex-wrap gap-6 sm:block">
                 {socialLinks.map((link) => (
                   <li key={link.href}>
                     <a
@@ -113,7 +113,7 @@ export default function Footer() {
             href="https://www.google.com/maps/place/The+Hoxton+Mix/@51.5256479,-0.0885239"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex min-h-11 w-fit shrink-0 items-center gap-2.5 text-sm transition-colors hover:text-white"
+            className="flex min-h-11 max-w-full flex-wrap items-center gap-2.5 text-sm transition-colors hover:text-white"
           >
             {t('madeWithLove')}
             <Image
