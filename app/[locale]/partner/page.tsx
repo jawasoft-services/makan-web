@@ -134,7 +134,7 @@ export default async function PartnerPage({ params }: {
               <dl className="grid grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-6">
                 {numbers.map((number) => (
                   <div key={number.label} className="border-b border-brand-line pb-4">
-                    <dt className="text-3xl font-bold tracking-tight text-brand-ink tabular-nums">{numberFormat.format(number.value)}</dt>
+                    <dt className="text-3xl font-bold tracking-tight text-brand-orange tabular-nums">{numberFormat.format(number.value)}</dt>
                     <dd className="mt-2 text-sm leading-relaxed text-brand-muted">{number.label}</dd>
                   </div>
                 ))}
@@ -159,7 +159,7 @@ export default async function PartnerPage({ params }: {
           <dl className="grid gap-6 sm:grid-cols-2">
             {(['stat1', 'stat2'] as const).map((key, index) => (
               <div key={key}>
-                <dt className="text-3xl font-bold text-brand-ink">{t(key + 'Number')}</dt>
+                <dt className="text-3xl font-bold text-brand-orange">{t(key + 'Number')}</dt>
                 <dd className={'mt-2 ' + prose}>{t(key + 'Body')}</dd>
                 <dd className="mt-3 text-sm text-brand-muted"><a href={index === 0 ? 'https://www.olo.com/blog/the-high-cost-of-anonymous-restaurant-guests' : 'https://pos.toasttab.com/blog/data/regulars-report'} className="inline-flex min-h-11 items-center underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink">{t(key + 'Src')}</a></dd>
               </div>
