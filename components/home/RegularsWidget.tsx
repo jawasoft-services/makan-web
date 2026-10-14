@@ -3,8 +3,7 @@
 import Image from "next/image"
 import { useId, useRef, useState } from "react"
 
-// The prepared captures already contain the visible tabs and content.
-// Reuse the wireframe's hit areas instead of drawing duplicate labels over them.
+// Draw shared controls once so switching screenshot content cannot move them.
 export default function RegularsWidget({ images, labels, alts, label, rulesLabel, rules }: {
   images: [string, string]
   labels: [string, string]
@@ -37,11 +36,11 @@ export default function RegularsWidget({ images, labels, alts, label, rulesLabel
           <Image src={`/mockup-assets/${image}`} alt={alts[index]} width={1086} height={942} sizes="(min-width: 768px) 468px, 90vw" className="block h-auto w-full" loading="eager" />
         </div>
       ))}
-      {showRules ? <span aria-hidden="true" className="pointer-events-none absolute left-[4%] top-[4%] z-10 h-[19%] w-[77%] bg-brand-card" /> : null}
+      <span aria-hidden="true" className={`pointer-events-none absolute inset-x-[4%] top-[4%] z-10 bg-brand-card ${showRules ? "bottom-[5%]" : "h-[20%]"}`} />
       <div role="tablist" aria-label={label}>
         {labels.map((text, index) => (
           <button key={text} ref={node => { buttons.current[index] = node }} id={`${id}-tab-${index}`} type="button" role="tab" aria-selected={!showRules && selected === index} aria-controls={`${id}-panel-${index}`} tabIndex={selected === index ? 0 : -1}
-            className={`absolute top-[5.4%] z-10 h-[15.3%] min-h-11 w-[36.5%] rounded-[18px] text-[clamp(0.75rem,3.8vw,1rem)] font-bold text-brand-muted hover:bg-brand-orange/10 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-ink ${showRules ? "bg-brand-card" : "bg-transparent"}`}
+            className={`absolute top-[5.4%] z-10 flex h-[15.3%] min-h-11 w-[36.5%] items-center justify-center rounded-[18px] whitespace-nowrap text-[clamp(0.625rem,3.3vw,1rem)] font-bold text-brand-muted hover:bg-brand-orange/10 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-ink ${!showRules && selected === index ? "bg-brand-orange/15" : "bg-transparent"}`}
             style={{ left: index === 0 ? "4.7%" : "43.4%" }}
             onClick={() => select(index)}
             onKeyDown={event => {
@@ -49,11 +48,16 @@ export default function RegularsWidget({ images, labels, alts, label, rulesLabel
               event.preventDefault()
               select(event.key === "Home" ? 0 : event.key === "End" ? 1 : 1 - selected, true)
             }}>
-            <span className={showRules ? "" : "sr-only"}>{text}</span>
+            <span>{text}</span>
           </button>
         ))}
       </div>
-      <button ref={infoButton} type="button" aria-label={rulesLabel} aria-expanded={showRules} aria-controls={`${id}-rules`} onClick={() => setShowRules(!showRules)} className={`absolute left-[88.6%] top-[13%] z-10 h-11 w-11 -translate-x-1/2 -translate-y-1/2 rounded-full hover:bg-brand-orange/10 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-ink ${showRules ? "bg-brand-orange/15" : ""}`} />
+      <button ref={infoButton} type="button" aria-label={rulesLabel} aria-expanded={showRules} aria-controls={`${id}-rules`} onClick={() => setShowRules(!showRules)} className={`absolute left-[88.6%] top-[5.4%] z-10 flex h-[15.3%] min-h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full text-brand-ink hover:bg-brand-orange/10 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-ink ${showRules ? "bg-brand-orange/15" : ""}`}>
+        <svg aria-hidden="true" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 11v6M12 7h.01" />
+        </svg>
+      </button>
       <div id={`${id}-rules`} role="region" tabIndex={0} aria-labelledby={`${id}-rules-title`} hidden={!showRules} className="absolute inset-x-[4.7%] bottom-[5%] top-[26%] z-10 overflow-y-auto bg-brand-card px-1 pb-2 text-brand-ink">
         <h3 id={`${id}-rules-title`} className="mb-3 text-xl font-bold leading-tight">{rules.title}</h3>
         <div className="space-y-3 text-[clamp(0.875rem,3.6vw,1rem)] leading-[1.45] text-brand-muted">
