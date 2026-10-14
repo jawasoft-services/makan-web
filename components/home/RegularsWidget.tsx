@@ -5,7 +5,8 @@ import { useId, useRef, useState } from "react"
 
 // The prepared captures already contain the visible tabs and content.
 // Reuse the wireframe's hit areas instead of drawing duplicate labels over them.
-export default function RegularsWidget({ labels, alts, label, rulesLabel, rules }: {
+export default function RegularsWidget({ images, labels, alts, label, rulesLabel, rules }: {
+  images: [string, string]
   labels: [string, string]
   alts: [string, string]
   label: string
@@ -17,7 +18,6 @@ export default function RegularsWidget({ labels, alts, label, rulesLabel, rules 
   const id = useId()
   const infoButton = useRef<HTMLButtonElement>(null)
   const buttons = useRef<(HTMLButtonElement | null)[]>([])
-  const images = ["regulars.png", "usual-order.png"]
   function select(index: number, focus = false) {
     setSelected(index)
     setShowRules(false)
