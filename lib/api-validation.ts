@@ -64,21 +64,22 @@ export function isBotByHoneypot(body: { website?: unknown }): boolean {
 }
 
 /**
- * Origin allowlist. Browsers automatically send an `Origin` header on
- * cross-origin POSTs; rejecting mismatches blocks drive-by browser-based abuse
- * (a malicious page that POSTs to our forms from a victim's browser).
+ * Same-site check. A request passes when EITHER its `Origin` is one of ours
+ * OR the browser's `Sec-Fetch-Site` says same-origin/same-site; it fails when
+ * both are absent or foreign. Safari drops `Origin` on some same-site fetches,
+ * so `Origin` alone must not be required; `Sec-Fetch-Site` is set by every
+ * modern browser and cannot be set by page script. Rejecting mismatches blocks
+ * drive-by browser abuse (a malicious page POSTing to our forms from a
+ * visitor's browser).
  *
- * Non-browser clients (curl, scripts) can spoof Origin freely — this is one
- * layer of defense, not a perimeter. Pair with rate limiting at the platform.
- *
- * When Origin is absent (some server-to-server fetches don't send it), we
- * allow the request; CSRF in the classic sense doesn't apply here because the
- * endpoints have no auth/session to ride.
+ * Non-browser clients (curl, scripts) can spoof both headers — this is one
+ * layer of defense, not a perimeter. Pair with Turnstile and rate limiting.
  */
 export function isAllowedOrigin(request: Request, allowed: string[]): boolean {
   const origin = request.headers.get("origin")
-  if (!origin) return true
-  return allowed.includes(origin)
+  if (origin && allowed.includes(origin)) return true
+  const site = request.headers.get("sec-fetch-site")
+  return site === "same-origin" || site === "same-site"
 }
 
 /**

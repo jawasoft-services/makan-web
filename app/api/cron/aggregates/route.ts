@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'node:crypto'
 import { NextResponse } from 'next/server'
 import { getDb } from '@/lib/firebase-admin'
 import { computeEatStandings, computePlaceDirectory, computePlaceStats, indexOf } from '@/lib/aggregates/compute'
@@ -23,7 +24,11 @@ export const maxDuration = 60
 function authorised(request: Request): boolean {
   const secret = process.env.CRON_SECRET
   if (!secret) return process.env.NODE_ENV === 'development'
-  return request.headers.get('authorization') === `Bearer ${secret}`
+  // Constant-time: `===` returns at the first differing byte, which leaks how
+  // much of a guess matched. timingSafeEqual needs equal lengths.
+  const expected = Buffer.from(`Bearer ${secret}`)
+  const given = Buffer.from(request.headers.get('authorization') ?? '')
+  return given.length === expected.length && timingSafeEqual(given, expected)
 }
 
 export async function GET(request: Request) {

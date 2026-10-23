@@ -1,25 +1,32 @@
 import { NextResponse } from 'next/server'
-import { THUMB_WIDTHS } from '@/lib/thumb'
+import { rateLimited } from '@/lib/rate-limit'
+import { THUMB_WIDTHS, thumbSource } from '@/lib/thumb'
 
 export const runtime = 'nodejs'
 
 /**
  * Resizes a Firebase meal photo on the server. The originals are phone
  * photos of several hundred kilobytes; a grid tile needs a tenth of that.
- * Only this project's storage bucket is accepted, the result is WebP, and
- * it is cached for a year at the CDN and the browser (originals never
- * change: a new upload is a new URL). Any failure sends the browser to the
- * original rather than a broken image.
+ * Only objects in this project's storage bucket are accepted (lib/thumb.ts),
+ * the result is WebP, and it is cached for a year at the CDN and the browser
+ * (originals never change: a new upload is a new URL). Any failure sends the
+ * browser to the original rather than a broken image.
+ *
+ * Each unique URL costs a function run and a resize, and a page loads at most
+ * a few dozen; a stream of unique URLs from one address is not a page. Past
+ * the limit the browser is sent to the original, so nothing breaks and the
+ * resize is what is withheld. Vercel Firewall rules remain the global control.
  */
-const ALLOWED_PREFIX = 'https://firebasestorage.googleapis.com/v0/b/munchies-expo'
+const LIMIT = { burst: 120, perMinute: 120 }
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
-  const u = searchParams.get('u') ?? ''
+  const u = thumbSource(searchParams.get('u') ?? '')
   const w = Number(searchParams.get('w'))
-  if (!u.startsWith(ALLOWED_PREFIX) || !THUMB_WIDTHS.includes(w as (typeof THUMB_WIDTHS)[number])) {
+  if (!u || !THUMB_WIDTHS.includes(w as (typeof THUMB_WIDTHS)[number])) {
     return NextResponse.json({ error: 'Bad request.' }, { status: 400 })
   }
+  if (rateLimited(request, 'thumb', LIMIT)) return NextResponse.redirect(u, 302)
   try {
     const upstream = await fetch(u, { cache: 'force-cache' })
     if (!upstream.ok) return NextResponse.redirect(u, 302)

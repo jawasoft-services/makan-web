@@ -1,6 +1,7 @@
 import crypto from "node:crypto"
 import { NextResponse } from "next/server"
 import { getDb } from "@/lib/firebase-admin"
+import { rateLimited } from "@/lib/rate-limit"
 import {
   ALLOWED_ORIGINS,
   isAllowedOrigin,
@@ -12,6 +13,8 @@ export const runtime = "nodejs"
 const PUBLIC_ID_PATTERN = /^[A-Za-z0-9_-]{12}$/
 const SECRET_PATTERN = /^[A-Za-z0-9_-]{43}$/
 const CONSENT_VERSION = 2
+// One invite page makes one preview call; each costs a Firestore read.
+const LIMIT = { burst: 30, perMinute: 30 }
 
 type PreviewBody = {
   publicId?: unknown
@@ -53,6 +56,7 @@ const inviteState = (data: Record<string, unknown>, now: number): string => {
 
 export async function POST(request: Request) {
   if (!isAllowedOrigin(request, ALLOWED_ORIGINS)) return json({ error: "Forbidden." }, 403)
+  if (rateLimited(request, "table-invite-preview", LIMIT)) return json({ error: "Too many requests." }, 429)
 
   const body = await parseSafeJson<PreviewBody>(request, 1024)
   if (

@@ -1,4 +1,5 @@
 import type { Review } from "@/lib/reviews/types"
+import { safeJsonLd } from "@/lib/safe-json-ld"
 
 const BASE = "https://www.makanofficial.com"
 
@@ -88,9 +89,5 @@ export function ReviewSchema({ review }: { review: Review }) {
   ]
 
   const jsonLd = { "@context": "https://schema.org", "@graph": graph }
-  // All content is author-controlled (no user input), but escape "<" so a stray
-  // "</script>" can never break out of the tag — the standard safe JSON-LD pattern.
-  const safeJson = JSON.stringify(jsonLd).replace(/</g, "\\u003c")
-
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJson }} />
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
 }
