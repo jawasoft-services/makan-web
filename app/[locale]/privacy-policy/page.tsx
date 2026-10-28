@@ -194,7 +194,8 @@ export default function PrivacyPolicy() {
                 chose to return to.
               </p>
               <p>
-                <strong className="font-semibold text-brand-ink">It is not available yet, and nothing analyses your photographs today.</strong>{' '}
+                <strong className="font-semibold text-brand-ink">It is not available yet. No dish recognition runs on your photographs today.</strong>{' '}
+                The only check that looks at a photograph is the safety check described in section 13.
                 We will describe the feature in this Policy, and name the service provider involved,
                 before it starts. Photographs you uploaded before it existed will never be analysed
                 unless you separately opt them in — doing nothing means they are never touched. That
@@ -340,6 +341,35 @@ export default function PrivacyPolicy() {
               </p>
 
               <div className="pt-2">
+                <h3 className="font-medium text-brand-ink">Places you eat at often</h3>
+                <p className="mt-2">
+                  A restaurant that has claimed its page on Makan can see a short list of its regulars:
+                  its current Maître d&rsquo; and up to five people who ate there on two or more days in
+                  the last 60 days. For each person it sees only their name and how many days they ate
+                  there. It never sees your meals, photographs, captions or the dates of your visits,
+                  and it learns nothing about places other than its own.
+                </p>
+                <p className="mt-2">
+                  Before you can appear on any such list, the App tells you about it once and asks
+                  you to choose. Only visits after that day count, and they include all your meals at
+                  that place, friends-only ones too. You can turn this off at any time in Settings
+                  (&ldquo;Let places I visit often see my profile&rdquo;); you are then removed from
+                  every list straight away. If you never answer, no restaurant sees you.
+                </p>
+                <p className="mt-2">
+                  Restaurants on our paid plan may also send a reward message, through the App only,
+                  to people who have eaten there twice since seeing that notice. The same setting stops
+                  these, and so does the these, and so does the venue rewards switch in your notification settings.ldquo;Restaurant rewardsthese, and so does the venue rewards switch in your notification settings.rdquo; switch in your notification settings.
+                </p>
+                <p className="mt-2">
+                  We do this because it is part of how Makan works for the restaurants you return to
+                  (our legitimate interests). You can object at any time with the setting above, or by
+                  contacting{' '}
+                  <a href="mailto:support@makanofficial.com" className="text-brand-orange hover:underline">support@makanofficial.com</a>.
+                </p>
+              </div>
+
+              <div className="pt-2">
                 <h3 className="font-medium text-brand-ink">Featuring your public content in our marketing</h3>
                 <p className="mt-2">
                   Where you post content to a public audience, we may feature it in our own
@@ -380,6 +410,7 @@ export default function PrivacyPolicy() {
               <div>
                 <h3 className="font-medium text-brand-ink">Providers that process data on our behalf</h3>
                 <ul className="mt-2 list-disc pl-5 space-y-1">
+                  <li>Google LLC (Cloud Vision SafeSearch) — the safety check on uploaded photographs described in section 13. It receives the photograph and returns only unsafe-content likelihoods.</li>
                   <li>Google LLC (Firebase) — the App&apos;s backend. We use Firebase Authentication, Cloud Firestore, Cloud Storage, Cloud Functions, and Firebase Analytics to store and synchronise account and meal data, operate core features, and understand usage.</li>
                   <li>Functional Software, Inc. (Sentry) — crash and error reporting for the App. Receives diagnostic data about faults, including a user identifier and the sequence of actions before a crash, so we can find and fix them.</li>
                   <li>Vercel Inc. — hosting for the Site, and Vercel Web Analytics, which measures aggregate Site usage.</li>
@@ -620,10 +651,19 @@ export default function PrivacyPolicy() {
                 to decide whether you can use any part of the Services, or to advertise to you.
               </p>
               <p>
-                We do not analyse the content of your meal photographs. By &ldquo;analyse&rdquo; we
-                mean working out what a photograph shows. Ordinary technical handling — resizing,
-                compressing, storing and delivering your photographs so the App can display them — is
-                not analysis, and we do that for every meal you save.
+                <strong className="font-semibold text-brand-ink">The safety check on photographs.</strong>{' '}
+                Each meal photograph and profile picture you upload is checked once for unsafe
+                content using Google Cloud Vision SafeSearch. It returns only how likely the photo is
+                to contain adult, violent, racy, medical or spoof content. It does not identify people
+                or faces, and it does not work out what food is shown. If a photo looks likely to be
+                unsafe, other people cannot see it until someone at Makan has reviewed it; you still
+                see it, with a notice.
+              </p>
+              <p>
+                Apart from that check, we do not analyse the content of your meal photographs. By
+                &ldquo;analyse&rdquo; we mean working out what a photograph shows. Ordinary technical
+                handling — resizing, compressing, storing and delivering your photographs so the App
+                can display them — is not analysis, and we do that for every meal you save.
               </p>
               <p>
                 When we introduce the dish recognition feature described in section 3, it will work by
