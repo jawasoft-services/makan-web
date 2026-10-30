@@ -678,5 +678,24 @@
     "savedAt": "Disimpan di",
     "openPlace": "Lihat semua makanan yang disimpan di {name}",
     "standings": "Peringkat Eat or Yeet"
+  },
+  "Claim": {
+    "metaTitle": "Klaim {name} di Makan",
+    "metaTitleUnknown": "Klaim restoran Anda di Makan",
+    "title": "Klaim {name} di Makan",
+    "body": "Lihat apa yang dipesan pengunjung di sini. Gratis.",
+    "meals": "{count, plural, =0 {Belum ada momen makan di Makan} other {# momen makan di Makan}}",
+    "howItWorks": "Anda akan mengklaimnya di aplikasi Makan. Kami memeriksa setiap klaim sebelum disetujui.",
+    "getApp": "Dapatkan aplikasi Makan",
+    "haveApp": "Saya sudah punya Makan",
+    "photoCredit": "Foto: {author}",
+    "claimedTitle": "{name} sudah diklaim",
+    "claimedBody": "Pemiliknya mengelolanya di Makan. Jika itu tidak benar, beri tahu kami dan kami akan memeriksanya.",
+    "tellUs": "Tidak benar? Beri tahu kami",
+    "disputeSubject": "Klaim untuk {name}",
+    "disputeBody": "Ceritakan apa yang salah dengan klaim ini:",
+    "notFoundTitle": "Kami tidak menemukan restoran ini",
+    "notFoundBody": "Tautannya mungkin sudah lama atau ada bagian yang hilang.",
+    "tellUsAboutPlace": "Ceritakan tentang tempat Anda"
   }
 }
