@@ -19,9 +19,15 @@ test("AASA claims complete fragment-bearing table invites and venue claim links"
     }, {
       "/": "/claim/*",
       comment: "Open a venue claim link in Makan",
+    }, {
+      "/": "/id/claim/*",
+      comment: "Open an Indonesian venue claim link in Makan",
     }],
   }, {
     appIDs: ["T3Z49Z9YUB.com.makanofficial.makandev"],
-    components: [{ "/": "/claim/*", comment: "Open a venue claim link in Makan" }],
+    components: [
+      { "/": "/claim/*", comment: "Open a venue claim link in Makan" },
+      { "/": "/id/claim/*", comment: "Open an Indonesian venue claim link in Makan" },
+    ],
   }])
 })
