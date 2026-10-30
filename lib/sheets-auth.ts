@@ -1,5 +1,6 @@
 import 'server-only'
 import { google } from 'googleapis'
+import { federatedCredentials } from './gcp-federation'
 
 // Module-scoped flag so the "fallback used" warning fires at most once per
 // Vercel function instance (per cold start), not on every request.
@@ -7,6 +8,10 @@ let fallbackWarned = false
 
 /**
  * Returns a GoogleAuth instance scoped to the Sheets API.
+ *
+ * FEDERATED path (RM20289) — Vercel OIDC token, no stored key; used when
+ *   GCP_WORKLOAD_IDENTITY_PROVIDER and GCP_SHEETS_SERVICE_ACCOUNT_EMAIL are set
+ *   (see lib/gcp-federation.ts).
  *
  * PRIMARY path — dedicated Sheets-only service account:
  *   Uses GOOGLE_SHEETS_CLIENT_EMAIL + GOOGLE_SHEETS_PRIVATE_KEY. The account
@@ -45,6 +50,12 @@ let fallbackWarned = false
  *      commit for cleanliness.
  */
 export function getSheetsAuth() {
+  // RM20289: on Vercel, the deployment's OIDC token instead of a stored key.
+  const credentials = federatedCredentials(process.env.GCP_SHEETS_SERVICE_ACCOUNT_EMAIL)
+  if (credentials) {
+    return new google.auth.GoogleAuth({ credentials, scopes: ['https://www.googleapis.com/auth/spreadsheets'] })
+  }
+
   const sheetsEmail = process.env.GOOGLE_SHEETS_CLIENT_EMAIL
   const sheetsKey = process.env.GOOGLE_SHEETS_PRIVATE_KEY
 
