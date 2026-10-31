@@ -2,6 +2,7 @@ import 'server-only'
 import { unstable_cache } from 'next/cache'
 import { GoogleAuth, JWT } from 'google-auth-library'
 import seed from '@/lib/data/place-cities.json'
+import { federatedCredentials } from '@/lib/gcp-federation'
 
 /**
  * City and country for a Google Place id, for the standings.
@@ -79,13 +80,18 @@ function pick(components: { longText?: string; types?: string[] }[], types: stri
   return ''
 }
 
-/** An OAuth token for Google APIs billed to the project: the site's service account on Vercel, ADC locally. */
+/**
+ * An OAuth token for Google APIs billed to the project: the site's service account on Vercel
+ * (federated when configured, else its key), ADC locally.
+ */
 export async function accessToken(): Promise<string | null> {
   const scopes = ['https://www.googleapis.com/auth/cloud-platform']
+  const credentials = federatedCredentials(process.env.GCP_SERVICE_ACCOUNT_EMAIL)
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL
   const privateKey = process.env.FIREBASE_PRIVATE_KEY
-  const client =
-    clientEmail && privateKey
+  const client = credentials
+    ? await new GoogleAuth({ credentials, scopes }).getClient()
+    : clientEmail && privateKey
       ? new JWT({ email: clientEmail, key: privateKey.replace(/\\n/g, '\n'), scopes })
       : await new GoogleAuth({ scopes }).getClient()
   const token = await client.getAccessToken()
