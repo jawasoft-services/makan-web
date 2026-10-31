@@ -697,5 +697,22 @@
     "notFoundTitle": "We can't find this restaurant",
     "notFoundBody": "The link may be old or missing a part.",
     "tellUsAboutPlace": "Tell us about your place"
+  },
+  "PlaceLink": {
+    "metaTitleUnknown": "Get Makan",
+    "metaTitleDish": "{dish} at {place} · Makan",
+    "metaTitlePlace": "{place} on Makan",
+    "descDish": "A dish at {place}, shared on Makan.",
+    "descPlace": "{count, plural, one {# public meal} other {# public meals}} saved here on Makan.",
+    "tagDish": "Dish on Makan",
+    "tagPlace": "Restaurant on Makan",
+    "meals": "{count, plural, one {# public meal on Makan} other {# public meals on Makan}}",
+    "dishMeals": "{count, plural, one {# public meal of this dish on Makan} other {# public meals of this dish on Makan}}",
+    "photoAlt": "A public meal photo: {name}",
+    "open": "Open in Makan",
+    "get": "Get Makan, free",
+    "afterInstall": "After you install, Makan opens this page.",
+    "unknownTitle": "We can't show this place here",
+    "unknownBody": "It may not have any public meals yet. Makan is free, and keeps your own food diary."
   }
 }

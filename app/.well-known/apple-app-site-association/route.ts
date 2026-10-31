@@ -1,9 +1,13 @@
 // RM20363 — claim links (/claim/<token>) open the installed app on "Is this your
 // restaurant?". MakanDev claims them too so testers can scan a dev venue's QR.
 // Indonesian browsers are localised to /id/claim/<token>; the app opens that form too.
+// RM20333 — restaurant and dish links (/p/<placeId>[/<dishId>]) open the installed app the same way;
+// the friend without the app gets the web page.
 const CLAIM_COMPONENTS = [
   { "/": "/claim/*", comment: "Open a venue claim link in Makan" },
   { "/": "/id/claim/*", comment: "Open an Indonesian venue claim link in Makan" },
+  { "/": "/p/*", comment: "Open a restaurant or dish link in Makan" },
+  { "/": "/id/p/*", comment: "Open an Indonesian restaurant or dish link in Makan" },
 ]
 
 export function GET() {

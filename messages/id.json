@@ -697,5 +697,22 @@
     "notFoundTitle": "Kami tidak menemukan restoran ini",
     "notFoundBody": "Tautannya mungkin sudah lama atau ada bagian yang hilang.",
     "tellUsAboutPlace": "Ceritakan tentang tempat Anda"
+  },
+  "PlaceLink": {
+    "metaTitleUnknown": "Dapatkan Makan",
+    "metaTitleDish": "{dish} di {place} · Makan",
+    "metaTitlePlace": "{place} di Makan",
+    "descDish": "Sebuah hidangan di {place}, dibagikan di Makan.",
+    "descPlace": "{count, plural, other {# momen makan publik}} tersimpan di sini di Makan.",
+    "tagDish": "Hidangan di Makan",
+    "tagPlace": "Restoran di Makan",
+    "meals": "{count, plural, other {# momen makan publik di Makan}}",
+    "dishMeals": "{count, plural, other {# momen makan publik hidangan ini di Makan}}",
+    "photoAlt": "Foto momen makan publik: {name}",
+    "open": "Buka di Makan",
+    "get": "Dapatkan Makan, gratis",
+    "afterInstall": "Setelah kamu memasangnya, Makan membuka halaman ini.",
+    "unknownTitle": "Tempat ini tidak bisa ditampilkan di sini",
+    "unknownBody": "Mungkin belum ada momen makan publik di sana. Makan gratis, dan menyimpan catatan makananmu sendiri."
   }
 }
