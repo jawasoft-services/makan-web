@@ -218,6 +218,18 @@ export default async function PlacePage({ params }: Props) {
             </p>
           ) : null}
 
+          {/* RM20364 — one quiet row for owners, gone once the venue is claimed. */}
+          {place.claimed ? null : (
+            <p className="mt-3">
+              <Link
+                href={localizePath(locale, `/claim/${place.slug}`)}
+                className="inline-flex min-h-11 items-center text-base font-semibold text-brand-ink underline decoration-brand-orange/50 underline-offset-4 hover:decoration-brand-orange focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
+              >
+                {t('claimRow')}
+              </Link>
+            </p>
+          )}
+
           {hasGeo ? (
             <PlacesMapLoader
               className="mt-5 h-[13rem] sm:h-[15rem]"

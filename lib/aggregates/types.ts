@@ -98,6 +98,8 @@ export interface DirectoryPlace {
   meals: DirectoryMeal[]
   /** Whether search engines should index the page (enough on it to be worth a result). */
   indexable: boolean
+  /** RM20364 — an owner has claimed the venue (from the restaurant document, so the page needs no extra read). */
+  claimed?: boolean
 }
 
 /** A single meal with no matchups is a real page but not worth a search result. */

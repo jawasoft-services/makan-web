@@ -226,15 +226,15 @@ export async function computePlaceDirectory(db: Firestore): Promise<DirectoryPla
 
   const candidates = [...byPlace.entries()].filter(([id, e]) => e.meals.length && isFoodVenue(getPlaceSeed(id)?.types))
 
-  const canonical = new Map<string, { name: string; cuisine: string[] }>()
+  const canonical = new Map<string, { name: string; cuisine: string[]; claimed: boolean }>()
   const refs = candidates.map(([id]) => db.collection('restaurants').doc(id))
   for (let i = 0; i < refs.length; i += 100) {
-    const docs = await db.getAll(...refs.slice(i, i + 100), { fieldMask: ['displayName', 'locationName', 'cuisine'] })
+    const docs = await db.getAll(...refs.slice(i, i + 100), { fieldMask: ['displayName', 'locationName', 'cuisine', 'claimed'] })
     for (const d of docs) {
       if (!d.exists) continue
       const data = d.data() ?? {}
       const cats = (data.cuisine?.categories ?? []) as { label?: string }[]
-      canonical.set(d.id, { name: str(data.displayName) || str(data.locationName), cuisine: cats.map((c) => str(c.label)).filter(Boolean) })
+      canonical.set(d.id, { name: str(data.displayName) || str(data.locationName), cuisine: cats.map((c) => str(c.label)).filter(Boolean), claimed: data.claimed === true })
     }
   }
 
@@ -279,6 +279,7 @@ export async function computePlaceDirectory(db: Firestore): Promise<DirectoryPla
         since: Number.isFinite(e.first) ? new Date(e.first).toISOString() : null,
         meals,
         indexable: meals.length >= INDEX_MIN_MEALS,
+        ...(canonical.get(placeId)?.claimed ? { claimed: true } : {}),
       }
     })
     .sort((x, y) => y.meals.length - x.meals.length || x.name.localeCompare(y.name))

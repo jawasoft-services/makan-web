@@ -308,7 +308,15 @@
     "faqNext": "What happens when I send the form?",
     "faqNextAnswer": "Your details go to Devon as a restaurant enquiry. He replies in person within two days. Use the optional note to ask about getting started, local activity, or more than one venue.",
     "eatsScreenAlt": "The Makan Eat or Yeet screen, where a diner chooses between their own saved meals",
-    "eatsScreenCaption": "Their own meals. Their choice. An Eat when your dish wins."
+    "eatsScreenCaption": "Their own meals. Their choice. An Eat when your dish wins.",
+    "findTitle": "Find your restaurant",
+    "findBody": "Search for your restaurant to claim it in the Makan app. It's free.",
+    "findLabel": "Restaurant name",
+    "findPlaceholder": "Start typing a name",
+    "findNone": "We can't find that one yet.",
+    "findError": "Search isn't working right now. Try again in a moment.",
+    "findCant": "Can't find it?",
+    "findCantCta": "Tell us about your place"
   },
   "Support": {
     "metaTitle": "Support — Makan",
@@ -672,7 +680,8 @@
     "maitredHeldSub": "Eats here more than anyone on Makan",
     "maitredHeldFooter": "Get Makan to see every pick — or become the next Maître'D.",
     "metaTitleLocated": "{name}, {city} | Makan",
-    "metaDescriptionEmpty": "{place}. No public meal photos are available yet."
+    "metaDescriptionEmpty": "{place}. No public meal photos are available yet.",
+    "claimRow": "Own this place? Claim it"
   },
   "Meal": {
     "savedAt": "Saved at",
@@ -696,6 +705,7 @@
     "disputeBody": "Tell us what's wrong with this claim:",
     "notFoundTitle": "We can't find this restaurant",
     "notFoundBody": "The link may be old or missing a part.",
-    "tellUsAboutPlace": "Tell us about your place"
+    "tellUsAboutPlace": "Tell us about your place",
+    "howItWorksFind": "You'll claim it in the Makan app: open the app, find this restaurant and tap \"Own this place? Claim it\". We check every claim before it goes through."
   }
 }
