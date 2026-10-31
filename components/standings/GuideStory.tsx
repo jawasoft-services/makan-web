@@ -128,9 +128,9 @@ export default async function GuideStory({ locale, compact = false }: { locale: 
                   {leader.where ? <span className="block truncate text-xs text-brand-muted">{leader.where.city}</span> : null}
                 </span>
                 <span className="text-right">
-                  <span className="block text-base font-bold leading-none tabular-nums text-brand-ink">{leader.eats}</span>
+                  <span className="block text-base font-bold leading-none tabular-nums text-brand-ink">{percent.format(leader.eatRate)}</span>
                   <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-brand-muted">
-                    {t('eats', { rate: percent.format(leader.eatRate) })}
+                    {t('picked', { eats: leader.eats, matchups: leader.matchups })}
                   </span>
                 </span>
               </div>

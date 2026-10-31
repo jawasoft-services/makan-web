@@ -67,9 +67,9 @@ export default async function StandingsPreview() {
                 ) : null}
               </span>
               <span className="shrink-0 text-right">
-                <span className="block text-[1.25rem] font-bold leading-none tabular-nums text-brand-ink">{row.eats}</span>
+                <span className="block text-[1.25rem] font-bold leading-none tabular-nums text-brand-ink">{percent.format(row.eatRate)}</span>
                 <span className="block text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-brand-muted">
-                  {t("eats", { rate: percent.format(row.eatRate) })}
+                  {t("picked", { eats: row.eats, matchups: row.matchups })}
                 </span>
               </span>
             </li>
