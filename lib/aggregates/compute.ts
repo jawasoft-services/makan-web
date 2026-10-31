@@ -29,9 +29,11 @@ import {
  * and are skipped. Only totals ever leave: no user, no meal, no individual pick
  * is exposed. Public captions are the only user text, and only clean ones.
  *
- * The app's own server aggregate (RM19117, `eatEvidenceAggregateState`) is
- * live in production but only covers comparisons since mid-August 2026; once
- * it is backfilled, computeEatStandings should read it instead.
+ * The Eat, Yeet and tie totals come from the app's own server aggregate
+ * (RM19117, `eatEvidenceAggregateState/{placeId}`), which the app's comparison
+ * function keeps current and which holds the replayed pre-August history. The
+ * legacy `rankingComparisons` collection stopped receiving picks on
+ * 7 Aug 2026, so it must not be counted here.
  */
 
 const RECENT_CAPTIONS = 3
@@ -42,13 +44,12 @@ const byEats = (x: StandingRow, y: StandingRow) =>
   y.eats - x.eats || y.eatRate - x.eatRate || (x.since ?? '').localeCompare(y.since ?? '')
 
 export async function computeEatStandings(db: Firestore): Promise<EatStandings> {
-  const [mealsSnap, compsSnap] = await Promise.all([
+  const [mealsSnap, evidenceSnap] = await Promise.all([
     db.collection('meals').select('placeProviderId', 'locationName', 'createdAt', 'isPublic', 'moderationStatus', 'caption').get(),
-    db.collection('rankingComparisons').select('mealAId', 'mealBId', 'winnerId').get(),
+    db.collection('eatEvidenceAggregateState').select('eat', 'yeet', 'tie').get(),
   ])
 
-  // meal id -> place, plus per-place name votes, first-meal date, public meals and captions.
-  const placeOfMeal = new Map<string, { id: string; name: string }>()
+  // Per-place name votes, first-meal date, public meals and captions.
   const nameVotes = new Map<string, Map<string, number>>()
   const firstMeal = new Map<string, number>()
   const publicMeals = new Map<string, number>()
@@ -58,7 +59,6 @@ export async function computeEatStandings(db: Firestore): Promise<EatStandings> 
     const id = str(d.placeProviderId)
     if (!id) continue
     const name = str(d.locationName)
-    placeOfMeal.set(doc.id, { id, name })
     if (name) {
       const votes = nameVotes.get(id) ?? new Map<string, number>()
       votes.set(name, (votes.get(name) ?? 0) + 1)
@@ -78,33 +78,20 @@ export async function computeEatStandings(db: Firestore): Promise<EatStandings> 
     }
   }
 
+  // Every applied comparison adds one result to each of its two restaurants,
+  // so the number of comparisons is half the sum of all per-place results.
+  // Places whose evidence was later withdrawn sit at zero and are skipped.
   const tally = new Map<string, { eats: number; yeets: number; ties: number }>()
-  const bump = (id: string, key: 'eats' | 'yeets' | 'ties') => {
-    const t = tally.get(id) ?? { eats: 0, yeets: 0, ties: 0 }
-    t[key] += 1
-    tally.set(id, t)
+  let results = 0
+  for (const doc of evidenceSnap.docs) {
+    const d = doc.data()
+    const t = { eats: wholeCount(d.eat), yeets: wholeCount(d.yeet), ties: wholeCount(d.tie) }
+    const n = t.eats + t.yeets + t.ties
+    if (!n) continue
+    tally.set(doc.id, t)
+    results += n
   }
-  let matchups = 0
-  for (const doc of compsSnap.docs) {
-    const c = doc.data()
-    const a = placeOfMeal.get(str(c.mealAId))
-    const b = placeOfMeal.get(str(c.mealBId))
-    if (!a || !b || a.id === b.id) continue
-    const winner = str(c.winnerId)
-    if (winner === 'tie') {
-      bump(a.id, 'ties')
-      bump(b.id, 'ties')
-    } else if (winner === str(c.mealAId)) {
-      bump(a.id, 'eats')
-      bump(b.id, 'yeets')
-    } else if (winner === str(c.mealBId)) {
-      bump(b.id, 'eats')
-      bump(a.id, 'yeets')
-    } else {
-      continue
-    }
-    matchups += 1
-  }
+  const matchups = Math.round(results / 2)
 
   // Canonical display names where the app has them; the most-used tag otherwise.
   const ids = [...tally.keys()]
@@ -349,4 +336,8 @@ function toMillis(v: unknown): number | null {
 
 function str(v: unknown): string {
   return typeof v === 'string' ? v.trim() : ''
+}
+
+function wholeCount(v: unknown): number {
+  return Number.isSafeInteger(v) && (v as number) > 0 ? (v as number) : 0
 }
