@@ -11,16 +11,6 @@ export function GET() {
             "/": `/invite/${"?".repeat(12)}`,
             "#": `s=${"?".repeat(43)}`,
             comment: "Open a complete table invite in Makan",
-          },
-          // RM20320 — a taste-match link carries its key in the path (no fragment to lose), so
-          // it can open the installed app straight away; without the app it stays on the web page.
-          {
-            "/": `/taste/${"?".repeat(12)}/${"?".repeat(43)}`,
-            comment: "Open a taste-match link in Makan",
-          },
-          {
-            "/": `/id/taste/${"?".repeat(12)}/${"?".repeat(43)}`,
-            comment: "Open an Indonesian taste-match link in Makan",
           }],
         }],
       },

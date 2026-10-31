@@ -39,6 +39,8 @@ const isPublicMeal = (meal: Doc, hostUid: string): boolean =>
   Boolean(
     meal
     && meal.isPublic === true
+    && meal.isDeleted !== true
+    && !meal.deletedAt
     && meal.isPublicDraft !== true
     && meal.isLocalDraft !== true
     && meal.isLocalOnly !== true
