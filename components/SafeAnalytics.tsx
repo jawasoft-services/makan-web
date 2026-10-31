@@ -1,18 +1,14 @@
 "use client"
 
 import { Analytics } from "@vercel/analytics/next"
+import { redactAnalyticsUrl } from "@/lib/analytics-url"
 
 export default function SafeAnalytics() {
   return (
     <Analytics
       beforeSend={(event) => {
         try {
-          const url = new URL(event.url)
-          if (url.pathname.includes("/invite/")) {
-            url.searchParams.delete("s")
-            url.hash = ""
-          }
-          return { ...event, url: url.toString() }
+          return { ...event, url: redactAnalyticsUrl(event.url) }
         } catch {
           return event
         }
