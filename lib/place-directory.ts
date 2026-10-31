@@ -12,8 +12,9 @@ export type { DirectoryMeal, DirectoryPlace, PlaceIndexEntry } from '@/lib/aggre
  * Every restaurant on Makan that has public meals, as the app's place screen
  * would show it. Read from the aggregate documents the daily cron writes:
  * a small sharded index for lists, and one document per place for a page.
- * The full scan (lib/aggregates/compute.ts) runs only when the aggregate is
- * missing or the cron has been silent for 36 hours, which is logged.
+ * The full scan (lib/aggregates/compute.ts) runs only for the cached index
+ * and directory lists, when the aggregate is missing or the cron has been
+ * silent for 36 hours, which is logged; single-place reads never scan.
  */
 
 async function aggregateIsFresh(): Promise<boolean> {
@@ -67,20 +68,18 @@ export const getPlaceDirectory = unstable_cache(
   { revalidate: 3600 },
 )
 
-/** One place by its Google Place id: a single document read. */
+/**
+ * One place by its Google Place id: a single document read, never a scan.
+ * Missing from the aggregate means not a page (not a food venue, no public
+ * meals) or the cron has not run yet; the cron repairs the second case. A
+ * request path must not scan `meals`: this is reached by every shared meal
+ * link, and an unknown id would otherwise cost a full collection read per hit.
+ */
 export async function getDirectoryPlaceById(placeId: string): Promise<DirectoryPlace | null> {
   try {
     const db = getDb()
     if (!db) return null
-    const [place, fresh] = await Promise.all([readPlace(db, placeId), aggregateIsFresh()])
-    if (place && fresh) return place
-    if (place) return place
-    // Missing from the aggregate: either not a page (not a food venue, no
-    // public meals) or the cron has not run yet. Only in the second case is
-    // a scan worth it.
-    if (fresh) return null
-    const all = await fallbackDirectory('missing')
-    return all.find((p) => p.placeId === placeId) ?? null
+    return await readPlace(db, placeId)
   } catch (err) {
     console.error('place-directory: failed to read a place.', err)
     return null

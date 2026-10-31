@@ -8,6 +8,7 @@ import GuideStory from '@/components/standings/GuideStory'
 import PlacesMapLoader from '@/components/map/PlacesMapLoader'
 import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
 import { CITY_FLOOR, EVIDENCE_FLOOR, getEatStandingsSnapshot } from '@/lib/eat-standings'
+import { safeJsonLd } from '@/lib/safe-json-ld'
 import { localizePath } from '@/i18n/paths'
 
 // Standings snapshot and its actual last-check time (lib/eat-standings.ts).
@@ -86,7 +87,7 @@ export default async function StandingsPage({
   return (
     <div className="min-h-screen bg-brand-cream">
       <SiteSchema locale={locale} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(schema) }} />
       <main id="main-content" className="mx-auto max-w-3xl px-5 pb-16 pt-24 sm:px-8 sm:pb-24 sm:pt-32">
         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-orange">{t('eyebrow')}</p>
         <h1 className="mt-4 text-3xl font-bold text-brand-ink sm:text-4xl lg:text-5xl" style={{ letterSpacing: '-0.02em' }}>

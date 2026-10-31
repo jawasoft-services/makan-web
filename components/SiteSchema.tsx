@@ -1,5 +1,6 @@
 import { APP_STORE_URL } from "@/lib/links"
 import { BOILERPLATE_LONG, COMPANY, FOUNDER, SOCIALS } from "@/lib/press"
+import { safeJsonLd } from "@/lib/safe-json-ld"
 import { SITE_URL } from "@/lib/site-metadata"
 
 /** Homepage entity graph: connects the site, company, founder and iOS app. */
@@ -65,7 +66,7 @@ export default function SiteSchema({ locale = "en" }: { locale?: string }) {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(graph).replace(/</g, "\\u003c") }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLd(graph) }}
     />
   )
 }

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { track } from '@vercel/analytics'
+import Turnstile, { TURNSTILE_SITE_KEY, resetTurnstile } from '@/components/Turnstile'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -11,6 +12,7 @@ export default function AndroidWaitlist() {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState('')
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -19,6 +21,13 @@ export default function AndroidWaitlist() {
     if (!EMAIL_RE.test(trimmedEmail)) {
       setStatus('error')
       setMessage(t('invalid'))
+      return
+    }
+    // Turnstile mints the token a moment after load; a submit before then
+    // only asks for another go rather than sending an unverifiable request.
+    if (TURNSTILE_SITE_KEY && !turnstileToken) {
+      setStatus('error')
+      setMessage(t('error'))
       return
     }
 
@@ -34,6 +43,7 @@ export default function AndroidWaitlist() {
           source: 'android-waitlist',
           email: trimmedEmail,
           website: String(formData.get('website') ?? ''),
+          turnstileToken,
         }),
       })
 
@@ -49,6 +59,9 @@ export default function AndroidWaitlist() {
     } catch (error) {
       setStatus('error')
       setMessage(error instanceof Error ? error.message : t('error'))
+      // Tokens are single-use: the next attempt needs a fresh one.
+      setTurnstileToken('')
+      resetTurnstile()
     }
   }
 
@@ -93,6 +106,8 @@ export default function AndroidWaitlist() {
         className="hidden"
         aria-hidden="true"
       />
+
+      <Turnstile onToken={setTurnstileToken} />
 
       <p
         className={`mt-3 min-h-5 text-sm text-brand-muted ${status === 'error' ? 'font-semibold text-brand-orange' : ''}`}

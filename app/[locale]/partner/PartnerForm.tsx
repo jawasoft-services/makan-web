@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { localizePath } from '@/i18n/paths'
 import { FIELD_MAX } from '@/lib/api-validation'
+import Turnstile, { TURNSTILE_SITE_KEY, resetTurnstile } from '@/components/Turnstile'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const fields = ['name', 'email', 'restaurant', 'city'] as const
@@ -17,6 +18,7 @@ export default function PartnerForm() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
   const [invalidField, setInvalidField] = useState<Field | null>(null)
+  const [turnstileToken, setTurnstileToken] = useState('')
   const successRef = useRef<HTMLHeadingElement>(null)
 
   useEffect(() => {
@@ -42,6 +44,12 @@ export default function PartnerForm() {
       event.currentTarget.querySelector<HTMLInputElement>('#partner-' + invalid)?.focus()
       return
     }
+    // Turnstile mints the token a moment after load; a submit before then
+    // only asks for another go rather than sending an unverifiable request.
+    if (TURNSTILE_SITE_KEY && !turnstileToken) {
+      setErrorMsg(t('tryAgain'))
+      return
+    }
     setStatus('loading')
     const website = String(new FormData(event.currentTarget).get('website') ?? '')
     try {
@@ -55,6 +63,7 @@ export default function PartnerForm() {
           city: values.city.trim(),
           message: values.message.trim(),
           website,
+          turnstileToken,
         }),
       })
       if (!response.ok) throw new Error(t('tryAgain'))
@@ -62,6 +71,9 @@ export default function PartnerForm() {
     } catch {
       setStatus('error')
       setErrorMsg(t('tryAgain'))
+      // Tokens are single-use: the next attempt needs a fresh one.
+      setTurnstileToken('')
+      resetTurnstile()
     }
   }
 
@@ -104,6 +116,7 @@ export default function PartnerForm() {
           <textarea id="partner-message" name="message" rows={3} maxLength={FIELD_MAX.message} value={values.message} disabled={status === 'loading'} onChange={event => updateField('message', event.target.value)} className="w-full resize-y rounded-xl border border-brand-muted bg-brand-card px-4 py-3 text-base text-brand-ink caret-brand-ink transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-ink disabled:opacity-60" />
         </div>
         <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 0, height: 0, opacity: 0 }} />
+        <Turnstile onToken={setTurnstileToken} />
         <button type="submit" disabled={status === 'loading'} className="min-h-14 w-full cursor-pointer rounded-xl bg-brand-orange px-4 py-3 text-base font-bold text-white transition-colors hover:bg-brand-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink disabled:cursor-wait disabled:opacity-60">{status === 'loading' ? t('sending') : t('send')}</button>
         {errorMsg && !invalidField && <p role="alert" className="text-sm font-semibold leading-relaxed text-brand-ink">{errorMsg}</p>}
       </form>

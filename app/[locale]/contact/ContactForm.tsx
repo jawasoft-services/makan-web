@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { localizePath } from '@/i18n/paths'
+import Turnstile, { TURNSTILE_SITE_KEY, resetTurnstile } from '@/components/Turnstile'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -16,6 +17,7 @@ export default function ContactForm() {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -27,6 +29,12 @@ export default function ContactForm() {
     }
     if (!EMAIL_RE.test(email.trim())) {
       setErrorMsg(t('emailError'))
+      return
+    }
+    // Turnstile mints the token a moment after load; a submit before then
+    // only asks for another go rather than sending an unverifiable request.
+    if (TURNSTILE_SITE_KEY && !turnstileToken) {
+      setErrorMsg(t('tryAgain'))
       return
     }
 
@@ -45,6 +53,7 @@ export default function ContactForm() {
           name: name.trim(),
           email: email.trim(),
           website: honeypot,
+          turnstileToken,
         }),
       })
 
@@ -59,6 +68,9 @@ export default function ContactForm() {
       setErrorMsg(
         err instanceof Error ? err.message : t('tryAgain'),
       )
+      // Tokens are single-use: the next attempt needs a fresh one.
+      setTurnstileToken('')
+      resetTurnstile()
     }
   }
 
@@ -186,6 +198,8 @@ export default function ContactForm() {
                 aria-hidden="true"
                 style={{ position: 'absolute', left: '-9999px', width: 0, height: 0, opacity: 0 }}
               />
+
+              <Turnstile onToken={setTurnstileToken} />
 
               <div className="pt-2">
                 <button
