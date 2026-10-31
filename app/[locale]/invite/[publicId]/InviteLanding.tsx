@@ -39,14 +39,6 @@ const terminalCopy: Record<Exclude<InviteState, "active">, { title: string; body
   },
 }
 
-// RM20333 — the invite's secret lives only in this page's #fragment. A phone's store button carries the
-// whole link through install (Play referrer on Android, clipboard + Paste on iPhone), never a server.
-const carryInviteThroughInstall = (event: React.MouseEvent<HTMLAnchorElement>) => {
-  if (phoneKind() === "other") return
-  event.preventDefault()
-  void goToStoreWithLink(window.location.href)
-}
-
 const initialsFor = (name: string): string =>
   name.trim().split(/\s+/).filter(Boolean).slice(0, 2)
     .map((word) => word[0]?.toUpperCase()).join("") || "M"
@@ -147,6 +139,12 @@ export default function InviteLanding({ publicId }: { publicId: string }) {
   }
 
   const hostName = preview.hostDisplayName || "A Makan friend"
+  // Always the canonical /invite/ form, even when this page was opened under an /id/ prefix.
+  const carryInviteThroughInstall = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (phoneKind() === "other") return
+    event.preventDefault()
+    void goToStoreWithLink(`https://www.makanofficial.com/invite/${publicId}${window.location.hash}`)
+  }
   return (
     <InviteShell>
       <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-orange">Table invite</p>
@@ -171,6 +169,8 @@ export default function InviteLanding({ publicId }: { publicId: string }) {
       <button type="button" onClick={openApp} className="invite-primary">Open in Makan</button>
       <StoreLink
         location="table-invite"
+        // RM20333 — the secret lives only in this page's #fragment; a phone's store button carries the
+        // whole link through install (Play referrer on Android, clipboard + Paste on iPhone), never a server.
         onStoreClick={carryInviteThroughInstall}
         className="inline-flex min-h-12 items-center justify-center px-5 font-semibold text-brand-muted underline decoration-brand-orange/50 underline-offset-4 hover:text-brand-ink"
       >
