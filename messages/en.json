@@ -678,5 +678,33 @@
     "savedAt": "Saved at",
     "openPlace": "See every meal saved at {name}",
     "standings": "Eat or Yeet standings"
+  },
+  "TasteInvite": {
+    "title": "See how your taste matches {name}",
+    "topThree": "{name}'s top 3",
+    "noMeals": "{name} hasn't shared any public meals yet.",
+    "explainer": "Open Makan to add {name} as a friend. Your match shows once you're friends and you've both picked 3 of the same dishes in Eat or Yeet.",
+    "getApp": "Get the Makan app",
+    "haveApp": "I already have Makan",
+    "installNote": "Installing Makan now? Open this link again after setup.",
+    "goToMakan": "Go to Makan",
+    "gone": {
+      "invalid": {
+        "title": "This link isn't available",
+        "body": "Ask your friend to share it again."
+      },
+      "expired": {
+        "title": "This link has ended",
+        "body": "Ask your friend to share it again."
+      },
+      "revoked": {
+        "title": "This link has ended",
+        "body": "Ask your friend to share it again."
+      },
+      "unavailable": {
+        "title": "This isn't available yet",
+        "body": "Try again soon."
+      }
+    }
   }
 }

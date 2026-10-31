@@ -678,5 +678,33 @@
     "savedAt": "Disimpan di",
     "openPlace": "Lihat semua makanan yang disimpan di {name}",
     "standings": "Peringkat Eat or Yeet"
+  },
+  "TasteInvite": {
+    "title": "Lihat seberapa cocok seleramu dengan {name}",
+    "topThree": "3 teratas {name}",
+    "noMeals": "{name} belum membagikan hidangan publik.",
+    "explainer": "Buka Makan untuk menambahkan {name} sebagai teman. Kecocokan kalian muncul setelah kalian berteman dan sama-sama memilih 3 hidangan yang sama di Eat or Yeet.",
+    "getApp": "Unduh aplikasi Makan",
+    "haveApp": "Saya sudah punya Makan",
+    "installNote": "Baru memasang Makan? Buka tautan ini lagi setelah selesai menyiapkan.",
+    "goToMakan": "Buka Makan",
+    "gone": {
+      "invalid": {
+        "title": "Tautan ini tidak tersedia",
+        "body": "Minta temanmu membagikannya lagi."
+      },
+      "expired": {
+        "title": "Tautan ini sudah berakhir",
+        "body": "Minta temanmu membagikannya lagi."
+      },
+      "revoked": {
+        "title": "Tautan ini sudah berakhir",
+        "body": "Minta temanmu membagikannya lagi."
+      },
+      "unavailable": {
+        "title": "Ini belum tersedia",
+        "body": "Coba lagi nanti."
+      }
+    }
   }
 }
