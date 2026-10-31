@@ -9,6 +9,7 @@ import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
 import Link from 'next/link'
 import { getMealCount, getPlaceStats } from '@/lib/makan-stats'
 import { localizePath } from '@/i18n/paths'
+import FindRestaurant from './FindRestaurant'
 
 export const revalidate = 3600
 
@@ -177,6 +178,12 @@ export default async function PartnerPage({ params }: {
               </details>
             ))}
           </div>
+        </section>
+
+        <section id="find" aria-labelledby="find-title" className="mt-16 scroll-mt-28 sm:mt-20">
+          <h2 id="find-title" className={heading}>{t('findTitle')}</h2>
+          <p className={'mt-3 max-w-[60ch] ' + prose}>{t('findBody')}</p>
+          <div className="mt-5 max-w-xl"><FindRestaurant /></div>
         </section>
 
         <section id="enquire" aria-labelledby="enquiry-title" className="mt-16 scroll-mt-28 rounded-3xl bg-brand-espresso p-[24px] sm:mt-20 sm:p-10">

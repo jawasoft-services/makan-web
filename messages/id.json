@@ -308,7 +308,15 @@
     "faqNext": "Apa yang terjadi setelah formulir dikirim?",
     "faqNextAnswer": "Detailmu dikirim ke Devon sebagai pertanyaan dari restoran. Ia membalas sendiri dalam dua hari. Gunakan catatan opsional untuk bertanya tentang cara memulai, aktivitas di daerahmu, atau lebih dari satu tempat.",
     "eatsScreenAlt": "Layar Eat or Yeet di Makan, tempat tamu memilih di antara makanan mereka sendiri yang telah disimpan",
-    "eatsScreenCaption": "Makanan mereka sendiri. Pilihan mereka. Satu Eat saat hidanganmu menang."
+    "eatsScreenCaption": "Makanan mereka sendiri. Pilihan mereka. Satu Eat saat hidanganmu menang.",
+    "findTitle": "Temukan restoran Anda",
+    "findBody": "Cari restoran Anda untuk mengklaimnya di aplikasi Makan. Gratis.",
+    "findLabel": "Nama restoran",
+    "findPlaceholder": "Mulai ketik nama",
+    "findNone": "Kami belum menemukannya.",
+    "findError": "Pencarian sedang tidak bisa dipakai. Coba lagi sebentar lagi.",
+    "findCant": "Tidak ketemu?",
+    "findCantCta": "Ceritakan tentang tempat Anda"
   },
   "Support": {
     "metaTitle": "Bantuan — Makan",
@@ -672,7 +680,8 @@
     "maitredHeldSub": "Paling sering makan di sini di Makan",
     "maitredHeldFooter": "Pakai Makan buat lihat semua pilihannya — atau jadi Maître'D berikutnya.",
     "metaTitleLocated": "{name}, {city} | Makan",
-    "metaDescriptionEmpty": "{place}. Belum ada foto makanan publik."
+    "metaDescriptionEmpty": "{place}. Belum ada foto makanan publik.",
+    "claimRow": "Pemilik tempat ini? Klaim"
   },
   "Meal": {
     "savedAt": "Disimpan di",
@@ -696,6 +705,7 @@
     "disputeBody": "Ceritakan apa yang salah dengan klaim ini:",
     "notFoundTitle": "Kami tidak menemukan restoran ini",
     "notFoundBody": "Tautannya mungkin sudah lama atau ada bagian yang hilang.",
-    "tellUsAboutPlace": "Ceritakan tentang tempat Anda"
+    "tellUsAboutPlace": "Ceritakan tentang tempat Anda",
+    "howItWorksFind": "Anda mengklaimnya di aplikasi Makan: buka aplikasi, cari restoran ini lalu ketuk \"Pemilik tempat ini? Klaim\". Kami memeriksa setiap klaim sebelum disetujui."
   }
 }

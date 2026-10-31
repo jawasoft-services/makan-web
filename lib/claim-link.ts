@@ -1,6 +1,7 @@
 import 'server-only'
 import { unstable_cache } from 'next/cache'
 import { getDb } from '@/lib/firebase-admin'
+import { getPlaceIndex } from '@/lib/place-directory'
 
 /**
  * RM20363 — claim links (makanofficial.com/claim/<token>), minted by the app
@@ -20,6 +21,8 @@ export interface ClaimVenue {
   area: string
   mealCount: number
   claimed: boolean
+  /** True when a prepared claim link exists, so the app can open on the venue; otherwise the owner finds it in the app. */
+  appLink: boolean
 }
 
 const text = (value: unknown) => (typeof value === 'string' ? value.trim() : '')
@@ -32,8 +35,15 @@ async function readClaimVenue(token: string): Promise<ClaimVenue | null> {
   const db = getDb()
   if (!db) return null
   const link = await db.collection('claimLinks').doc(token).get()
-  const placeId = text(link.data()?.placeId)
-  if (!placeId) return null
+  let placeId = text(link.data()?.placeId)
+  let fallback: { name: string; city: string | null } | null = null
+  if (!placeId) {
+    // RM20364 — a venue nobody prepared still has a public page: its slug is a claim path too, from the cached index.
+    const entry = (await getPlaceIndex()).find((place) => place.slug === token)
+    if (!entry) return null
+    placeId = entry.placeId
+    fallback = { name: entry.name, city: entry.city }
+  }
   const [restaurant, businesses] = await Promise.all([
     db.collection('restaurants').doc(placeId).get(),
     db.collection('businesses').where('placeProviderId', '==', placeId).select('placeProviderId').limit(1).get(),
@@ -46,14 +56,15 @@ async function readClaimVenue(token: string): Promise<ClaimVenue | null> {
   return {
     token,
     placeId,
-    name: text(venue?.displayName) || text(link.data()?.displayName),
-    area: text(link.data()?.area),
+    name: text(venue?.displayName) || text(link.data()?.displayName) || fallback?.name || '',
+    area: text(link.data()?.area) || fallback?.city || '',
     mealCount: Number.isSafeInteger(count) && count > 0 ? count : 0,
     claimed: !businesses.empty,
+    appLink: !fallback,
   }
 }
 
 export function getClaimVenue(token: string): Promise<ClaimVenue | null> {
   if (!isClaimToken(token)) return Promise.resolve(null)
-  return unstable_cache(() => readClaimVenue(token), ['makan-claim-venue', 'v1', token], { revalidate: 300 })()
+  return unstable_cache(() => readClaimVenue(token), ['makan-claim-venue', 'v2', token], { revalidate: 300 })()
 }
