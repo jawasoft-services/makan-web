@@ -54,6 +54,14 @@ const isActiveProfile = (user: Doc): boolean => {
   return Boolean(done || ((user.name || user.display_name) && (user.username || user.username_normalized)))
 }
 
+// Same bar as the app's search and social surfaces: hidden, held, suspended or deleted hosts are not shown.
+const HIDDEN = new Set(["deleted", "disabled", "held", "hidden", "moderated", "pending", "suspended"])
+const isHidden = (user: Doc): boolean =>
+  Boolean(user?.deletedAt || user?.isDeleted === true)
+  || [user?.moderationStatus, user?.visibility_status, user?.status].some(
+    (value) => typeof value === "string" && HIDDEN.has(value.trim().toLowerCase()),
+  )
+
 const hostName = (user: Doc): string =>
   clip(user?.name, 80) || clip(user?.display_name, 80) || clip(user?.username, 80) || "A Makan friend"
 
@@ -79,7 +87,7 @@ export async function loadTasteInvitePreview(
 
   const hostUid = invite.hostUid
   const host = (await db.doc(`users/${hostUid}`).get()).data() as Doc
-  if (!isActiveProfile(host)) return invalid
+  if (!isActiveProfile(host) || isHidden(host)) return invalid
 
   const projection = (await db.doc(`users/${hostUid}/publicTasteGraph/top3`).get()).data() as Doc
   const ids = (Array.isArray(projection?.entries) ? (projection.entries as { mealId?: unknown }[]) : [])

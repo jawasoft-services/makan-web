@@ -681,8 +681,8 @@
   },
   "TasteInvite": {
     "title": "Lihat seberapa cocok seleramu dengan {name}",
-    "topThree": "3 teratas {name}",
-    "noMeals": "{name} belum membagikan hidangan publik.",
+    "topThree": "Pilihan teratas {name}",
+    "noMeals": "{name} belum punya yang bisa ditampilkan secara publik.",
     "explainer": "Buka Makan untuk menambahkan {name} sebagai teman. Kecocokan kalian muncul setelah kalian berteman dan sama-sama memilih 3 hidangan yang sama di Eat or Yeet.",
     "getApp": "Unduh aplikasi Makan",
     "haveApp": "Saya sudah punya Makan",

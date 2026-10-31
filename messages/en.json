@@ -681,8 +681,8 @@
   },
   "TasteInvite": {
     "title": "See how your taste matches {name}",
-    "topThree": "{name}'s top 3",
-    "noMeals": "{name} hasn't shared any public meals yet.",
+    "topThree": "{name}'s top picks",
+    "noMeals": "{name} has nothing public to show yet.",
     "explainer": "Open Makan to add {name} as a friend. Your match shows once you're friends and you've both picked 3 of the same dishes in Eat or Yeet.",
     "getApp": "Get the Makan app",
     "haveApp": "I already have Makan",
