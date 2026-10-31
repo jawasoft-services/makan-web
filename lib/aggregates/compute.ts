@@ -40,8 +40,14 @@ const RECENT_CAPTIONS = 3
 const MAX_MEALS_ON_PAGE = 60
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000
 
-const byEats = (x: StandingRow, y: StandingRow) =>
-  y.eats - x.eats || y.eatRate - x.eatRate || (x.since ?? '').localeCompare(y.since ?? '')
+// The app's Makan Picks order (functions/eatEvidence/domain.js
+// compareRankingCandidates): Eat rate compared exactly by cross-multiplying,
+// then more matchups, then more Eats, then the earlier first meal.
+const byEatRate = (x: StandingRow, y: StandingRow) =>
+  y.eats * x.matchups - x.eats * y.matchups ||
+  y.matchups - x.matchups ||
+  y.eats - x.eats ||
+  (x.since ?? '').localeCompare(y.since ?? '')
 
 export async function computeEatStandings(db: Firestore): Promise<EatStandings> {
   const [mealsSnap, evidenceSnap] = await Promise.all([
@@ -139,7 +145,7 @@ export async function computeEatStandings(db: Firestore): Promise<EatStandings> 
       cityRank: null,
     }
   })
-  all.sort(byEats)
+  all.sort(byEatRate)
 
   // Locate every place that is either already known (free) or big enough
   // to earn a paid lookup; tiny unseeded places stay unlocated.
@@ -147,7 +153,7 @@ export async function computeEatStandings(db: Firestore): Promise<EatStandings> 
   const where = await getPlaceWhere(locate)
   for (const r of all) r.where = where.get(r.placeId) ?? null
 
-  // Spec §3: by Eats, then Eat rate, then the earlier first meal.
+  // Ranked by Eat rate, as the app ranks Makan Picks (Devon, 31 Oct 2026).
   const rows = all.filter((r) => r.matchups >= EVIDENCE_FLOOR)
   rows.forEach((r, i) => (r.rank = i + 1))
 

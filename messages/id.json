@@ -209,7 +209,7 @@
     "eatsEyebrow": "Eat",
     "eatsTitle": "Setiap pilihan menghasilkan satu Eat.",
     "eatsBody": "Saat tamu memilih makanan di tempatmu daripada makanan di tempat lain di Eat or Yeet, hidanganmu dapat satu Eat, begitu juga kamu. Eat terus bertambah seumur hidup.",
-    "eats1": "Setiap bulan, restoran dengan Eat terbanyak di kotamu dipublikasikan: di aplikasi, di situs ini, dan di Instagram kami.",
+    "eats1": "Setiap bulan, restoran yang paling sering dipilih di kotamu dipublikasikan: di aplikasi, di situs ini, dan di Instagram kami.",
     "eats2": "Hanya orang yang makan di tempatmu yang bisa memberimu Eat. Eat or Yeet membandingkan makanan seseorang sendiri, bukan yang lain.",
     "eats3": "Eat terkumpul dari waktu ke waktu. Peringkat menunjukkan kapan kamu bergabung.",
     "liveEyebrow": "Yang terjadi hari ini",
@@ -568,17 +568,17 @@
     "Standings": {
       "eyebrow": "Peringkat",
       "title": "Restoran yang terus dipilih tamu.",
-      "body": "Eats restoran berasal dari pilihan pengguna antara makanan yang mereka simpan sendiri di Eat or Yeet. Ini lima restoran dengan Eats terbanyak, dari tempat dengan setidaknya {floor} perbandingan. Gelar Maître d’ dihitung terpisah, lewat hari makan yang dicatat.",
+      "body": "Eats restoran berasal dari pilihan pengguna antara makanan yang mereka simpan sendiri di Eat or Yeet. Ini lima restoran yang paling sering dipilih, dari tempat dengan setidaknya {floor} perbandingan. Gelar Maître d’ dihitung terpisah, lewat hari makan yang dicatat.",
       "cta": "Lihat peringkat lengkap",
-      "eats": "Eat · {rate}"
+      "picked": "Dipilih {eats} dari {matchups}"
     }
   },
   "Standings": {
     "metaTitle": "Peringkat Eat or Yeet — Makan",
-    "metaDescription": "Restoran diurutkan berdasarkan Eat: setiap kali tamu memilih makanan dari satu tempat daripada makanan dari tempat lain di Eat or Yeet, pemenangnya dapat satu Eat.",
+    "metaDescription": "Restoran diurutkan berdasarkan seberapa sering tamu memilihnya di Eat or Yeet. Setiap kali tamu memilih makanan dari satu tempat daripada makanan dari tempat lain, pemenangnya dapat satu Eat.",
     "eyebrow": "Peringkat",
     "title": "Restoran yang terus dipilih tamu.",
-    "intro": "Pilih makanan dari satu restoran daripada makanan dari restoran lain di Eat or Yeet, dan pemenangnya dapat satu Eat. Yang kalah dapat satu Yeet. Ini restoran dengan {floor} pertandingan atau lebih, diurutkan berdasarkan Eat.",
+    "intro": "Pilih makanan dari satu restoran daripada makanan dari restoran lain di Eat or Yeet, dan pemenangnya dapat satu Eat. Yang kalah dapat satu Yeet. Ini restoran dengan {floor} pertandingan atau lebih, diurutkan berdasarkan rasio Eat: seberapa sering mereka menang.",
     "colRank": "#",
     "colRestaurant": "Restoran",
     "colEats": "Eat",
@@ -599,9 +599,9 @@
     "colWhere": "Lokasi",
     "countries": "Saat ini itu mencakup {count} negara.",
     "cityMetaTitle": "{city}: restoran yang terus dipilih tamu — Makan",
-    "cityMetaDescription": "Restoran di {city}, {country}, diurutkan berdasarkan Eat: setiap kali tamu memilih makanan dari satu tempat daripada makanan dari tempat lain di Eat or Yeet, pemenangnya dapat satu Eat. Diurutkan mulai dari {floor} pertandingan.",
+    "cityMetaDescription": "Restoran di {city}, {country}, diurutkan berdasarkan seberapa sering tamu memilihnya di Eat or Yeet. Setiap kali tamu memilih makanan dari satu tempat daripada makanan dari tempat lain, pemenangnya dapat satu Eat. Diurutkan mulai dari {floor} pertandingan.",
     "cityTitle": "Restoran yang terus dipilih tamu di {city}.",
-    "cityIntro": "Pilih makanan dari satu restoran daripada makanan dari restoran lain di Eat or Yeet, dan pemenangnya dapat satu Eat. Yang kalah dapat satu Yeet. Ini restoran di {city} dengan {floor} pertandingan atau lebih, diurutkan berdasarkan Eat.",
+    "cityIntro": "Pilih makanan dari satu restoran daripada makanan dari restoran lain di Eat or Yeet, dan pemenangnya dapat satu Eat. Yang kalah dapat satu Yeet. Ini restoran di {city} dengan {floor} pertandingan atau lebih, diurutkan berdasarkan rasio Eat: seberapa sering mereka menang.",
     "cityHow": "Satu kota adalah kumpulan yang lebih kecil, jadi {city} diurutkan mulai dari {floor} pertandingan. Peringkat utama dimulai dari sepuluh.",
     "byCityTitle": "Per kota",
     "byCityBody": "Peringkat yang sama di dalam satu kota, mulai dari {floor} pertandingan. Sebuah kota mendapat halaman begitu dua restoran mencapai angka itu.",
@@ -622,7 +622,7 @@
     "storyVs": "VS",
     "storyAlt": "Makanan yang disimpan di Makan oleh orang yang makan di restoran-restoran yang masuk peringkat",
     "storyScreenAlt": "Layar Eat or Yeet: dua makanan tersimpan, pilih yang mau kamu makan lagi duluan",
-    "eats": "Eat · {rate}"
+    "picked": "Dipilih {eats} dari {matchups}"
   },
   "Places": {
     "metaTitle": "{name} | Makan",
