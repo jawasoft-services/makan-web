@@ -1,6 +1,7 @@
 "use client"
 
 import StoreLink from "@/components/home/StoreLink"
+import { goToStoreWithLink, phoneKind } from "@/lib/carry-link"
 
 import Image from "next/image"
 import Link from "next/link"
@@ -36,6 +37,14 @@ const terminalCopy: Record<Exclude<InviteState, "active">, { title: string; body
     title: "This invite isn’t available",
     body: "The link may be incomplete. Ask your friend to share it again.",
   },
+}
+
+// RM20333 — the invite's secret lives only in this page's #fragment. A phone's store button carries the
+// whole link through install (Play referrer on Android, clipboard + Paste on iPhone), never a server.
+const carryInviteThroughInstall = (event: React.MouseEvent<HTMLAnchorElement>) => {
+  if (phoneKind() === "other") return
+  event.preventDefault()
+  void goToStoreWithLink(window.location.href)
 }
 
 const initialsFor = (name: string): string =>
@@ -162,6 +171,7 @@ export default function InviteLanding({ publicId }: { publicId: string }) {
       <button type="button" onClick={openApp} className="invite-primary">Open in Makan</button>
       <StoreLink
         location="table-invite"
+        onStoreClick={carryInviteThroughInstall}
         className="inline-flex min-h-12 items-center justify-center px-5 font-semibold text-brand-muted underline decoration-brand-orange/50 underline-offset-4 hover:text-brand-ink"
       >
         Get Makan on the App Store
@@ -169,7 +179,7 @@ export default function InviteLanding({ publicId }: { publicId: string }) {
       <p className="max-w-sm text-sm leading-relaxed text-brand-muted">
         {attemptedOpen
           ? "If Makan didn’t open, install it below. Then come back to this link after setup."
-          : "Installing Makan now? Come back to this link after setup—the invite won’t carry into a fresh install."}
+          : "Installing Makan now? Your invite comes with you: Makan opens it after setup. On iPhone, tap Paste when Makan asks."}
       </p>
     </InviteShell>
   )

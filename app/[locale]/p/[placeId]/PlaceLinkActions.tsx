@@ -2,7 +2,8 @@
 
 import Link from "next/link"
 import { track } from "@vercel/analytics"
-import { APP_STORE_URL, GOOGLE_PLAY_URL } from "@/lib/links"
+import { goToStoreWithLink, phoneKind } from "@/lib/carry-link"
+import { GOOGLE_PLAY_URL } from "@/lib/links"
 
 const ANDROID_PACKAGE = "com.makanofficial.makanapp"
 
@@ -16,11 +17,6 @@ interface Props {
   className: { primary: string; secondary: string }
 }
 
-const platform = () => {
-  const ua = navigator.userAgent
-  return /android/i.test(ua) ? "android" : /iphone|ipad|ipod/i.test(ua) ? "ios" : "other"
-}
-
 /**
  * "Open in Makan" and "Get Makan". A universal link tapped on its own website stays in the browser, so
  * Open uses an Android intent (package-pinned, falling back to the store) and the app scheme on iPhone.
@@ -30,7 +26,7 @@ const platform = () => {
 export default function PlaceLinkActions({ link, appPath, openLabel, getLabel, className }: Props) {
   const open = (event: React.MouseEvent<HTMLAnchorElement>) => {
     track("Place Link Open Clicked")
-    if (platform() !== "android") return
+    if (phoneKind() !== "android") return
     event.preventDefault()
     const { host, pathname } = new URL(link)
     const fallback = encodeURIComponent(GOOGLE_PLAY_URL)
@@ -39,15 +35,9 @@ export default function PlaceLinkActions({ link, appPath, openLabel, getLabel, c
 
   const get = async (event: React.MouseEvent<HTMLAnchorElement>) => {
     track("Place Link Get App Clicked")
-    const kind = platform()
-    if (kind === "other") return
+    if (phoneKind() === "other") return
     event.preventDefault()
-    if (kind === "android") {
-      window.location.href = `${GOOGLE_PLAY_URL}&referrer=${encodeURIComponent(`l=${encodeURIComponent(link)}`)}`
-      return
-    }
-    try { await navigator.clipboard.writeText(link) } catch { /* the store opens either way */ }
-    window.location.href = APP_STORE_URL
+    await goToStoreWithLink(link)
   }
 
   return (
