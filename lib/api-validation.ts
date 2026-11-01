@@ -95,11 +95,13 @@ export const FIELD_MAX = {
 
 /**
  * Origins permitted to POST to the public API.
- * Production domains + dev origin + Vercel preview URL (when present).
+ * Production domains + dev origin + Vercel preview URL (when present) +
+ * the App Hosting address (RM20377, set in apphosting.yaml).
  */
 export const ALLOWED_ORIGINS = [
   "https://www.makanofficial.com",
   "https://makanofficial.com",
   ...(process.env.NODE_ENV === "development" ? ["http://localhost:3000"] : []),
   ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+  ...(process.env.EXTRA_ALLOWED_ORIGIN ? [process.env.EXTRA_ALLOWED_ORIGIN] : []),
 ]
