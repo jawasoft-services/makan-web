@@ -2,6 +2,7 @@ import 'server-only'
 import { unstable_cache } from 'next/cache'
 import { getDb } from '@/lib/firebase-admin'
 import { computePlaceDirectory, indexOf } from '@/lib/aggregates/compute'
+import { readMaitredHolders } from '@/lib/aggregates/maitred'
 import { MAX_AGE_MS, readLastRun, readPlace, readPlaceIndex, readPlaces } from '@/lib/aggregates/store'
 import type { DirectoryPlace, PlaceIndexEntry } from '@/lib/aggregates/types'
 
@@ -27,7 +28,8 @@ async function fallbackDirectory(reason: string): Promise<DirectoryPlace[]> {
   const db = getDb()
   if (!db) return []
   console.warn(`place-directory: aggregate ${reason}; falling back to a live scan.`)
-  return computePlaceDirectory(db)
+  const holders = await readMaitredHolders(db)
+  return computePlaceDirectory(db, holders.map((h) => h.placeId))
 }
 
 /** The small index: slug, name, city, indexable, meal count, for every place. One or two reads. */
