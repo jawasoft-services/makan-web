@@ -24,6 +24,12 @@ env:
     secret: CRON_SECRET
     availability:
       - RUNTIME
-  # ponytail: RESEND_API_KEY and GOOGLE_SHEET_ID are added here once Devon has
-  # stored them (a missing secret fails the build); until then the contact and
-  # partner forms return their existing error responses.
+  # Shared with Cloud Functions (same secret, read-only here): Devon chose
+  # read access over a website-only key on 1 Nov 2026.
+  - variable: RESEND_API_KEY
+    secret: RESEND_API_KEY
+    availability:
+      - RUNTIME
+  # ponytail: GOOGLE_SHEET_ID is added here once Devon has stored it (a missing
+  # secret fails the build); until then the partner form returns its existing
+  # error response.
