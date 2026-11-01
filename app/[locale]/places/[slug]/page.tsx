@@ -11,6 +11,7 @@ import PlacesMapLoader from '@/components/map/PlacesMapLoader'
 import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
 import { CITY_FLOOR, EVIDENCE_FLOOR, getEatStandings, type StandingRow } from '@/lib/eat-standings'
 import { getDirectoryPlace, getPlaceIndex, type DirectoryPlace } from '@/lib/place-directory'
+import { getMaitredAt } from '@/lib/maitred'
 import { getPlacePhoto } from '@/lib/place-photo'
 import { localizePath } from '@/i18n/paths'
 import { thumbUrl } from '@/lib/thumb'
@@ -93,7 +94,7 @@ export default async function PlacePage({ params }: Props) {
     ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(place.name)}&destination_place_id=${encodeURIComponent(place.placeId)}`
     : null
   // The hero is the place's Google photo, as in the app; a public meal if none.
-  const googlePhoto = await getPlacePhoto(place.placeId)
+  const [googlePhoto, maitred] = await Promise.all([getPlacePhoto(place.placeId), getMaitredAt(place.placeId)])
   const hero = googlePhoto ? { src: googlePhoto.uri, alt: place.name } : place.meals[0] ? { src: place.meals[0].src, alt: place.meals[0].caption ? `${place.meals[0].caption}, ${place.name}` : t('mealAlt', { name: place.name }) } : null
 
   const schema = {
@@ -137,6 +138,12 @@ export default async function PlacePage({ params }: Props) {
       ? [{ value: `${row.matchups}/${EVIDENCE_FLOOR}`, label: t('matchupsToward') }]
       : []
 
+  // Meta row: cuisine · meals · since, leaving out what this place lacks.
+  const meta = [
+    place.cuisine.join(', '),
+    place.meals.length ? t('mealsShort', { count: place.meals.length }) : '',
+    place.since ? t('since', { date: monthYear.format(new Date(place.since)) }) : '',
+  ].filter(Boolean)
   const eyebrow = 'text-[0.72rem] font-extrabold uppercase tracking-[0.16em] text-brand-orange'
 
   return (
@@ -188,17 +195,20 @@ export default async function PlacePage({ params }: Props) {
           </h1>
 
           {/* Meta row: cuisine · meals · since. */}
-          <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-brand-muted">
-            {place.cuisine.length ? <span>{place.cuisine.join(', ')}</span> : null}
-            {place.cuisine.length ? <span aria-hidden>·</span> : null}
-            <span>{t('mealsShort', { count: place.meals.length })}</span>
-            {place.since ? (
-              <>
-                <span aria-hidden>·</span>
-                <span>{t('since', { date: monthYear.format(new Date(place.since)) })}</span>
-              </>
-            ) : null}
-          </p>
+          {meta.length ? (
+            <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-brand-muted">
+              {meta.map((part, i) => (
+                <span key={part} className="contents">
+                  {i ? <span aria-hidden>·</span> : null}
+                  <span>{part}</span>
+                </span>
+              ))}
+            </p>
+          ) : null}
+
+          {/* Maître'D: what to order here when someone holds the seat, the
+              empty seat when nobody does, nothing when it cannot be read. */}
+          {maitred !== undefined ? <PlaceMaitred locale={locale} placeName={place.name} held={maitred} faqHref={localizePath(locale, '/#faq')} /> : null}
 
           {/* Address row, tappable for directions, as in the app. */}
           {place.address ? (
@@ -227,10 +237,6 @@ export default async function PlacePage({ params }: Props) {
             />
           ) : null}
 
-          {/* Maître'D — the download hook, above the standing band. Empty-seat
-              (claim it) by default; the held state lights up when RM19505 ships a
-              public roster read. Ported 1:1 from the app's Maître'D UI. */}
-          <PlaceMaitred locale={locale} placeName={place.name} />
 
           {/* The band the app fills with YOU and FRIENDS; on the web, the place's standing. */}
           {row && (ranked || row.cityRank !== null || row.matchups > 0) ? (

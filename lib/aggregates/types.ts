@@ -103,6 +103,35 @@ export interface DirectoryPlace {
 /** A single meal with no matchups is a real page but not worth a search result. */
 export const INDEX_MIN_MEALS = 2
 
+/**
+ * The Maître d' notes a holder published for a restaurant, as written and
+ * never translated. Empty strings where the holder left a note out.
+ */
+export interface MaitredNotes {
+  always: string
+  another: string
+  why: string
+  tip: string
+}
+
+/** A restaurant with a current, public Maître d' (RM19505 standing + menu). */
+export interface MaitredVenue {
+  placeId: string
+  slug: string
+  name: string
+  where: PlaceWhere | null
+  holderName: string
+  /** The holder's profile photo (Firebase Storage), or null. */
+  holderPhoto: string | null
+  notes: MaitredNotes
+  /** The newest public meal photo here, or null (pages fall back to the Google photo). */
+  photo: string | null
+}
+
+export interface MaitredList {
+  venues: MaitredVenue[]
+}
+
 /** The small per-place record the sitemap, static params and lookups use. */
 export interface PlaceIndexEntry {
   placeId: string

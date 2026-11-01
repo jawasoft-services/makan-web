@@ -182,7 +182,11 @@ export async function computeEatStandings(db: Firestore): Promise<EatStandings> 
  * places Google types as somewhere people eat; handles only where the
  * account chose one; captions only when clean.
  */
-export async function computePlaceDirectory(db: Firestore): Promise<DirectoryPlace[]> {
+export async function computePlaceDirectory(db: Firestore, include: string[] = []): Promise<DirectoryPlace[]> {
+  // Restaurants that must have a page whatever their meals (a current
+  // Maître d'): they are real venues in the app, so the food-type check and
+  // the one-public-meal floor do not apply to them.
+  const extra = new Set(include)
   const snap = await db
     .collection('meals')
     .select('placeProviderId', 'locationName', 'createdAt', 'isPublic', 'moderationStatus', 'imageURL', 'thumbnailUrl', 'caption', 'mealType', 'userID', 'uid', 'userName')
@@ -217,19 +221,27 @@ export async function computePlaceDirectory(db: Firestore): Promise<DirectoryPla
     byPlace.set(placeId, entry)
   }
 
-  const candidates = [...byPlace.entries()].filter(([id, e]) => e.meals.length && isFoodVenue(getPlaceSeed(id)?.types))
+  for (const id of extra) if (!byPlace.has(id)) byPlace.set(id, { name: new Map<string, number>(), first: Infinity, meals: [] })
+  const candidates = [...byPlace.entries()].filter(([id, e]) => extra.has(id) || (e.meals.length && isFoodVenue(getPlaceSeed(id)?.types)))
 
-  const canonical = new Map<string, { name: string; cuisine: string[] }>()
+  const canonical = new Map<string, { name: string; cuisine: string[]; lat: number | null; lng: number | null }>()
   const refs = candidates.map(([id]) => db.collection('restaurants').doc(id))
   for (let i = 0; i < refs.length; i += 100) {
-    const docs = await db.getAll(...refs.slice(i, i + 100), { fieldMask: ['displayName', 'locationName', 'cuisine'] })
+    const docs = await db.getAll(...refs.slice(i, i + 100), { fieldMask: ['displayName', 'locationName', 'cuisine', 'latitude', 'longitude'] })
     for (const d of docs) {
       if (!d.exists) continue
       const data = d.data() ?? {}
       const cats = (data.cuisine?.categories ?? []) as { label?: string }[]
-      canonical.set(d.id, { name: str(data.displayName) || str(data.locationName), cuisine: cats.map((c) => str(c.label)).filter(Boolean) })
+      canonical.set(d.id, {
+        name: str(data.displayName) || str(data.locationName),
+        cuisine: cats.map((c) => str(c.label)).filter(Boolean),
+        lat: typeof data.latitude === 'number' ? data.latitude : null,
+        lng: typeof data.longitude === 'number' ? data.longitude : null,
+      })
     }
   }
+  // Unseeded extras: the month-cached city lookup the standings already use.
+  const lookedUp = await getPlaceWhere(candidates.filter(([id]) => extra.has(id) && !getPlaceSeed(id)).map(([id]) => id))
 
   const uids = new Set<string>()
   for (const [, e] of candidates) for (const m of e.meals.slice(0, MAX_MEALS_ON_PAGE)) if (!m.legacyName && m.uid) uids.add(m.uid)
@@ -264,10 +276,10 @@ export async function computePlaceDirectory(db: Firestore): Promise<DirectoryPla
         slug: placeSlug(name, placeId),
         hash: shortHash(placeId),
         name,
-        where: seed ? placeLabel(seed) : null,
+        where: seed ? placeLabel(seed) : (lookedUp.get(placeId) ?? null),
         address: seed?.address ?? '',
-        lat: seed?.lat ?? null,
-        lng: seed?.lng ?? null,
+        lat: seed?.lat ?? canonical.get(placeId)?.lat ?? null,
+        lng: seed?.lng ?? canonical.get(placeId)?.lng ?? null,
         cuisine: canonical.get(placeId)?.cuisine ?? [],
         since: Number.isFinite(e.first) ? new Date(e.first).toISOString() : null,
         meals,

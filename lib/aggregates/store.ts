@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
 import { Timestamp, type Firestore } from 'firebase-admin/firestore'
-import type { DirectoryPlace, EatStandings, PlaceIndexEntry, PlaceStats } from './types'
+import type { DirectoryPlace, EatStandings, MaitredList, PlaceIndexEntry, PlaceStats } from './types'
 
 /**
  * Where the aggregates live in Firestore, and how they are written and read.
@@ -8,6 +8,7 @@ import type { DirectoryPlace, EatStandings, PlaceIndexEntry, PlaceStats } from '
  *   webAggregates/meta                       lastRunAt (every run: the heartbeat)
  *   webAggregates/standings                  EatStandings
  *   webAggregates/stats                      PlaceStats
+ *   webAggregates/maitred                    MaitredList
  *   webAggregates/placeIndex                 { shards, count } + shards/{n} of 500 entries
  *   webAggregates/places/items/{placeId}     DirectoryPlace
  *
@@ -62,6 +63,10 @@ export async function readStandings(db: Firestore): Promise<EatStandings | null>
   return readDoc<EatStandings>(db, db.collection(ROOT).doc('standings'))
 }
 
+export async function readMaitred(db: Firestore): Promise<MaitredList | null> {
+  return readDoc<MaitredList>(db, db.collection(ROOT).doc('maitred'))
+}
+
 export async function readStats(db: Firestore): Promise<PlaceStats | null> {
   return readDoc<PlaceStats>(db, db.collection(ROOT).doc('stats'))
 }
@@ -110,14 +115,14 @@ export interface WriteSummary {
  */
 export async function writeAggregates(
   db: Firestore,
-  data: { standings: EatStandings; directory: DirectoryPlace[]; index: PlaceIndexEntry[]; stats: PlaceStats },
+  data: { standings: EatStandings; directory: DirectoryPlace[]; index: PlaceIndexEntry[]; stats: PlaceStats; maitred: MaitredList },
 ): Promise<WriteSummary> {
   const summary: WriteSummary = { written: 0, skipped: 0, removed: 0 }
   const now = Timestamp.now()
   const root = db.collection(ROOT)
 
   // Existing hashes, one read per content document.
-  const [standingsSnap, statsSnap, indexMetaSnap] = await Promise.all([root.doc('standings').get(), root.doc('stats').get(), root.doc('placeIndex').get()])
+  const [standingsSnap, statsSnap, indexMetaSnap, maitredSnap] = await Promise.all([root.doc('standings').get(), root.doc('stats').get(), root.doc('placeIndex').get(), root.doc('maitred').get()])
   const existingPlaces = await root.doc('places').collection('items').select('contentHash').get()
   const placeHash = new Map<string, string>()
   for (const d of existingPlaces.docs) placeHash.set(d.id, String(d.data()?.contentHash ?? ''))
@@ -149,6 +154,10 @@ export async function writeAggregates(
   const statsHash = hashOf(data.stats)
   if (statsSnap.data()?.contentHash === statsHash) summary.skipped += 1
   else put(root.doc('stats'), data.stats, statsHash)
+
+  const maitredHash = hashOf(data.maitred)
+  if (maitredSnap.data()?.contentHash === maitredHash) summary.skipped += 1
+  else put(root.doc('maitred'), data.maitred, maitredHash)
 
   // Index: sharded, one hash over the whole list on the meta document.
   const indexHash = hashOf(data.index)
