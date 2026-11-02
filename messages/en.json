@@ -209,7 +209,7 @@
     "eatsEyebrow": "Eats",
     "eatsTitle": "Every choice earns an Eat.",
     "eatsBody": "When a diner picks a meal at your place over a meal somewhere else in Eat or Yeet, your dish gets an Eat and so do you. Eats add up for life.",
-    "eats1": "Every month, the restaurant with the most Eats in your city gets published: in the app, on this site, and on our Instagram.",
+    "eats1": "Every month, the restaurant diners pick most often in your city gets published: in the app, on this site, and on our Instagram.",
     "eats2": "Only people who ate at your place can give you one. Eat or Yeet compares a person's own meals, nothing else.",
     "eats3": "Eats accumulate over time. The standings show when you joined.",
     "liveEyebrow": "What happens today",
@@ -568,17 +568,17 @@
     "Standings": {
       "eyebrow": "The standings",
       "title": "The restaurants diners keep picking.",
-      "body": "Restaurant Eats come from diners picking between their own saved meals in Eat or Yeet. These are the five restaurants with the most Eats, among places with {floor} or more matchups. Maître d’ titles are earned separately, through saved dining days.",
+      "body": "Restaurant Eats come from diners picking between their own saved meals in Eat or Yeet. These are the five restaurants diners pick most often, among places with {floor} or more matchups. Maître d’ titles are earned separately, through saved dining days.",
       "cta": "See the full standings",
-      "eats": "Eats · {rate}"
+      "picked": "Picked {eats} of {matchups}"
     }
   },
   "Standings": {
     "metaTitle": "Eat or Yeet standings — Makan",
-    "metaDescription": "Restaurants ranked by Eats: every time a diner picks a meal from one place over a meal from another in Eat or Yeet, the winner gets an Eat.",
+    "metaDescription": "Restaurants ranked by how often diners pick them in Eat or Yeet. Every time a diner picks a meal from one place over a meal from another, the winner gets an Eat.",
     "eyebrow": "Standings",
     "title": "The restaurants diners keep picking.",
-    "intro": "Pick a meal from one restaurant over a meal from another in Eat or Yeet and the winner gets an Eat. The loser gets a Yeet. These are the restaurants with {floor} or more matchups, ranked by Eats.",
+    "intro": "Pick a meal from one restaurant over a meal from another in Eat or Yeet and the winner gets an Eat. The loser gets a Yeet. These are the restaurants with {floor} or more matchups, ranked by Eat rate: how often they win.",
     "colRank": "#",
     "colRestaurant": "Restaurant",
     "colEats": "Eats",
@@ -599,9 +599,9 @@
     "colWhere": "Where",
     "countries": "Right now that's {count, plural, one {# country} other {# countries}}.",
     "cityMetaTitle": "{city}: the restaurants diners keep picking — Makan",
-    "cityMetaDescription": "Restaurants in {city}, {country}, ranked by Eats: every time a diner picks a meal from one place over a meal from another in Eat or Yeet, the winner gets an Eat. Ranked from {floor} matchups.",
+    "cityMetaDescription": "Restaurants in {city}, {country}, ranked by how often diners pick them in Eat or Yeet. Every time a diner picks a meal from one place over a meal from another, the winner gets an Eat. Ranked from {floor} matchups.",
     "cityTitle": "The restaurants diners keep picking in {city}.",
-    "cityIntro": "Pick a meal from one restaurant over a meal from another in Eat or Yeet and the winner gets an Eat. The loser gets a Yeet. These are the restaurants in {city} with {floor} or more matchups, ranked by Eats.",
+    "cityIntro": "Pick a meal from one restaurant over a meal from another in Eat or Yeet and the winner gets an Eat. The loser gets a Yeet. These are the restaurants in {city} with {floor} or more matchups, ranked by Eat rate: how often they win.",
     "cityHow": "A city is a smaller pool, so {city} ranks from {floor} matchups. The main standings start at ten.",
     "byCityTitle": "By city",
     "byCityBody": "The same ranking inside one city, from {floor} matchups. A city gets a page once two restaurants have reached that.",
@@ -622,7 +622,7 @@
     "storyVs": "VS",
     "storyAlt": "Meals saved on Makan by people who ate at the ranked restaurants",
     "storyScreenAlt": "The Eat or Yeet screen: two saved meals, pick the one you'd eat again first",
-    "eats": "Eats · {rate}"
+    "picked": "Picked {eats} of {matchups}"
   },
   "Places": {
     "metaTitle": "{name} | Makan",

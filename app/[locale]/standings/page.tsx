@@ -38,6 +38,7 @@ export default async function StandingsPage({
   setRequestLocale(locale)
   const t = await getTranslations('Standings')
   const { standings, checkedAt } = await getEatStandingsSnapshot()
+  const percent = new Intl.NumberFormat(locale === 'id' ? 'id-ID' : 'en-GB', { style: 'percent', maximumFractionDigits: 0 })
   const dayMonthYear = new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
   const computedAt = standings.computedAt ? new Date(standings.computedAt) : new Date()
   const pageUrl = `${SITE_URL}${locale === 'id' ? '/id' : ''}/standings`
@@ -132,7 +133,7 @@ export default async function StandingsPage({
                   name: r.name,
                   lat: r.lat as number,
                   lng: r.lng as number,
-                  line: `#${i + 1} · ${r.eats} ${t('colEats')}`,
+                  line: `#${r.rank ?? i + 1} · ${percent.format(r.eatRate)} ${t('colRate')}`,
                   href: localizePath(locale, `/places/${r.slug}`),
                 }))}
             />

@@ -1,5 +1,6 @@
 import { initializeApp, getApps, cert, applicationDefault, type App } from "firebase-admin/app"
-import { getFirestore, type Firestore } from "firebase-admin/firestore"
+import { getFirestore, Firestore, type Settings } from "firebase-admin/firestore"
+import { federatedCredentials } from "./gcp-federation"
 
 function getApp(): App | null {
   if (getApps().length) return getApps()[0]
@@ -20,7 +21,7 @@ function getApp(): App | null {
 
   // Local dev: fall back to gcloud Application Default Credentials
   // (`gcloud auth application-default login`). Never present on Vercel,
-  // where the cert() env vars above are the only path.
+  // where federation (getDb) or the cert() env vars above are the paths.
   try {
     return initializeApp({
       credential: applicationDefault(),
@@ -35,6 +36,18 @@ let _db: Firestore | null = null
 
 export function getDb(): Firestore | null {
   if (_db) return _db
+  // RM20289: firebase-admin's Firestore accepts only a key or ADC, so the
+  // federated credentials go to the Firestore class it re-exports. Its
+  // `credentials` type lists key fields only; google-gax hands the object to
+  // GoogleAuth, which builds the external-account client from it.
+  const credentials = federatedCredentials(process.env.GCP_SERVICE_ACCOUNT_EMAIL)
+  if (credentials) {
+    _db = new Firestore({
+      projectId: process.env.FIREBASE_PROJECT_ID ?? "munchies-expo",
+      credentials: credentials as unknown as Settings["credentials"],
+    })
+    return _db
+  }
   const app = getApp()
   if (!app) return null
   _db = getFirestore(app)

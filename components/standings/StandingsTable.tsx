@@ -4,7 +4,7 @@ import type { StandingRow } from '@/lib/eat-standings'
 
 /**
  * The standings as a table: rank, restaurant (linked to its page), where,
- * Eats, Yeets, Eat rate, on Makan since. Wide, so it scrolls inside its own
+ * Eat rate (the ranking column), Eats, Yeets, on Makan since. Wide, so it scrolls inside its own
  * box; the page never scrolls sideways. `showWhere` is off on a city page,
  * where every row is in the same place.
  */
@@ -33,9 +33,9 @@ export default function StandingsTable({
             <th scope="col" className={th}>{labels.rank}</th>
             <th scope="col" className={th}>{labels.restaurant}</th>
             {showWhere ? <th scope="col" className={th}>{labels.where}</th> : null}
+            <th scope="col" className={`${th} text-right`}>{labels.rate}</th>
             <th scope="col" className={`${th} text-right`}>{labels.eats}</th>
             <th scope="col" className={`${th} text-right`}>{labels.yeets}</th>
-            <th scope="col" className={`${th} text-right`}>{labels.rate}</th>
             <th scope="col" className={`${th} text-right`}>{labels.since}</th>
           </tr>
         </thead>
@@ -63,9 +63,9 @@ export default function StandingsTable({
                   )}
                 </td>
               ) : null}
-              <td className="px-4 py-4 text-right text-base font-bold tabular-nums text-brand-ink sm:px-5">{row.eats}</td>
+              <td className="px-4 py-4 text-right text-base font-bold tabular-nums text-brand-ink sm:px-5">{percent.format(row.eatRate)}</td>
+              <td className="px-4 py-4 text-right text-base tabular-nums text-brand-ink sm:px-5">{row.eats}</td>
               <td className="px-4 py-4 text-right text-base tabular-nums text-brand-muted sm:px-5">{row.yeets}</td>
-              <td className="px-4 py-4 text-right text-base tabular-nums text-brand-ink sm:px-5">{percent.format(row.eatRate)}</td>
               <td className="px-4 py-4 text-right text-base tabular-nums text-brand-muted sm:px-5">
                 {row.since ? monthYear.format(new Date(row.since)) : '—'}
               </td>

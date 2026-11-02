@@ -128,9 +128,9 @@ export default async function PlacePage({ params }: Props) {
 
   const stats = ranked && row
     ? [
+        { value: percent.format(row.eatRate), label: t('eatRate') },
         { value: String(row.eats), label: t('eats') },
         { value: String(row.yeets), label: t('yeets') },
-        { value: percent.format(row.eatRate), label: t('eatRate') },
         { value: String(row.matchups), label: t('matchups') },
       ]
     : row && row.matchups > 0

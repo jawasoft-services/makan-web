@@ -8,7 +8,8 @@ export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 
 /**
- * The one place the site scans `meals` and `rankingComparisons`. Vercel
+ * The one place the site scans `meals` and reads the app's Eat evidence
+ * totals (`eatEvidenceAggregateState`). Vercel
  * Cron calls it daily at 03:00 UTC (vercel.json; Hobby plans reject anything
  * more frequent) and the GitHub Actions workflow in
  * .github/workflows/aggregates.yml can call it hourly once the repository has

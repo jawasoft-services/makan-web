@@ -1,0 +1,35 @@
+# RM20377 — Firebase App Hosting: project munchies-expo, backend makan-web,
+# us-central1 (next to Firestore nam5). The server runs as makan-website@
+# (set on the backend), so Firestore and Sheets need no stored key.
+runConfig:
+  minInstances: 0
+  maxInstances: 4
+  concurrency: 80
+  cpu: 1
+  memoryMiB: 512
+
+env:
+  - variable: FIREBASE_PROJECT_ID
+    value: munchies-expo
+  - variable: CONTACT_EMAIL
+    value: devon@makanofficial.com
+  - variable: RESEND_FROM
+    value: "Makan Website <onboarding@resend.dev>"
+  # Lets the forms be tested on the App Hosting address before DNS moves.
+  - variable: EXTRA_ALLOWED_ORIGIN
+    value: https://makan-web--munchies-expo.us-central1.hosted.app
+    availability:
+      - RUNTIME
+  - variable: CRON_SECRET
+    secret: CRON_SECRET
+    availability:
+      - RUNTIME
+  # Shared with Cloud Functions (same secret, read-only here): Devon chose
+  # read access over a website-only key on 1 Nov 2026.
+  - variable: RESEND_API_KEY
+    secret: RESEND_API_KEY
+    availability:
+      - RUNTIME
+  # ponytail: GOOGLE_SHEET_ID is added here once Devon has stored it (a missing
+  # secret fails the build); until then the partner form returns its existing
+  # error response.

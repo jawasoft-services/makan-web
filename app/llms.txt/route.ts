@@ -27,7 +27,7 @@ export function GET() {
     "## Product",
     `- [Get Makan](${APP_STORE_URL}): Download Makan free on the App Store.`,
     `- [Manifesto](${base}/manifesto): Why Makan exists.`,
-    `- [Eat or Yeet standings](${base}/standings): Restaurants ranked by Eats, the picks of diners who ate there.`,
+    `- [Eat or Yeet standings](${base}/standings): Restaurants ranked by Eat rate: how often diners who ate there pick them.`,
     `- [For restaurants](${base}/partner): Free for restaurants; your name on every saved meal, an Eat every time a diner picks your dish.`,
     "",
     "## Support",
