@@ -49,7 +49,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...localized("/support", "monthly", 0.7),
     ...localized("/manifesto", "monthly", 0.6),
     ...localized("/app", "monthly", 0.8),
-    { url: `${base}/privacy-policy`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
+    ...localized("/privacy-policy", "yearly", 0.3),
     { url: `${base}/tos`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
   ]
 }

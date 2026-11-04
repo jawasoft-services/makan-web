@@ -228,7 +228,7 @@ export default function ContactForm() {
                 {t('terms')}
               </Link>{' '}
               {t('and')}{' '}
-              <Link href="/privacy-policy" className="underline hover:text-brand-muted">
+              <Link href={localizePath(locale, '/privacy-policy')} className="underline hover:text-brand-muted">
                 {t('privacy')}
               </Link>
               .

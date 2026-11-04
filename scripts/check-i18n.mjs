@@ -52,6 +52,7 @@ for (const path of [
   '"/contact"',
   '"/manifesto"',
   '"/partner"',
+  '"/privacy-policy"',
   '"/story"',
   '"/support"',
 ]) {
@@ -63,7 +64,6 @@ for (const path of [
 
 for (const englishOnlyPath of [
   '"/blog"',
-  '"/privacy-policy"',
   '"/tos"',
   '"/meal"',
   '"/r"',

@@ -9,6 +9,7 @@ const INDONESIAN_ROUTES = new Set([
   "/opengraph-image", // share cards render per locale
   "/twitter-image",
   "/partner",
+  "/privacy-policy",
   "/standings",
   "/standings/opengraph-image",
   "/partner/opengraph-image",

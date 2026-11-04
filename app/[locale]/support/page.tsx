@@ -129,7 +129,7 @@ export default async function SupportPage({
             .
           </p>
           <p className="mt-4 text-[15px] leading-[1.75] text-brand-muted">
-            <Link href="/privacy-policy" className="text-brand-orange hover:underline">
+            <Link href={localizePath(locale, "/privacy-policy")} className="text-brand-orange hover:underline">
               {t("privacy")}
             </Link>
             {" · "}

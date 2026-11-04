@@ -139,7 +139,7 @@ export default async function DeletionRequestPage({
           className="mt-10 flex flex-col gap-2 border-t border-brand-line pt-8 sm:flex-row sm:items-center sm:gap-6"
         >
           <Link
-            href="/privacy-policy"
+            href={localizePath(locale, "/privacy-policy")}
             className="inline-flex min-h-11 items-center text-sm font-semibold text-brand-orange hover:underline"
           >
             {t("privacyLink")}
