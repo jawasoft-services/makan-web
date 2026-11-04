@@ -110,3 +110,18 @@ test('the routing code (the one proxy.ts uses) accepts /id/privacy-policy', asyn
   assert.equal(isIndonesianRoute('/privacy-policy'), true)
   assert.equal(isIndonesianRoute('/id/tos'), false)
 })
+
+// Grok j208684: the sitemap helper must accept "yearly" (tsc and next build), the partner page links to the
+// localized policy, and both languages say drinks are left out of the match.
+test('the sitemap helper types "yearly", and the partner form links to the localized policy', () => {
+  assert.match(read('../../app/sitemap.ts'), /changeFrequency: "weekly" \| "monthly" \| "yearly"/)
+  const partner = read('../../app/[locale]/partner/PartnerForm.tsx')
+  assert.match(partner, /href=\{localizePath\(locale, '\/privacy-policy'\)\}/)
+  assert.doesNotMatch(partner, /href="\/privacy-policy"/)
+  assert.match(partner, /href="\/tos"/)
+})
+
+test('both languages say drinks are left out of the match', () => {
+  assert.match(page(english), /leaves out drinks/)
+  assert.match(page(indonesian), /minuman tidak ikut/)
+})
