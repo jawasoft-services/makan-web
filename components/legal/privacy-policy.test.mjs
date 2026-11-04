@@ -77,3 +77,36 @@ test('access, export and deletion rights stay in both languages', () => {
   assert.match(page(indonesian), /meminta salinannya/)
   assert.match(page(indonesian), /dihapus saat kamu menghapus akunmu/)
 })
+
+// Grok j208669 P1: the Indonesian page must be reachable. proxy.ts sends every /id path that is not an
+// Indonesian route to the English path, so the route has to be declared, and every link must follow it.
+const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
+
+test('/id/privacy-policy is a declared Indonesian route, not an English-only one', () => {
+  assert.match(read('../../i18n/availability.ts'), /"\/privacy-policy",/)
+  const check = read('../../scripts/check-i18n.mjs')
+  assert.match(check, /'"\/privacy-policy"',\n  '"\/story"',/)
+  assert.doesNotMatch(check.slice(check.indexOf('for (const englishOnlyPath')), /privacy-policy/)
+})
+
+test('every privacy link and the sitemap follow the language', () => {
+  assert.match(read('../Footer.tsx'), /localizePath\(locale, '\/privacy-policy'\)/)
+  assert.match(read('../DeletionRequestPage.tsx'), /localizePath\(locale, "\/privacy-policy"\)/)
+  assert.match(read('../../app/[locale]/contact/ContactForm.tsx'), /localizePath\(locale, '\/privacy-policy'\)/)
+  assert.match(read('../../app/[locale]/support/page.tsx'), /localizePath\(locale, "\/privacy-policy"\)/)
+  assert.match(read('../../app/sitemap.ts'), /localized\("\/privacy-policy"/)
+  assert.doesNotMatch(read('../../scripts/check-site-navigation.mjs'), /\['\/blog', '\/privacy-policy'/)
+})
+
+test('the Indonesian page links home to /id, and both name the counted meals', () => {
+  assert.match(indonesian, /<Link href="\/id" className/)
+  assert.match(page(english), /counts only your public and friends-only meals/)
+  assert.match(page(indonesian), /yang publik dan yang hanya-teman/)
+})
+
+test('the routing code (the one proxy.ts uses) accepts /id/privacy-policy', async () => {
+  const { isIndonesianRoute } = await import('../../i18n/availability.ts')
+  assert.equal(isIndonesianRoute('/id/privacy-policy'), true)
+  assert.equal(isIndonesianRoute('/privacy-policy'), true)
+  assert.equal(isIndonesianRoute('/id/tos'), false)
+})
