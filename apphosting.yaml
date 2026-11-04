@@ -1,0 +1,40 @@
+# RM20377 — Firebase App Hosting: project munchies-expo, backend makan-web,
+# us-central1 (next to Firestore nam5). The server runs as makan-website@
+# (set on the backend), so Firestore and Sheets need no stored key.
+runConfig:
+  minInstances: 0
+  maxInstances: 4
+  concurrency: 80
+  cpu: 1
+  memoryMiB: 512
+
+env:
+  - variable: FIREBASE_PROJECT_ID
+    value: munchies-expo
+  - variable: CONTACT_EMAIL
+    value: devon@makanofficial.com
+  - variable: RESEND_FROM
+    value: "Makan Website <onboarding@resend.dev>"
+  # Lets the forms be tested on the App Hosting address before DNS moves.
+  - variable: EXTRA_ALLOWED_ORIGIN
+    value: https://makan-web--munchies-expo.us-central1.hosted.app
+    availability:
+      - RUNTIME
+  - variable: CRON_SECRET
+    secret: CRON_SECRET
+    availability:
+      - RUNTIME
+  # Shared with Cloud Functions (same secret, read-only here): Devon chose
+  # read access over a website-only key on 1 Nov 2026.
+  - variable: RESEND_API_KEY
+    secret: RESEND_API_KEY
+    availability:
+      - RUNTIME
+  # RM20333 — Android App Links. The MakanDev build's signing-certificate SHA-256 (public, not a
+  # secret). The production fingerprint (ANDROID_APP_LINK_SHA256) stays unset until the app
+  # without the https /invite filter is on Play; with it unset assetlinks.json lists no production app.
+  - variable: ANDROID_DEV_APP_LINK_SHA256
+    value: "91:6B:18:70:28:C5:30:3F:C0:6F:0F:67:1E:85:B5:F2:37:55:6D:43:81:B6:92:BA:5E:FE:07:84:35:F7:1E:05"
+  # ponytail: GOOGLE_SHEET_ID is added here once Devon has stored it (a missing
+  # secret fails the build); until then the partner form returns its existing
+  # error response.

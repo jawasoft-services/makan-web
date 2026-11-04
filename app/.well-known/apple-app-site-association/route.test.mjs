@@ -3,7 +3,7 @@ import test from "node:test"
 
 import { GET } from "./route.ts"
 
-test("AASA claims only complete fragment-bearing table invites", async () => {
+test("AASA claims complete fragment-bearing table invites, venue claim links and restaurant/dish links", async () => {
   const response = GET()
   const { applinks } = await response.json()
 
@@ -16,6 +16,26 @@ test("AASA claims only complete fragment-bearing table invites", async () => {
       "/": `/invite/${"?".repeat(12)}`,
       "#": `s=${"?".repeat(43)}`,
       comment: "Open a complete table invite in Makan",
+    }, {
+      "/": "/claim/*",
+      comment: "Open a venue claim link in Makan",
+    }, {
+      "/": "/id/claim/*",
+      comment: "Open an Indonesian venue claim link in Makan",
+    }, {
+      "/": "/p/*",
+      comment: "Open a restaurant or dish link in Makan",
+    }, {
+      "/": "/id/p/*",
+      comment: "Open an Indonesian restaurant or dish link in Makan",
     }],
+  }, {
+    appIDs: ["T3Z49Z9YUB.com.makanofficial.makandev"],
+    components: [
+      { "/": "/claim/*", comment: "Open a venue claim link in Makan" },
+      { "/": "/id/claim/*", comment: "Open an Indonesian venue claim link in Makan" },
+      { "/": "/p/*", comment: "Open a restaurant or dish link in Makan" },
+      { "/": "/id/p/*", comment: "Open an Indonesian restaurant or dish link in Makan" },
+    ],
   }])
 })

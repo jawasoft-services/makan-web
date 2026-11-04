@@ -47,6 +47,13 @@ const nextConfig: NextConfig = {
   // This repository lives below a user-level lockfile; pin tracing to the
   // actual app so Next does not infer the home directory as the build root.
   outputFileTracingRoot: process.cwd(),
+  // The share images read public/fonts from disk, so tracing would put a
+  // partial public/ in the standalone output. Firebase App Hosting's adapter
+  // then skips copying the real public/ (it only copies missing top-level
+  // entries), and every static file 404s. Leave public/ to the adapter.
+  outputFileTracingExcludes: {
+    "*": ["public/**"],
+  },
   images: {
     // The Hobby quota is capped at 5,000 billed transformations. This site is
     // deliberately image-heavy, so width variants from /_next/image exhausted
