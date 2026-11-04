@@ -1,17 +1,39 @@
 // RM19740 — PUBLISH ONLY with the RM19738 analytics opt-out release: section 7 describes a Settings switch
 // and section 2.3 a narrowed event payload. Resolve docs/rm19740/PRD.md O-01–08 and recheck both dates before publication.
+// RM20320 — PUBLISH ONLY once counsel has confirmed the wording of sections 2.7, 4, 11, 12, 13 and 14 (the taste
+// picture is now part of the service under contract, and friends see a taste match), and publish this page and its
+// Indonesian twin (components/legal/PrivacyPolicyId.tsx) together, before the app version that shows the notice
+// and the friend match reaches anyone. Recheck the "Last updated" date at publication.
 import { Metadata } from 'next'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
+import PrivacyPolicyId from '@/components/legal/PrivacyPolicyId'
 import { createPageMetadata } from '@/lib/site-metadata'
 
-export const metadata: Metadata = createPageMetadata({
-  title: 'Privacy Policy — Makan',
-  description: 'How Makan App Ltd collects, uses, and protects your personal data.',
-  path: '/privacy-policy',
-})
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  return locale === 'id'
+    ? createPageMetadata({
+      title: 'Kebijakan Privasi — Makan',
+      description: 'Bagaimana Makan App Ltd mengumpulkan, menggunakan, dan melindungi data pribadimu.',
+      path: '/id/privacy-policy',
+      locale,
+    })
+    : createPageMetadata({
+      title: 'Privacy Policy — Makan',
+      description: 'How Makan App Ltd collects, uses, and protects your personal data.',
+      path: '/privacy-policy',
+      locale,
+    })
+}
 
-export default function PrivacyPolicy() {
+export default async function PrivacyPolicy({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  if (locale === 'id') return <PrivacyPolicyId />
   return (
     <div className="min-h-screen bg-brand-cream">
       <main id="main-content" className="mx-auto max-w-3xl px-5 sm:px-8 pt-24 sm:pt-32 pb-16 sm:pb-24">
@@ -23,7 +45,7 @@ export default function PrivacyPolicy() {
 
         {/* Title */}
         <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-brand-ink">Privacy Policy</h1>
-        <p className="mt-2 text-sm text-brand-muted">Last updated: 12 October 2026</p>
+        <p className="mt-2 text-sm text-brand-muted">Last updated: 4 November 2026</p>
 
         <div className="mt-10 space-y-10 text-[15px] leading-relaxed text-brand-ink/80">
 
@@ -90,6 +112,7 @@ export default function PrivacyPolicy() {
                   <li>Friend relationships and friend requests (Makan uses mutual friendships)</li>
                   <li>Likes, craves, and comments</li>
                   <li>Your answers when the App asks you to compare two of your own meals and pick the one you would choose again</li>
+                  <li>The order you arrange your own meals in (&ldquo;Your order&rdquo;), including meals you move up or down</li>
                 </ul>
               </div>
               <div>
@@ -143,21 +166,23 @@ export default function PrivacyPolicy() {
                 </p>
                 <p className="mt-2">
                   When the App shows you two of your own saved meals and asks which one you would
-                  choose again, we keep your answer. From enough of those answers we build a private
-                  picture of your own taste: an ordering of your own meals, a sense of which
-                  restaurants suit you, and short written summaries of what your choices suggest you
-                  enjoy. That picture is what lets Makan tell you what you are likely to like at a
-                  restaurant you have never been to.
+                  choose again, we keep your answer. We also keep the order you put your own meals
+                  in. From those we build a picture of your own taste: an ordering of your own meals
+                  and dishes, a sense of which restaurants suit you, and short written reasons for
+                  what Makan suggests. That picture is what lets Makan tell you what you are likely
+                  to like at a restaurant you have never been to.
                 </p>
                 <p className="mt-2">
-                  It is personal data about you, so you should know exactly what it is and is not:
+                  It is personal data about you, and it is fair to call it a profile of your
+                  preferences, so you should know exactly what it is and is not:
                 </p>
                 <ul className="mt-2 list-disc pl-5 space-y-1">
-                  <li>It is built <strong className="font-semibold text-brand-ink">only from choices you made on purpose</strong> — the comparisons you answered. We do not build it by watching what you look at, tap, or linger on.</li>
-                  <li>It is <strong className="font-semibold text-brand-ink">stored privately against your account and shown only to you.</strong> No other user sees it.</li>
-                  <li>It is used <strong className="font-semibold text-brand-ink">only to help you decide what to eat.</strong> Never to advertise to you, never to rank you against other people, never to make a decision that affects you outside the App.</li>
+                  <li>It is built <strong className="font-semibold text-brand-ink">only from choices you made on purpose</strong> — the comparisons you answered and the order you set. We do not build it by watching what you look at, tap, or linger on.</li>
+                  <li>It is <strong className="font-semibold text-brand-ink">stored privately against your account.</strong> We do not show it to other users. Two things other people can see come from it, and only these two. First, a <strong className="font-semibold text-brand-ink">taste match with your friends</strong>: where you and a mutual friend have both ranked the same dishes, each of you sees how many dishes you have both ranked and how many of those sit in the same half of each of your orders — for example &ldquo;You agree on 4 of 6 dishes&rdquo;. It uses only meals each of you can already see, never anything hidden, held or private, and it shows neither your order nor the dishes. Someone who is no longer your friend, or whom you have blocked or reported, sees nothing. Second, <strong className="font-semibold text-brand-ink">public rankings</strong>: your answers count, combined with everyone else&apos;s, toward public rankings such as a restaurant&apos;s Eat percentage. No individual answer is shown or attributed to you.</li>
+                  <li>It is used <strong className="font-semibold text-brand-ink">only to help you decide what to eat</strong> — your suggestions, your taste match with friends and those combined rankings. Never to advertise to you, never to rank you against other people, never to make a decision that affects you outside the App.</li>
                   <li>Losing a comparison does not mean you disliked something. It records only which of two meals you would return to first.</li>
-                  <li>You can <strong className="font-semibold text-brand-ink">object</strong> to us building it at all — see section 11 — and it is <strong className="font-semibold text-brand-ink">deleted when you delete your account.</strong></li>
+                  <li>It is <strong className="font-semibold text-brand-ink">part of how Makan works</strong>, so there is no setting to switch it off; we rely on contract for it (section 4.1). Earlier versions of the App had a &ldquo;Share my taste&rdquo; setting. It has been removed, and if you had it switched off the App tells you once. Answers you gave while it was off have never counted toward public rankings.</li>
+                  <li>You can ask for a copy of it (section 11), and it is <strong className="font-semibold text-brand-ink">deleted when you delete your account.</strong></li>
                 </ul>
               </div>
             </div>
@@ -170,6 +195,7 @@ export default function PrivacyPolicy() {
               <p>We use personal data to:</p>
               <ul className="list-disc pl-5 space-y-1">
                 <li><strong className="font-semibold text-brand-ink">Help you decide what to eat</strong> — by remembering the meals you have saved, keeping the comparisons you have answered, and building the private picture of your taste described in section 2.7</li>
+                <li>Show you and your friends how your tastes match, as described in section 2.7</li>
                 <li>Create and manage user accounts</li>
                 <li>Provide core App functionality, including saving meals and displaying feeds according to the audience you chose</li>
                 <li>Operate the friend graph, including friend requests and mutual friendships</li>
@@ -231,9 +257,10 @@ export default function PrivacyPolicy() {
             <div className="mt-4 space-y-4">
               <p>
                 Under UK GDPR, we rely on the following lawful bases. In short:{' '}
-                <strong className="font-semibold text-brand-ink">contract</strong> covers your account
-                and the core features; <strong className="font-semibold text-brand-ink">legitimate
-                interests</strong> covers the private taste picture, dish recognition, usage
+                <strong className="font-semibold text-brand-ink">contract</strong> covers your account,
+                the core features and the picture of your taste and the taste match built from it;{' '}
+                <strong className="font-semibold text-brand-ink">legitimate
+                interests</strong> covers dish recognition, usage
                 measurement, security, fault-fixing, improving the Services, and featuring meals you
                 have made public in our marketing; and{' '}
                 <strong className="font-semibold text-brand-ink">consent</strong> covers enquiries
@@ -246,21 +273,19 @@ export default function PrivacyPolicy() {
                   account — account management, saving and displaying meals according to your chosen
                   audience, the friend graph, and syncing across your devices.
                 </p>
+                <p className="mt-2">
+                  <strong className="font-semibold text-brand-ink">The picture of your taste and the taste match (section 2.7).</strong>{' '}
+                  Makan exists to help you decide what to order, and this picture is the means by which
+                  it does so. Your suggestions, the taste match with your friends and the combined
+                  rankings are the service you asked us for, so we process the data behind them to
+                  provide it, and there is no separate setting to switch it off. We keep it to what the
+                  service needs: it is built only from choices you made on purpose, it is never used to
+                  advertise to you or to evaluate you, and what other people can see from it is limited
+                  to the friend taste match and the combined rankings described in section 2.7.
+                </p>
               </div>
               <div>
                 <h3 className="font-medium text-brand-ink">4.2 Legitimate interests</h3>
-                <p className="mt-2">
-                  <strong className="font-semibold text-brand-ink">The private picture of your taste (section 2.7).</strong>{' '}
-                  We rely on legitimate interests to build it. Makan exists to help you decide what to
-                  order, and that picture is the means by which it does so — it is not an incidental
-                  by-product of running the App, it is the service you came for. We consider the
-                  interest a shared one: the picture is built only from comparisons you deliberately
-                  answered, it is visible only to you, it is never used to advertise to you or to
-                  evaluate you, and it produces nothing that leaves the App. Weighed against your
-                  rights and reasonable expectations, we think someone who asks an app what they
-                  should order expects that app to remember what they liked. If you disagree, you can
-                  object at any time using the contact details above, and we will stop.
-                </p>
                 <p className="mt-2">
                   <strong className="font-semibold text-brand-ink">Dish recognition (section 3).</strong>{' '}
                   We rely on legitimate interests here for the same reason. Makan is the app you open
@@ -556,9 +581,16 @@ export default function PrivacyPolicy() {
                 <li>Request deletion of personal data</li>
                 <li>Request restriction of processing in certain circumstances</li>
                 <li>Request data portability where applicable</li>
-                <li>Object to processing we carry out on the basis of legitimate interests. This includes the private picture of your taste described in section 2.7, and the usage measurement and crash reporting described in section 7</li>
+                <li>Object to processing we carry out on the basis of legitimate interests, such as the usage measurement and crash reporting described in section 7</li>
                 <li>Withdraw consent where we rely on it. Withdrawing consent does not affect the lawfulness of processing we carried out before you withdrew it</li>
               </ul>
+              <p>
+                The picture of your taste (section 2.7) is part of the service under contract, so the
+                right to object to processing based on legitimate interests does not apply to it, and
+                there is no setting to turn it off. You can still ask for a copy of it, ask us to correct
+                it, and have it deleted by deleting your account. If you think it is being used in a way
+                this Policy does not describe, tell us.
+              </p>
               <p>
                 You can delete your account at any time from within the App, which begins the deletion
                 process described above. To exercise any other right, contact us at{' '}
@@ -591,7 +623,7 @@ export default function PrivacyPolicy() {
                 <li>Your first shared meal is always friends-only; after that, you choose friends-only or public for each meal</li>
                 <li>Location access is off by default and only used, with permission, at the moment you use a location feature</li>
                 <li>We collect the minimum data needed, and we never use your data for targeted advertising</li>
-                <li>We build a private picture of your own taste from the comparisons you answer, as described in section 2.7. It exists to help you choose what to eat, it is shown only to you, and it is never used to advertise to you, to judge you, or to decide anything about you</li>
+                <li>We build a picture of your own taste from the comparisons you answer and the order you set, as described in section 2.7. It exists to help you choose what to eat, it is private to you apart from the friend taste match and the combined rankings described there, and it is never used to advertise to you, to judge you, or to decide anything about you</li>
                 <li>We do not use manipulative design or nudges to push you to share more than you intend</li>
                 <li>We do not use streaks, badges, points, or leaderboards to keep you using the App</li>
               </ul>
@@ -612,12 +644,14 @@ export default function PrivacyPolicy() {
                 similarly significant effects for you.
               </p>
               <p>
-                Makan does build the private picture of your taste described in section 2.7, and it is
-                fair to call that a profile of your preferences. We would rather say so plainly than
-                hide behind wording. What matters is what it is for and what it cannot do: it exists
-                to answer &ldquo;what should I order&rdquo;, it is assembled from comparisons you
-                chose to answer, it is shown to nobody but you, and it is never used to evaluate you,
-                to decide whether you can use any part of the Services, or to advertise to you.
+                Makan does build the picture of your taste described in section 2.7, and it is fair to
+                call that a profile of your preferences. We would rather say so plainly than hide
+                behind wording. What matters is what it is for and what it cannot do: it exists to
+                answer &ldquo;what should I order&rdquo;, it is assembled from comparisons you chose to
+                answer and the order you set, the only things other people see from it are the friend
+                taste match and the combined rankings described in section 2.7, and it is never used to
+                evaluate you, to decide whether you can use any part of the Services, or to advertise
+                to you.
               </p>
               <p>
                 We do not analyse the content of your meal photographs. By &ldquo;analyse&rdquo; we
@@ -645,6 +679,13 @@ export default function PrivacyPolicy() {
                 The updated version will be published with a revised &ldquo;Last updated&rdquo; date.
                 Where the change is significant, we will take reasonable steps to notify you, for
                 example within the App or by email.
+              </p>
+              <p>
+                The update dated 4 November 2026 makes the picture of your taste part of the service
+                rather than a setting. It describes the friend taste match and the combined public
+                rankings in section 2.7, moves the picture from legitimate interests to contract in
+                section 4, removes the right-to-object wording that applied to it in sections 11 and
+                13, and explains that the &ldquo;Share my taste&rdquo; setting has been removed.
               </p>
               <p>
                 The previous update, made on 30 August 2026, rewrote the dish recognition parts of
