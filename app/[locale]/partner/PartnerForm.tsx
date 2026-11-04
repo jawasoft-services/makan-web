@@ -107,7 +107,7 @@ export default function PartnerForm() {
         <button type="submit" disabled={status === 'loading'} className="min-h-14 w-full cursor-pointer rounded-xl bg-brand-orange px-4 py-3 text-base font-bold text-white transition-colors hover:bg-brand-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink disabled:cursor-wait disabled:opacity-60">{status === 'loading' ? t('sending') : t('send')}</button>
         {errorMsg && !invalidField && <p role="alert" className="text-sm font-semibold leading-relaxed text-brand-ink">{errorMsg}</p>}
       </form>
-      <p className="mt-5 text-sm leading-relaxed text-brand-muted">{t('agreement')}{' '}<Link href="/tos" className="inline-block py-2 underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-ink">{t('terms')}</Link>{' '}{t('and')}{' '}<Link href="/privacy-policy" className="inline-block py-2 underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-ink">{t('privacy')}</Link>.</p>
+      <p className="mt-5 text-sm leading-relaxed text-brand-muted">{t('agreement')}{' '}<Link href="/tos" className="inline-block py-2 underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-ink">{t('terms')}</Link>{' '}{t('and')}{' '}<Link href={localizePath(locale, '/privacy-policy')} className="inline-block py-2 underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-ink">{t('privacy')}</Link>.</p>
     </div>
   )
 }

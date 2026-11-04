@@ -12,7 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const localized = (
     path: string,
-    changeFrequency: "weekly" | "monthly",
+    changeFrequency: "weekly" | "monthly" | "yearly",
     priority: number,
   ) => {
     const enUrl = `${base}${path}`
