@@ -14,6 +14,7 @@ import { getDirectoryPlace, getPlaceIndex, type DirectoryPlace } from '@/lib/pla
 import { getPlacePhoto } from '@/lib/place-photo'
 import { localizePath } from '@/i18n/paths'
 import { thumbUrl } from '@/lib/thumb'
+import { safeJsonLd } from '@/lib/safe-json-ld'
 
 /**
  * One restaurant on Makan, laid out like the app's place screen
@@ -142,7 +143,7 @@ export default async function PlacePage({ params }: Props) {
   return (
     <div className="min-h-screen bg-brand-cream">
       <SiteSchema locale={locale} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(schema) }} />
       <main id="main-content" className="pb-28">
         {/* Hero: the latest public meal, full-bleed, as the app does. */}
         <div className="relative h-[16rem] w-full bg-brand-card pt-20 sm:h-[22rem]">

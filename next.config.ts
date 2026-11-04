@@ -6,7 +6,9 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 const isDev = process.env.NODE_ENV === "development";
 const contentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  // Cloudflare Turnstile (contact and partner forms) loads from, and renders
+  // its challenge in a frame from, challenges.cloudflare.com.
+  `script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com${isDev ? " 'unsafe-eval'" : ""}`,
   "script-src-attr 'none'",
   // Framer Motion and React style props require inline styles. Script execution
   // remains strict in production; styles cannot execute JavaScript.
@@ -19,6 +21,7 @@ const contentSecurityPolicy = [
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
+  "frame-src https://challenges.cloudflare.com",
   "frame-ancestors 'none'",
   "worker-src 'self' blob:",
   "upgrade-insecure-requests",

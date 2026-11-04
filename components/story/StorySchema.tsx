@@ -1,6 +1,7 @@
 // Server component: emits one JSON-LD @graph so AI/search treat /story as the
 // canonical entity record for Makan. Mirrors components/blog/ReviewSchema.tsx.
 import { BOILERPLATE_LONG, COMPANY, FOUNDER, LAUNCH, PRESS_EMAIL, SOCIALS } from "@/lib/press"
+import { safeJsonLd } from "@/lib/safe-json-ld"
 
 const BASE = "https://www.makanofficial.com"
 
@@ -64,8 +65,7 @@ export default function StorySchema({ locale = "en" }: { locale?: string }) {
   return (
     <script
       type="application/ld+json"
-      // Escape < to prevent the JSON from terminating the script element.
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(graph).replace(/</g, "\\u003c") }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLd(graph) }}
     />
   )
 }
