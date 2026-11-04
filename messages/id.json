@@ -571,6 +571,16 @@
       "body": "Eats restoran berasal dari pilihan pengguna antara makanan yang mereka simpan sendiri di Eat or Yeet. Ini lima restoran yang paling sering dipilih, dari tempat dengan setidaknya {floor} perbandingan. Gelar Maître d’ dihitung terpisah, lewat hari makan yang dicatat.",
       "cta": "Lihat peringkat lengkap",
       "picked": "Dipilih {eats} dari {matchups}"
+    },
+    "Maitred": {
+      "eyebrow": "Maître d’",
+      "title": "Pesanan andalan para langganan.",
+      "body": "Maître d’ adalah langganan teratas sebuah restoran di Makan. Sebagian memberi tahu menu yang sebaiknya dipesan. Saat ini {count} restoran punya Maître d’.",
+      "whatToOrder": "Pesanan andalan",
+      "byline": "{name}, sang Maître d’, menyarankan menu ini.",
+      "othersTitle": "Juga punya Maître d’",
+      "othersSub": "Belum ada catatan menu.",
+      "cta": "Cara menjadi Maître d’"
     }
   },
   "Standings": {
@@ -668,11 +678,17 @@
     "maitredEmptyBody": "Maître'D itu yang paling sering makan di sini. Simpan makananmu di {name} dan kursinya jadi milikmu — dengan pilihanmu sendiri yang dilihat orang lain.",
     "maitredReward": "Jadi pelanggan paling setia {name}. Diperlakukan seperti itu.",
     "maitredCta": "Ambil kursinya — pakai Makan gratis",
-    "maitredHeldEyebrow": "Maître'D di sini",
-    "maitredHeldSub": "Paling sering makan di sini di Makan",
-    "maitredHeldFooter": "Pakai Makan buat lihat semua pilihannya — atau jadi Maître'D berikutnya.",
+    "maitredHeldEyebrow": "Maître d’ di sini",
     "metaTitleLocated": "{name}, {city} | Makan",
-    "metaDescriptionEmpty": "{place}. Belum ada foto makanan publik."
+    "metaDescriptionEmpty": "{place}. Belum ada foto makanan publik.",
+    "maitredOrderEyebrow": "Pesanan andalan di sini",
+    "maitredBy": "<strong>{name}</strong>, sang Maître d’, menyarankan menu ini.",
+    "maitredAnother": "Juga enak",
+    "maitredWhy": "Kenapa mereka suka",
+    "maitredTip": "Tips",
+    "maitredExplain": "Maître d’ adalah orang yang menyimpan makanan di sini pada hari terbanyak dalam 60 hari terakhir.",
+    "maitredHow": "Cara menjadi Maître d’ di sini",
+    "maitredNoNote": "Belum ada catatan menu."
   },
   "Meal": {
     "savedAt": "Disimpan di",

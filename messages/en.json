@@ -571,6 +571,16 @@
       "body": "Restaurant Eats come from diners picking between their own saved meals in Eat or Yeet. These are the five restaurants diners pick most often, among places with {floor} or more matchups. Maître d’ titles are earned separately, through saved dining days.",
       "cta": "See the full standings",
       "picked": "Picked {eats} of {matchups}"
+    },
+    "Maitred": {
+      "eyebrow": "Maîtres d’",
+      "title": "What the regular orders.",
+      "body": "A Maître d’ is a restaurant’s top regular on Makan. Some say which dish to order. {count, plural, one {# restaurant has} other {# restaurants have}} a Maître d’ right now.",
+      "whatToOrder": "What to order",
+      "byline": "{name}, the Maître d’, says to order this.",
+      "othersTitle": "Also with a Maître d’",
+      "othersSub": "No note on what to order yet.",
+      "cta": "How to become a Maître d’"
     }
   },
   "Standings": {
@@ -668,11 +678,17 @@
     "maitredEmptyBody": "The Maître'D is whoever eats here most. Save your meals at {name} and the seat is yours — with your own picks other diners see.",
     "maitredReward": "Be {name}'s most loyal customer. Get treated like it.",
     "maitredCta": "Claim the seat — get Makan free",
-    "maitredHeldEyebrow": "The Maître'D here",
-    "maitredHeldSub": "Eats here more than anyone on Makan",
-    "maitredHeldFooter": "Get Makan to see every pick — or become the next Maître'D.",
+    "maitredHeldEyebrow": "The Maître d’ here",
     "metaTitleLocated": "{name}, {city} | Makan",
-    "metaDescriptionEmpty": "{place}. No public meal photos are available yet."
+    "metaDescriptionEmpty": "{place}. No public meal photos are available yet.",
+    "maitredOrderEyebrow": "What to order here",
+    "maitredBy": "<strong>{name}</strong>, the Maître d’, says to order this.",
+    "maitredAnother": "Also good",
+    "maitredWhy": "Why they like it",
+    "maitredTip": "Tip",
+    "maitredExplain": "The Maître d’ is the person who has saved meals here on the most days in the last 60 days.",
+    "maitredHow": "How to become the Maître d’ here",
+    "maitredNoNote": "No note on what to order yet."
   },
   "Meal": {
     "savedAt": "Saved at",
