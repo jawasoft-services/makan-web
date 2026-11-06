@@ -1,3 +1,4 @@
+import PlayfulArrow from '@/components/PlayfulArrow'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
@@ -16,7 +17,7 @@ export async function generateMetadata({ params }: {params: Promise<{locale: str
   const t = await getTranslations({locale, namespace:'Partner'})
   return createPageMetadata({title:t('metaTitle'), description:t('metaDescription'), path:locale === 'id' ? '/id/partner' : '/partner', locale, image:SITE_URL + (locale === 'id' ? '/id' : '') + '/partner/opengraph-image'})
 }
-const arrow = <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14" /></svg>
+const arrow = <PlayfulArrow />
 export default async function PartnerPage({ params }: {params: Promise<{locale: string}>}) {
   const {locale} = await params
   setRequestLocale(locale)

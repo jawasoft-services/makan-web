@@ -1,3 +1,4 @@
+import PlayfulArrow from '@/components/PlayfulArrow'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Link from 'next/link'
@@ -100,7 +101,7 @@ export default async function StandingsPage({
         <Image src="/redesign/food-plate.svg" alt="" width={120} height={120} className={styles.headingArt} />
         </header>
         <details className={styles.guide}>
-          <summary>{t('guideLine')}</summary>
+          <summary className="playful-disclosure">{t('guideLine')}<PlayfulArrow direction="down" /></summary>
           <div><GuideStory locale={locale} /></div>
         </details>
         <p className={styles.guideIntro}>

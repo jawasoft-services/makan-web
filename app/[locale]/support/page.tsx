@@ -1,3 +1,4 @@
+import PlayfulArrow from '@/components/PlayfulArrow'
 import type { Metadata } from "next"
 import Image from "next/image"
 import styles from "@/components/utility.module.css"
@@ -70,8 +71,8 @@ export default async function SupportPage({ params }: { params: Promise<{ locale
             <div className={styles.linkRow}><Link href={localizePath(locale, "/privacy-policy")}>{t("privacy")}</Link><Link href="/tos">{t("terms")}</Link></div>
           </section>
           <nav className={styles.linkStack} aria-label={account("relatedLinksLabel")}>
-            <Link href={localizePath(locale, "/account-deletion")}>{account("title")} <span aria-hidden>↗</span></Link>
-            <Link href={localizePath(locale, "/data-deletion")}>{data("title")} <span aria-hidden>↗</span></Link>
+            <Link href={localizePath(locale, "/account-deletion")}>{account("title")} <PlayfulArrow /></Link>
+            <Link href={localizePath(locale, "/data-deletion")}>{data("title")} <PlayfulArrow /></Link>
           </nav>
         </div>
         <section className={styles.company}><h2>{t("who")}</h2>

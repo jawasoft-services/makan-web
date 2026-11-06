@@ -100,7 +100,8 @@ test('every privacy link and the sitemap follow the language', () => {
 })
 
 test('the Indonesian page links home to /id, and both name the counted meals', () => {
-  assert.match(indonesian, /<Link\s+href=(['"])\/id\1[^>]*>\s*&larr; Kembali ke beranda\s*<\/Link>/)
+  const homeLink = indonesian.match(/<Link\s+href=(['"])\/id\1[^>]*>([\s\S]*?)<\/Link>/)?.[2]
+  assert.equal(homeLink?.replace(/<[^>]+>/g, "").trim(), "Kembali ke beranda")
   assert.match(page(english), /counts only your public and friends-only meals/)
   assert.match(page(indonesian), /yang publik dan yang hanya-teman/)
 })

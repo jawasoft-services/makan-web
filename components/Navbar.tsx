@@ -1,5 +1,6 @@
 'use client'
 
+import PlayfulArrow from '@/components/PlayfulArrow'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
@@ -44,7 +45,7 @@ export default function Navbar() {
   }, [])
   // Keep secret-bearing group invitations focused on their own app handoff.
   if (bare.startsWith('/invite/')) return null
-  const arrow = <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14" /></svg>
+  const arrow = <PlayfulArrow />
   return <header className={`site-header ready ${scrolled || !darkHero ? 'scrolled' : ''} ${hidden && !open ? 'out-of-view' : ''}`}>
     <Link className="brand" href={home} aria-label={locale === 'id' ? 'Beranda Makan' : 'Makan home'}><Image className="logo-light" src="/redesign/logo.svg" alt="Makan" width={168} height={40} priority /><Image className="logo-dark" src="/redesign/logo-orange.svg" alt="" width={168} height={40} /></Link>
     <nav className="desktop-nav" aria-label={nav('menu')}><a className="nav-plain" href={hash('#features')}>{t('theapp')}</a><a className="button orange text-white" href={primary} onClick={() => track('Store CTA Clicked', { location: 'navigation', locale })}>{primaryLabel}{arrow}</a><Link className="button outline" href={secondary}>{secondaryLabel}</Link><LanguageSwitcher compact /></nav>

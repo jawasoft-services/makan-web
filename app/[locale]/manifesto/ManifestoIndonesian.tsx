@@ -1,3 +1,4 @@
+import PlayfulArrow from '@/components/PlayfulArrow'
 import Image from 'next/image'
 import EditorialCta from '@/components/story/EditorialCta'
 import styles from '@/components/story/editorial.module.css'
@@ -188,7 +189,7 @@ export default function ManifestoIndonesian() {
           <Link
             href="/id"
           >
-            Kembali ke Makan →
+            Kembali ke Makan <PlayfulArrow direction="right" />
           </Link>
         </div>
 

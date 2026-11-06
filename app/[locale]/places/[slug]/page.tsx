@@ -1,3 +1,4 @@
+import PlayfulArrow from '@/components/PlayfulArrow'
 import type { Metadata } from 'next'
 import { notFound, permanentRedirect } from 'next/navigation'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
@@ -178,7 +179,7 @@ export default async function PlacePage({ params }: Props) {
           </div>
           <aside>
             {place.address ? <p className={styles.address}>
-              {directionsUrl ? <a href={directionsUrl} rel="noopener" target="_blank">{place.address}<span>{t('directions')} ↗</span></a> : <span>{place.address}</span>}
+              {directionsUrl ? <a href={directionsUrl} rel="noopener" target="_blank">{place.address}<span>{t('directions')} <PlayfulArrow /></span></a> : <span>{place.address}</span>}
             </p> : null}
             {place.claimed ? null : <Link href={localizePath(locale, `/claim/${place.slug}`)} className={styles.textLink}>{t('claimRow')}</Link>}
             {hasGeo ? <PlacesMapLoader className={styles.placeMap} label={t('mapLabel', { name: place.name })} zoom={16} markers={[{ slug: place.slug, name: place.name, lat: place.lat as number, lng: place.lng as number, href: pageUrl }]} /> : null}

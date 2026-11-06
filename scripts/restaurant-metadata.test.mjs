@@ -8,7 +8,7 @@ import { createTranslator } from 'next-intl'
 const routeFile = 'app/[locale]/places/[slug]/page.tsx'
 const unusedImports = new Set([
   'react/jsx-runtime', 'next/navigation', 'next/image', 'next/link',
-  '@/components/Footer', '@/components/PlaceMaitred', '@/components/SiteSchema',
+  '@/components/PlayfulArrow', '@/components/Footer', '@/components/PlaceMaitred', '@/components/SiteSchema',
   '@/components/home/StoreLink', '@/components/map/PlacesMapLoader',
   '@/lib/place-photo', '@/lib/maitred', '@/i18n/paths', '@/lib/thumb', '@/lib/safe-json-ld',
   '@/components/standings/public-pages.module.css',

@@ -1,3 +1,4 @@
+import PlayfulArrow from '@/components/PlayfulArrow'
 import StoreLink from "@/components/home/StoreLink"
 import Link from "next/link"
 import type { ReactNode } from "react"
@@ -65,7 +66,7 @@ function Faq({ review }: { review: Review }) {
   return (
     <section className={styles.faq} aria-labelledby="review-faq">
       <h2 id="review-faq">{review.restaurant.name}: quick questions</h2>
-      {review.faq.map(faq => <details key={faq.q}><summary>{faq.q}</summary><p>{faq.a}</p></details>)}
+      {review.faq.map(faq => <details key={faq.q}><summary className="playful-disclosure">{faq.q}<PlayfulArrow direction="down" /></summary><p>{faq.a}</p></details>)}
     </section>
   )
 }
@@ -101,7 +102,7 @@ export function ReviewArticle({ review }: { review: Review }) {
   return (
     <main id="main-content" className={styles.page} lang="en">
       <header className={`${styles.hero} ${styles.articleHero}`}>
-        <Link className={styles.back} href="/blog"><span aria-hidden>←</span> Food stories</Link>
+        <Link className={styles.back} href="/blog"><PlayfulArrow direction="left" /> Food stories</Link>
         <p className={styles.kicker}>{review.restaurant.locality} · First-hand review</p>
         <h1>{review.h1}</h1>
         <p className={styles.dek}>{review.dek}</p>
@@ -117,7 +118,7 @@ export function ReviewArticle({ review }: { review: Review }) {
         <aside className={styles.toc}>
           <p>In this review</p>
           <nav aria-label="Review sections">{review.blocks.map((block, i) => block.kind === 'h2' ? <a key={i} href={`#section-${i}`}>{block.text}</a> : null)}</nav>
-          {review.slug === 'kendal-street-kitchen' ? <Link className={styles.textLink} href="/places/kendal-street-kitchen-f7d46b">Kendal Street Kitchen on Makan <span aria-hidden>↗</span></Link> : null}
+          {review.slug === 'kendal-street-kitchen' ? <Link className={styles.textLink} href="/places/kendal-street-kitchen-f7d46b">Kendal Street Kitchen on Makan <PlayfulArrow /></Link> : null}
         </aside>
         <article className={`${styles.prose} ${styles.reviewProse}`}>
           {review.blocks.map((block, index) => <BlockView key={index} block={block} review={review} index={index} />)}

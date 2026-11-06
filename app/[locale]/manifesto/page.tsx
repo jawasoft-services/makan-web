@@ -1,3 +1,4 @@
+import PlayfulArrow from '@/components/PlayfulArrow'
 import Image from 'next/image'
 import EditorialCta from '@/components/story/EditorialCta'
 import styles from '@/components/story/editorial.module.css'
@@ -232,7 +233,7 @@ export default async function ManifestoPage({
             <Link
               href="/"
             >
-              Back to Makan →
+              Back to Makan <PlayfulArrow direction="right" />
             </Link>
           </div>
 

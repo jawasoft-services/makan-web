@@ -2,6 +2,7 @@
 // the whole policy and publish both languages together). The English page is the reference text: change them
 // together. PUBLISH ONLY after counsel's check of the wording, and together with the English page (the native read was
 // accepted by Devon without one, 4 Nov 2026). Recheck the "Terakhir diperbarui" date at publication.
+import PlayfulArrow from '@/components/PlayfulArrow'
 import styles from '@/components/utility.module.css'
 import type { ReactNode } from 'react'
 import Link from 'next/link'
@@ -631,7 +632,7 @@ export default function PrivacyPolicyId() {
 
           <div>
             <Link href="/id">
-              &larr; Kembali ke beranda
+              <PlayfulArrow direction="left" /> Kembali ke beranda
             </Link>
           </div>
 

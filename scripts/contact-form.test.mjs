@@ -25,6 +25,7 @@ function form({ siteKey = '', responses = [200] } = {}) {
       if(id==='next-intl') return {useLocale:()=> 'id',useTranslations:namespace=>key=>`${namespace}.${key}`}
       if(id==='next/link') return {default:'a'}
       if(id==='next/image') return {default:'img'}
+      if(id==='@/components/PlayfulArrow') return {default:'svg'}
       if(id==='@/i18n/paths') return {localizePath:(_,path)=>path==='/tos'?path:`/id${path==='/'?'':path}`}
       if(id==='@/components/Turnstile') return {default:'turnstile',TURNSTILE_SITE_KEY:siteKey,resetTurnstile:()=>reset++}
       if(id.endsWith('.module.css')) return {default:new Proxy({}, {get:(_,key)=>key})}

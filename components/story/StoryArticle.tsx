@@ -1,3 +1,4 @@
+import PlayfulArrow from '@/components/PlayfulArrow'
 import Image from 'next/image'
 import Link from 'next/link'
 import StoreLink from '@/components/home/StoreLink'
@@ -25,7 +26,7 @@ export default function StoryArticle({ locale, mealCount }: { locale: string; me
       </header>
       <figure className={styles.widePhoto}>
         <StaticPicture basePath="/static-images/v1/blog/kendal-street-kitchen/carbonara-risotto" widths={[480, 900, 1400]} width={2048} height={2048} sizes="(min-width: 1300px) 1200px, 90vw" alt={isId ? 'Carbonara, risotto jamur, dan kentang goreng truffle di Kendal Street Kitchen' : 'Carbonara, mushroom risotto and truffle fries at Kendal Street Kitchen'} />
-        <figcaption><Link href="/blog/kendal-street-kitchen">Kendal Street Kitchen · @ridorichard <span aria-hidden>↗</span></Link></figcaption>
+        <figcaption><Link href="/blog/kendal-street-kitchen">Kendal Street Kitchen · @ridorichard <PlayfulArrow /></Link></figcaption>
       </figure>
       <div className={styles.readingLayout}>
         <aside className={styles.toc}>
@@ -33,7 +34,7 @@ export default function StoryArticle({ locale, mealCount }: { locale: string; me
           <nav aria-label={isId ? 'Bab cerita' : 'Story chapters'}>
             {copy.map(([tag, text], i) => tag === 'h2' ? <a key={i} href={`#chapter-${i}`}>{text}</a> : null)}
           </nav>
-          <Link className={styles.textLink} href={localizePath(locale, '/manifesto')}>{isId ? 'Baca manifesto kami' : 'Read our manifesto'} <span aria-hidden>↗</span></Link>
+          <Link className={styles.textLink} href={localizePath(locale, '/manifesto')}>{isId ? 'Baca manifesto kami' : 'Read our manifesto'} <PlayfulArrow /></Link>
         </aside>
         <article className={styles.prose}>
           {copy.slice(3).map(([tag, text], i) => tag === 'h2'
@@ -43,7 +44,7 @@ export default function StoryArticle({ locale, mealCount }: { locale: string; me
           <section className={styles.press} aria-labelledby="press-title">
             <h2 id="press-title">{isId ? 'Untuk media' : 'For press'}</h2>
             <p>{isId ? 'Makan adalah aplikasi yang kamu buka saat bingung mau pesan apa. Didirikan Devon Makepeace dan tumbuh dari shared story teman-temannya selama pandemi, Makan membantumu menyimpan makanan, lalu membandingkan dua makananmu dan memilih mana yang ingin kamu pesan lagi lebih dulu. Saat berhadapan dengan menu, Makan mulai dari pengalamanmu sendiri, lalu orang-orang yang kamu pilih untuk dipercaya. Makan diluncurkan di Apple App Store pada Juni 2026.' : BOILERPLATE_LONG}</p>
-            <a className={styles.textLink} href={`mailto:${PRESS_EMAIL}`}>{PRESS_EMAIL} <span aria-hidden>↗</span></a>
+            <a className={styles.textLink} href={`mailto:${PRESS_EMAIL}`}>{PRESS_EMAIL} <PlayfulArrow /></a>
           </section>
         </article>
       </div>

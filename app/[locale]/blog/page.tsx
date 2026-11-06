@@ -1,3 +1,4 @@
+import PlayfulArrow from '@/components/PlayfulArrow'
 import type { Metadata } from "next"
 import Link from "next/link"
 import Footer from "@/components/Footer"
@@ -35,7 +36,7 @@ export default function BlogIndexPage() {
                 <p className={styles.kicker}>{review.restaurant.locality} · <time dateTime={review.datePublished}>{new Date(review.datePublished).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</time></p>
                 <h2><Link href={`/blog/${review.slug}`}>{review.restaurant.name}</Link></h2>
                 <p>{review.dek}</p>
-                <Link className={styles.textLink} href={`/blog/${review.slug}`}>Read the story <span aria-hidden>↗</span></Link>
+                <Link className={styles.textLink} href={`/blog/${review.slug}`}>Read the story <PlayfulArrow /></Link>
                 {review.slug === 'kendal-street-kitchen' ? <p className={styles.credit}>@ridorichard</p> : null}
               </div>
             </article>
@@ -43,7 +44,7 @@ export default function BlogIndexPage() {
         </section>
         <section className={styles.aboutStrip}>
           <div><p className={styles.kicker}>From Makan’s founder</p><h2>It started with a shared story.</h2></div>
-          <Link className={styles.button} href="/story">Our story <span aria-hidden>↗</span></Link>
+          <Link className={styles.button} href="/story">Our story <PlayfulArrow /></Link>
         </section>
         <EditorialCta />
       </main>

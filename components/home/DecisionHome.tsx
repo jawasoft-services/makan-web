@@ -1,3 +1,4 @@
+import PlayfulArrow from '@/components/PlayfulArrow'
 import Image from 'next/image'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
@@ -31,7 +32,7 @@ const reviews = [
   ['I love seeing what my friends are eating and cooking.', 'MimiPopps', '27 Jun'],
   ['A must for any food lover…', 'Woohooouk2009', '3 Oct'],
 ]
-const arrow = <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14" /></svg>
+const arrow = <PlayfulArrow />
 
 export default async function DecisionHome({ locale }: { locale: string }) {
   const t = await getTranslations('Redesign')
@@ -55,7 +56,7 @@ export default async function DecisionHome({ locale }: { locale: string }) {
       <div className="hero-content"><div className="hero-copy"><h1>{t('title')}</h1><p>{t('intro')}</p></div><div className="hero-actions"><a className="button orange text-white" href="#download">{t('app')}{arrow}</a><Link className="button outline" href={localizePath(locale, '/partner')}>{t('partner')}</Link></div></div>
       <Link className="hero-venue" href="/blog/kendal-street-kitchen">Kendal Street Kitchen · London</Link>
     </HomeHero>
-    {rating ? <aside className="store-proof" aria-label={locale === 'id' ? 'Penilaian App Store' : 'App Store rating'}><a href={`${APP_STORE_URL.replace('/app/', '/gb/app/')}`}><span className="proof-stars" aria-hidden="true">{Array.from({length: Math.round(rating.rating)}, (_, i) => <span key={i}>★</span>)}</span><strong className="rating-number">{rating.rating.toFixed(1)} <span>/ 5</span></strong><span>{locale === 'id' ? `Dari ${rating.count} penilaian di App Store Inggris` : `From ${rating.count} ratings on the UK App Store`}</span>{arrow}</a></aside> : null}
+    {rating ? <aside className="store-proof" aria-label={locale === 'id' ? 'Penilaian App Store' : 'App Store rating'}><a href={APP_STORE_URL.replace('/app/', '/gb/app/')} aria-label={locale === 'id' ? `${rating.rating.toFixed(1)} bintang di App Store` : `${rating.rating.toFixed(1)} stars on the App Store`}><span className="proof-stars" aria-hidden="true">{Array.from({length: Math.round(rating.rating)}, (_, i) => <span key={i}>★</span>)}</span><strong className="rating-number" aria-hidden="true">{rating.rating.toFixed(1)}</strong></a></aside> : null}
     <div id="how-it-works">
       {['features', 'memory', 'eat-or-yeet', 'regulars'].map((id, i) => <section key={id} id={id} className={`benefit ${i % 2 ? 'reverse' : ''}`} aria-labelledby={`h-${id}`}><Reveal className="benefit-inner">
         {i < 3 ? <div className={`phone-scene scene-${['feed', 'diary', 'choice'][i]}`}><a className="art art-phone" href={`/redesign/${images[i]}`} target="_blank" rel="noopener" aria-label={`${t('view')}: ${alts[i]}`}><Image src={`/redesign/${images[i]}`} width={1066} height={2198} alt={alts[i]} /></a>{i === 0 ? <figure className="scene-meal"><Image src="/redesign/dining.jpg" width={2048} height={2048} alt="Kendal Street Kitchen" /><figcaption>Kendal Street Kitchen</figcaption></figure> : null}<div className="scene-art"><Image src={`/redesign/${['food-fork.svg', 'food-noodles.svg', 'food-plate.svg'][i]}`} alt="" width={240} height={320} /></div></div> : <RedesignRegulars locale={locale} />}

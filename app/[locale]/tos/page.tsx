@@ -1,3 +1,4 @@
+import PlayfulArrow from '@/components/PlayfulArrow'
 import styles from '@/components/utility.module.css'
 import { Metadata } from 'next'
 import Footer from '@/components/Footer'
@@ -366,7 +367,7 @@ export default function TermsOfUse() {
           {/* Back to home */}
           <div>
             <Link href="/">
-              &larr; Back to home
+              <PlayfulArrow direction="left" /> Back to home
             </Link>
           </div>
 

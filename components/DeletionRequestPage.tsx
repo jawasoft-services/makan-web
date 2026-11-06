@@ -1,3 +1,4 @@
+import PlayfulArrow from '@/components/PlayfulArrow'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import Footer from '@/components/Footer'
@@ -27,7 +28,7 @@ export default async function DeletionRequestPage({ locale, namespace, otherPath
       </div>
       <section className={styles.retention}><h2>{t('retentionTitle')}</h2><p>{t('retentionBody')}</p></section>
       <section className={styles.optional}><h2>{t('optionalTitle')}</h2><p>{t('optionalBody')}</p></section>
-      <aside className={styles.other}><h2>{t('otherTitle')}</h2><p>{t('otherBody')}</p><Link href={localizePath(locale, otherPath)}>{t('otherLink')} <span aria-hidden>↗</span></Link></aside>
+      <aside className={styles.other}><h2>{t('otherTitle')}</h2><p>{t('otherBody')}</p><Link href={localizePath(locale, otherPath)}>{t('otherLink')} <PlayfulArrow /></Link></aside>
       <nav className={styles.linkRow} aria-label={t('relatedLinksLabel')}><Link href={localizePath(locale, '/privacy-policy')}>{t('privacyLink')}</Link><Link href={localizePath(locale, '/')}>{t('backHome')}</Link></nav>
     </main><Footer />
   </div>

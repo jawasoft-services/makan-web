@@ -1,5 +1,6 @@
 'use client'
 
+import PlayfulArrow from '@/components/PlayfulArrow'
 import { useEffect, useRef, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import Link from 'next/link'
@@ -78,12 +79,12 @@ export default function ContactForm() {
     <div>
       <header className={styles.heading}><Image className="brand-wordmark" src="/redesign/logo-orange.svg" alt="Makan" width={132} height={31} /><h1>{t('title')}</h1><p className={styles.intro}>{t('body')}</p></header>
       <Image className={styles.contactArt} src="/redesign/food-plate.svg" width={170} height={155} alt="" aria-hidden />
-      <div className={styles.contactHelp}><h2>{support('title')}</h2><Link href={localizePath(locale, '/support')}>{support('eyebrow')} <span aria-hidden>↗</span></Link></div>
+      <div className={styles.contactHelp}><h2>{support('title')}</h2><Link href={localizePath(locale, '/support')}>{support('eyebrow')} <PlayfulArrow /></Link></div>
     </div>
     <div className={styles.formWrap}>
       {status === 'success' ? <div className={styles.success} ref={feedbackRef} tabIndex={-1} role="status">
         <svg viewBox="0 0 24 24" aria-hidden><path d="m5 12 4 4 10-10" /></svg>
-        <h2>{t('successTitle')}</h2><p>{t('successBody')}</p><Link href={localizePath(locale, '/')}>{t('back')} <span aria-hidden>↗</span></Link>
+        <h2>{t('successTitle')}</h2><p>{t('successBody')}</p><Link href={localizePath(locale, '/')}>{t('back')} <PlayfulArrow /></Link>
       </div> : <>
         {/* JSON submission requires the handler; a native fallback must not put personal fields in a URL. */}
         <form onSubmit={handleSubmit} method="dialog" noValidate aria-busy={status === 'loading'}>
