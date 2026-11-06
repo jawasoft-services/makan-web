@@ -209,7 +209,7 @@
     "eatsEyebrow": "Eats",
     "eatsTitle": "Every choice earns an Eat.",
     "eatsBody": "When a diner picks a meal at your place over a meal somewhere else in Eat or Yeet, your dish gets an Eat and so do you. Eats add up for life.",
-    "eats1": "Every month, the restaurant diners pick most often in your city gets published: in the app, on this site, and on our Instagram.",
+    "eats1": "Every month, the restaurant with the most Eats in your city gets published: in the app, on this site, and on our Instagram.",
     "eats2": "Only people who ate at your place can give you one. Eat or Yeet compares a person's own meals, nothing else.",
     "eats3": "Eats accumulate over time. The standings show when you joined.",
     "liveEyebrow": "What happens today",
@@ -308,7 +308,15 @@
     "faqNext": "What happens when I send the form?",
     "faqNextAnswer": "Your details go to Devon as a restaurant enquiry. He replies in person within two days. Use the optional note to ask about getting started, local activity, or more than one venue.",
     "eatsScreenAlt": "The Makan Eat or Yeet screen, where a diner chooses between their own saved meals",
-    "eatsScreenCaption": "Their own meals. Their choice. An Eat when your dish wins."
+    "eatsScreenCaption": "Their own meals. Their choice. An Eat when your dish wins.",
+    "findTitle": "Find your restaurant",
+    "findBody": "Search for your restaurant to claim it in the Makan app. It's free.",
+    "findLabel": "Restaurant name",
+    "findPlaceholder": "Start typing a name",
+    "findNone": "We can't find that one yet.",
+    "findError": "Search isn't working right now. Try again in a moment.",
+    "findCant": "Can't find it?",
+    "findCantCta": "Tell us about your place"
   },
   "Support": {
     "metaTitle": "Support — Makan",
@@ -568,17 +576,17 @@
     "Standings": {
       "eyebrow": "The standings",
       "title": "The restaurants diners keep picking.",
-      "body": "Restaurant Eats come from diners picking between their own saved meals in Eat or Yeet. These are the five restaurants diners pick most often, among places with {floor} or more matchups. Maître d’ titles are earned separately, through saved dining days.",
+      "body": "Restaurant Eats come from diners picking between their own saved meals in Eat or Yeet. These are the five restaurants with the most Eats, among places with {floor} or more matchups. Maître d’ titles are earned separately, through saved dining days.",
       "cta": "See the full standings",
-      "picked": "Picked {eats} of {matchups}"
+      "eats": "Eats · {rate}"
     }
   },
   "Standings": {
     "metaTitle": "Eat or Yeet standings — Makan",
-    "metaDescription": "Restaurants ranked by how often diners pick them in Eat or Yeet. Every time a diner picks a meal from one place over a meal from another, the winner gets an Eat.",
+    "metaDescription": "Restaurants ranked by Eats: every time a diner picks a meal from one place over a meal from another in Eat or Yeet, the winner gets an Eat.",
     "eyebrow": "Standings",
     "title": "The restaurants diners keep picking.",
-    "intro": "Pick a meal from one restaurant over a meal from another in Eat or Yeet and the winner gets an Eat. The loser gets a Yeet. These are the restaurants with {floor} or more matchups, ranked by Eat rate: how often they win.",
+    "intro": "Pick a meal from one restaurant over a meal from another in Eat or Yeet and the winner gets an Eat. The loser gets a Yeet. These are the restaurants with {floor} or more matchups, ranked by Eats.",
     "colRank": "#",
     "colRestaurant": "Restaurant",
     "colEats": "Eats",
@@ -599,9 +607,9 @@
     "colWhere": "Where",
     "countries": "Right now that's {count, plural, one {# country} other {# countries}}.",
     "cityMetaTitle": "{city}: the restaurants diners keep picking — Makan",
-    "cityMetaDescription": "Restaurants in {city}, {country}, ranked by how often diners pick them in Eat or Yeet. Every time a diner picks a meal from one place over a meal from another, the winner gets an Eat. Ranked from {floor} matchups.",
+    "cityMetaDescription": "Restaurants in {city}, {country}, ranked by Eats: every time a diner picks a meal from one place over a meal from another in Eat or Yeet, the winner gets an Eat. Ranked from {floor} matchups.",
     "cityTitle": "The restaurants diners keep picking in {city}.",
-    "cityIntro": "Pick a meal from one restaurant over a meal from another in Eat or Yeet and the winner gets an Eat. The loser gets a Yeet. These are the restaurants in {city} with {floor} or more matchups, ranked by Eat rate: how often they win.",
+    "cityIntro": "Pick a meal from one restaurant over a meal from another in Eat or Yeet and the winner gets an Eat. The loser gets a Yeet. These are the restaurants in {city} with {floor} or more matchups, ranked by Eats.",
     "cityHow": "A city is a smaller pool, so {city} ranks from {floor} matchups. The main standings start at ten.",
     "byCityTitle": "By city",
     "byCityBody": "The same ranking inside one city, from {floor} matchups. A city gets a page once two restaurants have reached that.",
@@ -622,7 +630,7 @@
     "storyVs": "VS",
     "storyAlt": "Meals saved on Makan by people who ate at the ranked restaurants",
     "storyScreenAlt": "The Eat or Yeet screen: two saved meals, pick the one you'd eat again first",
-    "picked": "Picked {eats} of {matchups}"
+    "eats": "Eats · {rate}"
   },
   "Places": {
     "metaTitle": "{name} | Makan",
@@ -672,7 +680,8 @@
     "maitredHeldSub": "Eats here more than anyone on Makan",
     "maitredHeldFooter": "Get Makan to see every pick — or become the next Maître'D.",
     "metaTitleLocated": "{name}, {city} | Makan",
-    "metaDescriptionEmpty": "{place}. No public meal photos are available yet."
+    "metaDescriptionEmpty": "{place}. No public meal photos are available yet.",
+    "claimRow": "Own this place? Claim it"
   },
   "Meal": {
     "savedAt": "Saved at",
@@ -696,7 +705,8 @@
     "disputeBody": "Tell us what's wrong with this claim:",
     "notFoundTitle": "We can't find this restaurant",
     "notFoundBody": "The link may be old or missing a part.",
-    "tellUsAboutPlace": "Tell us about your place"
+    "tellUsAboutPlace": "Tell us about your place",
+    "howItWorksFind": "You'll claim it in the Makan app: open the app, find this restaurant and tap \"Own this place? Claim it\". We check every claim before it goes through."
   },
   "PlaceLink": {
     "metaTitleUnknown": "Get Makan",

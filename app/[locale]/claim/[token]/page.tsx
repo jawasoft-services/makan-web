@@ -78,7 +78,7 @@ export default async function ClaimPage({ params }: Props) {
               </div>
             </section>
 
-            {venue.claimed ? null : <p className="mt-5 text-[0.9375rem] leading-relaxed text-brand-muted">{t("howItWorks")}</p>}
+            {venue.claimed ? null : <p className="mt-5 text-[0.9375rem] leading-relaxed text-brand-muted">{t(venue.appLink ? "howItWorks" : "howItWorksFind")}</p>}
 
             <div className="mt-auto flex flex-col gap-3 pt-10">
               {venue.claimed ? (
@@ -90,7 +90,7 @@ export default async function ClaimPage({ params }: Props) {
                 <>
                   <GetAppLink className={primary}>{t("getApp")}</GetAppLink>
                   {/* A universal link tapped on its own website stays in the browser, so this uses the app's scheme. */}
-                  <a href={`makanapp://claim/${venue.token}`} className={secondary}>{t("haveApp")}</a>
+                  {venue.appLink ? <a href={`makanapp://claim/${venue.token}`} className={secondary}>{t("haveApp")}</a> : null}
                 </>
               )}
             </div>
