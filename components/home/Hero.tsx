@@ -128,9 +128,8 @@ export default async function Hero({
         <div className="relative mx-auto w-full max-w-[32rem] md:aspect-[1/1.02]">
           <div className="relative z-10 drop-shadow-[0_24px_28px_rgba(43,21,3,0.18)] md:absolute md:left-0 md:top-0 md:w-[80%]">
             <RegularsWidget
-              images={[`regulars-${locale}.webp`, `usual-order-${locale}.webp`]}
+              locale={locale}
               labels={[t("regularsLabel"), t("usualLabel")]}
-              alts={[t("regularsAlt"), t("usualAlt")]}
               label={t("widgetLabel")}
               rulesLabel={t("rulesLabel")}
               rules={{ title: t("rulesTitle"), qualify: t("rulesQualify"), holder: t("rulesHolder"), usual: t("rulesUsual") }}

@@ -30,3 +30,29 @@ export const NATIVE_MAITRED_COPY = {
     "shareButton": "Bagikan"
   }
 } as const
+
+// Same native source: restaurant, decision and claim copy.
+export const NATIVE_RESTAURANT_COPY = {
+  "en": {
+    "publicEatHeadline": "{{percent}}% picked this one",
+    "publicEatHeadCount_other": "Out of {{count}} head-to-heads.",
+    "publicEatFootHigh": "Chosen more often than the places it met.",
+    "ownThisPlace": "Own this place? Claim it",
+    "decisionHeading": "What to order here",
+    "maitredEvidence": "Maitre’D {{name}}: always order this",
+    "saveMeal": "Save a meal here",
+    "eatOrYeet": "Eat or Yeet",
+    "memory": "You had this here"
+  },
+  "id": {
+    "publicEatHeadline": "{{percent}}% memilih tempat ini",
+    "publicEatHeadCount_other": "Dari {{count}} adu langsung.",
+    "publicEatFootHigh": "Lebih sering dipilih daripada tempat yang ditemuinya.",
+    "ownThisPlace": "Pemilik tempat ini? Klaim",
+    "decisionHeading": "Pesan apa di sini?",
+    "maitredEvidence": "Maitre’D {{name}}: selalu pesan ini",
+    "saveMeal": "Simpan makanan di sini",
+    "eatOrYeet": "Eat or Yeet",
+    "memory": "Kamu pernah makan ini di sini"
+  }
+} as const
