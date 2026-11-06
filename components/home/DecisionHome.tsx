@@ -1,3 +1,4 @@
+import RatingCarousel from './RatingCarousel'
 import PlayfulArrow from '@/components/PlayfulArrow'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -54,9 +55,8 @@ export default async function DecisionHome({ locale }: { locale: string }) {
       <Image className="hero-photo hero-photo-extra" src="/redesign/prawns.jpg" alt="" width={2048} height={2048} />
       <Image className="hero-photo hero-photo-extra hero-photo-third" src="/redesign/tiramisu.jpg" alt="" width={2048} height={2048} />
       <div className="hero-content"><div className="hero-copy"><h1>{t('title')}</h1><p>{t('intro')}</p></div><div className="hero-actions"><a className="button orange text-white" href="#download">{t('app')}{arrow}</a><Link className="button outline" href={localizePath(locale, '/partner')}>{t('partner')}</Link></div></div>
-      <Link className="hero-venue" href="/blog/kendal-street-kitchen">Kendal Street Kitchen · London</Link>
     </HomeHero>
-    {rating ? <aside className="store-proof" aria-label={locale === 'id' ? 'Penilaian App Store' : 'App Store rating'}><a href={APP_STORE_URL.replace('/app/', '/gb/app/')} aria-label={locale === 'id' ? `${rating.rating.toFixed(1)} bintang di App Store` : `${rating.rating.toFixed(1)} stars on the App Store`}><span className="proof-stars" aria-hidden="true">{Array.from({length: Math.round(rating.rating)}, (_, i) => <span key={i}>★</span>)}</span><strong className="rating-number" aria-hidden="true">{rating.rating.toFixed(1)}</strong></a></aside> : null}
+    {rating ? <RatingCarousel rating={rating.rating} locale={locale} /> : null}
     <div id="how-it-works">
       {['features', 'memory', 'eat-or-yeet', 'regulars'].map((id, i) => <section key={id} id={id} className={`benefit ${i % 2 ? 'reverse' : ''}`} aria-labelledby={`h-${id}`}><Reveal className="benefit-inner">
         {i < 3 ? <div className={`phone-scene scene-${['feed', 'diary', 'choice'][i]}`}><a className="art art-phone" href={`/redesign/${images[i]}`} target="_blank" rel="noopener" aria-label={`${t('view')}: ${alts[i]}`}><Image src={`/redesign/${images[i]}`} width={1066} height={2198} alt={alts[i]} /></a>{i === 0 ? <figure className="scene-meal"><Image src="/redesign/dining.jpg" width={2048} height={2048} alt="Kendal Street Kitchen" /><figcaption>Kendal Street Kitchen</figcaption></figure> : null}<div className="scene-art"><Image src={`/redesign/${['food-fork.svg', 'food-noodles.svg', 'food-plate.svg'][i]}`} alt="" width={240} height={320} /></div></div> : <RedesignRegulars locale={locale} />}

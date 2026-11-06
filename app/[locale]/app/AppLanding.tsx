@@ -1,5 +1,6 @@
 "use client"
 
+import RatingCarousel from "@/components/home/RatingCarousel"
 import StoreLink from "@/components/home/StoreLink"
 import Image from "next/image"
 import Link from "next/link"
@@ -45,12 +46,7 @@ export default function AppLanding({ rating }: { rating: { rating: number; count
           <Image className={styles.plate} src="/redesign/food-plate.svg" alt="" width={180} height={180} aria-hidden />
         </div>
       </section>
-      {rating ? <aside className={`${styles.proof} store-proof`} aria-label={isId ? 'Penilaian App Store' : 'App Store rating'}>
-        <a href={APP_STORE_URL.replace('/app/', '/gb/app/')} aria-label={isId ? `${rating.rating.toFixed(1)} bintang di App Store` : `${rating.rating.toFixed(1)} stars on the App Store`}>
-          <span className="proof-stars" aria-hidden>{Array.from({length: Math.round(rating.rating)}, (_, i) => <span key={i}>★</span>)}</span>
-          <strong className="rating-number" aria-hidden>{rating.rating.toFixed(1)}</strong>
-        </a>
-      </aside> : null}
+      {rating ? <RatingCarousel rating={rating.rating} locale={locale} className={styles.proof} /> : null}
     </main>
   )
 }
