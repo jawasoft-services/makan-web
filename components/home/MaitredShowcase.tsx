@@ -3,24 +3,21 @@ import Image from "next/image"
 import Link from "next/link"
 import Reveal from "@/components/motion/Reveal"
 import { localizePath } from "@/i18n/paths"
-import { getMaitredVenues, type MaitredVenue } from "@/lib/maitred"
+import { getMaitredDirectory, type MaitredVenue } from "@/lib/maitred"
 import { getPlacePhoto } from "@/lib/place-photo"
 
-/**
- * Every restaurant with a current Maître d'. Restaurants whose Maître d'
- * left a note are cards that answer "what should I order here?": the venue
- * first, the dish second. The rest are one plain list, so every holder is
- * shown and nobody gets an empty tile. Renders nothing until someone holds
- * a seat (or when the list cannot be read).
- */
-export default async function MaitredShowcase() {
-  const venues = await getMaitredVenues()
-  if (!venues?.length) return null
+// All eligible holders, without inferring vacancy from a missing or filtered entry.
+export default async function MaitredShowcase({ dedicated = false }: { dedicated?: boolean }) {
+  const directory = await getMaitredDirectory()
+  const venues = directory.venues
+  if (!dedicated && !venues.length) return null
+  const page = await getTranslations("MaitredPage")
   const t = await getTranslations("Decision.Maitred")
   const tp = await getTranslations("Places")
   const locale = await getLocale()
   const picks = venues.filter((v) => v.notes.always)
   const others = venues.filter((v) => !v.notes.always)
+  const single = dedicated && picks.length === 1 && !others.length
   // The Google photo (month-cached, credited) only where no public meal has one.
   const googlePhotos = await Promise.all(picks.map((v) => (v.photo ? null : getPlacePhoto(v.placeId))))
 
@@ -35,16 +32,16 @@ export default async function MaitredShowcase() {
           style={{ "--beat": 1 } as React.CSSProperties}
           className="mt-4 max-w-[18ch] text-balance text-[clamp(2rem,4vw,3.4rem)] font-bold leading-[1.02] tracking-[-0.02em] text-brand-ink"
         >
-          {t("title")}
+          {dedicated ? page("proofTitle") : t("title")}
         </h2>
-        <p data-beat style={{ "--beat": 2 } as React.CSSProperties} className="mt-6 max-w-[50ch] text-[1.125rem] leading-[1.55] text-brand-ink">
-          {t("body", { count: venues.length })}
-        </p>
+        {(!dedicated || !venues.length) ? <p data-beat style={{ "--beat": 2 } as React.CSSProperties} className="mt-6 max-w-[50ch] text-[1.125rem] leading-[1.55] text-brand-ink">
+          {venues.length ? t("body", { count: venues.length }) : page(directory.status === "disabled" ? "proofDisabled" : directory.status === "unavailable" ? "proofUnavailable" : "proofEmpty")}
+        </p> : null}
 
-        <ul data-beat style={{ "--beat": 3 } as React.CSSProperties} className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+        <ul data-beat style={{ "--beat": 3 } as React.CSSProperties} className={`mt-10 grid grid-cols-1 gap-3 sm:gap-4 ${single ? "" : "sm:grid-cols-2 lg:grid-cols-3"}`}>
           {picks.map((v, i) => (
             <li key={v.placeId} className="flex">
-              <PickCard venue={v} locale={locale} google={googlePhotos[i]} credit={(author) => tp("photoCredit", { author })} byline={t("byline", { name: v.holderName })} label={t("whatToOrder")} />
+              <PickCard venue={v} locale={locale} google={googlePhotos[i]} credit={(author) => tp("photoCredit", { author })} byline={t("byline", { name: v.holderName })} label={t("whatToOrder")} wide={single} />
             </li>
           ))}
           {others.length ? (
@@ -74,12 +71,12 @@ export default async function MaitredShowcase() {
           ) : null}
         </ul>
 
-        <a
-          href={localizePath(locale, "/#faq")}
+        {!dedicated ? <a
+          href={localizePath(locale, "/maitre-d")}
           className="mt-8 inline-flex min-h-14 items-center rounded-full border-2 border-brand-ink px-7 text-base font-bold text-brand-ink transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink active:translate-y-0"
         >
           {t("cta")}
-        </a>
+        </a> : null}
       </Reveal>
     </section>
   )
@@ -92,6 +89,7 @@ function PickCard({
   credit,
   byline,
   label,
+  wide,
 }: {
   venue: MaitredVenue
   locale: string
@@ -99,23 +97,24 @@ function PickCard({
   credit: (author: string) => string
   byline: string
   label: string
+  wide: boolean
 }) {
   const src = venue.photo ?? google?.uri ?? null
   return (
     <Link
       href={localizePath(locale, `/places/${venue.slug}`)}
-      className="group flex w-full gap-3.5 rounded-2xl border border-brand-line bg-brand-card p-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink sm:flex-col sm:gap-0 sm:overflow-hidden sm:p-0"
+      className={`group flex w-full gap-3.5 rounded-2xl border border-brand-line bg-brand-card p-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink sm:gap-0 sm:overflow-hidden sm:p-0 ${wide ? "sm:flex-row" : "sm:flex-col"}`}
     >
-      <span className="relative block h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-brand-cream sm:aspect-[4/3] sm:h-auto sm:w-full sm:rounded-none">
+      {src ? <span className={`relative block h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-brand-cream sm:h-auto sm:rounded-none ${wide ? "sm:aspect-square sm:w-[42%]" : "sm:aspect-[4/3] sm:w-full"}`}>
         {src ? (
           <Image src={src} alt="" fill sizes="(min-width: 1024px) 330px, (min-width: 640px) 45vw, 96px" className="object-cover transition-transform duration-300 group-hover:scale-[1.02]" />
         ) : null}
         {/* Google requires the photographer's credit beside a Places photo. */}
         {!venue.photo && google ? (
-          <span className="absolute bottom-1.5 right-1.5 hidden rounded-full bg-brand-ink/60 px-2 py-0.5 text-[0.62rem] text-white/90 sm:block">{credit(google.author || "Google Maps")}</span>
+          <span className="absolute left-1.5 right-1.5 top-1.5 rounded-md bg-brand-ink/80 px-2 py-1 text-[0.68rem] leading-tight text-white">{credit(google.author || "Google Maps")}</span>
         ) : null}
-      </span>
-      <span className="flex min-w-0 flex-1 flex-col sm:px-5 sm:pb-6 sm:pt-[18px]">
+      </span> : null}
+      <span className={`flex min-w-0 flex-1 flex-col sm:px-5 sm:pb-6 sm:pt-[18px] ${wide ? "sm:justify-center sm:px-10 sm:py-10" : ""}`}>
         <span className="text-[1.1875rem] font-bold leading-[1.2] tracking-[-0.01em] text-brand-ink sm:text-[1.625rem] sm:leading-[1.15] sm:tracking-[-0.015em]">{venue.name}</span>
         {venue.where ? (
           <span className="mt-0.5 text-[0.8125rem] leading-[1.3] text-brand-muted sm:mt-1 sm:text-sm">

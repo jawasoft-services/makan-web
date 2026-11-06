@@ -13,7 +13,7 @@ if (WEBSITE_FIXTURES && hosting.some(key => Boolean(process.env[key]))) {
   throw new Error('Website fixtures are local-only and cannot run in a deployment environment.')
 }
 const state = process.env.MAKAN_WEBSITE_FIXTURE_STATE ?? 'healthy'
-if (WEBSITE_FIXTURES && !['healthy', 'empty', 'unavailable', 'stale'].includes(state)) {
+if (WEBSITE_FIXTURES && !['healthy', 'empty', 'unavailable', 'stale', 'maitred-vacant', 'maitred-unresolved', 'maitred-disabled', 'maitred-no-order', 'maitred-no-photo'].includes(state)) {
   throw new Error('Unknown website fixture state.')
 }
 export const FIXTURE_STATE = state
@@ -54,10 +54,15 @@ export function fixtureStandings(): EatStandings {
 }
 export function fixtureMaitred(): MaitredList | null {
   if (state === 'unavailable') return null
-  return { venues: state === 'empty' ? [] : [{ placeId: base.placeId, slug: base.slug, name: base.name, where: base.where,
-    holderName: 'Alex', holderPhoto: null, photo: meals[0].src,
-    notes: { always: 'Prawns', another: 'Tiramisu', why: 'My usual order.', tip: '' },
-  }] }
+  const status = state === 'maitred-disabled' ? 'disabled' : 'ready'
+  const places: MaitredList['places'] = state === 'maitred-vacant' || state === 'maitred-unresolved'
+    ? [{ placeId: base.placeId, status: state === 'maitred-vacant' ? 'vacant' : 'unresolved' }] : []
+  const venues: MaitredList['venues'] = state === 'empty' || status === 'disabled' || places.length ? [] : [{
+    placeId: base.placeId, slug: base.slug, name: base.name, where: base.where,
+    holderName: 'Alex', holderPhoto: null, photo: state === 'maitred-no-photo' ? null : meals[0].src,
+    notes: { always: state === 'maitred-no-order' ? '' : 'Prawns', another: '', why: '', tip: '' },
+  }]
+  return { schemaVersion: 2, verifiedAt: Date.now(), status, venues, places }
 }
 export function fixtureClaim(token: string): ClaimVenue | null {
   const place = fixtureDirectory().find(p => p.slug === token)

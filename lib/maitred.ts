@@ -1,51 +1,91 @@
 import { WEBSITE_FIXTURES, fixtureMaitred } from '@/lib/website-fixtures'
 import 'server-only'
-import { unstable_cache } from 'next/cache'
 import { getDb } from '@/lib/firebase-admin'
-import { buildMaitredList, readMaitredHolders } from '@/lib/aggregates/maitred'
-import { MAX_AGE_MS, readLastRun, readMaitred } from '@/lib/aggregates/store'
-import type { MaitredList, MaitredVenue } from '@/lib/aggregates/types'
-import { getPlaceDirectory } from '@/lib/place-directory'
+import { buildMaitredList, readMaitredPhotos, readMaitredSource } from '@/lib/aggregates/maitred'
+import { readMaitred } from '@/lib/aggregates/store'
+import type { MaitredList, MaitredVenue, MaitredDirectoryState, MaitredPlaceState } from '@/lib/aggregates/types'
+import { getPlaceDirectoryStrict } from '@/lib/place-directory'
 
-export type { MaitredNotes, MaitredVenue } from '@/lib/aggregates/types'
+export type { MaitredNotes, MaitredVenue, MaitredDirectoryState, MaitredPlaceState } from '@/lib/aggregates/types'
 
 /**
- * Every restaurant with a current Maître d', from the aggregate the daily
- * cron writes (webAggregates/maitred, built in lib/aggregates/maitred.ts):
- * two document reads an hour at most. Only when the aggregate is missing or
- * the cron has been silent for 36 hours does it read the standings live.
- *
- * null means "not known" (no database, or the read failed), which callers
- * must keep apart from an empty list: a restaurant page must never say
- * nobody holds the seat because a read failed.
+ * Hard expiry, not stale-while-revalidate: the routes using this reader are
+ * dynamic, while their unrelated data keeps its existing caches. Simultaneous
+ * consumers share one refresh; a failed/slow refresh never revives old identity.
  */
-const getCachedMaitred = unstable_cache(
-  async (): Promise<MaitredList | null> => {
-    if (WEBSITE_FIXTURES) return fixtureMaitred()
-    const db = getDb()
-    if (!db) return null
-    try {
-      const [stored, lastRun] = await Promise.all([readMaitred(db), readLastRun(db)])
-      if (stored && lastRun !== null && Date.now() - lastRun.getTime() < MAX_AGE_MS) return stored
-      console.warn(`maitred: aggregate ${stored ? 'stale' : 'missing'}; reading the standings live.`)
-      const [holders, directory] = await Promise.all([readMaitredHolders(db), getPlaceDirectory()])
-      return buildMaitredList(holders, directory)
-    } catch (err) {
-      console.error('maitred: failed to read; Maître d’ sections are hidden.', err)
-      return null
-    }
-  },
-  ['makan-maitred', 'v1'],
-  { revalidate: 3600 },
-)
+export const MAITRED_PUBLIC_MAX_AGE_MS = 5 * 60 * 1000
+interface VerifiedSnapshot { snapshot: MaitredList; verifiedAt: number }
+let cached: VerifiedSnapshot | null = null
+let pending: Promise<MaitredList | null> | null = null
+let failedAt: number | null = null
+const FAILURE_RETRY_MS = 10_000
 
-export async function getMaitredVenues(): Promise<MaitredVenue[] | null> {
-  return (await getCachedMaitred())?.venues ?? null
+const isFresh = (verifiedAt: number, now = Date.now()) => Number.isFinite(verifiedAt)
+  && verifiedAt <= now && now - verifiedAt < MAITRED_PUBLIC_MAX_AGE_MS
+
+async function refreshMaitred(): Promise<VerifiedSnapshot | null> {
+  const db = getDb()
+  if (!db) return null
+  const startedAt = Date.now()
+  const stored = await readMaitred(db)
+  // Verification starts before the source reads. A later cron heartbeat cannot
+  // extend it, even when the cron or this read was slow.
+  if (stored && stored.verifiedAt <= startedAt && isFresh(stored.verifiedAt)) {
+    return { snapshot: stored, verifiedAt: stored.verifiedAt }
+  }
+  const [source, directory] = await Promise.all([readMaitredSource(db), getPlaceDirectoryStrict()])
+  if (source.status === 'disabled') return { snapshot: buildMaitredList(source, [], new Map()), verifiedAt: source.verifiedAt }
+  if (!directory) return null
+  const photos = await readMaitredPhotos(db, source, directory)
+  return { snapshot: buildMaitredList(source, directory, photos), verifiedAt: source.verifiedAt }
 }
 
-/** The Maître d' at one restaurant: the venue, null when nobody holds it, undefined when unknown. */
+async function getCachedMaitred(): Promise<MaitredList | null> {
+  if (WEBSITE_FIXTURES) return fixtureMaitred()
+  if (cached && isFresh(cached.verifiedAt)) return cached.snapshot
+  cached = null
+  if (failedAt !== null && Date.now() >= failedAt && Date.now() - failedAt < FAILURE_RETRY_MS) return null
+  if (pending) return pending
+  const refresh = refreshMaitred().then(result => {
+    cached = result && isFresh(result.verifiedAt) ? result : null
+    failedAt = cached ? null : Date.now()
+    return cached?.snapshot ?? null
+  }).catch(() => {
+    cached = null
+    failedAt = Date.now()
+    console.error('maitred: public states unavailable.')
+    return null
+  }).finally(() => { if (pending === refresh) pending = null })
+  pending = refresh
+  return refresh
+}
+
+export async function getMaitredDirectory(): Promise<MaitredDirectoryState> {
+  const snapshot = await getCachedMaitred()
+  if (!snapshot) return { status: 'unavailable', venues: [] }
+  if (snapshot.status === 'disabled') return { status: 'disabled', venues: [] }
+  return { status: 'ready', venues: snapshot.venues }
+}
+
+export async function getMaitredStateAt(placeId: string): Promise<MaitredPlaceState> {
+  const snapshot = await getCachedMaitred()
+  if (!snapshot) return { status: 'unavailable' }
+  if (snapshot.status === 'disabled') return { status: 'disabled' }
+  const venue = snapshot.venues.find(venue => venue.placeId === placeId)
+  if (venue) return { status: 'held', venue }
+  const known = snapshot.places.find(place => place.placeId === placeId)
+  return { status: known?.status ?? 'unavailable' }
+}
+
+/** Compatibility for existing lists: disabled and failed are not an empty live catalogue. */
+export async function getMaitredVenues(): Promise<MaitredVenue[] | null> {
+  const directory = await getMaitredDirectory()
+  return directory.status === 'ready' ? directory.venues : null
+}
+
+/** Only proven vacancy yields null. Unknown/disabled/unresolved are omitted by old consumers. */
 export async function getMaitredAt(placeId: string): Promise<MaitredVenue | null | undefined> {
-  const venues = await getMaitredVenues()
-  if (!venues) return undefined
-  return venues.find((v) => v.placeId === placeId) ?? null
+  const place = await getMaitredStateAt(placeId)
+  if (place.status === 'held') return place.venue
+  return place.status === 'vacant' ? null : undefined
 }

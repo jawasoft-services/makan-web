@@ -6,6 +6,8 @@ const INDONESIAN_ROUTES = new Set([
   "/data-deletion",
   "/dev-preview", // dev-only harness; page 404s in production
   "/manifesto",
+  "/maitre-d",
+  "/maitre-d/opengraph-image",
   "/opengraph-image", // share cards render per locale
   "/twitter-image",
   "/partner",

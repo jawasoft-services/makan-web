@@ -96,7 +96,7 @@ test('healthy typed readers provide local data without invoking any provider', a
   assert.equal((await run.load('lib/eat-standings.ts').getCityStanding('london')).city.rows.length, 2)
   assert.ok((await run.load('lib/place-photo.ts').getPlacePhoto(f.FIXTURE_PLACE_ID)).uri.startsWith('/redesign/'))
   assert.equal((await run.load('lib/maitred.ts').getMaitredAt(f.FIXTURE_PLACE_ID)).holderName, 'Alex')
-  assert.equal(await run.load('lib/maitred.ts').getMaitredAt('missing'), null)
+  assert.equal(await run.load('lib/maitred.ts').getMaitredAt('missing'), undefined)
   assert.equal((await run.load('lib/claim-link.ts').getClaimVenue(f.FIXTURE_SLUG)).appLink, true)
   assert.equal(await run.load('lib/claim-link.ts').getClaimVenue('bad/token'), null)
   assert.equal((await run.load('lib/claim-venues.ts').getClaimSearchEntries()).length, 2)
@@ -113,7 +113,7 @@ test('empty and unavailable stay distinct; stale evidence keeps its timestamp', 
     assert.equal((await run.load('lib/eat-standings.ts').getEatStandings()).rows.length, 0)
     assert.equal(await run.load('lib/app-store.ts').getAppStoreRating(), null)
     const maitred = await run.load('lib/maitred.ts').getMaitredAt('fixture_kendal_0001')
-    assert.equal(maitred, state === 'unavailable' ? undefined : null)
+    assert.equal(maitred, undefined)
     assert.deepEqual(run.attempted, [])
   }
   const run = lane({ MAKAN_WEBSITE_FIXTURE_STATE: 'stale' })
@@ -208,4 +208,28 @@ test('without fixture mode the original provider path remains selected', async (
   const result=await POST(request('/api/contact',{name:'Fixture Person',email:'fixture@example.test'}))
   assert.equal(result.status,500)
   assert.deepEqual(form.attempted,['provider constructor'])
+})
+
+
+test('Maître d’ fixture states preserve unknown, explicit vacancy, unresolved, disabled and missing content', async () => {
+  const expectations = [
+    ['healthy', 'held'], ['empty', 'unavailable'], ['unavailable', 'unavailable'],
+    ['maitred-vacant', 'vacant'], ['maitred-unresolved', 'unresolved'],
+    ['maitred-disabled', 'disabled'], ['maitred-no-order', 'held'], ['maitred-no-photo', 'held'],
+  ]
+  for (const [state, expected] of expectations) {
+    const run = lane({ MAKAN_WEBSITE_FIXTURE_STATE: state })
+    const f = run.load('lib/website-fixtures.ts')
+    const api = run.load('lib/maitred.ts')
+    const place = await api.getMaitredStateAt(f.FIXTURE_PLACE_ID)
+    assert.equal(place.status, expected, state)
+    const compatibility = await api.getMaitredAt(f.FIXTURE_PLACE_ID)
+    if (expected === 'vacant') assert.equal(compatibility, null)
+    else if (expected !== 'held') assert.equal(compatibility, undefined)
+    if (state === 'maitred-no-order') assert.equal(place.venue.notes.always, '')
+    if (state === 'maitred-no-photo') assert.equal(place.venue.photo, null)
+    const directory = await api.getMaitredDirectory()
+    assert.equal(directory.status, state === 'unavailable' ? 'unavailable' : state === 'maitred-disabled' ? 'disabled' : 'ready')
+    assert.deepEqual(run.attempted, [])
+  }
 })

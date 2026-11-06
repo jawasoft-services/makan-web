@@ -26,7 +26,7 @@ export default function Navbar() {
   const darkHero = isHome || bare === '/manifesto'
   const partner = bare === '/partner'
   const home = localizePath(locale, '/')
-  const primary = partner ? '#enquire' : isHome ? '#download' : localizePath(locale, '/app')
+  const primary = partner ? '#enquire' : isHome || bare === '/maitre-d' ? '#download' : localizePath(locale, '/app')
   const primaryLabel = partner ? (locale === 'id' ? 'Hubungi Makan' : 'Talk to Makan') : t('app')
   const secondary = partner ? home : localizePath(locale, '/partner')
   const secondaryLabel = partner ? (locale === 'id' ? 'Untuk pencinta makanan' : 'For diners') : t('partner')
@@ -48,17 +48,17 @@ export default function Navbar() {
   const arrow = <PlayfulArrow />
   return <header className={`site-header ready ${scrolled || !darkHero ? 'scrolled' : ''} ${hidden && !open ? 'out-of-view' : ''}`}>
     <Link className="brand" href={home} aria-label={locale === 'id' ? 'Beranda Makan' : 'Makan home'}><Image className="logo-light" src="/redesign/logo.svg" alt="Makan" width={168} height={40} priority /><Image className="logo-dark" src="/redesign/logo-orange.svg" alt="" width={168} height={40} /></Link>
-    <nav className="desktop-nav" aria-label={nav('menu')}><a className="nav-plain" href={hash('#features')}>{t('theapp')}</a><a className="button orange text-white" href={primary} onClick={() => track('Store CTA Clicked', { location: 'navigation', locale })}>{primaryLabel}{arrow}</a><Link className="button outline" href={secondary}>{secondaryLabel}</Link><LanguageSwitcher compact /></nav>
+    <nav className="desktop-nav" aria-label={nav('menu')}><a className="nav-plain" href={hash('#features')}>{t('theapp')}</a><Link className="nav-plain" href={localizePath(locale, '/maitre-d')} aria-current={bare === '/maitre-d' ? 'page' : undefined}>Maître d’</Link><a className="button orange text-white" href={primary} onClick={() => track('Store CTA Clicked', { location: 'navigation', locale })}>{primaryLabel}{arrow}</a><Link className="button outline" href={secondary}>{secondaryLabel}</Link><LanguageSwitcher compact /></nav>
     <div className="mobile-menu-trigger"><Drawer.Root open={open} onOpenChange={setOpen} direction="right">
       <Drawer.Trigger asChild><button aria-label={nav('openMenu')} aria-expanded={open} aria-controls="mobile-navigation" className="menu-toggle"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" /></svg></button></Drawer.Trigger>
       <Drawer.Portal><Drawer.Overlay className="fixed inset-0 z-[60] bg-black/40" /><Drawer.Content id="mobile-navigation" aria-describedby={undefined} className="redesign-menu inverse-ground">
         <Drawer.Title className="sr-only">{nav('menu')}</Drawer.Title>
         <div className="menu-heading"><Link href={home} onClick={navigate}><Image src="/redesign/logo.svg" alt="Makan" width={140} height={34} /></Link><Drawer.Close asChild><button className="menu-toggle" aria-label={nav('closeMenu')}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19" /></svg></button></Drawer.Close></div>
         <div className="menu-art"><Image src="/redesign/food-noodles.svg" alt="" width={230} height={250} /><Image className="menu-crown" src="/redesign/maitred-crown.svg" alt="" width={74} height={66} /></div>
-        <nav className="menu-links" aria-label={nav('menu')}><a className="button orange text-white" href={primary} onClick={navigate}>{primaryLabel}</a><Link className="button outline" href={secondary} onClick={navigate}>{secondaryLabel}</Link><a className="menu-feature" href={hash('#regulars')} onClick={navigate}>Maître d’ {arrow}</a><Link className="menu-feature" href={localizePath(locale, '/standings')} onClick={navigate}>{t('standings')}</Link></nav>
+        <nav className="menu-links" aria-label={nav('menu')}><a className="button orange text-white" href={primary} onClick={navigate}>{primaryLabel}</a><Link className="button outline" href={secondary} onClick={navigate}>{secondaryLabel}</Link><Link className="menu-feature" href={localizePath(locale, '/maitre-d')} onClick={navigate}>Maître d’ {arrow}</Link><Link className="menu-feature" href={localizePath(locale, '/standings')} onClick={navigate}>{t('standings')}</Link></nav>
         <div className="menu-bottom"><div className="menu-social"><a href="https://www.instagram.com/makanappofficial/">Instagram</a><a href="https://www.tiktok.com/@makan.app">TikTok</a></div><LanguageSwitcher compact /></div>
       </Drawer.Content></Drawer.Portal>
     </Drawer.Root></div>
-    <noscript><style>{`.mobile-menu-trigger{display:none!important}.site-header{position:static;flex-wrap:wrap}.site-header:not(.scrolled){background:#30271f}.site-header noscript{flex-basis:100%}.nojs-navigation{flex-wrap:wrap}`}</style><nav className="nojs-navigation"><a href={localizePath(locale, "/app")}>{t("app")}</a><a href={secondary}>{secondaryLabel}</a></nav></noscript>
+    <noscript><style>{`.mobile-menu-trigger{display:none!important}.site-header{position:static;flex-wrap:wrap}.site-header:not(.scrolled){background:#30271f}.site-header noscript{flex-basis:100%}.nojs-navigation{flex-wrap:wrap}`}</style><nav className="nojs-navigation"><a href={localizePath(locale, "/maitre-d")}>Maître d’</a><a href={localizePath(locale, "/app")}>{t("app")}</a><a href={secondary}>{secondaryLabel}</a></nav></noscript>
   </header>
 }

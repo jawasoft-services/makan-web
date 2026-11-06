@@ -683,9 +683,8 @@
     "postMeal": "Posting makanan di sini",
     "photoCredit": "Foto: {author} · Google Maps",
     "maitredEyebrow": "Kursi Maître'D",
-    "maitredEmptyHead": "Belum ada yang pegang {name}.",
-    "maitredEmptyBody": "Maître'D itu yang paling sering makan di sini. Simpan makananmu di {name} dan kursinya jadi milikmu — dengan pilihanmu sendiri yang dilihat orang lain.",
-    "maitredReward": "Jadi pelanggan paling setia {name}. Diperlakukan seperti itu.",
+    "maitredEmptyHead": "Gelar Maître d’ di {name} belum terisi.",
+    "maitredEmptyBody": "Simpan makanan yang memenuhi syarat di {name} pada hari berbeda. Penuhi syarat, lalu unggul sendiri untuk meraih gelarnya.",
     "maitredCta": "Ambil kursinya — pakai Makan gratis",
     "maitredHeldEyebrow": "Maître d’ di sini",
     "metaTitleLocated": "{name}, {city} | Makan",
@@ -696,9 +695,11 @@
     "maitredAnother": "Juga enak",
     "maitredWhy": "Kenapa mereka suka",
     "maitredTip": "Tips",
-    "maitredExplain": "Maître d’ adalah orang yang menyimpan makanan di sini pada hari terbanyak dalam 60 hari terakhir.",
+    "maitredExplain": "Gelar yang diraih di restoran ini. Maître d’ dapat membagikan pesanan yang membuatnya kembali lagi.",
     "maitredHow": "Cara menjadi Maître d’ di sini",
-    "maitredNoNote": "Belum ada catatan menu."
+    "maitredNoNote": "Belum ada catatan menu.",
+    "maitredUnresolved": "Pemegang gelar di sini belum ditentukan.",
+    "maitredDisabled": "Maître d’ sedang dijeda."
   },
   "Meal": {
     "savedAt": "Disimpan di",
@@ -887,7 +888,7 @@
     "faqs": [
       [
         "Bagaimana tamu menjadi Maître d’ di sebuah restoran?",
-        "Tamu perlu menyimpan makanan yang memenuhi syarat pada setidaknya dua hari berbeda di restoran itu dalam 60 hari terakhir. Hari terhitung terbanyak memegang gelar; saat seri, pemegang yang masih memenuhi syarat tetap memegangnya. Pesanan andalan muncul hanya jika mereka memilih untuk membagikannya."
+        "Tamu perlu menyimpan makanan yang memenuhi syarat pada setidaknya dua hari berbeda di restoran itu dalam 60 hari terakhir. Pelanggan tetap yang memenuhi syarat harus unggul sendirian untuk meraih gelar. Saat seri, pemegang yang masih memenuhi syarat tetap memegangnya; tanpa pemegang yang memenuhi syarat, gelar belum ditentukan. Pesanan andalan muncul hanya jika mereka memilih untuk membagikannya."
       ],
       [
         "Apakah saya perlu menawarkan diskon atau hadiah?",
@@ -927,5 +928,97 @@
     "terms": "Ketentuan",
     "and": "dan",
     "privacy": "Kebijakan Privasi"
+  },
+  "MaitredPage": {
+    "metaTitle": "Maître d’ — Tempat langgananmu. Gelar untuk kamu raih. | Makan",
+    "metaDescription": "Raih gelar Maître d’ di restoran langgananmu lewat hari makan yang memenuhi syarat. Bagikan pesanan andalanmu dan bantu pengunjung berikutnya memilih.",
+    "heroStart": "Tempat langgananmu.",
+    "heroEnd": "Gelar untuk kamu raih.",
+    "heroBody": "Raih gelar di Makan lewat pengalaman makan di tempat langgananmu. Lalu bagikan menu yang selalu kamu pesan.",
+    "getApp": "Unduh Makan",
+    "seeHow": "Lihat cara meraihnya",
+    "earningTitle": "Gelar yang diraih di meja makan.",
+    "definition": "Maître d’ adalah gelar untuk pelanggan tetap restoran yang diraih di Makan.",
+    "countingLink": "Cara hari makan dihitung",
+    "faqTitle": "Persaingan seru, tetap adil.",
+    "downloadStart": "Punya pesanan andalan?",
+    "downloadEnd": "Mulai dari sana.",
+    "qrAlt": "Kode QR untuk mengunduh Makan",
+    "qrText": "Pindai dengan ponselmu untuk mengunduh Makan.",
+    "partnerLink": "Punya restoran? Lihat Makan untuk restoran.",
+    "demo": {
+      "label": "Demo",
+      "legend": "Demo Maître d’: jelajahi cara meraih gelar",
+      "venue": "Kendal Street Kitchen",
+      "dish": "Harissa prawns",
+      "photoAlt": "Udang harissa dengan roti sourdough panggang dan lemon di Kendal Street Kitchen",
+      "you": "Kamu",
+      "saved": "Tersimpan di catatan makanmu",
+      "usual": "Pesanan andalanmu",
+      "role": "Maître d’",
+      "firstDay": "Satu hari",
+      "anotherDay": "Hari lainnya",
+      "qualified": "Memenuhi syarat.",
+      "noGuarantee": "Ini baru awal. Gelarnya masih perlu diraih.",
+      "earned": "Di tempat langgananmu.",
+      "sharePrompt": "Pilihanmu untuk pengunjung berikutnya.",
+      "published": "Pesanan andalan dibagikan",
+      "steps": [
+        {
+          "id": "save",
+          "title": "Simpan makananmu.",
+          "body": "Tandai restorannya saat menyimpan apa yang kamu makan."
+        },
+        {
+          "id": "qualify",
+          "title": "Kembali di hari lain.",
+          "body": "Dua hari yang memenuhi syarat dalam 60 hari membuatmu bisa bersaing. Gelar belum otomatis didapat."
+        },
+        {
+          "id": "lead",
+          "title": "Unggul dari yang lain.",
+          "body": "Gelar berpindah saat satu pelanggan tetap yang memenuhi syarat unggul. Saat seri, pemegang yang masih memenuhi syarat tetap memegang gelar."
+        },
+        {
+          "id": "share",
+          "title": "Bagikan pesanan andalan.",
+          "body": "Pilih satu menu dan terbitkan untuk pengunjung berikutnya."
+        }
+      ]
+    },
+    "faqs": [
+      {
+        "question": "Bagaimana cara meraih gelarnya?",
+        "answer": "Simpan makanan yang memenuhi syarat di restoran yang sama pada setidaknya dua hari berbeda dalam 60 hari terakhir. Hari mengikuti waktu lokal restoran, dan setiap hari dihitung sekali. Pelanggan tetap yang memenuhi syarat dan unggul sendiri dapat meraih gelar."
+      },
+      {
+        "question": "Apakah dua hari menjamin gelarnya?",
+        "answer": "Tidak. Dua hari yang memenuhi syarat membuatmu bisa bersaing. Meraih gelar juga bergantung pada pelanggan tetap lain yang memenuhi syarat di restoran itu."
+      },
+      {
+        "question": "Bagaimana kalau seri?",
+        "answer": "Pemegang yang masih memenuhi syarat tetap memegang gelar saat seri. Untuk mengambil alih, satu penantang yang memenuhi syarat harus unggul dari semua yang lain. Jika tidak ada pemegang yang memenuhi syarat dan jumlah tertinggi seri, gelarnya belum ditentukan."
+      },
+      {
+        "question": "Apakah semua makanan dihitung?",
+        "answer": "Makanan perlu ditandai ke restoran yang tepat dan memiliki waktu makan yang valid. Akun dan keikutsertaan Maître d’ kamu juga harus memenuhi syarat. Makanan yang dihapus tidak dihitung. Beberapa makanan pada hari lokal restoran yang sama tetap dihitung sebagai satu hari."
+      },
+      {
+        "question": "Bisakah keikutsertaan dimatikan?",
+        "answer": "Bisa. Kamu dapat mematikan keikutsertaan Maître d’ di Makan. Makanan yang sudah kamu simpan tetap ada di diari."
+      },
+      {
+        "question": "Apakah gelarnya memberikan keuntungan khusus?",
+        "answer": "Gelar ini mengakui seorang pelanggan tetap. Gelar tidak menjanjikan makanan gratis, diskon, atau perlakuan khusus dari restoran."
+      },
+      {
+        "question": "Bisakah aku memakai Makan tanpa bersaing?",
+        "answer": "Bisa. Simpan makananmu, cari tahu mau pesan apa, dan baca pesanan andalan pelanggan tetap tanpa meraih gelar atau mengundang siapa pun. Kamu bisa mengelola keikutsertaan Maître d’ di Makan."
+      }
+    ],
+    "proofTitle": "Mulai dari pesanan andalan pelanggan tetap.",
+    "proofEmpty": "Pesanan andalan muncul di sini setelah dipublikasikan oleh Maître d’.",
+    "proofUnavailable": "Pesanan andalan belum bisa dimuat. Kamu tetap bisa menjelajahi Maître d’ di Makan.",
+    "proofDisabled": "Maître d’ sedang dijeda."
   }
 }

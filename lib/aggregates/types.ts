@@ -131,8 +131,23 @@ export interface MaitredVenue {
 }
 
 export interface MaitredList {
+  /** v1's holder-only list cannot prove vacancy or feature availability. */
+  schemaVersion: 2
+  /** Epoch milliseconds when the source verification began, never a later cron heartbeat. */
+  verifiedAt: number
+  status: 'ready' | 'disabled'
   venues: MaitredVenue[]
+  /** Only explicit healthy producer outcomes; absence remains unknown. */
+  places: { placeId: string; status: 'vacant' | 'unresolved' }[]
 }
+
+export type MaitredDirectoryState =
+  | { status: 'ready'; venues: MaitredVenue[] }
+  | { status: 'disabled' | 'unavailable'; venues: [] }
+
+export type MaitredPlaceState =
+  | { status: 'held'; venue: MaitredVenue }
+  | { status: 'vacant' | 'unresolved' | 'disabled' | 'unavailable' }
 
 /** The small per-place record the sitemap, static params and lookups use. */
 export interface PlaceIndexEntry {

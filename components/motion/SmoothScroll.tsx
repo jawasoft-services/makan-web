@@ -50,6 +50,12 @@ export default function SmoothScroll() {
       return id ? document.getElementById(id) : null
     }
     const goTo = (el: HTMLElement, immediate: boolean) => {
+      // Intercepted anchors bypass the browser's fragment-reveal step. Reveal
+      // every enclosing disclosure before Lenis measures the target; native
+      // details[name] grouping closes the previous answer automatically.
+      for (let details = el.closest('details'); details; details = details.parentElement?.closest('details') ?? null) {
+        if (!details.open) details.open = true
+      }
       // Sections carry scroll-margin-top equal to the nav, so no offset here:
       // native jumps and Lenis land in the same place.
       lenis.scrollTo(el, { immediate, force: true })

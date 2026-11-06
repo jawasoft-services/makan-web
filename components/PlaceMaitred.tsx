@@ -2,23 +2,9 @@ import { getTranslations } from 'next-intl/server'
 import Image from 'next/image'
 import styles from '@/components/standings/public-pages.module.css'
 import StoreLink from '@/components/home/StoreLink'
-import type { MaitredVenue } from '@/lib/maitred'
+import type { MaitredPlaceState, MaitredVenue } from '@/lib/maitred'
 
-/**
- * The Maître'D block on a restaurant page.
- *
- * Ported from the app's Maître'D UI (munchies-rn components/maitred: the
- * Crown, the Squiggle underline) so the web reads as the same product.
- *
- * Three states, from the daily Maître d' aggregate (lib/maitred.ts):
- *  - HELD WITH A NOTE: what to order here, the holder's name and photo,
- *    their other notes as written (never translated), and what a Maître d' is.
- *  - HELD, NO NOTE: who holds the seat, and that they have not left a note.
- *  - EMPTY SEAT: nobody holds it; the funnel with the App Store CTA.
- * The page renders none of them when the aggregate cannot be read, so a
- * failed read never claims an empty seat.
- */
-
+// Only an explicit vacant standing may show the empty-seat invitation.
 function Crown({ hollow = false }: { hollow?: boolean }) {
   return <Image src="/redesign/maitred-crown.svg" alt="" width={68} height={52} className={hollow ? 'opacity-70' : ''} />
 }
@@ -38,15 +24,17 @@ function HolderPhoto({ venue }: { venue: MaitredVenue }) {
 export default async function PlaceMaitred({
   locale,
   placeName,
-  held,
+  state,
   faqHref,
 }: {
   locale: string
   placeName: string
-  held: MaitredVenue | null
+  state: MaitredPlaceState
   faqHref: string
 }) {
   const t = await getTranslations({ locale, namespace: 'Places' })
+  if (state.status === 'unavailable') return null
+  const held = state.status === 'held' ? state.venue : null
   const eyebrow = styles.kicker
   const howLink = (
     <div className="mt-5 border-t border-white/10 pt-4">
@@ -115,7 +103,15 @@ export default async function PlaceMaitred({
     )
   }
 
-  // EMPTY SEAT: the funnel.
+  if (state.status === 'disabled' || state.status === 'unresolved') {
+    return <section className={styles.maitred} aria-label="Maître d’">
+      <Crown hollow />
+      <p className="mt-3 text-lg font-semibold">{t(state.status === 'disabled' ? 'maitredDisabled' : 'maitredUnresolved')}</p>
+      {howLink}
+    </section>
+  }
+
+  // Proven vacancy only; qualifying is not a guaranteed title.
   return (
     <section className={`${styles.maitred} ${styles.maitredEmpty}`}>
       <div className="flex items-center justify-center gap-2">
@@ -136,9 +132,7 @@ export default async function PlaceMaitred({
       <p className="mx-auto mt-2 max-w-md text-[0.95rem] leading-relaxed text-brand-cream/75">
         {t('maitredEmptyBody', { name: placeName })}
       </p>
-      <div className="mx-auto mt-4 max-w-md rounded-xl border border-brand-orange/30 bg-brand-orange/[0.12] px-4 py-3 text-[0.95rem] font-semibold leading-snug">
-        {t('maitredReward', { name: placeName })}
-      </div>
+      {howLink}
       <div className="mt-5">
         <StoreLink
           location="place-maitred"

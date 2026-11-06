@@ -13,16 +13,17 @@ import PlacesMapLoader from '@/components/map/PlacesMapLoader'
 import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
 import { CITY_FLOOR, EVIDENCE_FLOOR, getEatStandings, type StandingRow } from '@/lib/eat-standings'
 import { getDirectoryPlace, getPlaceIndex, type DirectoryPlace } from '@/lib/place-directory'
-import { getMaitredAt } from '@/lib/maitred'
+import { getMaitredStateAt } from '@/lib/maitred'
 import { getPlacePhoto } from '@/lib/place-photo'
 import { localizePath } from '@/i18n/paths'
 import { thumbUrl } from '@/lib/thumb'
 import { safeJsonLd } from '@/lib/safe-json-ld'
 
 /** A public restaurant: original meal photos, Maître d’ notes, standings and directions.
- * Data, visibility gates and SEO remain the same public projections as the app.
+ * The web publishes a separate, filtered projection; app-only progress is never included.
  */
-export const revalidate = 3600
+// Holder identity is revalidated by the shared strict-expiry data cache.
+export const dynamic = 'force-dynamic'
 export const dynamicParams = true
 
 interface Props {
@@ -91,7 +92,7 @@ export default async function PlacePage({ params }: Props) {
     ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(place.name)}&destination_place_id=${encodeURIComponent(place.placeId)}`
     : null
   // Lead with a real public meal tagged to this venue; keep the source photo as fallback.
-  const [googlePhoto, maitred] = await Promise.all([getPlacePhoto(place.placeId), getMaitredAt(place.placeId)])
+  const [googlePhoto, maitred] = await Promise.all([getPlacePhoto(place.placeId), getMaitredStateAt(place.placeId)])
   const heroMeal = place.meals[0]
   const hero = heroMeal ? { src: heroMeal.src, alt: heroMeal.caption ? `${heroMeal.caption}, ${place.name}` : t('mealAlt', { name: place.name }) } : googlePhoto ? { src: googlePhoto.uri, alt: place.name } : null
 
@@ -166,8 +167,7 @@ export default async function PlacePage({ params }: Props) {
 
         <div className={styles.placeDetails}>
           <div>
-            {/* Unknown is deliberately omitted; null is a confirmed empty seat. */}
-            {maitred !== undefined ? <PlaceMaitred locale={locale} placeName={place.name} held={maitred} faqHref={localizePath(locale, '/#faq')} /> : null}
+            <PlaceMaitred locale={locale} placeName={place.name} state={maitred} faqHref={localizePath(locale, '/maitre-d#how-it-is-earned')} />
             {row && (ranked || row.cityRank !== null || row.matchups > 0) ? <section className={styles.standing}>
               <p className={styles.kicker}>{t('standingBand')}</p>
               {ranked || row.cityRank !== null ? <p className={styles.rank}>

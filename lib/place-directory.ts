@@ -28,7 +28,7 @@ async function aggregateIsFresh(): Promise<boolean> {
 
 async function fallbackDirectory(reason: string): Promise<DirectoryPlace[]> {
   const db = getDb()
-  if (!db) return []
+  if (!db) throw new Error('Place directory database unavailable.')
   console.warn(`place-directory: aggregate ${reason}; falling back to a live scan.`)
   const holders = await readMaitredHolders(db)
   return computePlaceDirectory(db, holders.map((h) => h.placeId))
@@ -49,29 +49,39 @@ export const getPlaceIndex = unstable_cache(
       return []
     }
   },
-  ['makan-place-index', 'v1'],
+  ['makan-place-index', 'v2-maitred-states'],
   { revalidate: 3600 },
 )
 
-/** Every place in full. One read per place: use getPlaceIndex where a list will do. */
-export const getPlaceDirectory = unstable_cache(
+/** Cache successful full directories only; a provider failure is not an empty catalogue. */
+const getCachedPlaceDirectory = unstable_cache(
   async (): Promise<DirectoryPlace[]> => {
     if (WEBSITE_FIXTURES) return fixtureDirectory()
-    try {
-      const db = getDb()
-      if (!db) return []
-      const [index, fresh] = await Promise.all([readPlaceIndex(db), aggregateIsFresh()])
-      if (!index || !fresh) return fallbackDirectory(index ? 'stale' : 'missing')
-      const places = await readPlaces(db, index.map((p) => p.placeId))
-      return index.map((p) => places.get(p.placeId)).filter((p): p is DirectoryPlace => Boolean(p))
-    } catch (err) {
-      console.error('place-directory: failed to build the directory.', err)
-      return []
-    }
+    const db = getDb()
+    if (!db) throw new Error('Place directory database unavailable.')
+    const [index, fresh] = await Promise.all([readPlaceIndex(db), aggregateIsFresh()])
+    if (!index || !fresh) return fallbackDirectory(index ? 'stale' : 'missing')
+    const places = await readPlaces(db, index.map((p) => p.placeId))
+    return index.map((p) => places.get(p.placeId)).filter((p): p is DirectoryPlace => Boolean(p))
   },
-  ['makan-place-directory', 'v3'],
+  ['makan-place-directory', 'v5-strict-failure'],
   { revalidate: 3600 },
 )
+
+/** Maître callers must preserve failed joins as unavailable, separately from a real empty list. */
+export async function getPlaceDirectoryStrict(): Promise<DirectoryPlace[] | null> {
+  try {
+    return await getCachedPlaceDirectory()
+  } catch (err) {
+    console.error('place-directory: failed to build the directory.', err)
+    return null
+  }
+}
+
+/** Existing catalogue callers retain their safe empty rendering and share the same successful cache. */
+export async function getPlaceDirectory(): Promise<DirectoryPlace[]> {
+  return (await getPlaceDirectoryStrict()) ?? []
+}
 
 /**
  * One place by its Google Place id: a single document read, never a scan.

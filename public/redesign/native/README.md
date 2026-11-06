@@ -1,0 +1,1 @@
+Ionicons.ttf copied unchanged from locally installed @expo/vector-icons 15.1.1, bundled react-native-vector-icons. Glyph values verified against its glyphmaps/Ionicons.json. Native app source reference: 18d991a7527d76ff14eb2dd23846ad69da79e13f. Package and vendored adapter MIT licenses are retained alongside. This asset is the app package glyph font, not a custom redrawing.

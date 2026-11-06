@@ -3,7 +3,7 @@ import { timingSafeEqual } from 'node:crypto'
 import { NextResponse } from 'next/server'
 import { getDb } from '@/lib/firebase-admin'
 import { computeEatStandings, computePlaceDirectory, computePlaceStats, indexOf } from '@/lib/aggregates/compute'
-import { buildMaitredList, readMaitredHolders } from '@/lib/aggregates/maitred'
+import { buildMaitredList, readMaitredPhotos, readMaitredSource } from '@/lib/aggregates/maitred'
 import { writeAggregates } from '@/lib/aggregates/store'
 
 export const runtime = 'nodejs'
@@ -51,9 +51,10 @@ export async function GET(request: Request) {
     // Maître d' venues get a page even without public meals, so the
     // directory is built after the holders are read.
     const directoryWithMaitred = async () => {
-      const holders = await readMaitredHolders(db)
-      const directory = await computePlaceDirectory(db, holders.map((h) => h.placeId))
-      return { directory, maitred: buildMaitredList(holders, directory) }
+      const source = await readMaitredSource(db)
+      const directory = await computePlaceDirectory(db, source.holders.map((holder) => holder.placeId))
+      const photos = await readMaitredPhotos(db, source, directory)
+      return { directory, maitred: buildMaitredList(source, directory, photos) }
     }
     const [standings, { directory, maitred }, stats] = await Promise.all([
       timed('standings', computeEatStandings(db)),

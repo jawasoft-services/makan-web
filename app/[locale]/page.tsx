@@ -42,7 +42,8 @@ export async function generateMetadata({
 // Regenerate the static homepage once per hour — keeps the live meal count
 // fresh enough to feel "alive" between visits, with trivial Firestore cost
 // (~24 aggregation reads/day regardless of traffic).
-export const revalidate = 3600
+// Holder identity is revalidated by the shared strict-expiry data cache.
+export const dynamic = 'force-dynamic'
 
 // The homepage answers the five questions a new visitor brings with them:
 // is this for me → can it help → how → what do I get → why Makan.

@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 import { Timestamp, type Firestore } from 'firebase-admin/firestore'
 import type { DirectoryPlace, EatStandings, MaitredList, PlaceIndexEntry, PlaceStats } from './types'
+import { parseMaitredList } from './maitred'
 
 /**
  * Where the aggregates live in Firestore, and how they are written and read.
@@ -64,7 +65,27 @@ export async function readStandings(db: Firestore): Promise<EatStandings | null>
 }
 
 export async function readMaitred(db: Firestore): Promise<MaitredList | null> {
-  return readDoc<MaitredList>(db, db.collection(ROOT).doc('maitred'))
+  const root = db.collection(ROOT)
+  const [content, meta] = await Promise.all([root.doc('maitred').get(), root.doc('meta').get()])
+  const stored = content.data()
+  const payload = parseMaitredList(stored?.payload)
+  if (!payload) return null
+  const proof = meta.data()?.maitredVerification
+  // A successful unchanged run still reverified its source. Its proof lives in
+  // the existing meta write, bound to exactly this schema and content. Neither
+  // cron completion time nor a mismatched/legacy proof can extend freshness.
+  const hash = maitredContentHash(payload)
+  if (proof?.schemaVersion === payload.schemaVersion && stored?.contentHash === hash && proof.contentHash === hash
+    && typeof proof.verifiedAt === 'number' && Number.isFinite(proof.verifiedAt) && proof.verifiedAt >= payload.verifiedAt) {
+    return { ...payload, verifiedAt: proof.verifiedAt }
+  }
+  return payload
+}
+
+function maitredContentHash(payload: MaitredList): string {
+  const { verifiedAt: _verifiedAt, ...body } = payload
+  void _verifiedAt
+  return hashOf(body)
 }
 
 export async function readStats(db: Firestore): Promise<PlaceStats | null> {
@@ -117,6 +138,9 @@ export async function writeAggregates(
   db: Firestore,
   data: { standings: EatStandings; directory: DirectoryPlace[]; index: PlaceIndexEntry[]; stats: PlaceStats; maitred: MaitredList },
 ): Promise<WriteSummary> {
+  // Do not let a legacy producer overwrite the explicit-state public contract.
+  const maitred = parseMaitredList(data.maitred)
+  if (!maitred) throw new Error('Unsupported Maître d’ aggregate schema.')
   const summary: WriteSummary = { written: 0, skipped: 0, removed: 0 }
   const now = Timestamp.now()
   const root = db.collection(ROOT)
@@ -155,9 +179,11 @@ export async function writeAggregates(
   if (statsSnap.data()?.contentHash === statsHash) summary.skipped += 1
   else put(root.doc('stats'), data.stats, statsHash)
 
-  const maitredHash = hashOf(data.maitred)
+  // Verification age is not content. The existing meta write carries a new
+  // source-read proof even when this content document does not need rewriting.
+  const maitredHash = maitredContentHash(maitred)
   if (maitredSnap.data()?.contentHash === maitredHash) summary.skipped += 1
-  else put(root.doc('maitred'), data.maitred, maitredHash)
+  else put(root.doc('maitred'), maitred, maitredHash)
 
   // Index: sharded, one hash over the whole list on the meta document.
   const indexHash = hashOf(data.index)
@@ -188,7 +214,10 @@ export async function writeAggregates(
     summary.removed += 1
   }
 
-  swallow(writer.set(root.doc('meta'), { lastRunAt: now, places: data.directory.length, standingsRows: data.standings.rows.length }))
+  swallow(writer.set(root.doc('meta'), {
+    lastRunAt: now, places: data.directory.length, standingsRows: data.standings.rows.length,
+    maitredVerification: { schemaVersion: maitred.schemaVersion, contentHash: maitredHash, verifiedAt: maitred.verifiedAt },
+  }))
   await writer.close()
   if (failures.length > 0) throw new Error(`${failures.length} of ${summary.written + 1} writes failed; first: ${failures[0]}`)
   return summary

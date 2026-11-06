@@ -12,7 +12,7 @@ export default function Footer() {
   return <footer className="redesign-footer inverse-ground">
     <div className="footer-top">
       <Link className="footer-brand" href={localizePath(locale, '/')} aria-label={locale === 'id' ? 'Beranda Makan' : 'Makan home'}><Image src="/redesign/logo.svg" alt="Makan" width={168} height={40} /></Link>
-      <nav aria-label="Makan">{primary.map(([path, key]) => <Link key={path} href={localizePath(locale, '/' + path)}>{t(key)}</Link>)}</nav>
+      <nav aria-label="Makan"><Link href={localizePath(locale, "/maitre-d")}>Maître d’</Link>{primary.map(([path, key]) => <Link key={path} href={localizePath(locale, '/' + path)}>{t(key)}</Link>)}</nav>
       <nav aria-label={t('help')}>{help.map(([path, key]) => <Link key={path} href={path === 'privacy-policy' ? localizePath(locale, '/privacy-policy') : localizePath(locale, '/' + path)}>{t(key)}</Link>)}</nav>
       <nav aria-label={locale === 'id' ? 'Media sosial' : 'Social'}><a href="https://www.instagram.com/makanappofficial/">Instagram</a><a href="https://www.tiktok.com/@makan.app">TikTok</a><a href="https://x.com/app_makan">X</a><LanguageSwitcher compact /></nav>
     </div>

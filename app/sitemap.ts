@@ -40,6 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     })),
     ...localized("/story", "monthly", 0.9),
+    ...localized("/maitre-d", "weekly", 0.8),
     ...localized("/partner", "monthly", 0.8),
     ...localized("/standings", "weekly", 0.8),
     ...standings.cities.flatMap((c) => localized(`/standings/${c.slug}`, "weekly", 0.7)),
