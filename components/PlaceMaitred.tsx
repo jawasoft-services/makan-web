@@ -3,6 +3,7 @@ import Image from 'next/image'
 import styles from '@/components/standings/public-pages.module.css'
 import StoreLink from '@/components/home/StoreLink'
 import type { MaitredPlaceState, MaitredVenue } from '@/lib/maitred'
+import { getVerifiedMenuPrice } from '@/lib/verified-menu-price'
 
 // Only an explicit vacant standing may show the empty-seat invitation.
 function Crown({ hollow = false }: { hollow?: boolean }) {
@@ -49,6 +50,7 @@ export default async function PlaceMaitred({
   )
 
   if (held?.notes.always) {
+    const menuPrice = getVerifiedMenuPrice(held.slug, held.notes.always)
     const extra = [
       { label: t('maitredAnother'), body: held.notes.another },
       { label: t('maitredWhy'), body: held.notes.why },
@@ -63,6 +65,7 @@ export default async function PlaceMaitred({
         <p className="mt-3.5 text-[1.75rem] font-bold leading-[1.2]" style={{ letterSpacing: '-0.015em' }}>
           {held.notes.always}
         </p>
+        {menuPrice ? <a href={menuPrice.menuUrl} className="mt-1 inline-flex min-h-11 items-center text-base font-semibold leading-[1.4] text-brand-cream underline decoration-brand-orange underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-cream">{t('menuPriceLabel', { price: menuPrice.price })}</a> : null}
         <div className="mt-3.5 flex items-center gap-3">
           <HolderPhoto venue={held} />
           <p className="text-[1.0625rem] leading-[1.45]">

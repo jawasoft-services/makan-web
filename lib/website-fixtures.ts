@@ -26,7 +26,7 @@ const unavailable = state === 'unavailable' || state === 'empty'
 const photo = (name: string) => `/redesign/${name}.jpg`
 
 const meals = [
-  { id: 'fixture-public-meal', src: photo('prawns'), thumb: '', caption: 'Prawns at Kendal Street Kitchen', mealType: 'Dinner', username: 'makan_fixture', at: '2026-11-05T18:00:00.000Z' },
+  { id: 'fixture-public-meal', src: photo('prawns'), thumb: '', caption: 'Harissa prawns at Kendal Street Kitchen', mealType: 'Dinner', username: 'makan_fixture', at: '2026-11-05T18:00:00.000Z' },
   { id: 'fixture-public-meal-2', src: photo('tiramisu'), thumb: '', caption: 'Tiramisu after dinner', mealType: 'Dinner', username: 'makan_fixture', at: '2026-11-04T18:00:00.000Z' },
   { id: 'fixture-public-meal-3', src: photo('dining'), thumb: '', caption: 'An evening at the table', mealType: 'Dinner', username: 'makan_fixture', at: '2026-11-03T18:00:00.000Z' },
 ]
@@ -60,7 +60,7 @@ export function fixtureMaitred(): MaitredList | null {
   const venues: MaitredList['venues'] = state === 'empty' || status === 'disabled' || places.length ? [] : [{
     placeId: base.placeId, slug: base.slug, name: base.name, where: base.where,
     holderName: 'Alex', holderPhoto: null, photo: state === 'maitred-no-photo' ? null : meals[0].src,
-    notes: { always: state === 'maitred-no-order' ? '' : 'Prawns', another: '', why: '', tip: '' },
+    notes: { always: state === 'maitred-no-order' ? '' : 'Harissa prawns', another: '', why: '', tip: '' },
   }]
   return { schemaVersion: 2, verifiedAt: Date.now(), status, venues, places }
 }
@@ -71,7 +71,7 @@ export function fixtureClaim(token: string): ClaimVenue | null {
 export function fixtureLinkedPlace(placeId: string, dishId?: string): LinkedPlace | null {
   const place = fixtureDirectory().find(p => p.placeId === placeId)
   return place ? { placeId, name: place.name, publicMealCount: place.meals.length, imageUrl: place.meals[0]?.src ?? null,
-    dish: dishId === FIXTURE_DISH_ID ? { dishId, name: 'Prawns', publicMealCount: 1 } : null,
+    dish: dishId === FIXTURE_DISH_ID ? { dishId, name: 'Harissa prawns', publicMealCount: 1 } : null,
   } : null
 }
 export function fixtureMeal(id: string) {

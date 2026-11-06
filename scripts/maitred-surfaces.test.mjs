@@ -8,6 +8,16 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { createTranslator } from 'next-intl'
 
+// Run the actual authored lookup; only its local fixture flag is substituted.
+const menuPrices = {}
+runInNewContext(ts.transpileModule(readFileSync('lib/verified-menu-price.ts', 'utf8'), {
+  compilerOptions: { module: ts.ModuleKind.CommonJS },
+}).outputText, { exports: menuPrices, require(id) {
+  if (id === 'server-only') return {}
+  if (id === './website-fixtures') return { WEBSITE_FIXTURES: false, FIXTURE_SLUG: 'kendal-street-kitchen-f10001' }
+  throw new Error(`Unexpected import: ${id}`)
+} })
+
 function load(file, locale, directory = { status: 'ready', venues: [] }) {
   const messages = JSON.parse(readFileSync(`messages/${locale}.json`, 'utf8'))
   const exports = {}
@@ -24,12 +34,24 @@ function load(file, locale, directory = { status: 'ready', venues: [] }) {
     if (id === '@/i18n/paths') return { localizePath: (_, path) => `${locale === 'id' ? '/id' : ''}${path}` }
     if (id === '@/lib/maitred') return { getMaitredDirectory: async () => directory }
     if (id === '@/lib/place-photo') return { getPlacePhoto: async () => null }
+    if (id === '@/lib/verified-menu-price') return menuPrices
     throw new Error(`Unexpected import: ${id}`)
   } })
   return exports.default
 }
 const venue = { placeId: 'public-venue', slug: 'public-venue', name: 'Venue', where: null, holderName: 'Alex', holderPhoto: null, photo: null,
   notes: { always: 'Sambal goreng', another: '', why: '', tip: '' } }
+
+function assertSiblingLinks(html) {
+  let depth = 0
+  for (const [tag] of html.matchAll(/<\/?a\b[^>]*>/g)) {
+    if (tag.startsWith('</')) depth--
+    else { assert.equal(depth, 0, 'Links must not be nested'); depth++ }
+    assert.ok(depth >= 0)
+  }
+  assert.equal(depth, 0)
+}
+
 for (const locale of ['en', 'id']) {
   test(`${locale}: place surface requires explicit vacancy and keeps unavailability silent`, async () => {
     const component = load('components/PlaceMaitred.tsx', locale)
@@ -63,6 +85,33 @@ for (const locale of ['en', 'id']) {
       assert.ok(output.length)
       assert.doesNotMatch(output, /Alex|Sambal goreng|Nobody runs|seat is yours/)
       assert.equal(await empty({}), null)
+    }
+  })
+  test(`${locale}: verified order links its published price separately from the venue`, async () => {
+    const kendal = { ...venue, slug: 'kendal-street-kitchen-f7d46b', name: 'Kendal Street Kitchen', notes: { ...venue.notes, always: 'Harissa prawns' } }
+    const showcase = load('components/home/MaitredShowcase.tsx', locale, { status: 'ready', venues: [kendal] })
+    const place = load('components/PlaceMaitred.tsx', locale)
+    const html = renderToStaticMarkup(await showcase({ dedicated: true }))
+    const panel = renderToStaticMarkup(await place({ locale, placeName: kendal.name, state: { status: 'held', venue: kendal }, faqHref: '/maitre-d#how-it-is-earned' }))
+    for (const output of [html, panel]) {
+      assert.match(output, /Harissa prawns/)
+      assert.match(output, new RegExp(`<a[^>]*href="https://kendalstreetkitchen.com/main-menu/"[^>]*>£10 ${locale === 'en' ? 'on menu' : 'di menu'}</a>`))
+      assertSiblingLinks(output)
+    }
+    assert.ok(html.includes(`href="${locale === 'id' ? '/id' : ''}/places/${kendal.slug}"`))
+  })
+  test(`${locale}: another venue, different dish and unpublished order never acquire a menu price`, async () => {
+    const place = load('components/PlaceMaitred.tsx', locale)
+    const variants = [
+      { ...venue, notes: { ...venue.notes, always: 'Harissa prawns' } },
+      { ...venue, slug: 'kendal-street-kitchen-f7d46b' },
+      { ...venue, slug: 'kendal-street-kitchen-f7d46b', notes: { ...venue.notes, always: '' } },
+    ]
+    for (const candidate of variants) {
+      const showcase = load('components/home/MaitredShowcase.tsx', locale, { status: 'ready', venues: [candidate] })
+      const html = renderToStaticMarkup(await showcase({ dedicated: true }))
+      const panel = renderToStaticMarkup(await place({ locale, placeName: candidate.name, state: { status: 'held', venue: candidate }, faqHref: '/maitre-d#how-it-is-earned' }))
+      for (const output of [html, panel]) assert.doesNotMatch(output, /kendalstreetkitchen.com\/main-menu|£10/)
     }
   })
 }

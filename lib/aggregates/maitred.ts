@@ -40,7 +40,7 @@ async function readSource(db: Firestore): Promise<MaitredSource> {
   // Both retained and transferred outcomes have a current holder. A vacancy must
   // be explicit in a complete, stable calculation, never inferred from this query's absence.
   const standings = await db.collection('maitredStanding').where('outcome', 'in', OUTCOMES)
-    .select('canonicalPlaceId', 'activeGenerationId', 'participationRebuildPending', 'outcome', 'holderUid', 'holderDisplayName', 'holderPhotoUrl').get()
+    .select('canonicalPlaceId', 'activeGenerationId', 'participationRebuildPending', 'outcome', 'holderUid').get()
   const rows = standings.docs.flatMap(doc => {
     const data = doc.data()
     if (data.canonicalPlaceId !== doc.id || !str(data.activeGenerationId) || data.participationRebuildPending === true) return []
@@ -49,7 +49,7 @@ async function readSource(db: Firestore): Promise<MaitredSource> {
     const uid = str(data.holderUid)
     const held = outcome === 'retained' || outcome === 'transferred'
     if (held ? !uid : data.holderUid !== null) return []
-    return [{ placeId: doc.id, outcome, uid, name: str(data.holderDisplayName), photo: str(data.holderPhotoUrl) }]
+    return [{ placeId: doc.id, outcome, uid }]
   })
   if (!rows.length) return { verifiedAt, status: 'ready', holders: [], places: [] }
 
@@ -59,10 +59,11 @@ async function readSource(db: Firestore): Promise<MaitredSource> {
     getAll(db, heldRows.map(row => `maitredMenus/${row.placeId}`)),
     getAll(db, uids.map(uid => `users/${uid}/maitredSettings/participation`)),
     getAll(db, rows.map(row => `restaurants/${row.placeId}`), ['isTestVenue', 'state', 'canonicalPlaceId', 'replacedByCanonicalPlaceId']),
-    getAll(db, uids.map(uid => `users/${uid}`), ['deletedAt', 'isDeleted', 'isSpam', 'spamSuspected', 'accountStatus']),
+    getAll(db, uids.map(uid => `users/${uid}`), ['deletedAt', 'isDeleted', 'isSpam', 'spamSuspected', 'accountStatus', 'display_name', 'displayName', 'name', 'photoURL', 'avatar', 'photoURLString']),
     getAll(db, uids.map(uid => `accountDeletionFences/${createHash('sha256').update(uid).digest('hex')}`)),
   ])
   const settingsOf = new Map(uids.map((uid, i) => [uid, participation[i].exists ? participation[i].data() ?? {} : null]))
+  const profileOf = new Map(uids.map((uid, i) => [uid, profiles[i].exists ? profiles[i].data() ?? null : null]))
   // Match the native inactive/deletion predicates. A missing profile fails closed
   // for anonymous export; no guessed account-visibility or owner-roster consent field.
   const active = new Set(uids.filter((_, i) => {
@@ -83,8 +84,14 @@ async function readSource(db: Firestore): Promise<MaitredSource> {
       continue
     }
     const settings = settingsOf.get(row.uid)
-    if (!active.has(row.uid) || settings?.enabled === false || !row.name || TEST_HOLDER.test(row.name)) continue
-    holders.push({ placeId: row.placeId, holderName: row.name, holderPhoto: row.photo.startsWith(STORAGE) ? row.photo : null,
+    const profile = profileOf.get(row.uid)
+    // Native profileFromRecord/resolveDinerDisplayNameFromRecord precedence.
+    // Standing identity is denormalized at recompute time; never resurrect a
+    // removed name/avatar from that older pointer during fresh verification.
+    const name = firstString([profile?.display_name, profile?.displayName, profile?.name])
+    const photo = firstString([profile?.photoURL, profile?.avatar, profile?.photoURLString])
+    if (!active.has(row.uid) || settings?.enabled === false || !name || TEST_HOLDER.test(name)) continue
+    holders.push({ placeId: row.placeId, holderName: name, holderPhoto: photo.startsWith(STORAGE) ? photo : null,
       notes: notesOf(menuOf.get(row.placeId), row.uid, settings) })
   }
   return { verifiedAt, status: 'ready', holders, places }
@@ -196,3 +203,4 @@ async function getAll(db: Firestore, paths: string[], fieldMask?: string[]): Pro
 }
 function record(value: unknown): Record<string, unknown> | null { return value !== null && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : null }
 function str(value: unknown): string { return typeof value === 'string' ? value.trim() : '' }
+function firstString(values: unknown[]): string { return values.map(str).find(Boolean) ?? '' }

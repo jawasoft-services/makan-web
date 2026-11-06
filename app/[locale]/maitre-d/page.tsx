@@ -34,7 +34,7 @@ export default async function MaitredPage({ params }: { params: Promise<{ locale
       <SiteSchema locale={locale} />
       <section className={styles.hero} id="top" aria-labelledby="maitred-title">
         <div className={styles.heroCopy}>
-          <p className={styles.eyebrow}>Maître d’</p>
+          <p className={styles.eyebrow}><span>Maître d’</span><Image className={styles.titleCrown} src="/redesign/maitred-crown.svg" alt="" width={72} height={54} aria-hidden="true" /></p>
           <h1 id="maitred-title">{t('heroStart')} <span>{t('heroEnd')}</span></h1>
           <p className={styles.intro}>{t('heroBody')}</p>
           <div className={styles.heroActions}>
@@ -43,7 +43,6 @@ export default async function MaitredPage({ params }: { params: Promise<{ locale
           </div>
         </div>
         <figure className={styles.heroScene}>
-          <span className={styles.demoLabel}>{demo.label}</span>
           <div className={styles.heroPhone}>
             <div className={styles.phoneIsland} aria-hidden="true" />
             <MaitredNativeMockup locale={locale} state="order" priority />
@@ -72,7 +71,7 @@ export default async function MaitredPage({ params }: { params: Promise<{ locale
       <section id="questions" className={styles.questions} aria-labelledby="questions-title">
         <div className={styles.questionHeading}><h2 id="questions-title">{t('faqTitle')}</h2></div>
         <div className={styles.faqList}>{faqs.map(({ question, answer }, index) => <details name="maitred-faq" open={index === 0} className={styles.question} key={question} id={`maitred-question-${index + 1}`}>
-          <summary>{question}<PlayfulArrow direction="down" /></summary><p id={index === 0 ? 'maitred-counting-rules' : undefined}>{answer}</p>
+          <summary>{question}<PlayfulArrow direction="down" /></summary><p id={index === 0 ? 'maitred-counting-rules' : undefined}>{answer}{index === 4 ? <Link href={`${localizePath(locale, '/privacy-policy')}#maitred-visibility`} className="flex min-h-11 w-fit items-center underline underline-offset-4">{t('privacyLink')}</Link> : null}</p>
         </details>)}</div>
       </section>
 

@@ -23,8 +23,8 @@ test('the page serves the Indonesian text at /id and English everywhere else', (
 })
 
 test('both carry the same date and the same update notes', () => {
-  assert.match(english, /Last updated: 4 November 2026/)
-  assert.match(indonesian, /Terakhir diperbarui: 4 November 2026/)
+  assert.match(english, /Last updated: 6 November 2026/)
+  assert.match(indonesian, /Terakhir diperbarui: 6 November 2026/)
   for (const date of ['4 November 2026', '30 Agustus 2026', '6 September 2026']) assert.ok(indonesian.includes(date), date)
   for (const date of ['4 November 2026', '30 August 2026', '6 September 2026']) assert.ok(english.includes(date), date)
 })

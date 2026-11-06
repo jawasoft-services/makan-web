@@ -690,6 +690,7 @@
     "metaTitleLocated": "{name}, {city} | Makan",
     "metaDescriptionEmpty": "{place}. No public meal photos are available yet.",
     "claimRow": "Own this place? Claim it",
+    "menuPriceLabel": "{price} on menu",
     "maitredOrderEyebrow": "What to order here",
     "maitredBy": "<strong>{name}</strong>, the Maître d’, says to order this.",
     "maitredAnother": "Also good",
@@ -947,22 +948,7 @@
     "qrText": "Scan with your phone to get Makan.",
     "partnerLink": "Run a restaurant? See Makan for restaurants.",
     "demo": {
-      "label": "Demo",
-      "legend": "Maître d’ demo: explore how the title is earned",
-      "venue": "Kendal Street Kitchen",
-      "dish": "Harissa prawns",
-      "photoAlt": "Harissa prawns with grilled sourdough and lemon at Kendal Street Kitchen",
-      "you": "You",
-      "saved": "Saved to your meals",
-      "usual": "Your usual order",
-      "role": "Maître d’",
-      "firstDay": "One day",
-      "anotherDay": "Another day",
-      "qualified": "In the running.",
-      "noGuarantee": "Qualifying is the start. The title is still to be earned.",
-      "earned": "At your regular spot.",
-      "sharePrompt": "Your pick for the next diner.",
-      "published": "Usual order shared",
+      "legend": "How the Maître d’ title is earned",
       "steps": [
         {
           "id": "save",
@@ -1004,8 +990,8 @@
         "answer": "A meal needs the right restaurant tag and a valid meal time, with your account and Maître d’ participation eligible. Deleted meals do not count. Saving several meals on the same restaurant-local day still counts as one day."
       },
       {
-        "question": "Can I turn participation off?",
-        "answer": "Yes. You can turn Maître d’ participation off in Makan. Your saved meals stay in your diary."
+        "question": "Who can see my profile and usual order?",
+        "answer": "Anyone can see a current holder’s Makan name, photo and title on our website. Your usual order appears only when you publish it. Meal history and visit counts stay off the card. Turn participation off in Makan to withdraw your title and order; your diary stays."
       },
       {
         "question": "Does the title come with perks?",
@@ -1016,6 +1002,7 @@
         "answer": "Yes. Save your meals, find out what to order and read a regular’s usual without earning a title or inviting anyone. You can manage Maître d’ participation in Makan."
       }
     ],
+    "privacyLink": "Privacy and controls",
     "proofTitle": "Start with a regular’s usual.",
     "proofEmpty": "Usual orders will appear here as Maîtres d’ publish them.",
     "proofUnavailable": "Usual orders aren’t available right now. You can still explore Maître d’ in Makan.",

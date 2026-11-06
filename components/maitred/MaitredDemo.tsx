@@ -8,22 +8,7 @@ import MaitredNativeMockup from './MaitredNativeMockup'
 
 export type DemoStep = 'save' | 'qualify' | 'lead' | 'share'
 export type MaitredDemoCopy = {
-  label: string
   legend: string
-  venue: string
-  dish: string
-  photoAlt: string
-  you: string
-  saved: string
-  usual: string
-  role: string
-  firstDay: string
-  anotherDay: string
-  qualified: string
-  noGuarantee: string
-  earned: string
-  sharePrompt: string
-  published: string
   steps: { id: DemoStep; title: string; body: string }[]
 }
 
@@ -44,7 +29,6 @@ export default function MaitredDemo({ copy, locale }: { copy: MaitredDemoCopy; l
       </label>)}
     </div>
     <div className={styles.scene} aria-hidden="true">
-      <span className={styles.demoLabel}>{copy.label}</span>
       <div className={styles.phone}>
         <div className={styles.island} />
         <div className={styles.panels}>

@@ -55,7 +55,7 @@ function seeded(ids = ['retained', 'transferred', 'vacant', 'unresolved']) {
       outcome: id, holderUid: held ? id+'-user' : null, holderDisplayName: held ? 'Alex' : '', holderPhotoUrl: sourcePhoto }
     seed[`restaurants/${id}`] = { state: 'active', canonicalPlaceId: id }
     if (held) {
-      seed[`users/${id}-user`] = { accountStatus: 'active' }
+      seed[`users/${id}-user`] = { accountStatus: 'active', display_name: 'Alex', photoURL: sourcePhoto }
       seed[`maitredMenus/${id}`] = { authorUid: id+'-user', moderation: 'visible', entries: { alwaysOrderThis: 'Prawns' } }
     }
   }
@@ -166,6 +166,47 @@ test('menu authorship/moderation/withdrawal/revision gates preserve the holder w
     const result = await lane().load('lib/aggregates/maitred.ts').readMaitredSource(db.db)
     assert.equal(result.holders.length, 1); assert.deepEqual(copy(result.holders[0].notes), { always: '', another: '', why: '', tip: '' })
   }
+})
+
+test('current profile name and avatar use native precedence, never stale standing identity', async () => {
+  const db = seeded(['retained']); const api = lane().load('lib/aggregates/maitred.ts')
+  const currentPhoto = 'https://firebasestorage.googleapis.com/current-avatar.jpg'
+  db.data.set('users/retained-user', { display_name: '  Current name  ', displayName: 'Auth name', name: 'Legacy name',
+    photoURL: currentPhoto, avatar: sourcePhoto, photoURLString: sourcePhoto })
+  const current = await api.readMaitredSource(db.db)
+  assert.equal(current.holders[0].holderName, 'Current name')
+  assert.equal(current.holders[0].holderPhoto, currentPhoto)
+  assert.equal(db.reads.filter(path => path === 'users/retained-user').length, 1, 'identity and eligibility share the same batched profile read')
+  db.data.set('users/retained-user', { display_name: ' ', displayName: 'Auth fallback', name: 'Legacy name', photoURL: '', avatar: currentPhoto })
+  const fallback = await api.readMaitredSource(db.db)
+  assert.equal(fallback.holders[0].holderName, 'Auth fallback'); assert.equal(fallback.holders[0].holderPhoto, currentPhoto)
+  db.data.set('users/retained-user', { name: 'Legacy profile', photoURLString: currentPhoto })
+  const legacy = await api.readMaitredSource(db.db)
+  assert.equal(legacy.holders[0].holderName, 'Legacy profile'); assert.equal(legacy.holders[0].holderPhoto, currentPhoto)
+  for (const profile of [{ display_name: 'Renamed' }, { display_name: 'Renamed', photoURL: 'https://untrusted.example/avatar.jpg' }]) {
+    db.data.set('users/retained-user', profile)
+    const removed = await api.readMaitredSource(db.db)
+    assert.equal(removed.holders[0].holderPhoto, null, 'removed or disallowed current avatar cannot revive the pointer avatar')
+  }
+  db.data.set('users/retained-user', { email: 'private@example.test', username: 'private-contact' })
+  const unnamed = await api.readMaitredSource(db.db)
+  assert.equal(unnamed.holders.length, 0); assert.equal(unnamed.places.length, 0, 'missing public name is not vacancy')
+})
+
+test('reader refresh reflects a profile rename/avatar removal and withdraws a deleted profile without false vacancy', async () => {
+  const db = seeded(['retained'])
+  const run = lane({ db: db.db, actualSource: true, directory: directory(['retained']) })
+  const api = run.load('lib/maitred.ts')
+  const first = await api.getMaitredStateAt('retained')
+  assert.equal(first.status, 'held'); assert.equal(first.venue.holderName, 'Alex'); assert.equal(first.venue.holderPhoto, sourcePhoto)
+  db.data.set('users/retained-user', { display_name: 'Renamed diner' })
+  run.clock.now += 300_000
+  const changed = await api.getMaitredStateAt('retained')
+  assert.equal(changed.status, 'held'); assert.equal(changed.venue.holderName, 'Renamed diner'); assert.equal(changed.venue.holderPhoto, null)
+  db.data.delete('users/retained-user'); run.clock.now += 300_000
+  assert.equal((await api.getMaitredStateAt('retained')).status, 'unavailable')
+  assert.equal(db.reads.filter(path => path === 'users/retained-user').length, 3)
+  assert.deepEqual(run.external, [])
 })
 
 test('source coalesces concurrent work, does not retain a failed read, and retries', async () => {

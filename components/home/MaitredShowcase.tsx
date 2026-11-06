@@ -5,6 +5,7 @@ import Reveal from "@/components/motion/Reveal"
 import { localizePath } from "@/i18n/paths"
 import { getMaitredDirectory, type MaitredVenue } from "@/lib/maitred"
 import { getPlacePhoto } from "@/lib/place-photo"
+import { getVerifiedMenuPrice } from "@/lib/verified-menu-price"
 
 // All eligible holders, without inferring vacancy from a missing or filtered entry.
 export default async function MaitredShowcase({ dedicated = false }: { dedicated?: boolean }) {
@@ -41,7 +42,7 @@ export default async function MaitredShowcase({ dedicated = false }: { dedicated
         <ul data-beat style={{ "--beat": 3 } as React.CSSProperties} className={`mt-10 grid grid-cols-1 gap-3 sm:gap-4 ${single ? "" : "sm:grid-cols-2 lg:grid-cols-3"}`}>
           {picks.map((v, i) => (
             <li key={v.placeId} className="flex">
-              <PickCard venue={v} locale={locale} google={googlePhotos[i]} credit={(author) => tp("photoCredit", { author })} byline={t("byline", { name: v.holderName })} label={t("whatToOrder")} wide={single} />
+              <PickCard venue={v} locale={locale} google={googlePhotos[i]} credit={(author) => tp("photoCredit", { author })} byline={t("byline", { name: v.holderName })} label={t("whatToOrder")} menuPriceLabel={(price) => tp("menuPriceLabel", { price })} wide={single} />
             </li>
           ))}
           {others.length ? (
@@ -89,6 +90,7 @@ function PickCard({
   credit,
   byline,
   label,
+  menuPriceLabel,
   wide,
 }: {
   venue: MaitredVenue
@@ -97,13 +99,14 @@ function PickCard({
   credit: (author: string) => string
   byline: string
   label: string
+  menuPriceLabel: (price: string) => string
   wide: boolean
 }) {
   const src = venue.photo ?? google?.uri ?? null
+  const menuPrice = getVerifiedMenuPrice(venue.slug, venue.notes.always)
   return (
-    <Link
-      href={localizePath(locale, `/places/${venue.slug}`)}
-      className={`group flex w-full gap-3.5 rounded-2xl border border-brand-line bg-brand-card p-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink sm:gap-0 sm:overflow-hidden sm:p-0 ${wide ? "sm:flex-row" : "sm:flex-col"}`}
+    <div
+      className={`group relative flex w-full gap-3.5 rounded-2xl border border-brand-line bg-brand-card p-3 sm:gap-0 sm:overflow-hidden sm:p-0 ${wide ? "sm:flex-row" : "sm:flex-col"}`}
     >
       {src ? <span className={`relative block h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-brand-cream sm:h-auto sm:rounded-none ${wide ? "sm:aspect-square sm:w-[42%]" : "sm:aspect-[4/3] sm:w-full"}`}>
         {src ? (
@@ -115,7 +118,9 @@ function PickCard({
         ) : null}
       </span> : null}
       <span className={`flex min-w-0 flex-1 flex-col sm:px-5 sm:pb-6 sm:pt-[18px] ${wide ? "sm:justify-center sm:px-10 sm:py-10" : ""}`}>
-        <span className="text-[1.1875rem] font-bold leading-[1.2] tracking-[-0.01em] text-brand-ink sm:text-[1.625rem] sm:leading-[1.15] sm:tracking-[-0.015em]">{venue.name}</span>
+        <Link href={localizePath(locale, `/places/${venue.slug}`)} className="text-[1.1875rem] font-bold leading-[1.2] tracking-[-0.01em] text-brand-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink sm:text-[1.625rem] sm:leading-[1.15] sm:tracking-[-0.015em]">
+          {venue.name}<span aria-hidden="true" className="absolute inset-0 rounded-2xl" />
+        </Link>
         {venue.where ? (
           <span className="mt-0.5 text-[0.8125rem] leading-[1.3] text-brand-muted sm:mt-1 sm:text-sm">
             {venue.where.city}, {venue.where.country}
@@ -123,12 +128,13 @@ function PickCard({
         ) : null}
         <span className="mt-4 hidden text-[0.72rem] font-extrabold uppercase tracking-[0.14em] text-brand-orange sm:block">{label}</span>
         <span className="mt-2 text-base font-semibold leading-[1.3] text-brand-ink sm:mt-1 sm:text-[1.1875rem]">{venue.notes.always}</span>
+        {menuPrice ? <a href={menuPrice.menuUrl} className="relative z-10 mt-1 inline-flex min-h-11 w-fit items-center text-sm font-semibold leading-[1.4] text-brand-ink underline decoration-brand-orange underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink">{menuPriceLabel(menuPrice.price)}</a> : null}
         <span className="mt-2 flex items-center gap-2 text-sm leading-[1.35] text-brand-ink sm:mt-4 sm:gap-2.5 sm:text-[0.9375rem]">
           <Avatar venue={venue} className="h-7 w-7 sm:h-9 sm:w-9" />
           <span>{byline}</span>
         </span>
       </span>
-    </Link>
+    </div>
   )
 }
 

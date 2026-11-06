@@ -4,12 +4,14 @@
 // picture is now part of the service under contract, and friends see a taste match), and publish this page and its
 // Indonesian twin (components/legal/PrivacyPolicyId.tsx) together, before the app version that shows the notice
 // and the friend match reaches anyone. Recheck the "Last updated" date at publication.
+// Maître d’ web visibility: 6 Nov product rule; notify existing diners and review its stated basis before publication.
 import PlayfulArrow from '@/components/PlayfulArrow'
 import styles from '@/components/utility.module.css'
 import { Metadata } from 'next'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
 import PrivacyPolicyId from '@/components/legal/PrivacyPolicyId'
+import MaitredPrivacyDisclosure from '@/components/legal/MaitredPrivacyDisclosure'
 import { createPageMetadata } from '@/lib/site-metadata'
 
 export async function generateMetadata({
@@ -65,7 +67,7 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
 
         {/* Title */}
         <h1>Privacy Policy</h1>
-        <p>Last updated: 4 November 2026</p>
+        <p>Last updated: 6 November 2026</p>
 
         </header>
         <div className={styles.legalLayout}>
@@ -223,6 +225,7 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                 <li>Create and manage user accounts</li>
                 <li>Provide core App functionality, including saving meals and displaying feeds according to the audience you chose</li>
                 <li>Operate the friend graph, including friend requests and mutual friendships</li>
+                <li>Recognise Maître d’ title holders publicly and show the usual orders they choose to publish, with the controls described in section 5</li>
                 <li>Synchronise content across your devices</li>
                 <li>Show nearby places and calculate distances, using your device location where you have granted permission</li>
                 <li>Find and fix faults, using crash reports and diagnostic data</li>
@@ -286,7 +289,7 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                 <strong>legitimate
                 interests</strong> covers dish recognition, usage
                 measurement, security, fault-fixing, improving the Services, and featuring meals you
-                have made public in our marketing; and{' '}
+                have made public in our marketing, and the public Maître d’ cards described in section 5; and{' '}
                 <strong>consent</strong> covers enquiries
                 and any analysis of photographs you saved before dish recognition existed.
               </p>
@@ -324,6 +327,14 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                   you saved before the feature existed are left out of it unless you opt them in. And
                   you can object at any time using the contact details above, after which we stop for
                   your account.
+                </p>
+                <p>
+                  <strong>Public Maître d’ cards (section 5).</strong>{' '}
+                  We rely on legitimate interests in helping diners find restaurant regulars and
+                  their published recommendations. We limit the card to your name, optional profile
+                  photo, venue title and notes you publish. You can stop taking part through the
+                  Maître d’ participation setting, or contact us to raise an objection. Your saved
+                  meals remain subject to their chosen audience.
                 </p>
                 <p>
                   <strong>Featuring public meals in our marketing (section 5).</strong>{' '}
@@ -388,6 +399,7 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                 caches or system backups for limited periods, as described in the retention section.
               </p>
 
+              <MaitredPrivacyDisclosure locale="en" />
               <div>
                 <h3>Featuring your public content in our marketing</h3>
                 <p>

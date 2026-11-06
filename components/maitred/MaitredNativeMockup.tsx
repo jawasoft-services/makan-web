@@ -17,7 +17,7 @@ function Crown({ size }: { size: number }) {
 /** Source-matched illustration of restaurantPage + MaitredPresentation at
  * native origin/main 18d991a75. The viewport stays 390 × 844 and scales whole.
  * No live identity/counts, network readers or pretend app actions are mounted.
- * The visible Demo label belongs outside this native viewport. */
+ * Illustration provenance is recorded in NATIVE-MOCKUP-SOURCE.md. */
 export default function MaitredNativeMockup({ locale, state = 'order', priority = false }: {
   locale: string
   state?: NativeMaitredState
@@ -27,8 +27,8 @@ export default function MaitredNativeMockup({ locale, state = 'order', priority 
   const own = state !== 'regulars'
   const hasMenu = state !== 'holder'
   const name = own ? copy.you : copy.aRegular
-  const venue = '[Kendal Street Kitchen]'
-  const dish = '[Harissa prawns]'
+  const venue = 'Kendal Street Kitchen'
+  const dish = 'Harissa prawns'
   return <div className={styles.scaleBox} aria-hidden="true" data-native-mockup="18d991a75" data-native-state={state}>
     <svg className={styles.canvas} style={{ width: '100%', height: '100%' }} viewBox="0 0 390 844" aria-hidden="true">
       <foreignObject width="390" height="844">
@@ -66,8 +66,8 @@ export default function MaitredNativeMockup({ locale, state = 'order', priority 
               {own && <div className={styles.ownerActions}><span>{hasMenu ? copy.editMenu : copy.addMenu}</span><span className={styles.shareAction} data-native-disabled={!hasMenu}><Icon name="share" />{copy.shareButton}</span></div>}
             </div>
           </div>
-          <div className={styles.detailRow}><Icon name="location" size={15} /><span>[Kendal Street, London]</span></div>
-          <div className={`${styles.detailRow} ${styles.website}`}><Icon name="globe" size={15} /><span>[Restaurant website]</span><Icon name="open" size={11} /></div>
+          <div className={styles.detailRow}><Icon name="location" size={15} /><span>Kendal Street, London</span></div>
+          <div className={`${styles.detailRow} ${styles.website}`}><Icon name="globe" size={15} /><span>Restaurant website</span><Icon name="open" size={11} /></div>
         </div>
       </div>
       <div className={`${styles.floating} ${styles.back}`}><Icon name="back" size={22} /></div>

@@ -43,7 +43,10 @@ All line numbers below refer to native commit `18d991a75`.
   the 280-point photo uses the source parallax factor .3. Safe-area assumptions
   are 47 top / 34 bottom for this 390 × 844 composition. System status-bar
   glyphs are not invented; the accepted marketing phone frame remains outside.
-- Venue, address, website and dish values are bracketed fixture data. Native
+- Venue, address, website and dish values are illustration data. Devon explicitly
+  requested removal of visible Demo labels and data brackets on 6 November 2026;
+  this supersedes the earlier labelled-fixture presentation requirement. The
+  source notes retain provenance, and no illustration is used as live proof. Native
   fallback `A regular` / `Pelanggan tetap` and `You` / `Kamu` are source copy,
   not named people. The one-time venue notice is in its answered state.
 - `/redesign/prawns.jpg` is the unchanged, attributed Kendal Street Kitchen
@@ -54,6 +57,7 @@ All line numbers below refer to native commit `18d991a75`.
 - The informational illustration is `aria-hidden` and has no links, buttons,
   inputs or focus targets at its scaled size. Full-size labelled native radio
   controls outside it expose the four explanations and work without hydration.
+  Their EN/ID legends describe how the title is earned without a Demo label.
 - No backend reads, standings calculations, automatic animation or personal
   analytics were added. Repeated images use the same existing asset URL.
 

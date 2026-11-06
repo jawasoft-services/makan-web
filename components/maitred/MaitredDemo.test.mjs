@@ -85,7 +85,9 @@ for (const locale of ['en', 'id']) {
       assert.ok(html.includes(copy.regularsTab))
       assert.ok(html.includes(copy.orderTab))
       assert.ok(html.includes(copy.countingWindow))
-      assert.equal(html.includes('[Harissa prawns]'), state !== 'holder', 'a new holder has no published dish; illustrative dish stays bracketed and untranslated')
+      assert.equal(html.includes('Harissa prawns'), state !== 'holder', 'a new holder has no published dish; the sourced dish stays untranslated')
+      assert.ok(!/[\[\]]/.test(html.replace(/<[^>]*>/g, '')), 'finished native illustration content has no fixture brackets')
+      assert.ok(html.includes('Kendal Street Kitchen'))
       assert.equal((html.match(/>—</g) || []).length, 2, 'unavailable rank and days use the native missing-data rendering')
       assert.equal((html.match(/class="regularRow/g) || []).length, 1, 'do not invent rival identities or counts')
       assert.ok(!/<(?:button|input|a)\b/.test(html), 'scaled illustration must not contain unusable tiny interactive controls')
@@ -122,8 +124,8 @@ for (const locale of ['en', 'id']) {
     }
     for (const step of copy.steps) assert.ok(html.includes(step.body), 'no-JS readers retain every earning rule')
     assert.ok(html.includes(copy.legend))
+    assert.ok(!/\bdemo\b/i.test(html.replace(/<[^>]*>/g, '')), 'visible and screen-reader explanation contains no Demo label')
     assert.ok(html.includes('Kendal Street Kitchen · @ridorichard'))
-    assert.equal(copy.dish, messages.en.MaitredPage.demo.dish, 'the sourced dish name is not silently translated')
     assert.equal(app.events.length, 4)
     for (const { name, payload } of app.events) {
       assert.equal(name, 'Maitre d Demo Step Selected')
@@ -140,6 +142,10 @@ for (const locale of ['en', 'id']) {
     const page = await pageModule.default({ params })
     const html = renderToStaticMarkup(page)
     assert.equal((html.match(/<h1\b/g) || []).length, 1)
+    assert.ok(!/\bdemo\b/i.test(html.replace(/<[^>]*>/g, '')), 'the finished page has no Demo badge or spoken label')
+    const eyebrow = allElements(page).find(element => element.type === 'p' && element.props.className === 'eyebrow')
+    assert.equal(eyebrow.props.children[0].props.children, 'Maître d’', 'expressive lettering preserves one accessible name')
+    assert.equal(eyebrow.props.children[1].props['aria-hidden'], 'true', 'the crown flourish is decorative')
     assert.ok(html.includes('data-proof-dedicated="true"'), 'do not replace the complete public proof collection with demo content')
     assert.equal((html.match(/<details\b/g) || []).length, 7)
     const questions = allElements(page).filter(element => element.type === 'details')
@@ -154,10 +160,12 @@ for (const locale of ['en', 'id']) {
     assert.ok(allElements(page).some(element => element.type === 'a' && element.props.href === '#maitred-counting-rules'))
     assert.deepEqual(questions.map(question => {
       const [summary, answer] = question.props.children
-      return { question: summary.props.children[0], answer: answer.props.children }
+      return { question: summary.props.children[0], answer: answer.props.children[0] }
     }), messages[locale].MaitredPage.faqs, 'all seven source questions and answers stay unchanged')
     for (const id of ['how-it-is-earned', 'questions', 'download']) assert.ok(html.includes(`id="${id}"`))
     const prefix = locale === 'id' ? '/id' : ''
+    const privacyLink = allElements(questions[4]).find(element => element.props?.href === `${prefix}/privacy-policy#maitred-visibility`)
+    assert.equal(privacyLink?.props.children, messages[locale].MaitredPage.privacyLink, 'the visibility answer links to the complete localized disclosure')
     assert.ok(html.includes(`href="${prefix}/app"`))
     assert.ok(html.includes(`href="${prefix}/partner"`))
     assert.ok(html.includes('href="https://apps.apple.com/app/id6756131450"'))
@@ -169,3 +177,12 @@ for (const locale of ['en', 'id']) {
     assert.equal(metadata.openGraph.images[0].url, `https://www.makanofficial.com${prefix}/maitre-d/opengraph-image`)
   })
 }
+
+test('neither public language catalogue contains a Demo label', () => {
+  const strings = value => typeof value === 'string' ? [value]
+    : value && typeof value === 'object' ? Object.values(value).flatMap(strings) : []
+  for (const locale of ['en', 'id']) {
+    assert.ok(!strings(messages[locale]).some(value => /\bdemo\b/i.test(value)), `${locale}: remove fixture labels rather than hiding them behind another caller`)
+    assert.deepEqual(Object.keys(messages[locale].MaitredPage.demo).sort(), ['legend', 'steps'], 'discard unused phone copy after source-matched mockup conversion')
+  }
+})

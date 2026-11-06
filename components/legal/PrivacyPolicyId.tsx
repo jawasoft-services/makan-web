@@ -2,11 +2,13 @@
 // the whole policy and publish both languages together). The English page is the reference text: change them
 // together. PUBLISH ONLY after counsel's check of the wording, and together with the English page (the native read was
 // accepted by Devon without one, 4 Nov 2026). Recheck the "Terakhir diperbarui" date at publication.
+// Visibilitas web Maître d’: aturan produk 6 Nov; beri tahu pengguna lama dan tinjau dasar hukumnya sebelum publikasi.
 import PlayfulArrow from '@/components/PlayfulArrow'
 import styles from '@/components/utility.module.css'
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
+import MaitredPrivacyDisclosure from '@/components/legal/MaitredPrivacyDisclosure'
 
 const strong = 'font-semibold text-brand-ink'
 
@@ -55,7 +57,7 @@ export default function PrivacyPolicyId() {
         <header className={styles.legalHeading}>
         <p>Hukum</p>
         <h1>Kebijakan Privasi</h1>
-        <p>Terakhir diperbarui: 4 November 2026</p>
+        <p>Terakhir diperbarui: 6 November 2026</p>
 
         </header>
         <div className={styles.legalLayout}>
@@ -192,6 +194,7 @@ export default function PrivacyPolicyId() {
               <li>Membuat dan mengelola akun pengguna</li>
               <li>Menyediakan fungsi inti Aplikasi, termasuk menyimpan makanan dan menampilkan beranda sesuai audiens yang kamu pilih</li>
               <li>Menjalankan graf pertemanan, termasuk permintaan pertemanan dan pertemanan timbal balik</li>
+              <li>Menampilkan pemegang gelar Maître d’ secara publik beserta pesanan andalan yang mereka pilih untuk diterbitkan, dengan pengaturan yang dijelaskan di bagian 5</li>
               <li>Menyinkronkan konten di semua perangkatmu</li>
               <li>Menampilkan tempat di sekitar dan menghitung jarak, memakai lokasi perangkatmu bila kamu telah memberi izin</li>
               <li>Menemukan dan memperbaiki gangguan, memakai laporan kerusakan dan data diagnostik</li>
@@ -249,7 +252,8 @@ export default function PrivacyPolicyId() {
                 seleramu dan kecocokan selera yang disusun darinya;{' '}
                 <strong className={strong}>kepentingan yang sah</strong> mencakup pengenalan hidangan,
                 pengukuran penggunaan, keamanan, perbaikan gangguan, peningkatan Layanan, dan menampilkan
-                makanan yang kamu jadikan publik dalam pemasaran kami; dan{' '}
+                makanan yang kamu jadikan publik dalam pemasaran kami, serta kartu publik Maître d’
+                yang dijelaskan di bagian 5; dan{' '}
                 <strong className={strong}>persetujuan</strong> mencakup pertanyaan dan analisis apa pun
                 atas foto yang kamu simpan sebelum pengenalan hidangan ada.
               </p>
@@ -286,6 +290,14 @@ export default function PrivacyPolicyId() {
                   jujur. Foto yang kamu simpan sebelum fitur ini ada tidak diikutkan kecuali kamu
                   mengikutsertakannya. Dan kamu dapat menolak kapan saja lewat kontak di atas, setelah
                   itu kami berhenti untuk akunmu.
+                </p>
+                <p>
+                  <strong className={strong}>Kartu publik Maître d’ (bagian 5).</strong>{' '}
+                  Kami mengandalkan kepentingan yang sah untuk membantu pengunjung menemukan pelanggan
+                  tetap restoran dan rekomendasi yang mereka terbitkan. Kartu dibatasi pada nama,
+                  foto profil opsional, gelar di restoran, dan catatan yang kamu terbitkan. Kamu dapat
+                  berhenti ikut serta melalui pengaturan keikutsertaan Maître d’, atau menghubungi kami
+                  untuk menyampaikan keberatan. Makanan tersimpan tetap mengikuti audiens pilihanmu.
                 </p>
                 <p>
                   <strong className={strong}>Menampilkan makanan publik dalam pemasaran kami (bagian 5).</strong>{' '}
@@ -347,6 +359,7 @@ export default function PrivacyPolicyId() {
               perangkat atau cadangan sistem untuk jangka waktu terbatas, seperti dijelaskan di bagian
               penyimpanan data.
             </p>
+            <MaitredPrivacyDisclosure locale="id" />
             <div>
               <h3>Menampilkan konten publikmu dalam pemasaran kami</h3>
               <p>

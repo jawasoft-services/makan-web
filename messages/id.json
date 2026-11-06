@@ -690,6 +690,7 @@
     "metaTitleLocated": "{name}, {city} | Makan",
     "metaDescriptionEmpty": "{place}. Belum ada foto makanan publik.",
     "claimRow": "Pemilik tempat ini? Klaim",
+    "menuPriceLabel": "{price} di menu",
     "maitredOrderEyebrow": "Pesanan andalan di sini",
     "maitredBy": "<strong>{name}</strong>, sang Maître d’, menyarankan menu ini.",
     "maitredAnother": "Juga enak",
@@ -947,22 +948,7 @@
     "qrText": "Pindai dengan ponselmu untuk mengunduh Makan.",
     "partnerLink": "Punya restoran? Lihat Makan untuk restoran.",
     "demo": {
-      "label": "Demo",
-      "legend": "Demo Maître d’: jelajahi cara meraih gelar",
-      "venue": "Kendal Street Kitchen",
-      "dish": "Harissa prawns",
-      "photoAlt": "Udang harissa dengan roti sourdough panggang dan lemon di Kendal Street Kitchen",
-      "you": "Kamu",
-      "saved": "Tersimpan di catatan makanmu",
-      "usual": "Pesanan andalanmu",
-      "role": "Maître d’",
-      "firstDay": "Satu hari",
-      "anotherDay": "Hari lainnya",
-      "qualified": "Memenuhi syarat.",
-      "noGuarantee": "Ini baru awal. Gelarnya masih perlu diraih.",
-      "earned": "Di tempat langgananmu.",
-      "sharePrompt": "Pilihanmu untuk pengunjung berikutnya.",
-      "published": "Pesanan andalan dibagikan",
+      "legend": "Cara meraih gelar Maître d’",
       "steps": [
         {
           "id": "save",
@@ -1004,8 +990,8 @@
         "answer": "Makanan perlu ditandai ke restoran yang tepat dan memiliki waktu makan yang valid. Akun dan keikutsertaan Maître d’ kamu juga harus memenuhi syarat. Makanan yang dihapus tidak dihitung. Beberapa makanan pada hari lokal restoran yang sama tetap dihitung sebagai satu hari."
       },
       {
-        "question": "Bisakah keikutsertaan dimatikan?",
-        "answer": "Bisa. Kamu dapat mematikan keikutsertaan Maître d’ di Makan. Makanan yang sudah kamu simpan tetap ada di diari."
+        "question": "Siapa yang bisa melihat profil dan pesanan andalanku?",
+        "answer": "Siapa pun dapat melihat nama Makan, foto, dan gelar pemegang saat ini di situs kami. Pesanan andalan hanya muncul saat kamu menerbitkannya. Riwayat makanan dan jumlah kunjungan tidak tampil di kartu. Matikan keikutsertaan Maître d’ di Makan untuk menarik gelar dan pesanan; diarimu tetap ada."
       },
       {
         "question": "Apakah gelarnya memberikan keuntungan khusus?",
@@ -1016,6 +1002,7 @@
         "answer": "Bisa. Simpan makananmu, cari tahu mau pesan apa, dan baca pesanan andalan pelanggan tetap tanpa meraih gelar atau mengundang siapa pun. Kamu bisa mengelola keikutsertaan Maître d’ di Makan."
       }
     ],
+    "privacyLink": "Privasi dan pengaturan",
     "proofTitle": "Mulai dari pesanan andalan pelanggan tetap.",
     "proofEmpty": "Pesanan andalan muncul di sini setelah dipublikasikan oleh Maître d’.",
     "proofUnavailable": "Pesanan andalan belum bisa dimuat. Kamu tetap bisa menjelajahi Maître d’ di Makan.",

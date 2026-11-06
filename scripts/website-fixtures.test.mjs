@@ -100,7 +100,7 @@ test('healthy typed readers provide local data without invoking any provider', a
   assert.equal((await run.load('lib/claim-link.ts').getClaimVenue(f.FIXTURE_SLUG)).appLink, true)
   assert.equal(await run.load('lib/claim-link.ts').getClaimVenue('bad/token'), null)
   assert.equal((await run.load('lib/claim-venues.ts').getClaimSearchEntries()).length, 2)
-  assert.equal((await run.load('lib/place-link.ts').getLinkedPlace(f.FIXTURE_PLACE_ID, f.FIXTURE_DISH_ID)).dish.name, 'Prawns')
+  assert.equal((await run.load('lib/place-link.ts').getLinkedPlace(f.FIXTURE_PLACE_ID, f.FIXTURE_DISH_ID)).dish.name, 'Harissa prawns')
   assert.equal(await run.load('lib/place-link.ts').getLinkedPlace('bad'), null)
   assert.equal((await run.load('lib/app-store.ts').getAppStoreRating()).count, 6)
   assert.deepEqual(run.attempted, [])
