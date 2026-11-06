@@ -2,6 +2,7 @@ import Hero from "@/components/home/Hero"
 import EatOrYeetScene from "@/components/home/EatOrYeetScene"
 import SeeTheApp from "@/components/home/SeeTheApp"
 import StandingsPreview from "@/components/home/StandingsPreview"
+import MaitredShowcase from "@/components/home/MaitredShowcase"
 import FinalAsk from "@/components/home/FinalAsk"
 import LatestOnMakan from "@/components/LatestOnMakan"
 import FAQ from "@/components/FAQ"
@@ -32,6 +33,7 @@ export default async function DecisionHome({ locale }: { locale: string }) {
       <EatOrYeetScene />
       <SeeTheApp />
       <LatestOnMakan liveMeals={liveMeals} />
+      <MaitredShowcase />
       <StandingsPreview />
       <FaqSchema items={faqs} />
       <FAQ items={faqs} />

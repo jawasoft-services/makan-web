@@ -1,30 +1,22 @@
 import { getTranslations } from 'next-intl/server'
+import Image from 'next/image'
 import StoreLink from '@/components/home/StoreLink'
+import type { MaitredVenue } from '@/lib/maitred'
 
 /**
- * The Maître'D block on a restaurant page — the download hook.
+ * The Maître'D block on a restaurant page.
  *
- * Ported 1:1 from the app's Maître'D UI (munchies-rn components/maitred: the
- * Crown, the Squiggle underline, the "Paper" card, the three menu entries) so
- * the web reads as the same product, not a lookalike.
+ * Ported from the app's Maître'D UI (munchies-rn components/maitred: the
+ * Crown, the Squiggle underline) so the web reads as the same product.
  *
- * Two states, chosen by whether a published Maître'D exists here:
- *  - EMPTY SEAT (the default): the app feature ships dark, so almost every venue
- *    has no holder. This is the funnel — "nobody runs this yet, claim it" — with
- *    the reward line and the App Store CTA.
- *  - HELD: a real holder's name + their published menu ("Always order this" /
- *    "Try this if…" / "Good to know"). Rendered only when a public roster exists
- *    for the place; that projection is not web-readable yet (RM19505 unmerged),
- *    so `held` is always null today and the block safely shows the empty seat.
- *    When RM19505 ships a public roster read, pass `held` and this lights up with
- *    no further change here.
+ * Three states, from the daily Maître d' aggregate (lib/maitred.ts):
+ *  - HELD WITH A NOTE: what to order here, the holder's name and photo,
+ *    their other notes as written (never translated), and what a Maître d' is.
+ *  - HELD, NO NOTE: who holds the seat, and that they have not left a note.
+ *  - EMPTY SEAT: nobody holds it; the funnel with the App Store CTA.
+ * The page renders none of them when the aggregate cannot be read, so a
+ * failed read never claims an empty seat.
  */
-
-export type MaitredMenuEntry = { label: string; body: string }
-export type MaitredHeld = {
-  holderName: string
-  entries: MaitredMenuEntry[]
-}
 
 // The app's crown (components/maitred/MaitredUi.tsx Crown), same viewBox + path.
 function Crown({ hollow = false }: { hollow?: boolean }) {
@@ -55,44 +47,99 @@ function Squiggle() {
   )
 }
 
+function HolderPhoto({ venue }: { venue: MaitredVenue }) {
+  return venue.holderPhoto ? (
+    <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-white/10">
+      <Image src={venue.holderPhoto} alt="" fill sizes="48px" className="object-cover" />
+    </span>
+  ) : (
+    <span aria-hidden className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/10 text-lg font-bold text-brand-cream/80">
+      {venue.holderName.slice(0, 1).toUpperCase()}
+    </span>
+  )
+}
+
 export default async function PlaceMaitred({
   locale,
   placeName,
-  held = null,
+  held,
+  faqHref,
 }: {
   locale: string
   placeName: string
-  held?: MaitredHeld | null
+  held: MaitredVenue | null
+  faqHref: string
 }) {
   const t = await getTranslations({ locale, namespace: 'Places' })
+  const eyebrow = 'text-[0.72rem] font-extrabold uppercase tracking-[0.16em] text-brand-orange'
+  const howLink = (
+    <div className="mt-5 border-t border-white/10 pt-4">
+      <p className="text-[0.95rem] leading-[1.5] text-brand-cream/80">{t('maitredExplain')}</p>
+      <a
+        href={faqHref}
+        className="inline-flex min-h-11 items-center text-[0.95rem] font-semibold text-brand-cream underline decoration-brand-orange/70 underline-offset-4 hover:decoration-brand-orange focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-cream"
+      >
+        {t('maitredHow')}
+      </a>
+    </div>
+  )
 
-  // HELD: a real holder and their published menu. Inert until RM19505 exposes a
-  // public roster; kept here so the page lights up with no further edit.
-  if (held && held.entries.length > 0) {
+  if (held?.notes.always) {
+    const extra = [
+      { label: t('maitredAnother'), body: held.notes.another },
+      { label: t('maitredWhy'), body: held.notes.why },
+      { label: t('maitredTip'), body: held.notes.tip },
+    ].filter((e) => e.body)
     return (
-      <section className="mt-8 overflow-hidden rounded-2xl bg-brand-ink p-6 text-brand-cream">
+      <section aria-label={t('maitredOrderEyebrow')} className="mt-6 overflow-hidden rounded-2xl bg-brand-ink p-6 text-brand-cream sm:p-7">
         <div className="flex items-center gap-2">
           <Crown />
-          <p className="text-[0.72rem] font-extrabold uppercase tracking-[0.16em] text-brand-orange">
-            {t('maitredHeldEyebrow')}
+          <p className={eyebrow}>{t('maitredOrderEyebrow')}</p>
+        </div>
+        <p className="mt-3.5 text-[1.75rem] font-bold leading-[1.2]" style={{ letterSpacing: '-0.015em' }}>
+          {held.notes.always}
+        </p>
+        <div className="mt-3.5 flex items-center gap-3">
+          <HolderPhoto venue={held} />
+          <p className="text-[1.0625rem] leading-[1.45]">
+            {t.rich('maitredBy', { name: held.holderName, strong: (chunks) => <strong className="font-semibold">{chunks}</strong> })}
           </p>
         </div>
-        <p className="mt-3 text-xl font-bold">{held.holderName}</p>
-        <p className="text-sm text-brand-cream/70">{t('maitredHeldSub')}</p>
-        <div className="mt-5 space-y-3">
-          {held.entries.map((entry) => (
-            <div key={entry.label} className="rounded-xl bg-white/[0.06] p-4">
-              <p className="text-[0.66rem] font-extrabold uppercase tracking-[0.14em] text-brand-orange">{entry.label}</p>
-              <p className="mt-1 text-[0.95rem] leading-snug">{entry.body}</p>
-            </div>
-          ))}
-        </div>
-        <p className="mt-5 text-center text-sm text-brand-cream/70">{t('maitredHeldFooter')}</p>
+        {extra.length ? (
+          <dl className="mt-5 space-y-3 border-t border-white/10 pt-4">
+            {extra.map((e) => (
+              <div key={e.label}>
+                <dt className="text-[0.68rem] font-extrabold uppercase tracking-[0.14em] text-brand-cream/60">{e.label}</dt>
+                <dd className="mt-0.5 text-[1.0625rem] leading-[1.45]">{e.body}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : null}
+        {howLink}
       </section>
     )
   }
 
-  // EMPTY SEAT: the funnel. The default state for ~every venue today.
+  if (held) {
+    return (
+      <section aria-label={t('maitredHeldEyebrow')} className="mt-6 overflow-hidden rounded-2xl bg-brand-ink p-6 text-brand-cream sm:p-7">
+        <div className="flex items-center gap-2">
+          <Crown />
+          <p className={eyebrow}>{t('maitredHeldEyebrow')}</p>
+        </div>
+        <div className="mt-3.5 flex items-center gap-3">
+          <HolderPhoto venue={held} />
+          <p className="text-[1.375rem] font-bold leading-[1.25]" style={{ letterSpacing: '-0.015em' }}>
+            {held.holderName}
+          </p>
+        </div>
+        <p className="mt-3 text-[1.0625rem] leading-[1.45] text-brand-cream/80">{t('maitredNoNote')}</p>
+        {howLink}
+      </section>
+    )
+  }
+
+  // EMPTY SEAT: the funnel.
   return (
     <section className="mt-8 overflow-hidden rounded-2xl bg-brand-ink p-6 text-center text-brand-cream">
       <div className="flex items-center justify-center gap-2">

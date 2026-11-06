@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getDb } from '@/lib/firebase-admin'
 import { computeEatStandings, computePlaceDirectory, computePlaceStats, indexOf } from '@/lib/aggregates/compute'
+import { buildMaitredList, readMaitredHolders } from '@/lib/aggregates/maitred'
 import { writeAggregates } from '@/lib/aggregates/store'
 
 export const runtime = 'nodejs'
@@ -40,13 +41,20 @@ export async function GET(request: Request) {
       return out
     }
     const timings: Record<string, number> = {}
-    const [standings, directory, stats] = await Promise.all([
+    // Maître d' venues get a page even without public meals, so the
+    // directory is built after the holders are read.
+    const directoryWithMaitred = async () => {
+      const holders = await readMaitredHolders(db)
+      const directory = await computePlaceDirectory(db, holders.map((h) => h.placeId))
+      return { directory, maitred: buildMaitredList(holders, directory) }
+    }
+    const [standings, { directory, maitred }, stats] = await Promise.all([
       timed('standings', computeEatStandings(db)),
-      timed('directory', computePlaceDirectory(db)),
+      timed('directory', directoryWithMaitred()),
       timed('stats', computePlaceStats(db)),
     ])
-    const summary = await timed('write', writeAggregates(db, { standings, directory, index: indexOf(directory), stats }))
-    const body = { ok: true, ...summary, places: directory.length, ranked: standings.rows.length, ms: Date.now() - started, timings }
+    const summary = await timed('write', writeAggregates(db, { standings, directory, index: indexOf(directory), stats, maitred }))
+    const body = { ok: true, ...summary, places: directory.length, ranked: standings.rows.length, maitred: maitred.venues.length, ms: Date.now() - started, timings }
     console.log('aggregates: run', JSON.stringify(body))
     return NextResponse.json(body)
   } catch (err) {
