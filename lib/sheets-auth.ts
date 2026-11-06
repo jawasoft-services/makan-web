@@ -70,6 +70,12 @@ export function getSheetsAuth() {
     })
   }
 
+  // RM20377: on Firebase App Hosting no key is stored at all; the backend's
+  // own service account (shared on the leads sheet) signs in.
+  if (!process.env.FIREBASE_PRIVATE_KEY) {
+    return new google.auth.GoogleAuth({ scopes: ['https://www.googleapis.com/auth/spreadsheets'] })
+  }
+
   // Fallback path — over-privileged Firebase Admin. Log loudly (once per
   // instance) so misconfigured deploys are visible in Vercel function logs.
   if (!fallbackWarned) {

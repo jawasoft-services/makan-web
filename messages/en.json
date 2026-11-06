@@ -678,5 +678,41 @@
     "savedAt": "Saved at",
     "openPlace": "See every meal saved at {name}",
     "standings": "Eat or Yeet standings"
+  },
+  "Claim": {
+    "metaTitle": "Claim {name} on Makan",
+    "metaTitleUnknown": "Claim your restaurant on Makan",
+    "title": "Claim {name} on Makan",
+    "body": "See what diners order here. It's free.",
+    "meals": "{count, plural, =0 {No meals on Makan yet} one {# meal on Makan} other {# meals on Makan}}",
+    "howItWorks": "You'll claim it in the Makan app. We check every claim before it goes through.",
+    "getApp": "Get the Makan app",
+    "haveApp": "I already have Makan",
+    "photoCredit": "Photo: {author}",
+    "claimedTitle": "{name} is already claimed",
+    "claimedBody": "Its owner manages it on Makan. If that's not right, tell us and we'll check.",
+    "tellUs": "Not right? Tell us",
+    "disputeSubject": "Claim for {name}",
+    "disputeBody": "Tell us what's wrong with this claim:",
+    "notFoundTitle": "We can't find this restaurant",
+    "notFoundBody": "The link may be old or missing a part.",
+    "tellUsAboutPlace": "Tell us about your place"
+  },
+  "PlaceLink": {
+    "metaTitleUnknown": "Get Makan",
+    "metaTitleDish": "{dish} at {place} · Makan",
+    "metaTitlePlace": "{place} on Makan",
+    "descDish": "A dish at {place}, shared on Makan.",
+    "descPlace": "{count, plural, one {# public meal} other {# public meals}} saved here on Makan.",
+    "tagDish": "Dish on Makan",
+    "tagPlace": "Restaurant on Makan",
+    "meals": "{count, plural, one {# public meal on Makan} other {# public meals on Makan}}",
+    "dishMeals": "{count, plural, one {# public meal of this dish on Makan} other {# public meals of this dish on Makan}}",
+    "photoAlt": "A public meal photo: {name}",
+    "open": "Open in Makan",
+    "get": "Get Makan, free",
+    "afterInstall": "After you install, Makan opens this page.",
+    "unknownTitle": "We can't show this place here",
+    "unknownBody": "It may not have any public meals yet. Makan is free, and keeps your own food diary."
   }
 }
