@@ -8,6 +8,7 @@ import StandingsTable from '@/components/standings/StandingsTable'
 import PlacesMapLoader from '@/components/map/PlacesMapLoader'
 import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
 import { CITY_FLOOR, getCityStanding, getEatStandings, getEatStandingsSnapshot } from '@/lib/eat-standings'
+import { safeJsonLd } from '@/lib/safe-json-ld'
 import { localizePath } from '@/i18n/paths'
 
 // One city, the same rule, a smaller pool: ranked from CITY_FLOOR matchups.
@@ -97,7 +98,7 @@ export default async function CityStandingsPage({ params }: Props) {
   return (
     <div className="min-h-screen bg-brand-cream">
       <SiteSchema locale={locale} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(schema) }} />
       <main id="main-content" className="mx-auto max-w-3xl px-5 pb-16 pt-24 sm:px-8 sm:pb-24 sm:pt-32">
         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-orange">
           <Link href={localizePath(locale, '/standings')} className="hover:underline">

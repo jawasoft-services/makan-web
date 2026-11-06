@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "npm run images:static && next build",
     "start": "next start",
+    "test": "node --test scripts/*.test.mjs",
     "lint": "eslint && npm run check:founder-decisions && npm run check:i18n && npm run check:contrast && npm run check:photo-credits",
     "check:founder-decisions": "node scripts/check-founder-decisions.mjs",
     "check:i18n": "node scripts/check-i18n.mjs",

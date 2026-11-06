@@ -2,6 +2,7 @@
 // and AI assistants can extract them. Mirrors StorySchema/ReviewSchema.
 // Items arrive as a prop so the homepage FAQ (lib/faq.ts) and the support FAQ
 // (lib/support.ts) each emit their own FAQPage on their own URL.
+import { safeJsonLd } from "@/lib/safe-json-ld"
 
 interface QandA {
   q: string
@@ -22,8 +23,7 @@ export default function FaqSchema({ items }: { items: readonly QandA[] }) {
   return (
     <script
       type="application/ld+json"
-      // Escape < to prevent the JSON from terminating the script element.
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, "\\u003c") }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLd(data) }}
     />
   )
 }

@@ -10,7 +10,7 @@ const unusedImports = new Set([
   'react/jsx-runtime', 'next/navigation', 'next/image', 'next/link',
   '@/components/Footer', '@/components/PlaceMaitred', '@/components/SiteSchema',
   '@/components/home/StoreLink', '@/components/map/PlacesMapLoader',
-  '@/lib/place-photo', '@/i18n/paths', '@/lib/thumb',
+  '@/lib/place-photo', '@/i18n/paths', '@/lib/thumb', '@/lib/safe-json-ld',
 ])
 
 // Execute the real metadata exports with fixture readers; no database or paid provider imports.

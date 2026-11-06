@@ -74,6 +74,10 @@ cp .env.local.example .env.local
 
 Local dev also falls back to `gcloud auth application-default login` if you'd rather not paste a service-account key.
 
+### Credentials the deployed site needs
+
+The site should run on a **least-privilege service account**, not the Firebase project's full admin key: its `FIREBASE_*` account needs only to read the `webAggregates/*` documents (plus `meals/{id}` for shared meal pages and `tableInvites/{id}` for invite previews) and to write `webAggregates/*` from the cron. The forms write leads through a **separate** Sheets-only account: `GOOGLE_SHEETS_CLIENT_EMAIL` and `GOOGLE_SHEETS_PRIVATE_KEY` must be set in Vercel, because `lib/sheets-auth.ts` otherwise falls back to the `FIREBASE_*` key with full project authority and logs a warning. `TURNSTILE_SECRET_KEY` and `NEXT_PUBLIC_TURNSTILE_SITE_KEY` turn on the bot check for the contact and partner forms; without them the check is skipped and logged. See `.env.local.example`.
+
 ## Scripts
 
 | Command | What it does |

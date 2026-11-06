@@ -11,8 +11,13 @@ import {
   ALLOWED_ORIGINS,
 } from "@/lib/api-validation"
 import { getSheetsAuth } from "@/lib/sheets-auth"
+import { clientAddress, rateLimited } from "@/lib/rate-limit"
+import { turnstilePassed } from "@/lib/turnstile"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+// A person sends a form a few times at most; each send costs an email and a
+// Sheets write. Vercel Firewall rules remain the global control.
+const LIMIT = { burst: 5, perMinute: 2 }
 
 type ContactSource = "contact" | "android-waitlist"
 
@@ -41,13 +46,17 @@ interface ContactBody {
   email?: string
   source?: ContactSource
   website?: string // honeypot
+  turnstileToken?: string
 }
 
 export async function POST(request: Request) {
   try {
-    // 1. Origin allowlist — block browser-based cross-site POSTs.
+    // 1. Same-site check — block browser-based cross-site POSTs.
     if (!isAllowedOrigin(request, ALLOWED_ORIGINS)) {
       return NextResponse.json({ error: "Forbidden." }, { status: 403 })
+    }
+    if (rateLimited(request, "contact", LIMIT)) {
+      return NextResponse.json({ error: "Too many requests." }, { status: 429 })
     }
 
     // 2. Size-capped JSON parse — reject oversized bodies up front.
@@ -80,6 +89,11 @@ export async function POST(request: Request) {
         { error: "A valid email is required." },
         { status: 400 },
       )
+    }
+
+    // 5. Turnstile — after the cheap checks, so bots pay for nothing upstream.
+    if (!(await turnstilePassed(body.turnstileToken, clientAddress(request)))) {
+      return NextResponse.json({ error: "Verification failed." }, { status: 400 })
     }
 
     const trimmedName = source === "android-waitlist" ? "Android waitlist" : name!.trim()

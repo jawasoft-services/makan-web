@@ -4,11 +4,19 @@ import { getDb } from "@/lib/firebase-admin"
 import Image from "next/image"
 import Footer from "@/components/Footer"
 import Link from "next/link"
-import { getTranslations } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { getDirectoryPlaceById } from "@/lib/place-directory"
 import { localizePath } from "@/i18n/paths"
 
-export const dynamic = "force-dynamic"
+// A public meal rarely changes once shared, so each page is cached for an
+// hour: one Firestore read per meal per hour, not one per visitor. Nothing is
+// prebuilt (ids are only known when a link is shared), but a dynamic segment
+// is cacheable only when it declares generateStaticParams, even an empty one.
+export const revalidate = 3600
+export const dynamicParams = true
+export function generateStaticParams() {
+  return []
+}
 
 interface PageProps {
   params: Promise<{ id: string; locale: string }>
@@ -77,6 +85,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function MealPage({ params }: PageProps) {
   const { id, locale } = await params
+  setRequestLocale(locale)
   const meal = await getMeal(id)
 
   // Privacy gate is centralized in getMeal (returns null for non-public).
@@ -92,8 +101,8 @@ export default async function MealPage({ params }: PageProps) {
   if (!imageUrl) redirect("/")
 
   // The way back into the site: the restaurant this meal was saved at. One
-  // aggregate document, not the directory: this route is force-dynamic and
-  // is hit by every shared meal link.
+  // aggregate document, not the directory: this route is hit by every shared
+  // meal link.
   const t = await getTranslations("Meal")
   const place = meal.placeProviderId ? await getDirectoryPlaceById(meal.placeProviderId) : null
 
