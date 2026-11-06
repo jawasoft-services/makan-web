@@ -6,6 +6,8 @@ import { getClaimVenue, type ClaimVenue } from "@/lib/claim-link"
 import { getPlacePhoto } from "@/lib/place-photo"
 import { localizePath } from "@/i18n/paths"
 import GetAppLink from "./GetAppLink"
+import Footer from "@/components/Footer"
+import styles from "@/components/standings/public-pages.module.css"
 
 /*
  * RM20363 — where a claim link or QR lands when the Makan app isn't installed
@@ -20,9 +22,9 @@ interface Props {
   params: Promise<{ locale: string; token: string }>
 }
 
-const primary = "inline-flex min-h-14 w-full items-center justify-center rounded-2xl bg-brand-orange px-6 py-3 text-center text-lg font-bold leading-snug text-white transition-transform active:scale-[0.98]"
-const secondary = "inline-flex min-h-14 w-full items-center justify-center rounded-2xl border-[1.5px] border-brand-ink px-6 py-3 text-center text-lg font-bold leading-snug text-brand-ink transition-transform active:scale-[0.98]"
-const textLink = "inline-flex min-h-11 items-center justify-center text-base font-semibold text-brand-ink underline underline-offset-4"
+const primary = styles.primary
+const secondary = styles.secondary
+const textLink = styles.textLink
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, token } = await params
@@ -47,9 +49,10 @@ export default async function ClaimPage({ params }: Props) {
   const photo = venue ? await getPlacePhoto(venue.placeId) : null
 
   return (
-    <div className="flex min-h-screen flex-col bg-brand-cream">
+    <div className={styles.page}>
       {/* The site header (with the Makan wordmark) sits above; pt-24 clears it. */}
-      <main id="main-content" className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 pb-8 pt-24">
+      <main id="main-content" className={styles.handoff}>
+        <Image src="/redesign/maitred-crown.svg" alt="" width={150} height={140} className={styles.handoffArt} />
         {venue ? (
           <>
             <h1 className="text-[1.875rem] font-extrabold leading-tight tracking-tight text-brand-ink">
@@ -59,7 +62,7 @@ export default async function ClaimPage({ params }: Props) {
               {venue.claimed ? t("claimedBody") : t("body")}
             </p>
 
-            <section aria-label={venue.name} className="mt-6 overflow-hidden rounded-2xl bg-brand-card">
+            <section aria-label={venue.name} className={styles.handoffVenue}>
               {photo ? (
                 <div className="relative h-40 w-full">
                   <Image src={photo.uri} alt={venue.name} fill sizes="(max-width: 448px) 100vw, 448px" className="object-cover" />
@@ -80,7 +83,7 @@ export default async function ClaimPage({ params }: Props) {
 
             {venue.claimed ? null : <p className="mt-5 text-[0.9375rem] leading-relaxed text-brand-muted">{t(venue.appLink ? "howItWorks" : "howItWorksFind")}</p>}
 
-            <div className="mt-auto flex flex-col gap-3 pt-10">
+            <div className={styles.handoffActions}>
               {venue.claimed ? (
                 <>
                   <a href={disputeHref(venue, t("disputeSubject", { name: venue.name }), t("disputeBody"))} className={primary}>{t("tellUs")}</a>
@@ -99,13 +102,14 @@ export default async function ClaimPage({ params }: Props) {
           <>
             <h1 className="text-[1.875rem] font-extrabold leading-tight tracking-tight text-brand-ink">{t("notFoundTitle")}</h1>
             <p className="mt-2 text-[1.0625rem] leading-relaxed text-brand-muted">{t("notFoundBody")}</p>
-            <div className="mt-auto flex flex-col gap-3 pt-10">
+            <div className={styles.handoffActions}>
               <Link href={localizePath(locale, "/partner")} className={primary}>{t("tellUsAboutPlace")}</Link>
               <GetAppLink className={textLink}>{t("getApp")}</GetAppLink>
             </div>
           </>
         )}
       </main>
+      <Footer />
     </div>
   )
 }

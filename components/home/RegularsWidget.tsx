@@ -4,7 +4,8 @@ import Image from "next/image"
 import { useId, useRef, useState } from "react"
 
 // Draw shared controls once so switching screenshot content cannot move them.
-export default function RegularsWidget({ images, labels, alts, label, rulesLabel, rules }: {
+export default function RegularsWidget({ images, labels, alts, label, rulesLabel, rules, initialTab = 0 }: {
+  initialTab?: number
   images: [string, string]
   labels: [string, string]
   alts: [string, string]
@@ -12,7 +13,7 @@ export default function RegularsWidget({ images, labels, alts, label, rulesLabel
   rulesLabel: string
   rules: { title: string; qualify: string; holder: string; usual: string }
 }) {
-  const [selected, setSelected] = useState(0)
+  const [selected, setSelected] = useState(initialTab)
   const [showRules, setShowRules] = useState(false)
   const id = useId()
   const infoButton = useRef<HTMLButtonElement>(null)
@@ -24,7 +25,7 @@ export default function RegularsWidget({ images, labels, alts, label, rulesLabel
   }
 
   return (
-    <div data-beat style={{ "--beat": 2 } as React.CSSProperties} className="relative mx-auto aspect-[1086/942] w-full max-w-[26rem]" aria-label={label}
+    <div data-beat style={{ "--beat": 2 } as React.CSSProperties} className="relative mx-auto aspect-[1086/942] w-full max-w-[34rem]" aria-label={label}
       onKeyDown={event => {
         if (event.key === "Escape" && showRules) {
           setShowRules(false)
@@ -33,13 +34,13 @@ export default function RegularsWidget({ images, labels, alts, label, rulesLabel
       }}>
       {images.map((image, index) => (
         <div key={image} id={`${id}-panel-${index}`} role="tabpanel" aria-labelledby={`${id}-tab-${index}`} hidden={selected !== index} aria-hidden={showRules || undefined} className="absolute inset-0">
-          <Image src={`/mockup-assets/${image}`} alt={alts[index]} width={1086} height={942} sizes="(min-width: 768px) 468px, 90vw" className="block h-auto w-full" loading="eager" />
+          <Image src={image.startsWith("/") ? image : `/mockup-assets/${image}`} alt={alts[index]} width={1086} height={942} sizes="(min-width: 768px) 468px, 90vw" className="block h-auto w-full" loading="eager" />
         </div>
       ))}
       <span aria-hidden="true" className={`pointer-events-none absolute inset-x-[4%] top-[4%] z-10 bg-brand-card ${showRules ? "bottom-[5%]" : "h-[20%]"}`} />
       <div role="tablist" aria-label={label}>
         {labels.map((text, index) => (
-          <button key={text} ref={node => { buttons.current[index] = node }} id={`${id}-tab-${index}`} type="button" role="tab" aria-selected={!showRules && selected === index} aria-controls={`${id}-panel-${index}`} tabIndex={selected === index ? 0 : -1}
+          <button key={text} ref={node => { buttons.current[index] = node }} id={`${id}-tab-${index}`} type="button" role="tab" aria-selected={selected === index} aria-controls={`${id}-panel-${index}`} tabIndex={selected === index ? 0 : -1}
             className={`absolute top-[5.4%] z-10 flex h-[15.3%] min-h-11 w-[36.5%] items-center justify-center rounded-[18px] whitespace-nowrap text-[clamp(0.625rem,3.3vw,1rem)] font-bold text-brand-muted hover:bg-brand-orange/10 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-ink ${!showRules && selected === index ? "bg-brand-orange/15" : "bg-transparent"}`}
             style={{ left: index === 0 ? "4.7%" : "43.4%" }}
             onClick={() => select(index)}

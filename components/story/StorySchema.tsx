@@ -41,7 +41,7 @@ export default function StorySchema({ locale = "en" }: { locale?: string }) {
         url: storyUrl,
         name: isIndonesian ? "Cerita Makan" : "The Makan story",
         description: isIndonesian
-          ? "Cerita tentang bagaimana shared story saat COVID tumbuh menjadi Makan, jurnal makanan sosial."
+          ? "Cerita tentang bagaimana shared story saat COVID tumbuh menjadi Makan, aplikasi yang membantu kamu memutuskan mau pesan apa."
           : BOILERPLATE_LONG,
         inLanguage: locale,
         datePublished: LAUNCH.date,

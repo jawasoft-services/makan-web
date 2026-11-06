@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { Plus_Jakarta_Sans } from "next/font/google"
+import localFont from "next/font/local"
 import { NextIntlClientProvider, hasLocale } from "next-intl"
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server"
 import { notFound } from "next/navigation"
@@ -10,12 +10,15 @@ import SmoothScroll from "@/components/motion/SmoothScroll"
 import { routing } from "@/i18n/routing"
 import "lenis/dist/lenis.css"
 import "../globals.css"
+import "../redesign.css"
 
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
+const jakarta = localFont({
+  src: [
+    { path: "../../public/fonts/PlusJakartaSans-Latin-Variable.woff2", weight: "400 800", style: "normal" },
+    { path: "../../public/fonts/PlusJakartaSans-Latin-Italic-Variable.woff2", weight: "400 800", style: "italic" },
+  ],
   variable: "--font-jakarta",
-  weight: ["400", "500", "600", "700", "800"],
-  style: ["normal", "italic"],
+  display: "swap",
 })
 
 export const viewport: Viewport = {
@@ -79,7 +82,7 @@ export default async function RootLayout({
   return (
     <ViewTransitions>
       <html lang={locale} className={jakarta.variable}>
-        <body className="font-sans antialiased">
+        <body className="redesign-site font-sans antialiased">
           <NextIntlClientProvider messages={clientMessages}>
             <a
               href="#main-content"

@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Link from 'next/link'
+import Image from 'next/image'
+import styles from '@/components/standings/public-pages.module.css'
 import Footer from '@/components/Footer'
 import SiteSchema from '@/components/SiteSchema'
 import StandingsTable from '@/components/standings/StandingsTable'
@@ -86,42 +88,43 @@ export default async function StandingsPage({
   }
 
   return (
-    <div className="min-h-screen bg-brand-cream">
+    <div className={styles.page}>
       <SiteSchema locale={locale} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(schema) }} />
-      <main id="main-content" className="mx-auto max-w-3xl px-5 pb-16 pt-24 sm:px-8 sm:pb-24 sm:pt-32">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-orange">{t('eyebrow')}</p>
-        <h1 className="mt-4 text-3xl font-bold text-brand-ink sm:text-4xl lg:text-5xl" style={{ letterSpacing: '-0.02em' }}>
+      <main id="main-content" className={styles.wrap}>
+        <header className={styles.heading}>
+        <p className={styles.kicker}>{t('eyebrow')}</p>
+        <h1 >
           {t('title')}
         </h1>
-        {/* The position, said once: a guide with no inspectors. Body copy only;
-            the name stays out of titles, metadata and schema. */}
-        <p className="mt-6 max-w-[40ch] text-xl font-bold leading-[1.3] text-brand-ink">{t('guideLine')}</p>
-        <div className="mt-8">
-          <GuideStory locale={locale} />
-        </div>
-        <p className="mt-4 max-w-[60ch] text-base leading-[1.75] text-brand-muted">
+        <Image src="/redesign/food-plate.svg" alt="" width={120} height={120} className={styles.headingArt} />
+        </header>
+        <details className={styles.guide}>
+          <summary>{t('guideLine')}</summary>
+          <div><GuideStory locale={locale} /></div>
+        </details>
+        <p className={styles.guideIntro}>
           {t('intro', { floor: EVIDENCE_FLOOR })}
           {standings.countries > 1 ? ' ' + t('countries', { count: standings.countries }) : ''}
         </p>
 
         {standings.rows.length ? (
           <>
-            <StandingsTable rows={standings.rows} locale={locale} labels={labels} caption={t('title')} />
-            <p className="mt-4 text-sm leading-[1.6] text-brand-muted">
+            <StandingsTable rows={standings.rows} locale={locale} labels={labels} caption={t('title')} hasMap={standings.rows.some((r) => r.lat !== null && r.lng !== null)} />
+            <p className={styles.freshness}>
               {t('belowFloor', { count: standings.belowFloor, floor: EVIDENCE_FLOOR })}{' '}
               <time dateTime={computedAt.toISOString()}>{t('scoresChangedOn', { date: dayMonthYear.format(computedAt) })}</time>{' '}
               {checkedAt ? <time dateTime={checkedAt}>{t('checkedOn', { date: dayMonthYear.format(new Date(checkedAt)) })}</time> : t('checkUnavailable')}
             </p>
           </>
         ) : (
-          <p className="mt-10 rounded-2xl border border-dashed border-brand-muted/35 bg-white/30 p-6 text-base leading-[1.7] text-brand-ink">
+          <p className={styles.empty}>
             {t('empty', { floor: EVIDENCE_FLOOR })}
           </p>
         )}
 
         {standings.rows.some((r) => r.lat !== null && r.lng !== null) ? (
-          <section className="mt-12 border-t border-brand-line pt-10">
+          <section id="map" className={styles.section}>
             <h2 className="text-xl font-bold text-brand-ink sm:text-2xl">{t('mapTitle')}</h2>
             <p className="mt-3 max-w-[60ch] text-base leading-[1.7] text-brand-muted">{t('mapBody')}</p>
             <PlacesMapLoader
@@ -142,15 +145,15 @@ export default async function StandingsPage({
         ) : null}
 
         {standings.cities.length ? (
-          <section className="mt-12 border-t border-brand-line pt-10">
+          <section className={styles.section}>
             <h2 className="text-xl font-bold text-brand-ink sm:text-2xl">{t('byCityTitle')}</h2>
             <p className="mt-3 max-w-[60ch] text-base leading-[1.7] text-brand-muted">{t('byCityBody', { floor: CITY_FLOOR })}</p>
-            <ul className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <ul className={styles.cities}>
               {standings.cities.map((c) => (
                 <li key={c.slug}>
                   <Link
                     href={localizePath(locale, `/standings/${c.slug}`)}
-                    className="flex items-baseline justify-between gap-4 rounded-xl border border-brand-line bg-brand-card px-5 py-4 text-base text-brand-ink transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
+
                   >
                     <span className="min-w-0">
                       <span className="block truncate font-semibold">{c.city}</span>
@@ -166,8 +169,8 @@ export default async function StandingsPage({
           </section>
         ) : null}
 
-        <section className="mt-12 border-t border-brand-line pt-10">
-          <h2 className="text-xl font-bold text-brand-ink sm:text-2xl">{t('howTitle')}</h2>
+        <section className={styles.method}>
+          <h2>{t('howTitle')}</h2>
           <ul className="mt-4 space-y-3">
             {(['how1', 'how2', 'how3', 'how4'] as const).map((k) => (
               <li key={k} className="flex items-baseline gap-3 text-base leading-[1.7] text-brand-ink">

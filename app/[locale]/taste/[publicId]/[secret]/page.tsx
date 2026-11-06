@@ -1,9 +1,12 @@
+import { WEBSITE_FIXTURES, fixtureTaste } from '@/lib/website-fixtures'
 import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { getTranslations } from "next-intl/server"
 import StoreLink from "@/components/home/StoreLink"
+import Footer from "@/components/Footer"
+import styles from "@/components/standings/public-pages.module.css"
 import { getDb } from "@/lib/firebase-admin"
 import { PUBLIC_ID_PATTERN, SECRET_PATTERN, loadTasteInvitePreview, type TasteInvitePreview } from "@/lib/taste-invite"
 
@@ -17,6 +20,7 @@ export const metadata: Metadata = {
 }
 
 const canRenderRemoteImage = (url: string): boolean => {
+  if (WEBSITE_FIXTURES && /^\/redesign\/[a-z0-9-]+\.(jpg|png|webp)$/.test(url)) return true
   try {
     return new URL(url).hostname === "firebasestorage.googleapis.com"
   } catch {
@@ -30,6 +34,7 @@ const initialsFor = (name: string): string =>
 const GONE: TasteInvitePreview = { state: "invalid", hostDisplayName: "", hostAvatarUrl: "", meals: [] }
 
 async function preview(publicId: string, secret: string): Promise<TasteInvitePreview> {
+  if (WEBSITE_FIXTURES) return fixtureTaste(publicId, secret)
   try {
     const db = getDb()
     return db ? await loadTasteInvitePreview(db, publicId, secret) : { ...GONE, state: "unavailable" }
@@ -40,8 +45,8 @@ async function preview(publicId: string, secret: string): Promise<TasteInvitePre
   }
 }
 
-const primaryClass = "inline-flex min-h-14 w-full max-w-sm items-center justify-center rounded-full bg-brand-orange px-8 text-base font-bold text-white transition-transform hover:-translate-y-0.5 active:translate-y-0"
-const secondaryClass = "inline-flex min-h-14 w-full max-w-sm items-center justify-center rounded-full border border-brand-ink/15 bg-white px-8 text-base font-bold text-brand-ink transition-transform hover:-translate-y-0.5 active:translate-y-0"
+const primaryClass = styles.primary
+const secondaryClass = styles.secondary
 
 export default async function TastePage({
   params,
@@ -56,9 +61,10 @@ export default async function TastePage({
   if (result.state !== "active") {
     return (
       <Shell>
+        <Image src="/redesign/food-noodles.svg" alt="" width={150} height={140} className={styles.handoffArt} />
         <h1 className="text-3xl font-extrabold tracking-tight text-brand-ink">{t(`gone.${result.state}.title`)}</h1>
         <p className="max-w-sm text-base leading-relaxed text-brand-muted">{t(`gone.${result.state}.body`)}</p>
-        <Link href="/" className={primaryClass}>{t("goToMakan")}</Link>
+        <div className={styles.handoffActions}><Link href="/" className={primaryClass}>{t("goToMakan")}</Link></div>
       </Shell>
     )
   }
@@ -66,7 +72,7 @@ export default async function TastePage({
   const name = result.hostDisplayName
   return (
     <Shell>
-      <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 border-brand-orange/25 bg-white text-2xl font-extrabold text-brand-ink">
+      <div className={`${styles.hostAvatar} flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 border-brand-orange/25 bg-white text-2xl font-extrabold text-brand-ink`}>
         {canRenderRemoteImage(result.hostAvatarUrl) ? (
           <Image src={result.hostAvatarUrl} alt="" width={96} height={96} className="h-full w-full object-cover" priority />
         ) : initialsFor(name)}
@@ -75,22 +81,22 @@ export default async function TastePage({
         {t("title", { name })}
       </h1>
 
-      <section aria-labelledby="top-three" className="w-full max-w-md">
+      <section aria-labelledby="top-three" className={styles.tasteTop}>
         <h2 id="top-three" className="text-xs font-bold uppercase tracking-[0.2em] text-brand-muted">{t("topThree", { name })}</h2>
         {result.meals.length === 0 ? (
           <p className="mt-3 text-base leading-relaxed text-brand-muted">{t("noMeals", { name })}</p>
         ) : (
-          <ol className="mt-3 grid grid-cols-3 gap-2 text-left">
+          <ol className={styles.tastePhotos}>
             {result.meals.map((meal, index) => (
               <li key={meal.mealId}>
                 <div className="relative aspect-square overflow-hidden rounded-xl bg-brand-orange/10">
                   {canRenderRemoteImage(meal.imageURL) ? (
-                    <Image src={meal.imageURL} alt="" fill sizes="(min-width: 640px) 140px, 30vw" className="object-cover" />
+                    <Image src={meal.imageURL} alt="" fill sizes="(min-width: 738px) 222px, 30vw" className="object-cover" />
                   ) : null}
                   <span className="absolute bottom-1.5 left-1.5 rounded-full bg-brand-ink px-2 text-xs font-bold text-white">{index + 1}</span>
                 </div>
-                <p className="mt-1.5 line-clamp-2 text-sm font-bold leading-snug text-brand-ink">{meal.caption}</p>
-                {meal.locationName ? <p className="line-clamp-1 text-xs text-brand-muted">{meal.locationName}</p> : null}
+                <p className="text-brand-ink">{meal.caption}</p>
+                {meal.locationName ? <p className="text-brand-muted">{meal.locationName}</p> : null}
               </li>
             ))}
           </ol>
@@ -98,6 +104,7 @@ export default async function TastePage({
       </section>
 
       <p className="max-w-md text-base leading-relaxed text-brand-muted">{t("explainer", { name })}</p>
+      <div className={styles.handoffActions}>
       <StoreLink
         location="taste-invite"
         className={primaryClass}
@@ -105,16 +112,17 @@ export default async function TastePage({
         {t("getApp")}
       </StoreLink>
       <a href={`makanapp://taste/${publicId}/${secret}`} className={secondaryClass}>{t("haveApp")}</a>
-      <p className="max-w-sm text-sm leading-relaxed text-brand-muted">{t("installNote")}</p>
+      </div>
+      <p className={styles.handoffNote}>{t("installNote")}</p>
     </Shell>
   )
 }
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <main id="main-content" className="flex min-h-dvh flex-col items-center justify-center gap-5 bg-brand-cream px-6 py-14 text-center">
-      <Image src="/makan-logo-orange.svg" alt="Makan" width={160} height={38} className="mb-3 h-auto w-36" priority />
-      {children}
-    </main>
+    <div className={styles.page}>
+      <main id="main-content" className={styles.handoff}>{children}</main>
+      <Footer />
+    </div>
   )
 }

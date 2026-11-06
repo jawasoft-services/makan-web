@@ -1,3 +1,4 @@
+import { WEBSITE_FIXTURES } from '@/lib/website-fixtures'
 import { initializeApp, getApps, cert, applicationDefault, type App } from "firebase-admin/app"
 import { getFirestore, Firestore, type Settings } from "firebase-admin/firestore"
 import { federatedCredentials } from "./gcp-federation"
@@ -35,6 +36,7 @@ function getApp(): App | null {
 let _db: Firestore | null = null
 
 export function getDb(): Firestore | null {
+  if (WEBSITE_FIXTURES) return null
   if (_db) return _db
   // RM20289: firebase-admin's Firestore accepts only a key or ADC, so the
   // federated credentials go to the Firestore class it re-exports. Its

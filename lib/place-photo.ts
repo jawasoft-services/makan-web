@@ -1,3 +1,4 @@
+import { WEBSITE_FIXTURES, fixturePhoto } from '@/lib/website-fixtures'
 import 'server-only'
 import { unstable_cache } from 'next/cache'
 import { Timestamp } from 'firebase-admin/firestore'
@@ -79,6 +80,7 @@ async function writeCached(placeId: string, photo: PlacePhoto): Promise<void> {
 
 /** The photo for a place: Firestore first, Google only when missing or over 30 days old. */
 async function resolvePlacePhoto(placeId: string): Promise<PlacePhoto | null> {
+  if (WEBSITE_FIXTURES) return fixturePhoto(placeId)
   let cached: CachedPhoto | null = null
   try {
     cached = await readCached(placeId)

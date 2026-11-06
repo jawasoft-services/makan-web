@@ -1,3 +1,4 @@
+import { WEBSITE_FIXTURES } from '@/lib/website-fixtures'
 import { NextResponse } from "next/server"
 import { Resend } from "resend"
 import { google } from "googleapis"
@@ -98,6 +99,10 @@ export async function POST(request: Request) {
 
     const trimmedName = source === "android-waitlist" ? "Android waitlist" : name!.trim()
     const trimmedEmail = email.trim()
+
+    if (WEBSITE_FIXTURES) return email.trim() === "fail@example.test"
+      ? NextResponse.json({ error: "Fixture delivery failure.", fixture: true }, { status: 503, headers: { "Cache-Control": "no-store" } })
+      : NextResponse.json({ success: true, fixture: true }, { headers: { "Cache-Control": "no-store" } })
 
     const resend = new Resend(process.env.RESEND_API_KEY)
     const toAddress = process.env.CONTACT_EMAIL ?? "team@makanofficial.com"

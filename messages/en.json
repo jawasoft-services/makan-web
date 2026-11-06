@@ -326,7 +326,7 @@
     "intro": "Something broken, a question about your account, or an idea for what Makan should do next — write to us and a person will read it.",
     "emailUs": "Email us",
     "reply": "We aim to reply the same day.",
-    "details": "It helps if you tell us what happened, which iPhone you have, the version of iOS you're on, and the Makan version shown in Settings.",
+    "details": "It helps if you tell us what happened, your phone model, its operating system version, and the Makan version shown in Settings.",
     "press": "Press or partnership enquiries?",
     "contact": "Get in touch here",
     "questions": "Common questions",
@@ -432,7 +432,7 @@
   },
   "Decision": {
     "Metadata": {
-      "title": "Makan — Order like a local",
+      "title": "Makan — Know what’s worth ordering.",
       "description": "Your regular spot. Your usual order. Save meals, earn its Maître d’ title and help the next diner choose what to order. Free on iPhone.",
       "ogSub": "Know your place. Share your usual."
     },
@@ -576,9 +576,10 @@
     "Standings": {
       "eyebrow": "The standings",
       "title": "The restaurants diners keep picking.",
-      "body": "Restaurant Eats come from diners picking between their own saved meals in Eat or Yeet. These are the five restaurants with the most Eats, among places with {floor} or more matchups. Maître d’ titles are earned separately, through saved dining days.",
+      "body": "See how often diners pick a restaurant’s saved meals in Eat or Yeet. Each place has at least {floor} matchups.",
       "cta": "See the full standings",
-      "eats": "Eats · {rate}"
+      "eats": "Eats · {rate}",
+      "picked": "Picked {eats} of {matchups}"
     },
     "Maitred": {
       "eyebrow": "Maîtres d’",
@@ -768,5 +769,163 @@
         "body": "Try again soon."
       }
     }
+  },
+  "Redesign": {
+    "title": "Know what’s worth ordering.",
+    "intro": "See real meals, find dishes to try, and remember what you’d order again.",
+    "app": "Get Makan",
+    "partner": "For restaurants",
+    "theapp": "The app",
+    "menu": "Menu",
+    "skip": "Skip to content",
+    "chapters": [
+      "Discover",
+      "Your meals",
+      "Eat or Yeet",
+      "Regulars"
+    ],
+    "heads": [
+      "Go beyond the menu.",
+      "Remember what you’d order again.",
+      "Which would you eat again?",
+      "Start with a regular’s usual."
+    ],
+    "body": [
+      "See what people ordered, where they ate, and who shared it.",
+      "Your meals, photos and places, together in your diary.",
+      "Compare two saved meals. Choose which you’d eat again—or choose either.",
+      "See a restaurant regular’s usual order, when they’ve shared one."
+    ],
+    "view": "View full app image",
+    "restaurant": "Run a restaurant?",
+    "restaurantheadline": "Let your regulars guide the next guest.",
+    "restaurantbody": "Your regulars know your menu. With Maître d’, their usual order can help someone new choose what to try.",
+    "restaurantbenefits": [
+      [
+        "Earned at your restaurant.",
+        "The Maître d’ title comes from saved dining days at your place. It can’t be bought."
+      ],
+      [
+        "Their usual. Your next guest’s first order.",
+        "When the title holder shares a usual order, diners can find it on your restaurant page."
+      ]
+    ],
+    "restaurantcta": "Explore Makan for restaurants",
+    "end": "Make the next order a good one.",
+    "scan": "Scan with your phone",
+    "downloadhelp": "Choose your app store.",
+    "story": "Our story",
+    "blog": "Food stories",
+    "standings": "Standings",
+    "help": "Support",
+    "contact": "Contact",
+    "privacy": "Privacy policy",
+    "terms": "Terms",
+    "deleteaccount": "Delete account",
+    "deletedata": "Delete data",
+    "rights": "All rights reserved.",
+    "sourcelabel": "Meals on Makan",
+    "meallabel": "meals saved on Makan",
+    "pauselabel": "Pause visual motion",
+    "motionlabel": "Resume visual motion",
+    "widget": {
+      "regularsLabel": "Regulars",
+      "usualLabel": "Usual order",
+      "regularsAlt": "Example regulars at Poppies Spitalfields in London: Alex Chen, Sophie Reed and Dimas Pratama, ranked by days eaten in the last 60 days.",
+      "usualAlt": "Example usual order: Alex Chen, Maître d’ at Poppies Spitalfields in London. His usual order is fish and chips.",
+      "widgetLabel": "Example Maître d’ at Poppies Spitalfields, London",
+      "rulesLabel": "How Maître d’ works",
+      "rulesTitle": "Maître d’",
+      "rulesQualify": "Save eligible meals here on at least two different days in the last 60 days.",
+      "rulesHolder": "Most counted days wins. A qualifying holder keeps the title on a tie.",
+      "rulesUsual": "The Maître d’ can share their usual order to help the next diner."
+    }
+  },
+  "PartnerRedesign": {
+    "hero": "Let your regulars guide the next guest.",
+    "intro": "With Maître d’, a regular can share their usual order to help someone new choose. Your food, with a little advice from someone who knows it.",
+    "enquire": "Talk to Devon",
+    "how": "Meet your Maître d’",
+    "offer": "Free to appear today. No commission on meals.",
+    "hero_alt": "Harissa prawns with grilled sourdough and lemon at Kendal Street Kitchen",
+    "hero_caption": "Harissa prawns · Kendal Street Kitchen",
+    "proof_title": "Your regulars know your menu.",
+    "proof_intro": "Give the next guest a useful place to start.",
+    "proof_body": "The Maître d’ title is earned through eligible dining days at your restaurant. When the title holder shares a usual order, diners can find it on your restaurant page.",
+    "proof_end": "A regular’s own choice. A little less guesswork at the menu.",
+    "benefit_title": "Your name stays with the meal.",
+    "benefits": [
+      [
+        "Shared with their people.",
+        "When a guest saves a meal and shares it with friends, your restaurant’s name stays with the photo."
+      ],
+      [
+        "Saved to Cravings. Found nearby.",
+        "A diner can save a friend’s dish to Cravings. Discover brings it back when they’re nearby, with the distance to your place."
+      ],
+      [
+        "Remembered in their favourites.",
+        "In Eat or Yeet, diners compare their own saved meals. A dish they would eat again can become a personal favourite, with your restaurant’s name attached."
+      ],
+      [
+        "One scan to your restaurant.",
+        "Your venue QR code opens your restaurant page in Makan. Ask about a code for your place when you get in touch."
+      ]
+    ],
+    "feed_alt": "Existing Makan app image showing Devon’s public seafood risotto meal at Kendal Street Kitchen",
+    "story_title": "A real meal. A place to remember.",
+    "story_body": "Prawns to start. Carbonara, mushroom risotto and truffle fries. A tiramisu to share. Each part of a meal gives someone a more specific starting point than a restaurant name alone.",
+    "story_link": "Read the Kendal Street Kitchen food story",
+    "dining_alt": "Carbonara, mushroom risotto and truffle fries at Kendal Street Kitchen",
+    "dining_caption": "Carbonara & mushroom risotto · @ridorichard",
+    "dessert_alt": "Tiramisu in a glass at Kendal Street Kitchen",
+    "dessert_caption": "Tiramisu · @ridorichard",
+    "offer_title": "Start with your restaurant.",
+    "offer_body": "Appearing on Makan is currently free, with no commission on meals. Tell Devon about your place and ask what is happening in your area.",
+    "offer_note": "Restaurant subscriptions may follow. Joining today does not lock in future pricing.",
+    "faq_title": "A few fair questions.",
+    "faqs": [
+      [
+        "How does a diner become Maître d’ locally?",
+        "They need eligible saved meals on at least two different days at that restaurant in the last 60 days. The highest counted days holds the title; a qualifying holder keeps it on a tie. A usual order appears only when they choose to share one."
+      ],
+      [
+        "Do I need to offer discounts or rewards?",
+        "You choose whether to offer anything. A good dish and a warm welcome are your starting point. Any reward should recognise a visit, never depend on a verdict, review or caption."
+      ],
+      [
+        "Can I pay for a better position?",
+        "No. Paid placement does not decide rankings or recommendations. Maître d’ is earned through meals at your restaurant."
+      ],
+      [
+        "Can Makan guarantee more customers?",
+        "We cannot promise extra customers or bookings. Makan is still growing and local activity varies. Ask Devon about your area and whether Makan fits your place."
+      ],
+      [
+        "What happens after I get in touch?",
+        "The live form sends a restaurant enquiry to Devon, Makan’s founder. Use the optional note to ask about getting started, local activity, a venue QR code or more than one restaurant."
+      ]
+    ],
+    "form_title": "Tell us about your place.",
+    "form_intro": "Tell Devon where you are and what you have in mind.",
+    "required_note": "All fields are required except the note.",
+    "labels": {
+      "name": "Your name",
+      "email": "Email",
+      "restaurant": "Restaurant name",
+      "city": "City",
+      "message": "Anything else? (optional)"
+    },
+    "errors": {
+      "name": "Enter your name.",
+      "email": "Enter a valid email address, such as you@example.com.",
+      "restaurant": "Enter your restaurant’s name.",
+      "city": "Enter the city your restaurant is in."
+    },
+    "too_long": "Use {max} characters or fewer.",
+    "invalid": "Check the highlighted fields. No enquiry has been sent.",
+    "terms": "Terms",
+    "and": "and",
+    "privacy": "Privacy Policy"
   }
 }

@@ -1,3 +1,4 @@
+import { WEBSITE_FIXTURES, fixtureClaim } from '@/lib/website-fixtures'
 import 'server-only'
 import { unstable_cache } from 'next/cache'
 import { getDb } from '@/lib/firebase-admin'
@@ -32,6 +33,7 @@ export function isClaimToken(value: string): boolean {
 }
 
 async function readClaimVenue(token: string): Promise<ClaimVenue | null> {
+  if (WEBSITE_FIXTURES) return fixtureClaim(token)
   const db = getDb()
   if (!db) return null
   const link = await db.collection('claimLinks').doc(token).get()

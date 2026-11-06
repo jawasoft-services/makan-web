@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { usePathname } from 'next/navigation'
-import { Link } from 'next-view-transitions'
+import Link from 'next/link'
 import { Drawer } from 'vaul'
 import { track } from '@vercel/analytics'
 import { localizePath } from '@/i18n/paths'
@@ -14,249 +14,50 @@ import LanguageSwitcher from './LanguageSwitcher'
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [hidden, setHidden] = useState(false)
-  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [open, setOpen] = useState(false)
   const lastY = useRef(0)
   const pathname = usePathname()
   const locale = useLocale()
-  const t = useTranslations('Nav')
-  const isHome = stripLocalePrefix(pathname) === '/'
-  const isInvite = stripLocalePrefix(pathname).startsWith('/invite/')
-  const homeHref = localizePath(locale, '/')
-
-  // A homepage-section link (#how-it-works, #features, #faq) must work from
-  // every page, not only home. On home we keep the bare hash so the browser
-  // scrolls in place. Elsewhere we point at the localized home path WITH the
-  // hash (homeHref already carries the locale, e.g. '/' or '/id'), joined so
-  // there is never a '//' or a stray slash before the '#'. The homepage reads
-  // the hash on mount and scrolls to it (see app/[locale]/page.tsx), which is
-  // what fixes links landing at the top of home instead of the section.
-  const hashTarget = (hash: string) => {
-    if (isHome) return hash
-    const base = homeHref === '/' ? '' : homeHref
-    return `${base}/${hash}`
-  }
-
-  // On the homepage a section link (#how-it-works, #features, #faq) must scroll
-  // through Lenis, NOT the browser's native hash jump: several sections sit in
-  // pinned/sticky `h-screen` scroll containers (HeroDiptych's how-it-works), so
-  // their scroll length differs from their visual position and a native jump
-  // lands at the BOTTOM of the pinned block. Lenis knows the real layout and
-  // scrolls to the element's true position. Off-home we let the link navigate
-  // to /#hash and HashScroll handles it after the sections mount.
-  const handleHashClick = (hash: string) => (e: React.MouseEvent) => {
-    if (!isHome) return // cross-page: let the <a> navigate; HashScroll finishes it
-    const id = hash.replace(/^#/, '')
-    const el = typeof document !== 'undefined' ? document.getElementById(id) : null
-    if (!el) return // element not found: fall back to the browser's default
-    e.preventDefault()
-    if (window.__lenis) window.__lenis.scrollTo(el, { offset: 0 })
-    else el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    // Reflect the section in the URL without a jump.
-    history.replaceState(null, '', hash)
-    setDrawerOpen(false)
-  }
-  const navLinks = [
-    { label: t('howItWorks'), href: '#how-it-works' },
-    { label: t('features'), href: '#features' },
-    // A real page, not a homepage anchor: it must work from every page.
-    { label: t('standings'), href: localizePath(locale, '/standings') },
-    { label: t('faq'), href: '#faq' },
-    { label: t('restaurants'), href: localizePath(locale, '/partner') },
-  ]
-
+  const t = useTranslations('Redesign')
+  const nav = useTranslations('Nav')
+  const bare = stripLocalePrefix(pathname)
+  const isHome = bare === '/'
+  const darkHero = isHome || bare === '/manifesto'
+  const partner = bare === '/partner'
+  const home = localizePath(locale, '/')
+  const primary = partner ? '#enquire' : isHome ? '#download' : localizePath(locale, '/app')
+  const primaryLabel = partner ? (locale === 'id' ? 'Hubungi Makan' : 'Talk to Makan') : t('app')
+  const secondary = partner ? home : localizePath(locale, '/partner')
+  const secondaryLabel = partner ? (locale === 'id' ? 'Untuk pencinta makanan' : 'For diners') : t('partner')
+  const hash = (id: string) => isHome ? id : `${home}${id}`
+  const navigate = () => setOpen(false)
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY
       setScrolled(y > 40)
-      // Hide when scrolling down past the fold; reveal on any upward scroll.
-      // Not while the pinned Eat or Yeet scene fills the screen: its layout is built
-      // around a visible bar, and keeping it there keeps the empty space above and
-      // below the scene's content equal in either scroll direction.
-      const scene = document.getElementById('proof')?.getBoundingClientRect()
-      const inScene = !!scene && scene.top <= 0 && scene.bottom >= window.innerHeight
-      setHidden(y > 160 && y > lastY.current && !inScene)
+      setHidden(y > 160 && y > lastY.current)
       lastY.current = y
     }
+    onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
-
-  // Invite links are a focused handoff into the app. The marketing navigation
-  // adds competing exits and a second App Store CTA, so the invite owns its page.
-  if (isInvite) return null
-
-  return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 text-white transition-all duration-500 ${
-        hidden && !drawerOpen ? '-translate-y-full' : 'translate-y-0'
-      } ${
-        scrolled || drawerOpen
-          ? 'bg-brand-orange/95 backdrop-blur-md shadow-sm shadow-black/10'
-          : 'bg-brand-orange'
-      }`}
-    >
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-y-[8px] px-[16px] py-[16px] sm:px-8 sm:py-[20px]">
-        <Link
-          href={homeHref}
-          className="flex items-center gap-2"
-          onClick={(e) => {
-            if (isHome) {
-              e.preventDefault()
-              if (window.__lenis) window.__lenis.scrollTo(0)
-              else window.scrollTo({ top: 0, behavior: 'smooth' })
-            }
-            setDrawerOpen(false)
-          }}
-        >
-          <Image
-            src="/makan-icon-white.svg"
-            alt=""
-            width={32}
-            height={32}
-            className="h-[28px] w-[28px] sm:h-[32px] sm:w-[32px]"
-          />
-          <Image
-            src="/makan-logo-white.svg"
-            alt="Makan"
-            width={104}
-            height={24}
-            className="h-[20px] w-auto sm:h-[24px]"
-            priority
-          />
-        </Link>
-
-        {/* Desktop nav */}
-        <div className="hidden max-w-full flex-wrap items-center gap-x-[32px] gap-y-[12px] lg:flex">
-          {navLinks.map((link) => {
-            // Route links (start with "/") use the view-transition Link; hash
-            // links use <a> and resolve to /#hash when not on the homepage.
-            if (link.href.startsWith('/')) {
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-sm font-medium text-white/90 transition-colors hover:text-white"
-                >
-                  {link.label}
-                </Link>
-              )
-            }
-            return (
-              <a
-                key={link.href}
-                href={hashTarget(link.href)}
-                onClick={handleHashClick(link.href)}
-                className="text-sm font-medium text-white/90 transition-colors hover:text-white"
-              >
-                {link.label}
-              </a>
-            )
-          })}
-          <LanguageSwitcher />
-          <Link
-            href={localizePath(locale, '/app')}
-            onClick={() => track('Store CTA Clicked', { location: 'navigation', locale })}
-            className="flex min-h-[44px] shrink-0 items-center whitespace-nowrap rounded-full bg-white px-5 py-[8px] text-sm font-semibold text-brand-orange transition-shadow hover:shadow-lg hover:shadow-black/10"
-          >
-            {t('getApp')}
-          </Link>
-        </div>
-
-        {/* Mobile: CTA + drawer */}
-        <div className="flex max-w-full flex-wrap items-center gap-[12px] lg:hidden">
-          <Link
-            href={localizePath(locale, '/app')}
-            onClick={() => track('Store CTA Clicked', { location: 'navigation', locale })}
-            className="flex min-h-[44px] shrink-0 items-center whitespace-nowrap rounded-full bg-white px-[14px] py-[8px] text-sm font-semibold text-brand-orange"
-          >
-            {t('getAppShort')}
-          </Link>
-          <Drawer.Root open={drawerOpen} onOpenChange={setDrawerOpen}>
-            <Drawer.Trigger asChild>
-              <button
-                aria-label={drawerOpen ? t('closeMenu') : t('openMenu')}
-                aria-expanded={drawerOpen}
-                aria-controls="mobile-navigation"
-                className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-lg text-white"
-              >
-                <svg className="h-[20px] w-[20px]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-                  <line x1="3" y1="6" x2="17" y2="6" />
-                  <line x1="3" y1="10" x2="17" y2="10" />
-                  <line x1="3" y1="14" x2="17" y2="14" />
-                </svg>
-              </button>
-            </Drawer.Trigger>
-            <Drawer.Portal>
-              <Drawer.Overlay className="fixed inset-0 z-[60] bg-black/40" />
-              <Drawer.Content
-                id="mobile-navigation"
-                aria-describedby={undefined}
-                className="fixed inset-x-0 bottom-0 z-[70] rounded-t-3xl bg-brand-orange"
-              >
-                <div className="max-h-[90dvh] overflow-y-auto px-6 pb-10 pt-3">
-                  <Drawer.Title className="sr-only">{t('menu')}</Drawer.Title>
-                  <div className="relative mb-3 h-11">
-                    <div aria-hidden className="absolute left-1/2 top-1 -translate-x-1/2 h-1.5 w-10 rounded-full bg-white/50" />
-                    <Drawer.Close asChild>
-                      <button
-                        type="button"
-                        aria-label={t('closeMenu')}
-                        className="absolute right-0 top-0 flex h-11 w-11 items-center justify-center rounded-full text-white hover:bg-white/15"
-                      >
-                        <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-                          <line x1="5" y1="5" x2="15" y2="15" />
-                          <line x1="15" y1="5" x2="5" y2="15" />
-                        </svg>
-                      </button>
-                    </Drawer.Close>
-                  </div>
-                  <div className="flex flex-col">
-                    {navLinks.map((link) => {
-                      const linkClassName =
-                        'rounded-xl px-3 py-3.5 text-lg font-semibold text-white/90 transition-colors hover:bg-white/15 hover:text-white'
-                      if (link.href.startsWith('/')) {
-                        return (
-                          <Link
-                            key={link.href}
-                            href={link.href}
-                            onClick={() => setDrawerOpen(false)}
-                            className={linkClassName}
-                          >
-                            {link.label}
-                          </Link>
-                        )
-                      }
-                      return (
-                        <a
-                          key={link.href}
-                          href={hashTarget(link.href)}
-                          onClick={handleHashClick(link.href)}
-                          className={linkClassName}
-                        >
-                          {link.label}
-                        </a>
-                      )
-                    })}
-                    <div className="mt-4">
-                      <LanguageSwitcher compact />
-                    </div>
-                    <Link
-                      href={localizePath(locale, '/app')}
-                      onClick={() => {
-                        track('Store CTA Clicked', { location: 'navigation-menu', locale })
-                        setDrawerOpen(false)
-                      }}
-                      className="mt-4 rounded-full bg-white px-5 py-3.5 text-center text-base font-semibold text-brand-orange"
-                    >
-                      {t('getApp')}
-                    </Link>
-                  </div>
-                </div>
-              </Drawer.Content>
-            </Drawer.Portal>
-          </Drawer.Root>
-        </div>
-      </div>
-    </nav>
-  )
+  // Keep secret-bearing group invitations focused on their own app handoff.
+  if (bare.startsWith('/invite/')) return null
+  const arrow = <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14" /></svg>
+  return <header className={`site-header ready ${scrolled || !darkHero ? 'scrolled' : ''} ${hidden && !open ? 'out-of-view' : ''}`}>
+    <Link className="brand" href={home} aria-label={locale === 'id' ? 'Beranda Makan' : 'Makan home'}><Image className="logo-light" src="/redesign/logo.svg" alt="Makan" width={168} height={40} priority /><Image className="logo-dark" src="/redesign/logo-orange.svg" alt="" width={168} height={40} /></Link>
+    <nav className="desktop-nav" aria-label={nav('menu')}><a className="nav-plain" href={hash('#features')}>{t('theapp')}</a><a className="button orange text-white" href={primary} onClick={() => track('Store CTA Clicked', { location: 'navigation', locale })}>{primaryLabel}{arrow}</a><Link className="button outline" href={secondary}>{secondaryLabel}</Link><LanguageSwitcher compact /></nav>
+    <div className="mobile-menu-trigger"><Drawer.Root open={open} onOpenChange={setOpen} direction="right">
+      <Drawer.Trigger asChild><button aria-label={nav('openMenu')} aria-expanded={open} aria-controls="mobile-navigation" className="menu-toggle"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" /></svg></button></Drawer.Trigger>
+      <Drawer.Portal><Drawer.Overlay className="fixed inset-0 z-[60] bg-black/40" /><Drawer.Content id="mobile-navigation" aria-describedby={undefined} className="redesign-menu inverse-ground">
+        <Drawer.Title className="sr-only">{nav('menu')}</Drawer.Title>
+        <div className="menu-heading"><Link href={home} onClick={navigate}><Image src="/redesign/logo.svg" alt="Makan" width={140} height={34} /></Link><Drawer.Close asChild><button className="menu-toggle" aria-label={nav('closeMenu')}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19" /></svg></button></Drawer.Close></div>
+        <div className="menu-art"><Image src="/redesign/food-noodles.svg" alt="" width={230} height={250} /><Image className="menu-crown" src="/redesign/maitred-crown.svg" alt="" width={74} height={66} /></div>
+        <nav className="menu-links" aria-label={nav('menu')}><a className="button orange text-white" href={primary} onClick={navigate}>{primaryLabel}</a><Link className="button outline" href={secondary} onClick={navigate}>{secondaryLabel}</Link><a className="menu-feature" href={hash('#regulars')} onClick={navigate}>Maître d’ {arrow}</a><Link className="menu-feature" href={localizePath(locale, '/standings')} onClick={navigate}>{t('standings')}</Link></nav>
+        <div className="menu-bottom"><div className="menu-social"><a href="https://www.instagram.com/makanappofficial/">Instagram</a><a href="https://www.tiktok.com/@makan.app">TikTok</a></div><LanguageSwitcher compact /></div>
+      </Drawer.Content></Drawer.Portal>
+    </Drawer.Root></div>
+    <noscript><style>{`.mobile-menu-trigger{display:none!important}.site-header{position:static;flex-wrap:wrap}.site-header:not(.scrolled){background:#30271f}.site-header noscript{flex-basis:100%}.nojs-navigation{flex-wrap:wrap}`}</style><nav className="nojs-navigation"><a href={localizePath(locale, "/app")}>{t("app")}</a><a href={secondary}>{secondaryLabel}</a></nav></noscript>
+  </header>
 }

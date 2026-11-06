@@ -1,3 +1,4 @@
+import { WEBSITE_FIXTURES, fixtureLinkedPlace } from '@/lib/website-fixtures'
 import 'server-only'
 import { unstable_cache } from 'next/cache'
 import { getDb } from '@/lib/firebase-admin'
@@ -24,6 +25,7 @@ export interface LinkedPlace {
 const text = (value: unknown) => (typeof value === 'string' ? value.trim() : '')
 
 async function readLinkedPlace(placeId: string, dishId: string | null): Promise<LinkedPlace | null> {
+  if (WEBSITE_FIXTURES) return fixtureLinkedPlace(placeId, dishId ?? undefined)
   const db = getDb()
   if (!db) return null
   const [venueSnap, dishSnap] = await Promise.all([

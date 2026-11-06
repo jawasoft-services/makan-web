@@ -90,16 +90,17 @@ test('/id/privacy-policy is a declared Indonesian route, not an English-only one
 })
 
 test('every privacy link and the sitemap follow the language', () => {
-  assert.match(read('../Footer.tsx'), /localizePath\(locale, '\/privacy-policy'\)/)
-  assert.match(read('../DeletionRequestPage.tsx'), /localizePath\(locale, "\/privacy-policy"\)/)
-  assert.match(read('../../app/[locale]/contact/ContactForm.tsx'), /localizePath\(locale, '\/privacy-policy'\)/)
-  assert.match(read('../../app/[locale]/support/page.tsx'), /localizePath\(locale, "\/privacy-policy"\)/)
+  const localizedPolicyHref = /href=\{[^}]*localizePath\(locale, (['"])\/privacy-policy\1\)[^}]*\}/
+  for (const path of [
+    '../Footer.tsx', '../DeletionRequestPage.tsx',
+    '../../app/[locale]/contact/ContactForm.tsx', '../../app/[locale]/support/page.tsx',
+  ]) assert.match(read(path), localizedPolicyHref, path)
   assert.match(read('../../app/sitemap.ts'), /localized\("\/privacy-policy"/)
   assert.doesNotMatch(read('../../scripts/check-site-navigation.mjs'), /\['\/blog', '\/privacy-policy'/)
 })
 
 test('the Indonesian page links home to /id, and both name the counted meals', () => {
-  assert.match(indonesian, /<Link href="\/id" className/)
+  assert.match(indonesian, /<Link\s+href=(['"])\/id\1[^>]*>\s*&larr; Kembali ke beranda\s*<\/Link>/)
   assert.match(page(english), /counts only your public and friends-only meals/)
   assert.match(page(indonesian), /yang publik dan yang hanya-teman/)
 })

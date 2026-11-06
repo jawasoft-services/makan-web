@@ -1,6 +1,7 @@
 "use client"
 
 import StoreLink from "@/components/home/StoreLink"
+import styles from "@/components/standings/public-pages.module.css"
 import { goToStoreWithLink, phoneKind } from "@/lib/carry-link"
 
 import Image from "next/image"
@@ -112,7 +113,7 @@ export default function InviteLanding({ publicId }: { publicId: string }) {
         <StatusIcon />
         <h1 className="text-3xl font-extrabold tracking-tight text-brand-ink">Couldn’t open the invite</h1>
         <p className="max-w-sm text-base leading-relaxed text-brand-muted">{error}</p>
-        <button type="button" onClick={() => window.location.reload()} className="invite-primary">Try again</button>
+        <button type="button" onClick={() => window.location.reload()} className={styles.primary}>Try again</button>
       </InviteShell>
     )
   }
@@ -120,7 +121,8 @@ export default function InviteLanding({ publicId }: { publicId: string }) {
   if (!preview) {
     return (
       <InviteShell>
-        <div className="h-20 w-20 animate-pulse rounded-full bg-brand-orange/15" aria-hidden />
+        <Image src="/redesign/food-noodles.svg" alt="" width={140} height={125} className={styles.statusArt} />
+        <h1 className="sr-only">Table invite</h1>
         <p role="status" className="font-medium text-brand-muted">Opening invite…</p>
       </InviteShell>
     )
@@ -133,7 +135,7 @@ export default function InviteLanding({ publicId }: { publicId: string }) {
         <StatusIcon />
         <h1 className="text-3xl font-extrabold tracking-tight text-brand-ink">{copy.title}</h1>
         <p className="max-w-sm text-base leading-relaxed text-brand-muted">{copy.body}</p>
-        <Link href="/" className="invite-primary">Go to Makan</Link>
+        <Link href="/" className={styles.primary}>Go to Makan</Link>
       </InviteShell>
     )
   }
@@ -147,8 +149,8 @@ export default function InviteLanding({ publicId }: { publicId: string }) {
   }
   return (
     <InviteShell>
-      <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-orange">Table invite</p>
-      <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border-4 border-brand-orange/25 bg-white text-3xl font-extrabold text-brand-ink shadow-sm">
+      <p className={styles.tag}>Table invite</p>
+      <div className={`${styles.hostAvatar} flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border-4 border-brand-orange/25 bg-white text-3xl font-extrabold text-brand-ink`}>
         {canRenderRemoteAvatar(preview.hostAvatarUrl) ? (
           <Image
             src={preview.hostAvatarUrl}
@@ -166,17 +168,17 @@ export default function InviteLanding({ publicId }: { publicId: string }) {
       <p className="max-w-md text-base leading-relaxed text-brand-muted sm:text-lg">
         Open Makan to see the invite. Join to become Makan friends with {hostName} and everyone else who joins this table.
       </p>
-      <button type="button" onClick={openApp} className="invite-primary">Open in Makan</button>
+      <button type="button" onClick={openApp} className={styles.primary}>Open in Makan</button>
       <StoreLink
         location="table-invite"
         // RM20333 — the secret lives only in this page's #fragment; a phone's store button carries the
         // whole link through install (Play referrer on Android, clipboard + Paste on iPhone), never a server.
         onStoreClick={carryInviteThroughInstall}
-        className="inline-flex min-h-12 items-center justify-center px-5 font-semibold text-brand-muted underline decoration-brand-orange/50 underline-offset-4 hover:text-brand-ink"
+        className={styles.textLink}
       >
         Get Makan on the App Store
       </StoreLink>
-      <p className="max-w-sm text-sm leading-relaxed text-brand-muted">
+      <p className={styles.handoffNote}>
         {attemptedOpen
           ? "If Makan didn’t open, install it below. Then come back to this link after setup."
           : "Installing Makan now? Your invite comes with you: Makan opens it after setup. On iPhone, tap Paste when Makan asks."}
@@ -187,19 +189,13 @@ export default function InviteLanding({ publicId }: { publicId: string }) {
 
 function InviteShell({ children }: { children: React.ReactNode }) {
   return (
-    <main id="main-content" className="flex min-h-dvh flex-col items-center justify-center gap-5 bg-brand-cream px-6 py-14 text-center">
-      <Image src="/makan-logo-orange.svg" alt="Makan" width={160} height={38} className="mb-3 h-auto w-36" priority />
+    <main id="main-content" className={`${styles.page} ${styles.handoff} ${styles.focused}`}>
+      <Image src="/makan-logo-orange.svg" alt="Makan" width={160} height={38} className={styles.wordmark} priority />
       {children}
     </main>
   )
 }
 
 function StatusIcon() {
-  return (
-    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-brand-orange/15 text-brand-orange" aria-hidden>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-9 w-9">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M10 13a5 5 0 0 0 7.1.1l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1M14 11a5 5 0 0 0-7.1-.1l-2 2A5 5 0 0 0 12 20l1.1-1.1" />
-      </svg>
-    </div>
-  )
+  return <Image src="/redesign/food-noodles.svg" alt="" width={140} height={125} className={styles.statusArt} />
 }

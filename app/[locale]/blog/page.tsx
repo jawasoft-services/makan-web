@@ -1,52 +1,53 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import Footer from "@/components/Footer"
+import StaticPicture from "@/components/StaticPicture"
+import EditorialCta from "@/components/story/EditorialCta"
 import { getAllReviews } from "@/lib/reviews"
 import { createPageMetadata } from "@/lib/site-metadata"
+import styles from "@/components/story/editorial.module.css"
 
 export const metadata: Metadata = createPageMetadata({
   title: "The Makan blog — first-hand London restaurant reviews",
-  description:
-    "First-hand restaurant reviews from the founder of Makan — what we ate, what it cost, and what to order.",
+  description: "First-hand restaurant reviews from the founder of Makan — what we ate, what it cost, and what to order.",
   path: "/blog",
 })
 
 export default function BlogIndexPage() {
   const reviews = getAllReviews()
-
   return (
-    <div className="min-h-screen bg-brand-cream">
-      <main id="main-content" className="mx-auto max-w-2xl px-5 pt-28 pb-16 sm:px-8">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-brand-orange">The Makan blog</p>
-        <h1 className="text-3xl font-extrabold tracking-tight text-brand-ink sm:text-4xl">Where we&apos;ve been eating</h1>
-        <p className="mt-4 text-lg text-brand-muted">
-          First-hand reviews of the restaurants we log on Makan — the food, the real bill, and what to order.
-        </p>
-
-        <ul className="mt-10 space-y-4">
-          {reviews.map((r) => (
-            <li key={r.slug}>
-              <Link
-                href={`/blog/${r.slug}`}
-                className="group block rounded-2xl border border-brand-line bg-brand-card p-5 transition-colors hover:border-brand-orange/50"
-              >
-                <p className="text-xs uppercase tracking-wide text-brand-muted">
-                  {new Date(r.datePublished).toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </p>
-                <h2 className="mt-1 text-xl font-bold text-brand-ink transition-colors group-hover:text-brand-orange">
-                  {r.restaurant.name}
-                </h2>
-                <p className="mt-1.5 text-sm text-brand-muted">{r.dek}</p>
-              </Link>
-            </li>
-          ))}
-        </ul>
+    <>
+      <main id="main-content" className={styles.page} lang="en">
+        <header className={`${styles.hero} ${styles.blogHero}`}>
+          <p className={styles.kicker}>Food stories</p>
+          <h1>Stories from the table.</h1>
+          <p className={styles.dek}>What we ate, what it cost, and what’s worth ordering.</p>
+        </header>
+        <section className={styles.blogList} aria-label="Restaurant reviews">
+          {reviews.map((review) => {
+            const photo = review.meals.find(meal => meal.photo)
+            return (
+            <article className={styles.featureStory} key={review.slug}>
+              {photo?.photo ? <Link className={styles.featurePhoto} href={`/blog/${review.slug}`} tabIndex={-1} aria-hidden>
+                <StaticPicture basePath={photo.photo.replace('/blog/', '/static-images/v1/blog/').replace(/\.[^.]+$/, '')} widths={[480, 900, 1400]} alt="" width={2048} height={2048} sizes="(min-width: 701px) 48vw, 90vw" />
+              </Link> : null}
+              <div className={styles.featureCopy}>
+                <p className={styles.kicker}>{review.restaurant.locality} · <time dateTime={review.datePublished}>{new Date(review.datePublished).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</time></p>
+                <h2><Link href={`/blog/${review.slug}`}>{review.restaurant.name}</Link></h2>
+                <p>{review.dek}</p>
+                <Link className={styles.textLink} href={`/blog/${review.slug}`}>Read the story <span aria-hidden>↗</span></Link>
+                {review.slug === 'kendal-street-kitchen' ? <p className={styles.credit}>@ridorichard</p> : null}
+              </div>
+            </article>
+          )})}
+        </section>
+        <section className={styles.aboutStrip}>
+          <div><p className={styles.kicker}>From Makan’s founder</p><h2>It started with a shared story.</h2></div>
+          <Link className={styles.button} href="/story">Our story <span aria-hidden>↗</span></Link>
+        </section>
+        <EditorialCta />
       </main>
       <Footer />
-    </div>
+    </>
   )
 }

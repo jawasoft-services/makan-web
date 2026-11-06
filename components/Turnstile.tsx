@@ -14,7 +14,7 @@ declare global {
 }
 
 /** Set in Vercel for production; empty locally, which renders nothing. */
-export const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ''
+export const TURNSTILE_SITE_KEY = (process.env.NEXT_PUBLIC_MAKAN_WEBSITE_FIXTURES === '1' ? undefined : process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY) ?? ''
 
 /** After a failed submit: tokens are single-use, so mint a fresh one. */
 export function resetTurnstile() {

@@ -1,3 +1,4 @@
+import { WEBSITE_FIXTURES } from '@/lib/website-fixtures'
 import { timingSafeEqual } from 'node:crypto'
 import { NextResponse } from 'next/server'
 import { getDb } from '@/lib/firebase-admin'
@@ -34,6 +35,7 @@ function authorised(request: Request): boolean {
 }
 
 export async function GET(request: Request) {
+  if (WEBSITE_FIXTURES) return NextResponse.json({ error: "Cron is disabled in website fixtures." }, { status: 403 })
   if (!authorised(request)) return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 })
   const db = getDb()
   if (!db) return NextResponse.json({ error: 'No database.' }, { status: 500 })

@@ -1,3 +1,4 @@
+import { WEBSITE_FIXTURES, FIXTURE_STATE } from '@/lib/website-fixtures'
 import "server-only"
 import { APP_STORE_URL } from "@/lib/links"
 
@@ -5,6 +6,7 @@ import { APP_STORE_URL } from "@/lib/links"
  *  storefront has no ratings yet, or the lookup fails — the page must never
  *  break on this. Revalidated daily; the number moves slowly. */
 export async function getAppStoreRating(country = "gb"): Promise<{ rating: number; count: number } | null> {
+  if (WEBSITE_FIXTURES) return FIXTURE_STATE === "unavailable" || FIXTURE_STATE === "empty" ? null : { rating: 5, count: 6 }
   const id = APP_STORE_URL.match(/id(\d+)/)?.[1]
   if (!id) return null
   try {

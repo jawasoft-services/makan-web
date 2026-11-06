@@ -1,9 +1,11 @@
 import type { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 import AppLanding from "./AppLanding"
+import Footer from "@/components/Footer"
 import { createPageMetadata } from "@/lib/site-metadata"
 import SiteSchema from "@/components/SiteSchema"
 import { DECISION_HOME } from "@/lib/decision-home"
+import { getAppStoreRating } from "@/lib/app-store"
 
 export async function generateMetadata({
   params,
@@ -26,10 +28,12 @@ export async function generateMetadata({
 
 export default async function AppPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
+  const rating = await getAppStoreRating()
   return (
     <>
       <SiteSchema locale={locale} />
-      <AppLanding />
+      <AppLanding rating={rating} />
+      <Footer />
     </>
   )
 }

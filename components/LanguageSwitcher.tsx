@@ -38,11 +38,7 @@ export default function LanguageSwitcher({
           window.location.assign(`${targetHref}${suffix}`)
         }
       }}
-      className={
-        compact
-          ? "inline-flex min-h-11 items-center justify-center rounded-full bg-white px-4 text-sm font-bold text-brand-orange"
-          : "inline-flex min-h-11 items-center justify-center rounded-full bg-white px-4 text-xs font-bold tracking-[0.08em] text-brand-orange transition-shadow hover:shadow-lg hover:shadow-black/10"
-      }
+      className={`language-switch ${compact ? "compact" : ""}`}
     >
       {locale === "id" ? "ID / EN" : "EN / ID"}
     </a>

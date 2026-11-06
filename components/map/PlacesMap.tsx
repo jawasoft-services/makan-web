@@ -43,7 +43,7 @@ export default function PlacesMap({
       const L = (await import('leaflet')).default
       if (cancelled || !ref.current) return
       map = L.map(el, { scrollWheelZoom: false, attributionControl: true })
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      L.tileLayer(process.env.NEXT_PUBLIC_MAKAN_WEBSITE_FIXTURES === '1' ? '/redesign/fixture-map-tile.svg' : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(map)

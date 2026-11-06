@@ -2,6 +2,7 @@
 // the whole policy and publish both languages together). The English page is the reference text: change them
 // together. PUBLISH ONLY after counsel's check of the wording, and together with the English page (the native read was
 // accepted by Devon without one, 4 Nov 2026). Recheck the "Terakhir diperbarui" date at publication.
+import styles from '@/components/utility.module.css'
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
@@ -10,7 +11,7 @@ const strong = 'font-semibold text-brand-ink'
 
 const Section = ({ title, children }: { title: string; children: ReactNode }) => (
   <section>
-    <h2 className="text-lg font-semibold text-brand-ink">{title}</h2>
+    <h2 id={`legal-section-${title.split(".")[0]}`}>{title}</h2>
     <div className="mt-4 space-y-3">{children}</div>
   </section>
 )
@@ -29,15 +30,37 @@ const Mail = () => (
   </a>
 )
 
+const sections = [
+  "1. Siapa Kami",
+  "2. Data Pribadi yang Kami Kumpulkan",
+  "3. Bagaimana Kami Memakai Data Pribadi",
+  "4. Dasar Hukum Pemrosesan",
+  "5. Kontrol Berbagi dan Visibilitas",
+  "6. Penyedia Layanan dan Penerima Lain",
+  "7. Cookie dan Teknologi Serupa",
+  "8. Transfer Data Internasional",
+  "9. Keamanan",
+  "10. Penyimpanan Data",
+  "11. Hakmu",
+  "12. Anak-Anak",
+  "13. Pengambilan Keputusan Otomatis dan Pemrofilan",
+  "14. Perubahan pada Kebijakan Ini"
+]
+
 export default function PrivacyPolicyId() {
   return (
     <div className="min-h-screen bg-brand-cream">
-      <main id="main-content" className="mx-auto max-w-3xl px-5 sm:px-8 pt-24 sm:pt-32 pb-16 sm:pb-24">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">Hukum</p>
-        <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-brand-ink">Kebijakan Privasi</h1>
-        <p className="mt-2 text-sm text-brand-muted">Terakhir diperbarui: 4 November 2026</p>
+      <main id="main-content" className={styles.legalPage}>
+        <header className={styles.legalHeading}>
+        <p>Hukum</p>
+        <h1>Kebijakan Privasi</h1>
+        <p>Terakhir diperbarui: 4 November 2026</p>
 
-        <div className="mt-10 space-y-10 text-[15px] leading-relaxed text-brand-ink/80">
+        </header>
+        <div className={styles.legalLayout}>
+          <aside className={styles.contents}><details><summary>Di halaman ini</summary><nav aria-label="Di halaman ini">{sections.map((title, index) => <a key={title} href={`#legal-section-${index + 1}`}>{title}</a>)}</nav></details></aside>
+          <article className={styles.legalProse} data-policy-copy>
+
           <p>
             MAKAN APP LTD (&ldquo;kami&rdquo;) mengoperasikan aplikasi seluler Makan (&ldquo;Aplikasi&rdquo;)
             dan situs web di makanofficial.com (&ldquo;Situs&rdquo;), yang bersama-sama kami sebut
@@ -57,7 +80,7 @@ export default function PrivacyPolicyId() {
           </p>
 
           <Section title="1. Siapa Kami">
-            <div className="space-y-2">
+            <div>
               <p>Pengendali data: MAKAN APP LTD</p>
               <p>Alamat terdaftar: 86–90 Paul Street, London, EC2A 4NE, Britania Raya</p>
               <p>Email kontak: <Mail /></p>
@@ -70,7 +93,7 @@ export default function PrivacyPolicyId() {
           </Section>
 
           <Section title="2. Data Pribadi yang Kami Kumpulkan">
-            <div className="space-y-6">
+            <div>
               <Sub title="2.1 Data akun (Aplikasi)">
                 <Bullets>
                   <li>Nama atau nama tampilan (jika kamu isi)</li>
@@ -218,7 +241,7 @@ export default function PrivacyPolicyId() {
           </Section>
 
           <Section title="4. Dasar Hukum Pemrosesan">
-            <div className="space-y-4">
+            <div>
               <p>
                 Menurut UK GDPR, kami mengandalkan dasar hukum berikut. Singkatnya:{' '}
                 <strong className={strong}>kontrak</strong> mencakup akunmu, fitur inti, serta gambaran
@@ -323,15 +346,15 @@ export default function PrivacyPolicyId() {
               perangkat atau cadangan sistem untuk jangka waktu terbatas, seperti dijelaskan di bagian
               penyimpanan data.
             </p>
-            <div className="pt-2">
-              <h3 className="font-medium text-brand-ink">Menampilkan konten publikmu dalam pemasaran kami</h3>
-              <p className="mt-2">
+            <div>
+              <h3>Menampilkan konten publikmu dalam pemasaran kami</h3>
+              <p>
                 Bila kamu memposting konten untuk audiens publik, kami dapat menampilkannya dalam materi
                 promosi dan kanal kami sendiri, termasuk platform pihak ketiga seperti Instagram dan
                 TikTok — misalnya &ldquo;Makan of the Week&rdquo; pilihan kami. Ini dapat mencakup foto
                 makanan, keterangan, dan nama pengguna atau nama tampilanmu.
               </p>
-              <ul className="mt-2 list-disc pl-5 space-y-1">
+              <ul>
                 <li>Hanya konten publik. Kami tidak pernah memakai konten yang kamu setel hanya-teman.</li>
                 <li>Dasar hukum. Kami mengandalkan kepentingan sah kami dalam mempromosikan Makan, ditimbang terhadap hakmu (bagian 4.2). Kami tidak meminta izin sebelum setiap penampilan; kamu dapat menolak, atau meminta kami menghapus konten yang ditampilkan, kapan saja.</li>
                 <li>Orang lain dalam fotomu. Sebelum menampilkan apa pun ke luar, kami melihatnya dulu, dan kami tidak menerbitkan foto yang memperlihatkan jelas orang lain. Jika kamu muncul di konten yang kami tampilkan dan tidak setuju, hubungi kami dan kami akan menghapusnya dari kanal yang kami kendalikan.</li>
@@ -458,7 +481,7 @@ export default function PrivacyPolicyId() {
           </Section>
 
           <Section title="10. Penyimpanan Data">
-            <div className="space-y-4">
+            <div>
               <p>
                 Kami menyimpan data pribadi hanya selama diperlukan untuk tujuan yang dijelaskan dalam
                 Kebijakan Privasi ini.
@@ -606,11 +629,13 @@ export default function PrivacyPolicyId() {
             </p>
           </Section>
 
-          <div className="pt-4 border-t border-brand-line">
-            <Link href="/id" className="text-sm text-brand-orange hover:underline">
+          <div>
+            <Link href="/id">
               &larr; Kembali ke beranda
             </Link>
           </div>
+
+          </article>
         </div>
       </main>
       <Footer />

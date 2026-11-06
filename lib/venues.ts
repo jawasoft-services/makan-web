@@ -21,8 +21,9 @@ import venuesData from "./venues.data.json"
  * ── Where to edit ──
  *   The venue DATA lives in `lib/venues.data.json` (the single source of truth
  *   this module and the QR-card generator both read, so a page and its printed
- *   card can never drift). Add a venue there + run `npm run venue-qr` to mint
- *   its landing page and print-ready card together.
+ *   card can never drift). Use `npm run venue:add` to add a venue and mint its card with validation.
+ *   `lib/venues.lock.json` permanently reserves minted slugs; `venue:check`
+ *   runs before every npm build. Never hand-edit an existing printed identity.
  */
 
 export interface PilotVenue {

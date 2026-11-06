@@ -1,8 +1,11 @@
+import { WEBSITE_FIXTURES, fixtureMeal } from '@/lib/website-fixtures'
 import { redirect } from "next/navigation"
 import { Metadata } from "next"
 import { getDb } from "@/lib/firebase-admin"
 import Image from "next/image"
 import Footer from "@/components/Footer"
+import StoreLink from "@/components/home/StoreLink"
+import styles from "@/components/standings/public-pages.module.css"
 import Link from "next/link"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { getDirectoryPlaceById } from "@/lib/place-directory"
@@ -37,11 +40,17 @@ interface MealData {
 
 async function getMeal(id: string): Promise<MealData | null> {
   try {
-    const db = getDb()
-    if (!db) return null
-    const doc = await db.collection("meals").doc(id).get()
-    if (!doc.exists) return null
-    const meal = { id: doc.id, ...doc.data() } as MealData
+    let meal: MealData | null
+    if (WEBSITE_FIXTURES) {
+      meal = fixtureMeal(id)
+    } else {
+      const db = getDb()
+      if (!db) return null
+      const doc = await db.collection("meals").doc(id).get()
+      if (!doc.exists) return null
+      meal = { id: doc.id, ...doc.data() } as MealData
+    }
+    if (!meal) return null
     // Fail closed: only return meals explicitly marked public.
     // Any missing/null/false isPublic is treated as private and yields null,
     // so both generateMetadata and the page inherit the same gate.
@@ -107,38 +116,25 @@ export default async function MealPage({ params }: PageProps) {
   const place = meal.placeProviderId ? await getDirectoryPlaceById(meal.placeProviderId) : null
 
   return (
-    <div className="min-h-screen bg-brand-cream">
-      <main id="main-content" className="flex min-h-screen items-center justify-center px-6 pt-20 pb-12">
-        <div className="w-full max-w-sm">
-          {/*
-            Declared at the size the card actually renders (the wrapper caps at
-            max-w-sm = 384px), not at the source's 1080x1920. Every public meal
-            id mints its own cache entries here and they never stop accruing, so
-            the pair wants to be as cheap as possible: 384/828 instead of
-            1080/1920. Ratio is unchanged (384/683 == 1080/1920), so this is
-            byte savings with no layout shift.
-          */}
-          <Image
-            src={imageUrl}
-            alt={title}
-            width={384}
-            height={683}
-            className="w-full h-auto rounded-2xl shadow-2xl shadow-black/40"
-          />
+    <div className={styles.page}>
+      <main id="main-content" className={`${styles.wrap} ${styles.mealDetail}`}>
+        {/* Preserve the complete share card and its original aspect ratio. */}
+        <figure className={styles.mealImage}>
+          <Image src={imageUrl} alt={title} width={384} height={683} sizes="(max-width: 424px) calc(100vw - 40px), 384px" priority />
+        </figure>
+        <div className={styles.mealCopy}>
+          <Image className="brand-wordmark" src="/redesign/logo-orange.svg" alt="Makan" width={132} height={31} />
+          <h1>{title}</h1>
+          {meal.caption ? <p>{meal.caption}</p> : null}
           {place ? (
-            <p className="mt-6 text-center text-base leading-[1.6] text-brand-muted">
+            <p>
               {t("savedAt")}{" "}
-              <Link
-                href={localizePath(locale ?? "en", `/places/${place.slug}`)}
-                className="font-semibold text-brand-ink underline decoration-brand-orange decoration-2 underline-offset-4"
-              >
-                {place.name}
-              </Link>
-              <span className="mt-1 block text-sm">{t("openPlace", { name: place.name })}</span>
+              <Link href={localizePath(locale ?? "en", `/places/${place.slug}`)} className={styles.mealVenue}>{place.name}</Link>
+              <small>{t("openPlace", { name: place.name })}</small>
             </p>
-          ) : meal.locationName ? (
-            <p className="mt-6 text-center text-base text-brand-muted">{t("savedAt")} {meal.locationName}</p>
-          ) : null}
+          ) : meal.locationName ? <p>{t("savedAt")} {meal.locationName}</p> : null}
+          <Link href={localizePath(locale, '/standings')} className={styles.textLink}>{t('standings')}</Link>
+          <div><StoreLink location="meal" className={styles.primary}>{locale === 'id' ? 'Dapatkan Makan' : 'Get Makan'}</StoreLink></div>
         </div>
       </main>
       <Footer />

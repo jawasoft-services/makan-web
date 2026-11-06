@@ -1,3 +1,4 @@
+import { WEBSITE_FIXTURES, fixtureMaitred } from '@/lib/website-fixtures'
 import 'server-only'
 import { unstable_cache } from 'next/cache'
 import { getDb } from '@/lib/firebase-admin'
@@ -20,6 +21,7 @@ export type { MaitredNotes, MaitredVenue } from '@/lib/aggregates/types'
  */
 const getCachedMaitred = unstable_cache(
   async (): Promise<MaitredList | null> => {
+    if (WEBSITE_FIXTURES) return fixtureMaitred()
     const db = getDb()
     if (!db) return null
     try {

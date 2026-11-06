@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Link from 'next/link'
+import Image from 'next/image'
+import styles from '@/components/standings/public-pages.module.css'
 import Footer from '@/components/Footer'
 import SiteSchema from '@/components/SiteSchema'
 import StandingsTable from '@/components/standings/StandingsTable'
@@ -96,32 +98,35 @@ export default async function CityStandingsPage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-brand-cream">
+    <div className={styles.page}>
       <SiteSchema locale={locale} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(schema) }} />
-      <main id="main-content" className="mx-auto max-w-3xl px-5 pb-16 pt-24 sm:px-8 sm:pb-24 sm:pt-32">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-orange">
+      <main id="main-content" className={styles.wrap}>
+        <header className={styles.heading}>
+        <p className={styles.kicker}>
           <Link href={localizePath(locale, '/standings')} className="hover:underline">
             {t('eyebrow')}
           </Link>
           <span aria-hidden> · </span>
           {city.country}
         </p>
-        <h1 className="mt-4 text-3xl font-bold text-brand-ink sm:text-4xl lg:text-5xl" style={{ letterSpacing: '-0.02em' }}>
+        <h1 >
           {t('cityTitle', { city: city.city })}
         </h1>
-        <p className="mt-6 max-w-[60ch] text-base leading-[1.75] text-brand-muted">
+        <p className={styles.intro}>
           {t('cityIntro', { city: city.city, floor: CITY_FLOOR })}
         </p>
+        <Image src="/redesign/food-plate.svg" alt="" width={120} height={120} className={styles.headingArt} />
+        </header>
 
-        <StandingsTable rows={city.rows} locale={locale} labels={labels} showWhere={false} caption={t('cityTitle', { city: city.city })} />
-        <p className="mt-4 text-sm leading-[1.6] text-brand-muted">
+        <StandingsTable rows={city.rows} locale={locale} labels={labels} showWhere={false} caption={t('cityTitle', { city: city.city })} hasMap={city.rows.some((r) => r.lat !== null && r.lng !== null)} />
+        <p className={styles.freshness}>
           <time dateTime={computedAt.toISOString()}>{t('scoresChangedOn', { date: dayMonthYear.format(computedAt) })}</time>{' '}
           {checkedAt ? <time dateTime={checkedAt}>{t('checkedOn', { date: dayMonthYear.format(new Date(checkedAt)) })}</time> : t('checkUnavailable')}
         </p>
 
         {city.rows.some((r) => r.lat !== null && r.lng !== null) ? (
-          <section className="mt-12 border-t border-brand-line pt-10">
+          <section id="map" className={styles.section}>
             <h2 className="text-xl font-bold text-brand-ink sm:text-2xl">{t('mapTitle')}</h2>
             <p className="mt-3 max-w-[60ch] text-base leading-[1.7] text-brand-muted">{t('mapBody')}</p>
             <PlacesMapLoader
@@ -141,8 +146,8 @@ export default async function CityStandingsPage({ params }: Props) {
           </section>
         ) : null}
 
-        <section className="mt-12 border-t border-brand-line pt-10">
-          <h2 className="text-xl font-bold text-brand-ink sm:text-2xl">{t('howTitle')}</h2>
+        <section className={styles.method}>
+          <h2>{t('howTitle')}</h2>
           <ul className="mt-4 space-y-3">
             {(['how1', 'how2', 'cityHow', 'how4'] as const).map((k) => (
               <li key={k} className="flex items-baseline gap-3 text-base leading-[1.7] text-brand-ink">

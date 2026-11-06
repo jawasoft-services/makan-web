@@ -53,7 +53,7 @@ export default async function GuideStory({ locale, compact = false }: { locale: 
   const leader = standings.rows[0]
   const percent = new Intl.NumberFormat(locale === 'id' ? 'id-ID' : 'en-GB', { style: 'percent', maximumFractionDigits: 0 })
 
-  const panel = 'rounded-2xl border border-brand-line bg-brand-card p-5'
+  const panel = 'min-w-0 rounded-3xl bg-[#f3e5d4] p-5 sm:p-6'
   const caption = 'mt-4 text-base font-bold leading-[1.3] text-brand-ink'
   const sub = 'mt-1 text-sm text-brand-muted'
 
@@ -110,18 +110,18 @@ export default async function GuideStory({ locale, compact = false }: { locale: 
       {/* What it adds up to. */}
       {!compact ? (
         <figure className={panel}>
-          <div className="relative flex aspect-[4/3] items-end justify-center overflow-hidden rounded-xl bg-brand-cream px-4 pt-4">
+          <div className="relative flex min-h-72 flex-col items-center justify-center gap-4 rounded-2xl bg-brand-cream p-4">
             <Image
               src="/app-screens/story/eat-or-yeet.webp"
               alt={t('storyScreenAlt')}
               width={760}
               height={1572}
               sizes="160px"
-              className="w-[46%] max-w-[10rem] translate-y-[18%] drop-shadow-[0_12px_20px_rgba(43,21,3,0.22)]"
+              className="h-auto w-[46%] max-w-[10rem]"
               loading="lazy"
             />
             {leader ? (
-              <div className="absolute bottom-3 left-3 right-3 flex items-center gap-3 rounded-xl border border-brand-line bg-brand-card px-3 py-2 shadow-[0_8px_20px_-12px_rgba(43,21,3,0.35)]">
+              <div className="flex w-full items-center gap-3 rounded-xl bg-brand-card px-3 py-2">
                 <span className="text-lg font-bold tabular-nums text-brand-orange">1</span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-semibold text-brand-ink">{leader.name}</span>
@@ -130,7 +130,7 @@ export default async function GuideStory({ locale, compact = false }: { locale: 
                 <span className="text-right">
                   <span className="block text-base font-bold leading-none tabular-nums text-brand-ink">{percent.format(leader.eatRate)}</span>
                   <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-brand-muted">
-                    {t('picked', { eats: leader.eats, matchups: leader.matchups })}
+                    {leader.eats} {t('colEats')} / {leader.matchups}
                   </span>
                 </span>
               </div>

@@ -1,3 +1,4 @@
+import { WEBSITE_FIXTURES } from '@/lib/website-fixtures'
 import 'server-only'
 import { unstable_cache } from 'next/cache'
 import { GoogleAuth, JWT } from 'google-auth-library'
@@ -85,6 +86,7 @@ function pick(components: { longText?: string; types?: string[] }[], types: stri
  * (federated when configured, else its key), ADC locally.
  */
 export async function accessToken(): Promise<string | null> {
+  if (WEBSITE_FIXTURES) return null
   const scopes = ['https://www.googleapis.com/auth/cloud-platform']
   const credentials = federatedCredentials(process.env.GCP_SERVICE_ACCOUNT_EMAIL)
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL

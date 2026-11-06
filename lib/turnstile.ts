@@ -1,3 +1,4 @@
+import { WEBSITE_FIXTURES } from '@/lib/website-fixtures'
 import 'server-only'
 
 // Fires at most once per function instance, like sheets-auth's warning.
@@ -13,6 +14,7 @@ let skipWarned = false
  * the client resets its widget after any failed submit.
  */
 export async function turnstilePassed(token: unknown, remoteip: string): Promise<boolean> {
+  if (WEBSITE_FIXTURES) return token === "fixture-turnstile-pass" || (!process.env.TURNSTILE_SECRET_KEY && token !== "fixture-turnstile-fail")
   const secret = process.env.TURNSTILE_SECRET_KEY
   if (!secret) {
     if (!skipWarned) {

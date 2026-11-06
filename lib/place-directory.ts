@@ -1,3 +1,4 @@
+import { WEBSITE_FIXTURES, fixtureDirectory, fixturePlaceIndex } from '@/lib/website-fixtures'
 import 'server-only'
 import { unstable_cache } from 'next/cache'
 import { getDb } from '@/lib/firebase-admin'
@@ -36,6 +37,7 @@ async function fallbackDirectory(reason: string): Promise<DirectoryPlace[]> {
 /** The small index: slug, name, city, indexable, meal count, for every place. One or two reads. */
 export const getPlaceIndex = unstable_cache(
   async (): Promise<PlaceIndexEntry[]> => {
+    if (WEBSITE_FIXTURES) return fixturePlaceIndex()
     try {
       const db = getDb()
       if (!db) return []
@@ -54,6 +56,7 @@ export const getPlaceIndex = unstable_cache(
 /** Every place in full. One read per place: use getPlaceIndex where a list will do. */
 export const getPlaceDirectory = unstable_cache(
   async (): Promise<DirectoryPlace[]> => {
+    if (WEBSITE_FIXTURES) return fixtureDirectory()
     try {
       const db = getDb()
       if (!db) return []
@@ -78,6 +81,7 @@ export const getPlaceDirectory = unstable_cache(
  * link, and an unknown id would otherwise cost a full collection read per hit.
  */
 export async function getDirectoryPlaceById(placeId: string): Promise<DirectoryPlace | null> {
+  if (WEBSITE_FIXTURES) return fixtureDirectory().find(place => place.placeId === placeId) ?? null
   try {
     const db = getDb()
     if (!db) return null

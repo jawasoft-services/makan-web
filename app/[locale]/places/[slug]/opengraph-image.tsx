@@ -1,3 +1,4 @@
+import { WEBSITE_FIXTURES } from '@/lib/website-fixtures'
 import { ImageResponse } from "next/og"
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
@@ -15,9 +16,15 @@ export const contentType = "image/png"
 async function cardPhoto(src: string | undefined): Promise<string | null> {
   if (!src) return null
   try {
-    const res = await fetch(src, { next: { revalidate: 86400 } })
-    if (!res.ok) return null
-    const input = Buffer.from(await res.arrayBuffer())
+    let input: Buffer
+    if (WEBSITE_FIXTURES) {
+      if (!/^\/redesign\/[a-z0-9-]+\.(jpg|png|webp)$/.test(src)) return null
+      input = await readFile(join(process.cwd(), "public", src.slice(1)))
+    } else {
+      const res = await fetch(src, { next: { revalidate: 86400 } })
+      if (!res.ok) return null
+      input = Buffer.from(await res.arrayBuffer())
+    }
     const sharp = (await import("sharp")).default
     const jpeg = await sharp(input).rotate().resize(560, 630, { fit: "cover" }).jpeg({ quality: 82 }).toBuffer()
     return `data:image/jpeg;base64,${jpeg.toString("base64")}`

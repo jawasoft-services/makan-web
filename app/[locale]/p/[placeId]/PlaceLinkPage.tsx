@@ -3,6 +3,8 @@ import Image from "next/image"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { getLinkedPlace } from "@/lib/place-link"
 import PlaceLinkActions from "./PlaceLinkActions"
+import Footer from "@/components/Footer"
+import styles from "@/components/standings/public-pages.module.css"
 
 /*
  * RM20333 — the web page behind a Makan restaurant or dish link (what a friend gets from "Send to
@@ -14,8 +16,8 @@ export interface PlaceLinkProps {
   params: Promise<{ locale: string; placeId: string; dishId?: string }>
 }
 
-const primary = "inline-flex min-h-14 w-full items-center justify-center rounded-2xl bg-brand-orange px-6 py-3 text-center text-lg font-bold leading-snug text-white transition-transform active:scale-[0.98]"
-const secondary = "inline-flex min-h-14 w-full items-center justify-center rounded-2xl border-[1.5px] border-brand-ink px-6 py-3 text-center text-lg font-bold leading-snug text-brand-ink transition-transform active:scale-[0.98]"
+const primary = styles.primary
+const secondary = styles.secondary
 
 const canonicalLink = (placeId: string, dishId?: string) =>
   `https://www.makanofficial.com/p/${placeId}${dishId ? `/${dishId}` : ""}`
@@ -54,17 +56,17 @@ export default async function PlaceLinkPage({ params }: PlaceLinkProps) {
   const dishMeals = place?.dish?.publicMealCount ?? 0
 
   return (
-    <div className="flex min-h-screen flex-col bg-brand-cream">
+    <div className={styles.page}>
       {/* The site header (with the Makan wordmark) sits above; pt-24 clears it. */}
-      <main id="main-content" className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 pb-8 pt-24">
+      <main id="main-content" className={styles.handoff}>
         {place && heading ? (
           <>
             {place.imageUrl ? (
-              <div className="relative h-56 w-full overflow-hidden rounded-2xl bg-brand-card">
-                <Image src={place.imageUrl} alt={t("photoAlt", { name: heading })} fill priority sizes="(max-width: 448px) 100vw, 448px" className="object-cover" />
+              <div className={styles.handoffPhoto}>
+                <Image src={place.imageUrl} alt={t("photoAlt", { name: heading })} fill priority sizes="(max-width: 738px) calc(100vw - 48px), 690px" className="object-cover" />
               </div>
             ) : null}
-            <p className="mt-5 inline-flex w-fit rounded-lg bg-brand-card px-2.5 py-1 text-[0.8125rem] font-bold text-brand-muted">
+            <p className={styles.tag}>
               {place.dish ? t("tagDish") : t("tagPlace")}
             </p>
             <h1 className="mt-2 text-[1.875rem] font-extrabold leading-tight tracking-tight text-brand-ink">{heading}</h1>
@@ -77,15 +79,17 @@ export default async function PlaceLinkPage({ params }: PlaceLinkProps) {
           </>
         ) : (
           <>
+            <Image src="/redesign/food-plate.svg" alt="" width={150} height={140} className={styles.handoffArt} />
             <h1 className="text-[1.875rem] font-extrabold leading-tight tracking-tight text-brand-ink">{t("unknownTitle")}</h1>
             <p className="mt-2 text-[1.0625rem] leading-relaxed text-brand-muted">{t("unknownBody")}</p>
           </>
         )}
-        <div className="mt-auto flex flex-col gap-3 pt-10">
+        <div className={styles.handoffActions}>
           <PlaceLinkActions link={link} appPath={appPath} openLabel={t("open")} getLabel={t("get")} className={{ primary, secondary }} />
-          <p className="px-2 text-center text-[0.8125rem] text-brand-muted">{t("afterInstall")}</p>
         </div>
+        <p className={styles.handoffNote}>{t("afterInstall")}</p>
       </main>
+      <Footer />
     </div>
   )
 }

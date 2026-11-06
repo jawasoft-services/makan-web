@@ -1,3 +1,4 @@
+import { WEBSITE_FIXTURES, FIXTURE_STATE, FIXTURE_CHECKED_AT, fixtureStandings } from '@/lib/website-fixtures'
 import 'server-only'
 import { unstable_cache } from 'next/cache'
 import { getDb } from '@/lib/firebase-admin'
@@ -25,6 +26,7 @@ export interface EatStandingsSnapshot {
 
 const getCachedEatStandingsSnapshot = unstable_cache(
   async (): Promise<EatStandingsSnapshot> => {
+    if (WEBSITE_FIXTURES) return { standings: fixtureStandings(), checkedAt: FIXTURE_STATE === "unavailable" ? null : FIXTURE_CHECKED_AT }
     const db = getDb()
     if (!db) return { standings: EMPTY_STANDINGS, checkedAt: null }
     try {

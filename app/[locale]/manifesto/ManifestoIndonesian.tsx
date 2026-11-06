@@ -1,3 +1,6 @@
+import Image from 'next/image'
+import EditorialCta from '@/components/story/EditorialCta'
+import styles from '@/components/story/editorial.module.css'
 import Link from "next/link"
 import { Emphasis } from "@/components/Emphasis"
 
@@ -12,25 +15,23 @@ import { Emphasis } from "@/components/Emphasis"
 // strategy language. Category loanwords (menu, review) stay English.
 export default function ManifestoIndonesian() {
   return (
-    <main
-      id="main-content"
-      className="min-h-screen bg-brand-cream text-brand-ink"
-    >
-      <article className="mx-auto max-w-[680px] px-5 pb-24 pt-32 sm:px-8 sm:pb-32 sm:pt-40">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-orange">
-          Manifesto
-        </p>
-
-        <h1 className="mt-6 text-[34px] font-bold leading-[1.08] tracking-[-0.025em] text-brand-ink sm:text-[52px] lg:text-[64px]">
+    <main id="main-content" className={styles.page}>
+        <header className={styles.manifestoHero}>
+          <p className={styles.kicker}>Manifesto</p>
+          <h1>
           Kamu duduk. Menunya datang. Kamu{" "}
           <Emphasis variant="warm" trigger="load">
             bingung&nbsp;mau&nbsp;makan&nbsp;apa
           </Emphasis>
           .
         </h1>
+          <Image className={styles.manifestoArt} src="/redesign/food-fork.svg" alt="" width={100} height={160} aria-hidden />
+        </header>
+        <article className={`${styles.prose} ${styles.manifestoProse}`}>
 
-        <div className="mt-12 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
-          <p className="text-[19px] font-medium text-brand-ink sm:text-xl">
+
+        <div>
+          <p>
             Makan itu buat saat itu.
           </p>
           <p>
@@ -45,14 +46,14 @@ export default function ManifestoIndonesian() {
             Atau ikut pesanan temanmu. Dan kadang makanannya datang dan kamu
             langsung tahu: seharusnya kamu pesan yang dia pesan.
           </p>
-          <p className="text-[19px] font-medium text-brand-ink sm:text-xl">
+          <p>
             Makan mulai di sini.{" "}
             <Emphasis variant="warm">Di&nbsp;meja</Emphasis>, dengan menu yang
             terbuka.
           </p>
         </div>
 
-        <div className="mt-16 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+        <div>
           <p>
             Makan melihat apa yang pernah kamu makan. Bukan apa yang kamu tulis
             soal makanan itu. Tapi apa yang benar-benar kamu pilih, kamu makan,
@@ -66,7 +67,7 @@ export default function ManifestoIndonesian() {
           </p>
         </div>
 
-        <div className="mt-16 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+        <div>
           <p>
             Semua itu datang dari satu hal kecil. Setiap kali kamu makan
             sesuatu, kamu simpan. Satu foto. Kamu di mana. Sudah, itu saja.
@@ -86,25 +87,25 @@ export default function ManifestoIndonesian() {
           </p>
         </div>
 
-        <div className="mt-16 rounded-2xl border border-brand-line bg-white/40 p-6 sm:p-8">
-          <p className="text-[22px] font-semibold leading-[1.25] tracking-[-0.01em] text-brand-ink sm:text-[26px]">
+        <div>
+          <p className={styles.pullout}>
             Kadang Makan memang tidak tahu.
           </p>
-          <p className="mt-4 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+          <p>
             Mungkin belum ada yang makan di sini. Mungkin tidak ada yang kamu
             simpan yang mirip dengan menu ini. Kalau itu terjadi, Makan akan{" "}
             <Emphasis variant="warm">mengatakannya</Emphasis>, dan menyebut yang
             mana dari keduanya. Lalu kamu bisa tanya mas-nya, atau pesan apa pun
             yang kamu mau.
           </p>
-          <p className="mt-4 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+          <p>
             Makan tidak akan pura-pura tahu. Tebakan yang dikemas jadi jawaban
             itu lebih buruk daripada tidak ada jawaban, karena kamu baru sadar
             waktu makanannya sudah ada di depanmu.
           </p>
         </div>
 
-        <div className="mt-16 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+        <div>
           <p>Lalu makanannya datang, dan kamu makan.</p>
           <p>
             Itu bagian yang paling enak, dan bukan cuma karena kamu lapar. Kamu
@@ -114,20 +115,20 @@ export default function ManifestoIndonesian() {
           </p>
         </div>
 
-        <div className="mt-16">
-          <p className="mt-6 text-[26px] font-semibold leading-[1.2] tracking-[-0.01em] text-brand-ink sm:text-[32px]">
+        <div>
+          <p className={styles.pullout}>
             AI belum pernah <Emphasis variant="warm">mencicipi</Emphasis>{" "}
             makanan.
           </p>
 
-          <p className="mt-5 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+          <p>
             AI tidak bisa mencium. Tidak bisa mengunyah. Tidak ingat rasanya
             lapar waktu kecil. Jadi AI tidak akan pernah bilang sebuah makanan
             itu enak, tidak akan menuliskan ingatanmu, tidak akan mengarang
             pendapat yang bukan milikmu. Mencicipi itu bagian manusianya, dan
             itu tetap milikmu.
           </p>
-          <p className="mt-5 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+          <p>
             Yang AI lakukan adalah mengenali. AI bisa melihat kalau dua fotomu
             sendiri itu makanan yang sama, jadi Makan bisa bilang: kamu pernah
             makan ini, dan ini pendapatmu waktu itu. Fotomu sendiri, bukan foto
@@ -135,12 +136,12 @@ export default function ManifestoIndonesian() {
           </p>
         </div>
 
-        <div className="mt-16 border-t border-brand-line pt-12">
-          <p className="text-[15px] text-brand-ink/70">
+        <div>
+          <p>
             Semua ini bukan hasil rapat.
           </p>
 
-          <div className="mt-6 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+          <div>
             <p>
               Ini mulai waktu COVID. Aku tidak bisa bertemu teman-teman, jadi
               beberapa dari kami membuat shared story di Snapchat dan memposting
@@ -168,30 +169,31 @@ export default function ManifestoIndonesian() {
           </div>
         </div>
 
-        <p className="mt-14 text-[22px] font-semibold leading-[1.25] tracking-[-0.01em] text-brand-ink sm:text-[28px]">
+        <p>
           Kamu selesai. Kamu bayar. Kamu pulang. Dan lain kali kamu duduk di
           tempat baru dan ada yang menyerahkan menu ke kamu,{" "}
-          <span className="text-brand-orange">
+          <span>
             kamu tidak akan{" "}
             <Emphasis variant="warm">mulai&nbsp;dari&nbsp;nol</Emphasis>.
           </span>
         </p>
 
-        <p className="mt-10 text-[16px] italic leading-relaxed text-brand-ink/70">
+        <p>
           Kalau kamu pernah membaca satu menu dua kali dan akhirnya tetap pesan
           yang aman, ini buat kamu.
         </p>
 
-        <div className="mt-16 flex items-center justify-between border-t border-white/15 pt-8">
-          <p className="text-[15px] text-brand-ink/70">— Devon</p>
+        <div className={styles.manifestoSignature}>
+          <p>— Devon</p>
           <Link
             href="/id"
-            className="text-[13px] text-brand-ink/60 underline-offset-4 transition-colors hover:text-brand-orange hover:underline"
           >
             Kembali ke Makan →
           </Link>
         </div>
-      </article>
-    </main>
+
+        </article>
+        <EditorialCta locale="id" />
+      </main>
   )
 }

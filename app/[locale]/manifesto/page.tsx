@@ -1,3 +1,6 @@
+import Image from 'next/image'
+import EditorialCta from '@/components/story/EditorialCta'
+import styles from '@/components/story/editorial.module.css'
 import type { Metadata } from 'next'
 import SiteSchema from "@/components/SiteSchema"
 import { setRequestLocale } from 'next-intl/server'
@@ -55,23 +58,20 @@ export default async function ManifestoPage({
       {locale === 'id' ? (
         <ManifestoIndonesian />
       ) : (
-      <main id="main-content" className="bg-brand-cream min-h-screen text-brand-ink">
-        <article className="mx-auto max-w-[680px] px-5 pb-24 pt-32 sm:px-8 sm:pb-32 sm:pt-40">
-
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-orange">
-            Manifesto
-          </p>
-
-          {/* Beginning of the meal: sitting down. */}
-          <h1
-            className="mt-6 text-[34px] font-bold leading-[1.08] tracking-[-0.025em] text-brand-ink sm:text-[52px] lg:text-[64px]"
-          >
+      <main id="main-content" className={styles.page}>
+        <header className={styles.manifestoHero}>
+          <p className={styles.kicker}>Manifesto</p>
+          <h1>
             You sit down. The menu comes. You have{' '}
             <Emphasis variant="warm" trigger="load">no&nbsp;idea</Emphasis>.
           </h1>
+          <Image className={styles.manifestoArt} src="/redesign/food-fork.svg" alt="" width={100} height={160} aria-hidden />
+        </header>
+        <article className={`${styles.prose} ${styles.manifestoProse}`}>
 
-          <div className="mt-12 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
-            <p className="text-[19px] font-medium text-brand-ink sm:text-xl">
+
+          <div>
+            <p>
               Makan is for right then.
             </p>
             <p>
@@ -85,7 +85,7 @@ export default async function ManifestoPage({
               copy your friend. And sometimes the plate arrives and you know
               straight away that you should have had what she ordered.
             </p>
-            <p className="text-[19px] font-medium text-brand-ink sm:text-xl">
+            <p>
               Makan starts here.{' '}
               <Emphasis variant="warm">At&nbsp;the&nbsp;table</Emphasis>, with
               the menu open.
@@ -93,7 +93,7 @@ export default async function ManifestoPage({
           </div>
 
           {/* The choice: what Makan actually says. */}
-          <div className="mt-16 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+          <div>
             <p>
               It looks at what you have eaten before. Not what you said about
               it. What you really chose, and ate, and finished.
@@ -107,7 +107,7 @@ export default async function ManifestoPage({
           </div>
 
           {/* Where the answer comes from. */}
-          <div className="mt-16 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+          <div>
             <p>
               All of that comes from something small. Every time you eat
               something, you save it. A photo. Where you were. That is it.
@@ -125,18 +125,18 @@ export default async function ManifestoPage({
           </div>
 
           {/* When it can't answer. */}
-          <div className="mt-16 rounded-2xl border border-brand-line bg-white/40 p-6 sm:p-8">
-            <p className="text-[22px] font-semibold leading-[1.25] tracking-[-0.01em] text-brand-ink sm:text-[26px]">
+          <div>
+            <p className={styles.pullout}>
               Sometimes it will not know.
             </p>
-            <p className="mt-4 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+            <p>
               Maybe nobody has eaten here yet. Maybe nothing you have saved is
               anything like this menu. When that happens Makan will{' '}
               <Emphasis variant="warm">say&nbsp;so</Emphasis>, and tell you
               which of the two it is. Then you can ask the waiter, or just order
               what you fancy.
             </p>
-            <p className="mt-4 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+            <p>
               It will not pretend. A guess dressed up as an answer is worse than
               no answer, because you only find out when the food is already in
               front of you.
@@ -144,7 +144,7 @@ export default async function ManifestoPage({
           </div>
 
           {/* The food arrives. This is the turn: the meal feeds the next one. */}
-          <div className="mt-16 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+          <div>
             <p>Then the food comes, and you eat it.</p>
             <p>
               That is the good part, and not only because you are hungry. You
@@ -157,18 +157,18 @@ export default async function ManifestoPage({
           {/* The AI line, plainly. Describes what recognition does without
               promising a switch either way — the consent design is still open,
               so this states only what is true today. */}
-          <div className="mt-16">
-            <p className="mt-6 text-[26px] font-semibold leading-[1.2] tracking-[-0.01em] text-brand-ink sm:text-[32px]">
+          <div>
+            <p className={styles.pullout}>
               AI has never <Emphasis variant="warm">tasted</Emphasis> food.
             </p>
 
-            <p className="mt-5 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+            <p>
               It cannot smell. It cannot chew. It does not remember being hungry
               as a kid. So it will never tell you a dish is good, never write
               your memories for you, never make up an opinion you did not have.
               Tasting is the human bit, and it stays yours.
             </p>
-            <p className="mt-5 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+            <p>
               What it does is recognise. It can see that two of your own photos
               are the same dish, so Makan can tell you: you have eaten this
               before, and here is what you thought of it. Your photos, nobody
@@ -177,12 +177,12 @@ export default async function ManifestoPage({
           </div>
 
           {/* Where it began — late, as proof, told simply. */}
-          <div className="mt-16 border-t border-brand-line pt-12">
-            <p className="text-[15px] text-brand-ink/70">
+          <div>
+            <p>
               None of this came out of a meeting.
             </p>
 
-            <div className="mt-6 space-y-7 text-[17px] leading-relaxed text-brand-ink/85 sm:text-lg">
+            <div>
               <p>
                 It started in COVID. I could not see my friends, so a few of us
                 made a Snapchat story and posted our dinners. Breakfast. Nasi
@@ -212,31 +212,32 @@ export default async function ManifestoPage({
           </div>
 
           {/* End of the meal, and the loop closes on the next one. */}
-          <p className="mt-14 text-[22px] font-semibold leading-[1.25] tracking-[-0.01em] text-brand-ink sm:text-[28px]">
+          <p>
             You finish. You pay. You walk out. And the next time you sit down
             somewhere new and somebody hands you a menu,{' '}
-            <span className="text-brand-orange">
+            <span>
               you will not be{' '}
               <Emphasis variant="warm">starting&nbsp;from&nbsp;nothing</Emphasis>.
             </span>
           </p>
 
-          <p className="mt-10 text-[16px] italic leading-relaxed text-brand-ink/70">
+          <p>
             If you have ever read a menu twice and still ordered the safe thing,
             this is for you.
           </p>
 
           {/* Signature + back link */}
-          <div className="mt-16 flex items-center justify-between border-t border-white/15 pt-8">
-            <p className="text-[15px] text-brand-ink/70">— Devon</p>
+          <div className={styles.manifestoSignature}>
+            <p>— Devon</p>
             <Link
               href="/"
-              className="text-[13px] text-brand-ink/60 underline-offset-4 transition-colors hover:text-brand-orange hover:underline"
             >
               Back to Makan →
             </Link>
           </div>
+
         </article>
+        <EditorialCta locale="en" />
       </main>
       )}
       <Footer />

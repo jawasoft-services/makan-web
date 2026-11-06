@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import Image from "next/image"
 import { getVenue } from "@/lib/venues"
 import Footer from "@/components/Footer"
+import styles from "@/components/standings/public-pages.module.css"
 
 /*
  * Venue-QR landing page — the Phase-1 destination of the printed venue QR
@@ -67,30 +68,15 @@ export default async function VenueRedirectPage({ params }: PageProps) {
     : "Makan is a personal food diary — snap what you're eating, choose Public or Friends Only and keep the meal."
 
   return (
-    <div className="flex min-h-screen flex-col bg-brand-cream">
+    <div className={styles.page}>
       <main
         id="main-content"
-        className="flex flex-1 flex-col items-center justify-center px-6 pb-16 pt-28 text-center"
+        className={styles.handoff}
       >
-        <Image
-          src="/makan-icon.svg"
-          alt=""
-          width={64}
-          height={64}
-          className="mb-7 h-16 w-16"
-          priority
-        />
-        <Image
-          src="/makan-logo-orange.svg"
-          alt="Makan"
-          width={200}
-          height={46}
-          className="mb-9 h-auto w-[190px]"
-          priority
-        />
+        <Image src="/redesign/food-noodles.svg" alt="" width={150} height={140} className={styles.handoffArt} priority />
 
         {venue && (
-          <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-brand-orange">
+          <p className={styles.tag}>
             {venue.name} · {venue.city}
           </p>
         )}
@@ -103,23 +89,22 @@ export default async function VenueRedirectPage({ params }: PageProps) {
           {subcopy}
         </p>
 
+        <div className={styles.handoffActions}>
         <StoreLink
           location="restaurant-qr"
-          className="inline-flex h-14 items-center justify-center rounded-full bg-brand-orange px-9 text-base font-semibold text-white transition-all hover:shadow-lg hover:shadow-brand-orange/25 active:scale-[0.98]"
+          className={styles.primary}
         >
           Download on the App Store
         </StoreLink>
+        </div>
 
         <a
           href={APP_SCHEME_URL}
-          className="mt-5 text-sm font-medium text-brand-muted underline-offset-4 transition-colors hover:text-brand-ink hover:underline"
+          className={`${styles.textLink} mt-5`}
         >
           Already have Makan? Open the app
         </a>
 
-        <p className="mt-8 text-xs text-brand-muted">
-          Free on iPhone. Android is in the works.
-        </p>
       </main>
       <Footer />
     </div>

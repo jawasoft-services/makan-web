@@ -4,6 +4,7 @@
 // picture is now part of the service under contract, and friends see a taste match), and publish this page and its
 // Indonesian twin (components/legal/PrivacyPolicyId.tsx) together, before the app version that shows the notice
 // and the friend match reaches anyone. Recheck the "Last updated" date at publication.
+import styles from '@/components/utility.module.css'
 import { Metadata } from 'next'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
@@ -31,23 +32,45 @@ export async function generateMetadata({
     })
 }
 
+const sections = [
+  "1. Who We Are",
+  "2. Personal Data We Collect",
+  "3. How We Use Personal Data",
+  "4. Lawful Bases for Processing",
+  "5. Sharing and Visibility Controls",
+  "6. Service Providers and Other Recipients",
+  "7. Cookies and Similar Technologies",
+  "8. International Data Transfers",
+  "9. Security",
+  "10. Data Retention",
+  "11. Your Rights",
+  "12. Children",
+  "13. Automated Decision-Making and Profiling",
+  "14. Changes to This Policy"
+]
+
 export default async function PrivacyPolicy({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   if (locale === 'id') return <PrivacyPolicyId />
   return (
     <div className="min-h-screen bg-brand-cream">
-      <main id="main-content" className="mx-auto max-w-3xl px-5 sm:px-8 pt-24 sm:pt-32 pb-16 sm:pb-24">
+      <main id="main-content" className={styles.legalPage}>
+        <header className={styles.legalHeading}>
 
         {/* Eyebrow */}
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
+        <p>
           Legal
         </p>
 
         {/* Title */}
-        <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-brand-ink">Privacy Policy</h1>
-        <p className="mt-2 text-sm text-brand-muted">Last updated: 4 November 2026</p>
+        <h1>Privacy Policy</h1>
+        <p>Last updated: 4 November 2026</p>
 
-        <div className="mt-10 space-y-10 text-[15px] leading-relaxed text-brand-ink/80">
+        </header>
+        <div className={styles.legalLayout}>
+          <aside className={styles.contents}><details><summary>On this page</summary><nav aria-label="On this page">{sections.map((title, index) => <a key={title} href={`#legal-section-${index + 1}`}>{title}</a>)}</nav></details></aside>
+          <article className={styles.legalProse} data-policy-copy>
+
 
           <p>
             MAKAN APP LTD (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;) operates the Makan mobile
@@ -55,7 +78,7 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
             &ldquo;Site&rdquo;) (together, the &ldquo;Services&rdquo;).
           </p>
           <p>
-            <strong className="font-semibold text-brand-ink">Makan is for deciding what to eat.</strong>{' '}
+            <strong>Makan is for deciding what to eat.</strong>{' '}
             You use it when you are looking at a menu and do not know what to order. Almost everything
             the App does with your information exists to answer that one question: it remembers the
             meals you have had, it learns which ones you would choose again, and it uses that to tell
@@ -69,13 +92,13 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
 
           {/* 1 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">1. Who We Are</h2>
-            <div className="mt-4 space-y-2">
+            <h2 id="legal-section-1">1. Who We Are</h2>
+            <div>
               <p>Data controller: MAKAN APP LTD</p>
               <p>Registered address: 86–90 Paul Street, London, EC2A 4NE, United Kingdom</p>
               <p>
                 Contact email:{' '}
-                <a href="mailto:support@makanofficial.com" className="text-brand-orange hover:underline">
+                <a href="mailto:support@makanofficial.com">
                   support@makanofficial.com
                 </a>
               </p>
@@ -89,11 +112,11 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
 
           {/* 2 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">2. Personal Data We Collect</h2>
-            <div className="mt-4 space-y-6">
+            <h2 id="legal-section-2">2. Personal Data We Collect</h2>
+            <div>
               <div>
-                <h3 className="font-medium text-brand-ink">2.1 Account data (App)</h3>
-                <ul className="mt-2 list-disc pl-5 space-y-1">
+                <h3>2.1 Account data (App)</h3>
+                <ul>
                   <li>Name or display name (if provided)</li>
                   <li>Email address</li>
                   <li>Username and unique user identifier</li>
@@ -102,9 +125,9 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                 </ul>
               </div>
               <div>
-                <h3 className="font-medium text-brand-ink">2.2 Meal content and social data (App)</h3>
-                <p className="mt-2">Depending on how you use the App, we process:</p>
-                <ul className="mt-2 list-disc pl-5 space-y-1">
+                <h3>2.2 Meal content and social data (App)</h3>
+                <p>Depending on how you use the App, we process:</p>
+                <ul>
                   <li>Meal photos you upload</li>
                   <li>Captions or notes added to meals</li>
                   <li>Restaurant or location tags applied to meals</li>
@@ -116,8 +139,8 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                 </ul>
               </div>
               <div>
-                <h3 className="font-medium text-brand-ink">2.3 Technical, usage, and security data (App and Site)</h3>
-                <ul className="mt-2 list-disc pl-5 space-y-1">
+                <h3>2.3 Technical, usage, and security data (App and Site)</h3>
+                <ul>
                   <li>Device and app information required to operate the Services, such as device type, operating system, and app version</li>
                   <li>Usage and analytics events, collected to understand and improve the Services. These record which screens are opened and which features are used. Where an action involves another person — for example liking or commenting on someone else&apos;s meal — the event records only the kind of interaction, never who the other person was</li>
                   <li>Crash and performance diagnostics, including app and device information, diagnostic context and your account identifier while signed in, used to find and fix faults</li>
@@ -126,8 +149,8 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                 </ul>
               </div>
               <div>
-                <h3 className="font-medium text-brand-ink">2.4 Location data (App)</h3>
-                <p className="mt-2">
+                <h3>2.4 Location data (App)</h3>
+                <p>
                   With your permission, the App accesses your device&apos;s location to show you
                   nearby places and calculate distances to restaurants. You can grant or revoke this
                   permission at any time in your device settings. If you decline, location-based
@@ -137,34 +160,34 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                 </p>
               </div>
               <div>
-                <h3 className="font-medium text-brand-ink">2.5 Enquiry data (Site)</h3>
-                <p className="mt-2">
+                <h3>2.5 Enquiry data (Site)</h3>
+                <p>
                   If you contact us through the Site, we process the name and email address you
                   submit, and a timestamp, so we can respond to you.
                 </p>
               </div>
               <div>
-                <h3 className="font-medium text-brand-ink">2.6 What you have to give us, and what you do not</h3>
-                <p className="mt-2">
+                <h3>2.6 What you have to give us, and what you do not</h3>
+                <p>
                   To create and use a Makan account we need your email address; without it we cannot
                   provide the App. Everything else is your choice. You do not have to add a display
                   name, upload meals, tag a restaurant, add captions, add friends, or allow location
                   access. If you choose not to, the related features are unavailable but the rest of
                   the App works normally.
                 </p>
-                <p className="mt-2">
+                <p>
                   We do not intentionally collect special category personal data. However,
                   user-generated content may reveal sensitive information. You should avoid uploading
                   personal data you do not wish to be processed.
                 </p>
               </div>
               <div>
-                <h3 className="font-medium text-brand-ink">2.7 How we work out what you like</h3>
-                <p className="mt-2">
+                <h3>2.7 How we work out what you like</h3>
+                <p>
                   This is the part of Makan that answers the question you came with, so it is worth
                   reading.
                 </p>
-                <p className="mt-2">
+                <p>
                   When the App shows you two of your own saved meals and asks which one you would
                   choose again, we keep your answer. We also keep the order you put your own meals
                   in. From those we build a picture of your own taste: an ordering of your own meals
@@ -172,17 +195,17 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                   what Makan suggests. That picture is what lets Makan tell you what you are likely
                   to like at a restaurant you have never been to.
                 </p>
-                <p className="mt-2">
+                <p>
                   It is personal data about you, and it is fair to call it a profile of your
                   preferences, so you should know exactly what it is and is not:
                 </p>
-                <ul className="mt-2 list-disc pl-5 space-y-1">
-                  <li>It is built <strong className="font-semibold text-brand-ink">only from choices you made on purpose</strong> — the comparisons you answered and the order you set. We do not build it by watching what you look at, tap, or linger on.</li>
-                  <li>It is <strong className="font-semibold text-brand-ink">stored privately against your account.</strong> We do not show it to other users. Two things other people can see come from it, and only these two. First, a <strong className="font-semibold text-brand-ink">taste match with your friends</strong>: where you and a mutual friend have both ranked the same dishes, each of you sees how many dishes you have both ranked and how many of those sit in the same half of each of your orders — for example &ldquo;You agree on 4 of 6 dishes&rdquo;. It counts only your public and friends-only meals, the ones each of you can already see, and never drafts, held, deleted or test meals; it leaves out drinks, since it compares dishes; it shows neither your private order nor the dishes. Someone who is no longer your friend, or whom you have blocked or reported, sees nothing. Second, <strong className="font-semibold text-brand-ink">public rankings</strong>: your answers count, combined with everyone else&apos;s, toward public rankings such as a restaurant&apos;s Eat percentage. No individual answer is shown or attributed to you.</li>
-                  <li>It is used <strong className="font-semibold text-brand-ink">only to help you decide what to eat</strong> — your suggestions, your taste match with friends and those combined rankings. Never to advertise to you, never to rank you against other people, never to make a decision that affects you outside the App.</li>
+                <ul>
+                  <li>It is built <strong>only from choices you made on purpose</strong> — the comparisons you answered and the order you set. We do not build it by watching what you look at, tap, or linger on.</li>
+                  <li>It is <strong>stored privately against your account.</strong> We do not show it to other users. Two things other people can see come from it, and only these two. First, a <strong>taste match with your friends</strong>: where you and a mutual friend have both ranked the same dishes, each of you sees how many dishes you have both ranked and how many of those sit in the same half of each of your orders — for example &ldquo;You agree on 4 of 6 dishes&rdquo;. It counts only your public and friends-only meals, the ones each of you can already see, and never drafts, held, deleted or test meals; it leaves out drinks, since it compares dishes; it shows neither your private order nor the dishes. Someone who is no longer your friend, or whom you have blocked or reported, sees nothing. Second, <strong>public rankings</strong>: your answers count, combined with everyone else&apos;s, toward public rankings such as a restaurant&apos;s Eat percentage. No individual answer is shown or attributed to you.</li>
+                  <li>It is used <strong>only to help you decide what to eat</strong> — your suggestions, your taste match with friends and those combined rankings. Never to advertise to you, never to rank you against other people, never to make a decision that affects you outside the App.</li>
                   <li>Losing a comparison does not mean you disliked something. It records only which of two meals you would return to first.</li>
-                  <li>It is <strong className="font-semibold text-brand-ink">part of how Makan works</strong>, so there is no setting to switch it off; we rely on contract for it (section 4.1). Earlier versions of the App had a &ldquo;Share my taste&rdquo; setting. It has been removed, and if you had it switched off the App tells you once. Answers you gave while it was off have never counted toward public rankings, but your order kept updating, so the taste match with friends uses it.</li>
-                  <li>You can ask for a copy of it (section 11), and it is <strong className="font-semibold text-brand-ink">deleted when you delete your account.</strong></li>
+                  <li>It is <strong>part of how Makan works</strong>, so there is no setting to switch it off; we rely on contract for it (section 4.1). Earlier versions of the App had a &ldquo;Share my taste&rdquo; setting. It has been removed, and if you had it switched off the App tells you once. Answers you gave while it was off have never counted toward public rankings, but your order kept updating, so the taste match with friends uses it.</li>
+                  <li>You can ask for a copy of it (section 11), and it is <strong>deleted when you delete your account.</strong></li>
                 </ul>
               </div>
             </div>
@@ -190,11 +213,11 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
 
           {/* 3 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">3. How We Use Personal Data</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-3">3. How We Use Personal Data</h2>
+            <div>
               <p>We use personal data to:</p>
-              <ul className="list-disc pl-5 space-y-1">
-                <li><strong className="font-semibold text-brand-ink">Help you decide what to eat</strong> — by remembering the meals you have saved, keeping the comparisons you have answered, and building the picture of your taste described in section 2.7</li>
+              <ul>
+                <li><strong>Help you decide what to eat</strong> — by remembering the meals you have saved, keeping the comparisons you have answered, and building the picture of your taste described in section 2.7</li>
                 <li>Show you and your friends how your tastes match, as described in section 2.7</li>
                 <li>Create and manage user accounts</li>
                 <li>Provide core App functionality, including saving meals and displaying feeds according to the audience you chose</li>
@@ -212,7 +235,7 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                 advertising.
               </p>
               <p>
-                <strong className="font-semibold text-brand-ink">Dish recognition — a feature we are building.</strong>{' '}
+                <strong>Dish recognition — a feature we are building.</strong>{' '}
                 The hardest version of the question Makan exists to answer is a menu in a restaurant
                 you have never visited. To help there, we are building a feature that recognises when
                 two of your own meals are the same dish — so the App can tell you that you have eaten
@@ -220,21 +243,21 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                 chose to return to.
               </p>
               <p>
-                <strong className="font-semibold text-brand-ink">It is not available yet, and nothing analyses your photographs today.</strong>{' '}
+                <strong>It is not available yet, and nothing analyses your photographs today.</strong>{' '}
                 We will describe the feature in this Policy, and name the service provider involved,
                 before it starts. Photographs you uploaded before it existed will never be analysed
                 unless you separately opt them in — doing nothing means they are never touched. That
                 was our promise when you saved them, and it does not change.
               </p>
               <p>
-                <strong className="font-semibold text-brand-ink">When it arrives, it will be part of how the App works.</strong>{' '}
+                <strong>When it arrives, it will be part of how the App works.</strong>{' '}
                 Recognising your own dishes is not an extra we add on the side; it is how Makan answers
                 the question you opened it to ask. So we will not ask you to switch it on, and there
                 will not be a setting to switch it off. For this we rely on legitimate interests rather
                 than your consent, and we explain that choice in section 4.2.
               </p>
               <p>
-                <strong className="font-semibold text-brand-ink">You can still tell us to stop.</strong>{' '}
+                <strong>You can still tell us to stop.</strong>{' '}
                 You have a right to object to processing we base on legitimate interests. If you would
                 rather we did not do this with your photographs, write to us at
                 support@makanofficial.com and we will stop for your account. Your guidance will then
@@ -253,28 +276,28 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
 
           {/* 4 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">4. Lawful Bases for Processing</h2>
-            <div className="mt-4 space-y-4">
+            <h2 id="legal-section-4">4. Lawful Bases for Processing</h2>
+            <div>
               <p>
                 Under UK GDPR, we rely on the following lawful bases. In short:{' '}
-                <strong className="font-semibold text-brand-ink">contract</strong> covers your account,
+                <strong>contract</strong> covers your account,
                 the core features and the picture of your taste and the taste match built from it;{' '}
-                <strong className="font-semibold text-brand-ink">legitimate
+                <strong>legitimate
                 interests</strong> covers dish recognition, usage
                 measurement, security, fault-fixing, improving the Services, and featuring meals you
                 have made public in our marketing; and{' '}
-                <strong className="font-semibold text-brand-ink">consent</strong> covers enquiries
+                <strong>consent</strong> covers enquiries
                 and any analysis of photographs you saved before dish recognition existed.
               </p>
               <div>
-                <h3 className="font-medium text-brand-ink">4.1 Contract</h3>
-                <p className="mt-2">
+                <h3>4.1 Contract</h3>
+                <p>
                   Processing is necessary to provide the App and its core features once you create an
                   account — account management, saving and displaying meals according to your chosen
                   audience, the friend graph, and syncing across your devices.
                 </p>
-                <p className="mt-2">
-                  <strong className="font-semibold text-brand-ink">The picture of your taste and the taste match (section 2.7).</strong>{' '}
+                <p>
+                  <strong>The picture of your taste and the taste match (section 2.7).</strong>{' '}
                   Makan exists to help you decide what to order, and this picture is the means by which
                   it does so. Your suggestions, the taste match with your friends and the combined
                   rankings are the service you asked us for, so we process the data behind them to
@@ -285,9 +308,9 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                 </p>
               </div>
               <div>
-                <h3 className="font-medium text-brand-ink">4.2 Legitimate interests</h3>
-                <p className="mt-2">
-                  <strong className="font-semibold text-brand-ink">Dish recognition (section 3).</strong>{' '}
+                <h3>4.2 Legitimate interests</h3>
+                <p>
+                  <strong>Dish recognition (section 3).</strong>{' '}
                   We rely on legitimate interests here for the same reason. Makan is the app you open
                   when you do not know what to order, and knowing that two of your photographs are the
                   same dish is what makes an answer possible — so the feature is the service, not an
@@ -301,8 +324,8 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                   you can object at any time using the contact details above, after which we stop for
                   your account.
                 </p>
-                <p className="mt-2">
-                  <strong className="font-semibold text-brand-ink">Featuring public meals in our marketing (section 5).</strong>{' '}
+                <p>
+                  <strong>Featuring public meals in our marketing (section 5).</strong>{' '}
                   We rely on legitimate interests to feature meals you have set to a public audience,
                   including the photo, your caption and your username or display name, in our own
                   promotional materials and on our own channels, such as Instagram and TikTok. You
@@ -312,8 +335,8 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                   to remove something we have featured, at any time using the contact details above,
                   and we will.
                 </p>
-                <p className="mt-2">
-                  <strong className="font-semibold text-brand-ink">Operating and improving the Services.</strong>{' '}
+                <p>
+                  <strong>Operating and improving the Services.</strong>{' '}
                   We also rely on legitimate interests for internal operations: measuring how the App
                   is used, security, abuse prevention, crash and fault diagnosis, and improving
                   reliability and design. We balance these against your rights and expectations, we do
@@ -321,13 +344,13 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                 </p>
               </div>
               <div>
-                <h3 className="font-medium text-brand-ink">4.3 Consent</h3>
-                <p className="mt-2">
+                <h3>4.3 Consent</h3>
+                <p>
                   We rely on your consent when you submit an enquiry through the Site, and before we
                   analyse any photograph you saved before dish recognition existed (section 3). We do not rely on consent for dish recognition
                   itself; that is explained in section 4.2.
                 </p>
-                <p className="mt-2">
+                <p>
                   You can withdraw consent at any time by contacting us or unsubscribing. Withdrawing
                   your consent does not affect the lawfulness of any processing we carried out before
                   you withdrew it.
@@ -338,15 +361,15 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
 
           {/* 5 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">5. Sharing and Visibility Controls</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-5">5. Sharing and Visibility Controls</h2>
+            <div>
               <p>
                 Each meal you save has one of two audiences. What other people can see depends on
                 which you choose.
               </p>
-              <ul className="list-disc pl-5 space-y-1">
-                <li><strong className="font-semibold text-brand-ink">Public</strong> — visible to other users, and it may appear in discovery features within the App</li>
-                <li><strong className="font-semibold text-brand-ink">Friends only</strong> — visible to your mutual friends</li>
+              <ul>
+                <li><strong>Public</strong> — visible to other users, and it may appear in discovery features within the App</li>
+                <li><strong>Friends only</strong> — visible to your mutual friends</li>
               </ul>
               <p>Your first shared meal is always friends-only. After that you choose for each meal.</p>
               <p>
@@ -364,15 +387,15 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                 caches or system backups for limited periods, as described in the retention section.
               </p>
 
-              <div className="pt-2">
-                <h3 className="font-medium text-brand-ink">Featuring your public content in our marketing</h3>
-                <p className="mt-2">
+              <div>
+                <h3>Featuring your public content in our marketing</h3>
+                <p>
                   Where you post content to a public audience, we may feature it in our own
                   promotional materials and on our own channels, including third-party platforms such
                   as Instagram and TikTok — for example, a curated &ldquo;Makan of the Week&rdquo;.
                   This may include your meal photo, your caption, and your username or display name.
                 </p>
-                <ul className="mt-2 list-disc pl-5 space-y-1">
+                <ul>
                   <li>Only public content. We never use content you have set to friends-only.</li>
                   <li>Lawful basis. We rely on our legitimate interests in promoting Makan, balanced against your rights (section 4.2). We do not ask before each feature; you can object, or ask us to remove featured content, at any time.</li>
                   <li>Other people in your photos. Before we feature anything externally we look at it first, and we do not publish photographs in which other people are clearly identifiable. If you appear in content we have featured and you did not agree to it, contact us and we will remove it from the channels we control.</li>
@@ -380,7 +403,7 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                   <li>
                     Your controls. You can decline, ask us to remove featured content from channels we
                     control, or object, by contacting{' '}
-                    <a href="mailto:support@makanofficial.com" className="text-brand-orange hover:underline">
+                    <a href="mailto:support@makanofficial.com">
                       support@makanofficial.com
                     </a>
                     . Content already shared onward by others may remain outside our control.
@@ -393,8 +416,8 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
 
           {/* 6 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">6. Service Providers and Other Recipients</h2>
-            <div className="mt-4 space-y-4">
+            <h2 id="legal-section-6">6. Service Providers and Other Recipients</h2>
+            <div>
               <p>
                 We use the following providers to operate the Services. Where they process personal
                 data on our behalf, they do so under contractual terms requiring appropriate security
@@ -403,8 +426,8 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                 are listed here too, so the picture is complete.
               </p>
               <div>
-                <h3 className="font-medium text-brand-ink">Providers that process data on our behalf</h3>
-                <ul className="mt-2 list-disc pl-5 space-y-1">
+                <h3>Providers that process data on our behalf</h3>
+                <ul>
                   <li>Google LLC (Firebase) — the App&apos;s backend. We use Firebase Authentication, Cloud Firestore, Cloud Storage, Cloud Functions, and Firebase Analytics to store and synchronise account and meal data, operate core features, and understand usage.</li>
                   <li>Functional Software, Inc. (Sentry) — crash and error reporting for the App. Receives diagnostic data about faults, including a user identifier and the sequence of actions before a crash, so we can find and fix them.</li>
                   <li>Vercel Inc. — hosting for the Site, and Vercel Web Analytics, which measures aggregate Site usage.</li>
@@ -414,8 +437,8 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                 </ul>
               </div>
               <div>
-                <h3 className="font-medium text-brand-ink">Services your device contacts directly</h3>
-                <ul className="mt-2 list-disc pl-5 space-y-1">
+                <h3>Services your device contacts directly</h3>
+                <ul>
                   <li>Google LLC (Places and Maps) — restaurant search and nearby places. When you search for a restaurant or ask the App for places near you, your search text and your approximate location are sent to Google.</li>
                   <li>KLIPY — the GIF picker in comments. When you type in the GIF search box, what you type is sent to Klipy, and because the request comes from your phone, Klipy also sees your IP address. Klipy does not receive your Makan account identifier or any device identifier. Klipy also sees the IP address of anyone whose device loads a GIF in a comment.</li>
                   <li>Unsplash — supplies the photographs used in our own editorial collections inside the App. Your device loads those images directly from Unsplash, so Unsplash sees your IP address. Nothing about you or your meals is sent.</li>
@@ -433,10 +456,10 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
 
           {/* 7 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">7. Cookies and Similar Technologies</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-7">7. Cookies and Similar Technologies</h2>
+            <div>
               <p>
-                <strong className="font-semibold text-brand-ink">The Site.</strong> The Site uses
+                <strong>The Site.</strong> The Site uses
                 Vercel Web Analytics, which is privacy-friendly and cookieless: it identifies visits
                 using a hash that resets daily and cannot track you across days or across other
                 websites. Vercel Web Analytics does not use cookies and collects no personal
@@ -444,12 +467,12 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                 page does not send your details to a font provider.
               </p>
               <p>
-                <strong className="font-semibold text-brand-ink">App usage analytics.</strong>{' '}
+                <strong>App usage analytics.</strong>{' '}
                 We use Firebase Analytics by Google to understand how the App&apos;s screens and
                 features are used so we can improve them. It uses an app-instance identifier. Usage
                 analytics is on by default on this device once you are signed in and your saved
                 preference has been checked. You can turn it off under Settings › Privacy ›{' '}
-                <strong className="font-semibold text-brand-ink">App usage analytics</strong>.
+                <strong>App usage analytics</strong>.
                 The switch stops future usage measurement on this device. Your choice is kept when
                 you sign out or delete your account; set it separately on other devices. Existing
                 opt-outs stay off. Turning off collection does not itself erase data already collected.
@@ -463,7 +486,7 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                 improve the App, not for its own separate purposes.
               </p>
               <p>
-                <strong className="font-semibold text-brand-ink">Crash and performance diagnostics.</strong>{' '}
+                <strong>Crash and performance diagnostics.</strong>{' '}
                 We use Sentry to identify crashes and performance faults. Reports can include your
                 account identifier while signed in, app and device information, and diagnostic
                 context. The App usage analytics switch controls Firebase Analytics; it does not
@@ -473,7 +496,7 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
               <p>
                 We rely on legitimate interests for these purposes as described in section 4.2.
                 To object to processing based on legitimate interests, contact{' '}
-                <a href="mailto:support@makanofficial.com" className="text-brand-orange hover:underline">
+                <a href="mailto:support@makanofficial.com">
                   support@makanofficial.com
                 </a>.
                 We will assess the affected processing, explain the action taken and confirm its
@@ -485,8 +508,8 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
 
           {/* 8 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">8. International Data Transfers</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-8">8. International Data Transfers</h2>
+            <div>
               <p>
                 Some of the services listed in section 6 — including Google, Sentry, Vercel, Resend,
                 Apple, Klipy, and Unsplash — receive or process personal data outside the United
@@ -504,7 +527,7 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                 under Indonesia&apos;s Personal Data Protection Law (UU PDP No. 27/2022). We are
                 extending this Policy and our practices to meet those requirements. For questions
                 about your data as a user in Indonesia, contact{' '}
-                <a href="mailto:support@makanofficial.com" className="text-brand-orange hover:underline">
+                <a href="mailto:support@makanofficial.com">
                   support@makanofficial.com
                 </a>
                 .
@@ -514,8 +537,8 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
 
           {/* 9 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">9. Security</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-9">9. Security</h2>
+            <div>
               <p>
                 We apply technical and organisational measures designed to protect personal data,
                 including encryption in transit, access controls, and server-side security rules.
@@ -531,21 +554,21 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
 
           {/* 10 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">10. Data Retention</h2>
-            <div className="mt-4 space-y-4">
+            <h2 id="legal-section-10">10. Data Retention</h2>
+            <div>
               <p>
                 We retain personal data only for as long as necessary for the purposes described in
                 this Privacy Policy.
               </p>
               <div>
-                <h3 className="font-medium text-brand-ink">10.1 Active accounts</h3>
-                <p className="mt-2">
+                <h3>10.1 Active accounts</h3>
+                <p>
                   Account data and meal content are retained while an account remains active.
                 </p>
               </div>
               <div>
-                <h3 className="font-medium text-brand-ink">10.2 Deleted accounts</h3>
-                <p className="mt-2">
+                <h3>10.2 Deleted accounts</h3>
+                <p>
                   When an account is deleted, personal data is deleted or anonymised within 30 days,
                   unless a longer retention period is required by law or necessary for security
                   purposes such as preventing abuse. We keep a permanent record that an account was
@@ -554,15 +577,15 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                 </p>
               </div>
               <div>
-                <h3 className="font-medium text-brand-ink">10.3 Enquiry data</h3>
-                <p className="mt-2">
+                <h3>10.3 Enquiry data</h3>
+                <p>
                   Enquiry data is retained until you ask us to remove it, or until it is no longer
                   needed for the purpose it was submitted for.
                 </p>
               </div>
               <div>
-                <h3 className="font-medium text-brand-ink">10.4 Backups and security logs</h3>
-                <ul className="mt-2 list-disc pl-5 space-y-1">
+                <h3>10.4 Backups and security logs</h3>
+                <ul>
                   <li>Backups retain data for a limited period as part of system resilience and recovery</li>
                   <li>Security and abuse-prevention logs are retained for a limited period appropriate to detecting and investigating abuse</li>
                 </ul>
@@ -572,10 +595,10 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
 
           {/* 11 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">11. Your Rights</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-11">11. Your Rights</h2>
+            <div>
               <p>Under UK GDPR, you have the right to:</p>
-              <ul className="list-disc pl-5 space-y-1">
+              <ul>
                 <li>Access your personal data</li>
                 <li>Request correction of inaccurate data</li>
                 <li>Request deletion of personal data</li>
@@ -594,7 +617,7 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
               <p>
                 You can delete your account at any time from within the App, which begins the deletion
                 process described above. To exercise any other right, contact us at{' '}
-                <a href="mailto:support@makanofficial.com" className="text-brand-orange hover:underline">
+                <a href="mailto:support@makanofficial.com">
                   support@makanofficial.com
                 </a>
                 . We may request information to verify your identity, and we handle requests within
@@ -609,17 +632,17 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
 
           {/* 12 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">12. Children</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-12">12. Children</h2>
+            <div>
               <p>You must be at least 13 to create an account.</p>
               <p>
                 The App does not verify age. Because a service like ours may be used by children and
                 we cannot reliably tell which of our users are children, we apply the protections
                 expected by the UK Age Appropriate Design Code (the Children&apos;s Code) to{' '}
-                <strong className="font-semibold text-brand-ink">every</strong> user, not only to
+                <strong>every</strong> user, not only to
                 those we believe to be young. In practice this means:
               </p>
-              <ul className="list-disc pl-5 space-y-1">
+              <ul>
                 <li>Your first shared meal is always friends-only; after that, you choose friends-only or public for each meal</li>
                 <li>Location access is off by default and only used, with permission, at the moment you use a location feature</li>
                 <li>We collect the minimum data needed, and we never use your data for targeted advertising</li>
@@ -637,8 +660,8 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
 
           {/* 13 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">13. Automated Decision-Making and Profiling</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-13">13. Automated Decision-Making and Profiling</h2>
+            <div>
               <p>
                 We do not use automated decision-making or profiling that produces legal effects or
                 similarly significant effects for you.
@@ -672,8 +695,8 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
 
           {/* 14 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">14. Changes to This Policy</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-14">14. Changes to This Policy</h2>
+            <div>
               <p>We may update this Privacy Policy from time to time.</p>
               <p>
                 The updated version will be published with a revised &ldquo;Last updated&rdquo; date.
@@ -706,12 +729,14 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
           </section>
 
           {/* Back to home */}
-          <div className="pt-4 border-t border-brand-line">
-            <Link href="/" className="text-sm text-brand-orange hover:underline">
+          <div>
+            <Link href="/">
               &larr; Back to home
             </Link>
           </div>
 
+
+          </article>
         </div>
       </main>
       <Footer />

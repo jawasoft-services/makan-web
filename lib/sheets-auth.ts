@@ -1,3 +1,4 @@
+import { WEBSITE_FIXTURES } from '@/lib/website-fixtures'
 import 'server-only'
 import { google } from 'googleapis'
 import { federatedCredentials } from './gcp-federation'
@@ -50,6 +51,7 @@ let fallbackWarned = false
  *      commit for cleanliness.
  */
 export function getSheetsAuth() {
+  if (WEBSITE_FIXTURES) throw new Error("Sheets is disabled in website fixtures.")
   // RM20289: on Vercel, the deployment's OIDC token instead of a stored key.
   const credentials = federatedCredentials(process.env.GCP_SHEETS_SERVICE_ACCOUNT_EMAIL)
   if (credentials) {

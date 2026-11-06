@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="food-illustration crown-illustration" viewBox="0 0 160 120" aria-hidden="true" focusable="false">
+<g stroke-linecap="round" stroke-linejoin="round">
+<path d="M22 35L50 53L78 15L105 51L138 31L124 94Q81 112 35 96Z" fill="#fffaf3" stroke="#fffaf3" stroke-width="14"/>
+<path d="M22 35L50 53L78 15L105 51L138 31L124 94Q81 112 35 96Z" fill="#ffc768" stroke="#604128" stroke-width="3.5"/>
+<path d="M78 15L86 79L107 86L138 31L105 51Z" fill="#ed9534"/>
+<path d="M25 43L39 84L54 83L50 53Z" fill="#ffe3a1"/>
+<path d="M35 80Q79 94 128 77L124 96Q80 113 38 97Z" fill="#ec8b32" stroke="#604128" stroke-width="3"/>
+<path d="M42 87Q80 99 120 85" fill="none" stroke="#ffd78a" stroke-width="3"/>
+<path d="M77 48L86 62L78 76L68 63Z" fill="#fff1c8" stroke="#a9692e" stroke-width="2.5"/>
+<path d="M77 48L78 76L68 63Z" fill="#fffaf0"/>
+</g></svg>

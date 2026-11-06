@@ -1,3 +1,4 @@
+import { WEBSITE_FIXTURES, fixturePlaceStats, fixturePublicMeals } from '@/lib/website-fixtures'
 import 'server-only'
 import { unstable_cache } from 'next/cache'
 import { getDb } from '@/lib/firebase-admin'
@@ -24,6 +25,7 @@ export const FALLBACK_MEAL_COUNT = 581
  * cannot break on this path.
  */
 export async function getMealCount(): Promise<number> {
+  if (WEBSITE_FIXTURES) return fixturePlaceStats().mealCount
   try {
     const db = getDb()
     if (!db) return FALLBACK_MEAL_COUNT
@@ -63,6 +65,7 @@ export type { PlaceStats } from '@/lib/aggregates/types'
  */
 export const getPlaceStats = unstable_cache(
   async (): Promise<PlaceStats> => {
+    if (WEBSITE_FIXTURES) return fixturePlaceStats()
     const db = getDb()
     if (!db) return FALLBACK_PLACE_STATS
     try {
@@ -142,6 +145,7 @@ const HANDLE_FILTER_SLACK = 12
 export async function getRecentPublicMeals(
   limit = HOME_MEAL_STRIP_TARGET,
 ): Promise<PublicMeal[]> {
+  if (WEBSITE_FIXTURES) return fixturePublicMeals().slice(0, limit)
   try {
     const db = getDb()
     if (!db) return []

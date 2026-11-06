@@ -1,3 +1,4 @@
+import { WEBSITE_FIXTURES, FIXTURE_STATE, fixtureTableInvite } from '@/lib/website-fixtures'
 import crypto from "node:crypto"
 import { NextResponse } from "next/server"
 import { getDb } from "@/lib/firebase-admin"
@@ -70,12 +71,19 @@ export async function POST(request: Request) {
   }
 
   try {
-    const db = getDb()
-    if (!db) return json({ error: "Invite preview is unavailable." }, 503)
-
-    const snap = await db.doc(`tableInvites/${body.publicId}`).get()
-    if (!snap.exists) return invalidPreview()
-    const data = snap.data() as Record<string, unknown>
+    let data: Record<string, unknown>
+    if (WEBSITE_FIXTURES) {
+      if (FIXTURE_STATE === "unavailable") return json({ error: "Invite preview is unavailable." }, 503)
+      const fixture = fixtureTableInvite(body.publicId)
+      if (!fixture) return invalidPreview()
+      data = fixture
+    } else {
+      const db = getDb()
+      if (!db) return json({ error: "Invite preview is unavailable." }, 503)
+      const snap = await db.doc(`tableInvites/${body.publicId}`).get()
+      if (!snap.exists) return invalidPreview()
+      data = snap.data() as Record<string, unknown>
+    }
     if (!secretMatches(data.tokenHash, body.secret)) return invalidPreview()
 
     const expiresAt = data.expiresAt as { toDate?: () => Date } | undefined

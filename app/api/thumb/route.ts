@@ -1,3 +1,4 @@
+import { WEBSITE_FIXTURES } from '@/lib/website-fixtures'
 import { NextResponse } from 'next/server'
 import { rateLimited } from '@/lib/rate-limit'
 import { THUMB_WIDTHS, thumbSource } from '@/lib/thumb'
@@ -26,6 +27,7 @@ export async function GET(request: Request) {
   if (!u || !THUMB_WIDTHS.includes(w as (typeof THUMB_WIDTHS)[number])) {
     return NextResponse.json({ error: 'Bad request.' }, { status: 400 })
   }
+  if (WEBSITE_FIXTURES) return NextResponse.json({ error: "Remote thumbnails are disabled in website fixtures." }, { status: 503 })
   if (rateLimited(request, 'thumb', LIMIT)) return NextResponse.redirect(u, 302)
   try {
     const upstream = await fetch(u, { cache: 'force-cache' })

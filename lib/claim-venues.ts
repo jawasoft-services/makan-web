@@ -1,3 +1,4 @@
+import { WEBSITE_FIXTURES, fixturePlaceIndex } from '@/lib/website-fixtures'
 import 'server-only'
 import { unstable_cache } from 'next/cache'
 import { getDb } from '@/lib/firebase-admin'
@@ -17,6 +18,7 @@ const text = (value: unknown) => (typeof value === 'string' ? value.trim() : '')
 
 export const getClaimSearchEntries = unstable_cache(
   async (): Promise<ClaimSearchEntry[]> => {
+    if (WEBSITE_FIXTURES) return fixturePlaceIndex().map(place => ({ placeId: place.placeId, name: place.name, area: place.city ?? "", path: `/claim/${place.slug}` }))
     const db = getDb()
     const [index, links] = await Promise.all([
       getPlaceIndex(),

@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "npm run images:static && next build",
     "start": "next start",
-    "test": "node --test scripts/*.test.mjs",
+    "test": "node --test scripts/*.test.mjs lib/*.test.mjs lib/aggregates/*.test.mjs components/*/*.test.mjs",
     "lint": "eslint && npm run check:founder-decisions && npm run check:i18n && npm run check:contrast && npm run check:photo-credits",
     "check:founder-decisions": "node scripts/check-founder-decisions.mjs",
     "check:i18n": "node scripts/check-i18n.mjs",
@@ -17,7 +17,13 @@
     "images:static": "node scripts/generate-static-images.mjs",
     "venue-qr": "node scripts/generate-venue-qr.mjs",
     "app-qr": "node scripts/generate-app-qr.mjs",
-    "monitor:cost": "node scripts/cost-monitor.mjs"
+    "monitor:cost": "node scripts/cost-monitor.mjs",
+    "prebuild": "node scripts/venue-check.mjs",
+    "venue:add": "node scripts/venue-add.mjs",
+    "venue:check": "node scripts/venue-check.mjs",
+    "venue:verify": "node scripts/verify-venue-qr.mjs",
+    "venue:relabel": "node scripts/venue-relabel.mjs",
+    "venue:set-place-id": "node scripts/venue-set-place-id.mjs"
   },
   "dependencies": {
     "@types/leaflet": "^1.9.22",

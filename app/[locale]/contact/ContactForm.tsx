@@ -1,255 +1,109 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import Link from 'next/link'
 import Image from 'next/image'
-import { motion, AnimatePresence } from 'framer-motion'
 import { localizePath } from '@/i18n/paths'
 import Turnstile, { TURNSTILE_SITE_KEY, resetTurnstile } from '@/components/Turnstile'
+import styles from '@/components/utility.module.css'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export default function ContactForm() {
   const t = useTranslations('Contact')
+  const support = useTranslations('Support')
   const locale = useLocale()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const [invalidField, setInvalidField] = useState<'name' | 'email' | null>(null)
   const [turnstileToken, setTurnstileToken] = useState('')
+  const nameRef = useRef<HTMLInputElement>(null)
+  const emailRef = useRef<HTMLInputElement>(null)
+  const feedbackRef = useRef<HTMLDivElement>(null)
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+  useEffect(() => {
+    if (status === 'success') feedbackRef.current?.focus()
+    else if (errorMsg) {
+      if (invalidField === 'name') nameRef.current?.focus()
+      else if (invalidField === 'email') emailRef.current?.focus()
+      else feedbackRef.current?.focus()
+    }
+  }, [status, errorMsg, invalidField])
+
+  function clearError() {
     setErrorMsg('')
+    setInvalidField(null)
+    if (status === 'error') setStatus('idle')
+  }
 
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    if (status === 'loading') return
+    setErrorMsg('')
+    setInvalidField(null)
     if (!name.trim()) {
-      setErrorMsg(t('nameError'))
-      return
+      setInvalidField('name'); setErrorMsg(t('nameError')); return
     }
     if (!EMAIL_RE.test(email.trim())) {
-      setErrorMsg(t('emailError'))
-      return
+      setInvalidField('email'); setErrorMsg(t('emailError')); return
     }
-    // Turnstile mints the token a moment after load; a submit before then
-    // only asks for another go rather than sending an unverifiable request.
     if (TURNSTILE_SITE_KEY && !turnstileToken) {
-      setErrorMsg(t('tryAgain'))
-      return
+      setErrorMsg(t('tryAgain')); return
     }
-
     setStatus('loading')
-
-    // Honeypot: read the hidden 'website' field — bots auto-fill it.
-    const honeypot = String(
-      new FormData(e.currentTarget as HTMLFormElement).get('website') ?? '',
-    )
-
+    const honeypot = String(new FormData(e.currentTarget).get('website') ?? '')
     try {
       const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: name.trim(),
-          email: email.trim(),
-          website: honeypot,
-          turnstileToken,
-        }),
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name.trim(), email: email.trim(), website: honeypot, turnstileToken }),
       })
-
       if (!res.ok) {
         const data = await res.json()
         throw new Error(data.error || t('genericError'))
       }
-
       setStatus('success')
     } catch (err) {
       setStatus('error')
-      setErrorMsg(
-        err instanceof Error ? err.message : t('tryAgain'),
-      )
-      // Tokens are single-use: the next attempt needs a fresh one.
+      setErrorMsg(err instanceof Error ? err.message : t('tryAgain'))
+      // Failed requests keep their input; single-use bot tokens must be renewed.
       setTurnstileToken('')
       resetTurnstile()
     }
   }
 
-  return (
-    <div className="w-full max-w-sm">
-      <AnimatePresence mode="wait">
-        {status === 'success' ? (
-          <motion.div
-            key="success"
-            className="text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-orange/15">
-              <svg className="h-7 w-7 text-brand-orange" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            </div>
-            <h1 className="mt-5 text-2xl font-bold text-brand-ink sm:text-3xl">
-              {t('successTitle')}
-            </h1>
-            <p className="mt-3 text-sm leading-relaxed text-brand-muted sm:text-base">
-              {t('successBody')}
-            </p>
-            <Link
-              href={localizePath(locale, '/')}
-              className="mt-8 inline-block text-sm font-medium text-brand-orange hover:underline"
-            >
-              &larr; {t('back')}
-            </Link>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="form"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-          >
-            {/* Logo + heading */}
-            <div className="text-center">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Image
-                  src="/makan-logo.png"
-                  alt="makan"
-                  width={600}
-                  height={120}
-                  className="mx-auto h-auto w-[140px] sm:w-[160px]"
-                  priority
-                />
-              </motion.div>
-
-              <motion.h1
-                className="mt-6 text-xl font-bold text-brand-ink sm:text-2xl"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-              >
-                {t('title')}
-              </motion.h1>
-
-              <motion.p
-                className="mt-2 text-sm leading-relaxed text-brand-muted"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                {t('body')}
-              </motion.p>
-            </div>
-
-            {/* Form */}
-            <motion.form
-              onSubmit={handleSubmit}
-              className="mt-8 space-y-3"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <div>
-                <label htmlFor="name" className="block text-xs font-medium text-brand-muted mb-1.5 ml-1">
-                  {t('name')}
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  placeholder={t('namePlaceholder')}
-                  value={name}
-                  onChange={(e) => {
-                    setName(e.target.value)
-                    if (errorMsg) setErrorMsg('')
-                  }}
-                  className="w-full rounded-xl border border-brand-line bg-brand-card px-4 py-3 text-sm text-brand-ink placeholder:text-brand-muted outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-card"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="email" className="block text-xs font-medium text-brand-muted mb-1.5 ml-1">
-                  {t('email')}
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value)
-                    if (errorMsg) setErrorMsg('')
-                  }}
-                  className="w-full rounded-xl border border-brand-line bg-brand-card px-4 py-3 text-sm text-brand-ink placeholder:text-brand-muted outline-none transition-colors focus:border-brand-orange/60 focus:bg-brand-card"
-                />
-              </div>
-
-              {/* Honeypot — hidden from real users; naive bots auto-fill it. */}
-              <input
-                type="text"
-                name="website"
-                tabIndex={-1}
-                autoComplete="off"
-                aria-hidden="true"
-                style={{ position: 'absolute', left: '-9999px', width: 0, height: 0, opacity: 0 }}
-              />
-
-              <Turnstile onToken={setTurnstileToken} />
-
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={status === 'loading'}
-                  className="w-full rounded-xl bg-brand-orange py-3 text-sm font-semibold text-white transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  {status === 'loading' ? (
-                    <span className="inline-flex items-center gap-2">
-                      <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                      </svg>
-                      {t('sending')}
-                    </span>
-                  ) : (
-                    t('send')
-                  )}
-                </button>
-              </div>
-
-              <AnimatePresence>
-                {errorMsg && (
-                  <motion.p
-                    className="text-center text-xs text-red-400"
-                    initial={{ opacity: 0, y: -4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -4 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    {errorMsg}
-                  </motion.p>
-                )}
-              </AnimatePresence>
-            </motion.form>
-
-            <p className="mt-6 text-center text-[11px] text-brand-muted">
-              {t('agreement')}{' '}
-              <Link href="/tos" className="underline hover:text-brand-muted">
-                {t('terms')}
-              </Link>{' '}
-              {t('and')}{' '}
-              <Link href={localizePath(locale, '/privacy-policy')} className="underline hover:text-brand-muted">
-                {t('privacy')}
-              </Link>
-              .
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+  return <div className={styles.contactLayout}>
+    <div>
+      <header className={styles.heading}><Image className="brand-wordmark" src="/redesign/logo-orange.svg" alt="Makan" width={132} height={31} /><h1>{t('title')}</h1><p className={styles.intro}>{t('body')}</p></header>
+      <Image className={styles.contactArt} src="/redesign/food-plate.svg" width={170} height={155} alt="" aria-hidden />
+      <div className={styles.contactHelp}><h2>{support('title')}</h2><Link href={localizePath(locale, '/support')}>{support('eyebrow')} <span aria-hidden>↗</span></Link></div>
     </div>
-  )
+    <div className={styles.formWrap}>
+      {status === 'success' ? <div className={styles.success} ref={feedbackRef} tabIndex={-1} role="status">
+        <svg viewBox="0 0 24 24" aria-hidden><path d="m5 12 4 4 10-10" /></svg>
+        <h2>{t('successTitle')}</h2><p>{t('successBody')}</p><Link href={localizePath(locale, '/')}>{t('back')} <span aria-hidden>↗</span></Link>
+      </div> : <>
+        {/* JSON submission requires the handler; a native fallback must not put personal fields in a URL. */}
+        <form onSubmit={handleSubmit} method="dialog" noValidate aria-busy={status === 'loading'}>
+          <div className={styles.field}><label htmlFor="contact-name">{t('name')}</label>
+            <input ref={nameRef} id="contact-name" name="name" type="text" autoComplete="name" required maxLength={100} value={name}
+              onChange={e => { setName(e.target.value); clearError() }}
+              aria-invalid={invalidField === 'name' || undefined} aria-describedby={invalidField === 'name' ? 'contact-feedback' : undefined} />
+          </div>
+          <div className={styles.field}><label htmlFor="contact-email">{t('email')}</label>
+            <input ref={emailRef} id="contact-email" name="email" type="email" autoComplete="email" required maxLength={254} value={email}
+              onChange={e => { setEmail(e.target.value); clearError() }}
+              aria-invalid={invalidField === 'email' || undefined} aria-describedby={invalidField === 'email' ? 'contact-feedback' : undefined} />
+          </div>
+          <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className={styles.honeypot} />
+          <Turnstile onToken={setTurnstileToken} />
+          <button type="submit" disabled={status === 'loading'} className={`${styles.primary} ${styles.submit}`}>{status === 'loading' ? t('sending') : t('send')}</button>
+          {errorMsg ? <div id="contact-feedback" ref={feedbackRef} tabIndex={-1} role="alert" className={styles.formError}>{errorMsg}</div> : null}
+        </form>
+        <p className={styles.formLegal}>{t('agreement')} <Link href="/tos">{t('terms')}</Link> {t('and')} <Link href={localizePath(locale, '/privacy-policy')}>{t('privacy')}</Link>.</p>
+      </>}
+    </div>
+  </div>
 }

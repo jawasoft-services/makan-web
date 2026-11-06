@@ -47,6 +47,9 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  env: { NEXT_PUBLIC_MAKAN_WEBSITE_FIXTURES: process.env.MAKAN_WEBSITE_FIXTURES === "1" ? "1" : "0" },
+  // Fixture caches and HTML must never become production output.
+  distDir: process.env.MAKAN_WEBSITE_FIXTURES === "1" ? ".next-fixtures" : ".next",
   // This repository lives below a user-level lockfile; pin tracing to the
   // actual app so Next does not infer the home directory as the build root.
   outputFileTracingRoot: process.cwd(),

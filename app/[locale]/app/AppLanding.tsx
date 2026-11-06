@@ -1,73 +1,58 @@
 "use client"
 
 import StoreLink from "@/components/home/StoreLink"
-
 import Image from "next/image"
+import Link from "next/link"
 import { useEffect } from "react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { APP_STORE_URL } from "@/lib/links"
+import { localizePath } from "@/i18n/paths"
+import styles from "./AppLanding.module.css"
 
-/* ─────────────────────────────────────────────────────────────────────────
-   Controls where the business-card QR ( makanofficial.com/app ) sends people.
-   Makan is live on the App Store — this hands off to APP_STORE_URL.
-   Change the link in lib/links.ts and redeploy; the printed card never changes.
-   ───────────────────────────────────────────────────────────────────────── */
-
+// Printed business-card QR URLs keep their existing iOS App Store handoff.
 function isIOS(): boolean {
   if (typeof navigator === "undefined") return false
-  return (
-    /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
-  )
+  return /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
 }
 
-export default function AppLanding() {
+export default function AppLanding({ rating }: { rating: { rating: number; count: number } | null }) {
   const t = useTranslations("AppPage")
-  useEffect(() => {
-    // On iOS, hand straight off to the App Store.
-    // Everyone else (and iOS, if the redirect is slow) uses the button below.
-    if (isIOS()) {
-      window.location.href = APP_STORE_URL
-    }
-  }, [])
+  const locale = useLocale()
+  const isId = locale === 'id'
+  useEffect(() => { if (isIOS()) window.location.href = APP_STORE_URL }, [])
 
   return (
-    <main
-      id="main-content"
-      className="flex min-h-screen flex-col items-center justify-center bg-brand-cream px-6 pb-16 pt-28 text-center"
-    >
-      <Image
-        src="/makan-icon.svg"
-        alt=""
-        width={64}
-        height={64}
-        className="mb-7 h-16 w-16"
-        priority
-      />
-      <Image
-        src="/makan-logo-orange.svg"
-        alt="Makan"
-        width={200}
-        height={46}
-        className="mb-9 h-auto w-[190px]"
-        priority
-      />
-
-      <h1 className="mb-3 text-3xl font-extrabold tracking-tight text-brand-ink sm:text-4xl">
-        {t("title")}
-      </h1>
-
-      <p className="mb-9 max-w-sm text-base font-medium leading-relaxed text-brand-muted">
-        {t("body")}
-      </p>
-
-      <StoreLink
-        location="app-page"
-        size="large"
-        className="inline-flex min-h-11 items-center rounded-[10px] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
-      >
-        <Image src="/app-store-badge.svg" alt={t("cta")} width={180} height={60} className="h-[clamp(2rem,10.8vw,2.25rem)] w-auto sm:h-14" />
-      </StoreLink>
+    <main id="main-content" className={styles.page}>
+      <section className={styles.intro}>
+        <div className={styles.copy}>
+          <Image className="brand-wordmark brand-wordmark-mobile-center" src="/redesign/logo-orange.svg" alt="Makan" width={132} height={31} />
+          <h1>{isId ? 'Buat pesanan berikutnya lebih berkesan.' : 'Make the next order a good one.'}</h1>
+          <p className={styles.dek}>{isId ? 'Makanan nyata. Pilihan lebih baik. Diari makananmu sendiri.' : 'Real meals. Better picks. Your own food diary.'}</p>
+          <div className={styles.stores}>
+            <StoreLink location="app-page" size="large" className={styles.storeLink}>
+              <Image src="/app-store-badge.svg" alt={t('cta')} width={180} height={60} />
+            </StoreLink>
+          </div>
+          <a className={styles.qr} href="https://www.makanofficial.com/app">
+            <Image src="/app-download-qr.svg" alt={isId ? 'Kode QR untuk mengunduh Makan' : 'Makan app download QR code'} width={104} height={104} />
+            <span>{isId ? 'Pindai dengan ponselmu' : 'Scan with your phone'}</span>
+          </a>
+          <Link className={styles.support} href={localizePath(locale, '/support')}>{isId ? 'Butuh bantuan?' : 'Need a hand?'}</Link>
+        </div>
+        <div className={styles.phoneScene}>
+          <Image className={styles.phone} src="/redesign/feed-seafood-risotto.webp" alt={isId ? 'Seafood risotto di Kendal Street Kitchen dalam aplikasi Makan' : 'Seafood risotto at Kendal Street Kitchen in Makan'} width={1066} height={2198} preload />
+          <Image className={styles.fork} src="/redesign/food-fork.svg" alt="" width={130} height={210} aria-hidden />
+          <Image className={styles.plate} src="/redesign/food-plate.svg" alt="" width={180} height={180} aria-hidden />
+        </div>
+      </section>
+      {rating ? <aside className={styles.proof} aria-label={isId ? 'Penilaian App Store' : 'App Store rating'}>
+        <a href={APP_STORE_URL.replace('/app/', '/gb/app/')}>
+          <span className={styles.stars} aria-hidden>{'★'.repeat(Math.round(rating.rating))}</span>
+          <strong className="rating-number">{rating.rating.toFixed(1)} <span>/ 5</span></strong>
+          <span>{isId ? `Dari ${rating.count} penilaian di App Store Inggris` : `From ${rating.count} ratings on the UK App Store`}</span>
+          <span aria-hidden>↗</span>
+        </a>
+      </aside> : null}
     </main>
   )
 }

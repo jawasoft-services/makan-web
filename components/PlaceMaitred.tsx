@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server'
 import Image from 'next/image'
+import styles from '@/components/standings/public-pages.module.css'
 import StoreLink from '@/components/home/StoreLink'
 import type { MaitredVenue } from '@/lib/maitred'
 
@@ -18,33 +19,8 @@ import type { MaitredVenue } from '@/lib/maitred'
  * failed read never claims an empty seat.
  */
 
-// The app's crown (components/maitred/MaitredUi.tsx Crown), same viewBox + path.
 function Crown({ hollow = false }: { hollow?: boolean }) {
-  return (
-    <svg width={30} height={30 * 0.78} viewBox="0 0 35 27" aria-hidden className="text-brand-orange">
-      <path
-        d="M4 7 L11 12 L17 3 L23 12 L31 6 L28 21 Q17 24 7 21 Z"
-        fill={hollow ? 'none' : 'currentColor'}
-        stroke="currentColor"
-        strokeWidth={2}
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-// The app's hand-drawn underline (MaitredUi.tsx Squiggle).
-function Squiggle() {
-  return (
-    <svg height={10} width="100%" viewBox="0 0 340 12" preserveAspectRatio="none" aria-hidden className="mt-1 text-brand-orange">
-      <path
-        d="M2 6 Q10 0 18 6 T34 6 T50 6 T66 6 T82 6 T98 6 T114 6 T130 6 T146 6 T162 6 T178 6 T194 6 T210 6 T226 6 T242 6 T258 6 T274 6 T290 6 T306 6 T322 6 T338 6"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={1.4}
-      />
-    </svg>
-  )
+  return <Image src="/redesign/maitred-crown.svg" alt="" width={68} height={52} className={hollow ? 'opacity-70' : ''} />
 }
 
 function HolderPhoto({ venue }: { venue: MaitredVenue }) {
@@ -71,7 +47,7 @@ export default async function PlaceMaitred({
   faqHref: string
 }) {
   const t = await getTranslations({ locale, namespace: 'Places' })
-  const eyebrow = 'text-[0.72rem] font-extrabold uppercase tracking-[0.16em] text-brand-orange'
+  const eyebrow = styles.kicker
   const howLink = (
     <div className="mt-5 border-t border-white/10 pt-4">
       <p className="text-[0.95rem] leading-[1.5] text-brand-cream/80">{t('maitredExplain')}</p>
@@ -91,7 +67,7 @@ export default async function PlaceMaitred({
       { label: t('maitredTip'), body: held.notes.tip },
     ].filter((e) => e.body)
     return (
-      <section aria-label={t('maitredOrderEyebrow')} className="mt-6 overflow-hidden rounded-2xl bg-brand-ink p-6 text-brand-cream sm:p-7">
+      <section aria-label={t('maitredOrderEyebrow')} className={styles.maitred}>
         <div className="flex items-center gap-2">
           <Crown />
           <p className={eyebrow}>{t('maitredOrderEyebrow')}</p>
@@ -122,7 +98,7 @@ export default async function PlaceMaitred({
 
   if (held) {
     return (
-      <section aria-label={t('maitredHeldEyebrow')} className="mt-6 overflow-hidden rounded-2xl bg-brand-ink p-6 text-brand-cream sm:p-7">
+      <section aria-label={t('maitredHeldEyebrow')} className={styles.maitred}>
         <div className="flex items-center gap-2">
           <Crown />
           <p className={eyebrow}>{t('maitredHeldEyebrow')}</p>
@@ -141,10 +117,10 @@ export default async function PlaceMaitred({
 
   // EMPTY SEAT: the funnel.
   return (
-    <section className="mt-8 overflow-hidden rounded-2xl bg-brand-ink p-6 text-center text-brand-cream">
+    <section className={`${styles.maitred} ${styles.maitredEmpty}`}>
       <div className="flex items-center justify-center gap-2">
         <Crown hollow />
-        <p className="text-[0.72rem] font-extrabold uppercase tracking-[0.16em] text-brand-orange">
+        <p className={styles.kicker}>
           {t('maitredEyebrow')}
         </p>
       </div>
@@ -163,13 +139,10 @@ export default async function PlaceMaitred({
       <div className="mx-auto mt-4 max-w-md rounded-xl border border-brand-orange/30 bg-brand-orange/[0.12] px-4 py-3 text-[0.95rem] font-semibold leading-snug">
         {t('maitredReward', { name: placeName })}
       </div>
-      <div className="mx-auto mt-5 max-w-xs">
-        <Squiggle />
-      </div>
       <div className="mt-5">
         <StoreLink
           location="place-maitred"
-          className="inline-flex h-12 items-center justify-center rounded-full bg-brand-orange px-7 text-base font-bold text-white transition-shadow hover:shadow-lg hover:shadow-black/20"
+          className={styles.primary}
         >
           {t('maitredCta')}
         </StoreLink>

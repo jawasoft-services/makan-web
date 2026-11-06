@@ -1,3 +1,4 @@
+import styles from '@/components/utility.module.css'
 import { Metadata } from 'next'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
@@ -9,21 +10,46 @@ export const metadata: Metadata = createPageMetadata({
   path: '/tos',
 })
 
+const sections = [
+  "1. Who We Are",
+  "2. Eligibility",
+  "3. Service Availability and Changes",
+  "4. Your Account",
+  "5. Acceptable Use",
+  "6. User Content",
+  "7. Intellectual Property and Infringement",
+  "8. Privacy",
+  "9. Apple App Store",
+  "10. Termination",
+  "11. Disclaimers",
+  "12. Limitation of Liability",
+  "13. Indemnity",
+  "14. Changes to the Terms",
+  "15. General",
+  "16. Governing Law and Jurisdiction",
+  "17. Contact"
+]
+
 export default function TermsOfUse() {
   return (
     <div className="min-h-screen bg-brand-cream">
-      <main id="main-content" className="mx-auto max-w-3xl px-5 sm:px-8 pt-24 sm:pt-32 pb-16 sm:pb-24">
+      <main id="main-content" className={styles.legalPage}>
+        <header className={styles.legalHeading}>
 
         {/* Eyebrow */}
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-orange">
+        <p>
           Legal
         </p>
 
         {/* Title */}
-        <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-brand-ink">Terms of Use</h1>
-        <p className="mt-2 text-sm text-brand-muted">Last updated: 12 October 2026</p>
+        <h1>Terms of Use</h1>
+        <p>Last updated: 12 October 2026</p>
 
-        <div className="mt-10 space-y-10 text-[15px] leading-relaxed text-brand-ink/80">
+        </header>
+        <div className={styles.legalLayout}>
+          <aside className={styles.contents}><details><summary>On this page</summary><nav aria-label="On this page">{sections.map((title, index) => <a key={title} href={`#legal-section-${index + 1}`}>{title}</a>)}</nav></details></aside>
+          <article className={styles.legalProse} data-policy-copy>
+
 
           <p>
             MAKAN APP LTD (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;) operates the Makan mobile
@@ -35,13 +61,13 @@ export default function TermsOfUse() {
 
           {/* 1 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">1. Who We Are</h2>
-            <div className="mt-4 space-y-2">
+            <h2 id="legal-section-1">1. Who We Are</h2>
+            <div>
               <p>Company name: MAKAN APP LTD</p>
               <p>Registered address: 86–90 Paul Street, London, EC2A 4NE, United Kingdom</p>
               <p>
                 Contact email:{' '}
-                <a href="mailto:support@makanofficial.com" className="text-brand-orange hover:underline">
+                <a href="mailto:support@makanofficial.com">
                   support@makanofficial.com
                 </a>
               </p>
@@ -51,8 +77,8 @@ export default function TermsOfUse() {
 
           {/* 2 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">2. Eligibility</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-2">2. Eligibility</h2>
+            <div>
               <p>
                 You must be at least 13 years old to use the Services. By using the Services, you
                 confirm that you meet this requirement and that you are able to enter into a binding
@@ -63,8 +89,8 @@ export default function TermsOfUse() {
 
           {/* 3 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">3. Service Availability and Changes</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-3">3. Service Availability and Changes</h2>
+            <div>
               <p>
                 Features, functionality, and availability of the Services may change at any time
                 without notice. We may add, modify, suspend, restrict, or remove features, or limit
@@ -80,8 +106,8 @@ export default function TermsOfUse() {
 
           {/* 4 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">4. Your Account</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-4">4. Your Account</h2>
+            <div>
               <p>
                 You are responsible for maintaining the confidentiality of your account and for all
                 activity that occurs under it. You agree to provide accurate information and to keep
@@ -92,10 +118,10 @@ export default function TermsOfUse() {
 
           {/* 5 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">5. Acceptable Use</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-5">5. Acceptable Use</h2>
+            <div>
               <p>You agree to use the Services only for lawful purposes. You must not:</p>
-              <ul className="list-disc pl-5 space-y-1">
+              <ul>
                 <li>Misuse the Services or interfere with their normal operation</li>
                 <li>Access, or attempt to access, accounts or data belonging to other users without authorisation</li>
                 <li>Upload or share content that is unlawful, harmful, harassing, hateful, defamatory, obscene, or that infringes the rights of others</li>
@@ -110,8 +136,8 @@ export default function TermsOfUse() {
 
           {/* 6 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">6. User Content</h2>
-            <div className="mt-4 space-y-4">
+            <h2 id="legal-section-6">6. User Content</h2>
+            <div>
               <p>You retain ownership of content you upload to the App, including meal photos and captions.</p>
               <p>
                 By uploading content, you grant us a worldwide, non-exclusive, royalty-free,
@@ -132,12 +158,12 @@ export default function TermsOfUse() {
                 and that any identifiable people in it have agreed to appear and to your sharing it.
               </p>
               <div>
-                <h3 className="font-medium text-brand-ink">Featuring your content (&ldquo;Makan of the Week&rdquo; and similar)</h3>
-                <p className="mt-2">
+                <h3>Featuring your content (&ldquo;Makan of the Week&rdquo; and similar)</h3>
+                <p>
                   From time to time we may feature public posts in our own promotional content, such as
                   a curated &ldquo;Makan of the Week&rdquo; selection on our social media.
                 </p>
-                <ul className="mt-2 list-disc pl-5 space-y-1">
+                <ul>
                   <li>We only ever use content you have set to a public audience — never private or friends-only content.</li>
                   <li>We may feature it, including your username, without asking first. You can ask us not to feature your content, or to remove something we have featured, at any time by contacting support@makanofficial.com.</li>
                   <li>We will credit you (for example, by your username) unless you ask us not to.</li>
@@ -150,8 +176,8 @@ export default function TermsOfUse() {
 
           {/* 7 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">7. Intellectual Property and Infringement</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-7">7. Intellectual Property and Infringement</h2>
+            <div>
               <p>
                 All intellectual property rights in the Services, branding, design, and underlying
                 software are owned by or licensed to MAKAN APP LTD. You may not copy, reproduce,
@@ -161,7 +187,7 @@ export default function TermsOfUse() {
               <p>
                 If you believe content on the Services infringes your intellectual property rights,
                 contact us at{' '}
-                <a href="mailto:support@makanofficial.com" className="text-brand-orange hover:underline">
+                <a href="mailto:support@makanofficial.com">
                   support@makanofficial.com
                 </a>{' '}
                 with details of the content and your rights, and we will review and act on valid
@@ -172,11 +198,11 @@ export default function TermsOfUse() {
 
           {/* 8 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">8. Privacy</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-8">8. Privacy</h2>
+            <div>
               <p>
                 Your use of the Services is governed by our{' '}
-                <Link href="/privacy-policy" className="text-brand-orange hover:underline">
+                <Link href="/privacy-policy">
                   Privacy Policy
                 </Link>
                 . By using the Services, you acknowledge that your personal
@@ -187,12 +213,12 @@ export default function TermsOfUse() {
 
           {/* 9 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">9. Apple App Store</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-9">9. Apple App Store</h2>
+            <div>
               <p>
                 The following applies where you obtain the App through Apple&apos;s App Store:
               </p>
-              <ul className="list-disc pl-5 space-y-1">
+              <ul>
                 <li>These Terms are between you and MAKAN APP LTD only, not with Apple. Apple is not responsible for the App or its content.</li>
                 <li>Your licence to use the App is a non-transferable licence to use it on any Apple-branded products that you own or control, as permitted by the Usage Rules in the Apple Media Services Terms and Conditions.</li>
                 <li>Apple has no obligation to provide maintenance or support for the App.</li>
@@ -208,8 +234,8 @@ export default function TermsOfUse() {
 
           {/* 10 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">10. Termination</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-10">10. Termination</h2>
+            <div>
               <p>
                 You may stop using the Services and delete your account at any time. We may suspend or
                 terminate your access if you breach these Terms, if required by law, or to protect the
@@ -226,8 +252,8 @@ export default function TermsOfUse() {
 
           {/* 11 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">11. Disclaimers</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-11">11. Disclaimers</h2>
+            <div>
               <p>The Services are provided on an &ldquo;as is&rdquo; and &ldquo;as available&rdquo; basis.</p>
               <p>
                 We do not guarantee that the Services will be uninterrupted, error-free, or secure at
@@ -241,8 +267,8 @@ export default function TermsOfUse() {
 
           {/* 12 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">12. Limitation of Liability</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-12">12. Limitation of Liability</h2>
+            <div>
               <p>
                 Nothing in these Terms limits or excludes our liability for death or personal injury
                 caused by negligence, for fraud or fraudulent misrepresentation, or for any other
@@ -261,8 +287,8 @@ export default function TermsOfUse() {
 
           {/* 13 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">13. Indemnity</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-13">13. Indemnity</h2>
+            <div>
               <p>
                 If you use the Services other than as a consumer (for example, on behalf of a
                 business), you agree to indemnify and hold harmless MAKAN APP LTD from claims, losses,
@@ -279,8 +305,8 @@ export default function TermsOfUse() {
 
           {/* 14 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">14. Changes to the Terms</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-14">14. Changes to the Terms</h2>
+            <div>
               <p>We may update these Terms from time to time.</p>
               <p>
                 The latest version will always be published with an updated &ldquo;Last updated&rdquo;
@@ -293,8 +319,8 @@ export default function TermsOfUse() {
 
           {/* 15 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">15. General</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-15">15. General</h2>
+            <div>
               <p>
                 If any provision of these Terms is found to be unenforceable, the remaining provisions
                 will remain in full force. Our failure to enforce any right is not a waiver of that
@@ -307,8 +333,8 @@ export default function TermsOfUse() {
 
           {/* 16 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">16. Governing Law and Jurisdiction</h2>
-            <div className="mt-4 space-y-3">
+            <h2 id="legal-section-16">16. Governing Law and Jurisdiction</h2>
+            <div>
               <p>These Terms are governed by the laws of England and Wales.</p>
               <p>
                 Any disputes arising out of or in connection with these Terms or the Services are
@@ -321,16 +347,16 @@ export default function TermsOfUse() {
 
           {/* 17 */}
           <section>
-            <h2 className="text-lg font-semibold text-brand-ink">17. Contact</h2>
-            <div className="mt-4 space-y-2">
+            <h2 id="legal-section-17">17. Contact</h2>
+            <div>
               <p>If you have any questions about these Terms, you can contact us at:</p>
-              <p className="font-medium text-brand-ink">MAKAN APP LTD</p>
+              <p>MAKAN APP LTD</p>
               <p>86–90 Paul Street</p>
               <p>London, EC2A 4NE</p>
               <p>United Kingdom</p>
               <p>
                 Email:{' '}
-                <a href="mailto:support@makanofficial.com" className="text-brand-orange hover:underline">
+                <a href="mailto:support@makanofficial.com">
                   support@makanofficial.com
                 </a>
               </p>
@@ -338,12 +364,14 @@ export default function TermsOfUse() {
           </section>
 
           {/* Back to home */}
-          <div className="pt-4 border-t border-brand-line">
-            <Link href="/" className="text-sm text-brand-orange hover:underline">
+          <div>
+            <Link href="/">
               &larr; Back to home
             </Link>
           </div>
 
+
+          </article>
         </div>
       </main>
       <Footer />

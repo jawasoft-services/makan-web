@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="food-illustration" viewBox="0 0 300 300" aria-hidden="true" focusable="false">
+<g stroke-linecap="round" stroke-linejoin="round">
+<!-- A slightly irregular porcelain plate, viewed from above. -->
+<path d="M152 26C224 24 274 77 275 146C278 217 222 271 151 274C80 277 25 225 25 154C22 85 77 28 152 26Z" fill="#fffaf3" stroke="#fffaf3" stroke-width="16"/>
+<path d="M152 26C224 24 274 77 275 146C278 217 222 271 151 274C80 277 25 225 25 154C22 85 77 28 152 26Z" fill="#eceddf" stroke="#3e4b3c" stroke-width="3.5"/>
+<path d="M55 213Q150 291 246 203Q211 269 151 274Q89 276 55 213Z" fill="#d0d6c7"/>
+<path d="M153 43C216 42 257 87 257 149C258 209 212 254 150 256C90 257 43 215 43 154C42 92 89 45 153 43Z" fill="#fffaf0" stroke="#719077" stroke-width="4"/>
+<path d="M152 62C204 61 238 98 238 150C238 199 202 236 150 237C98 238 62 204 62 154C61 102 99 64 152 62Z" fill="#f5efdf" stroke="#c3cbb9" stroke-width="2"/>
+<path d="M57 102Q70 73 96 61M208 242L223 233" fill="none" stroke="#fffefa" stroke-width="6"/>
+<!-- A mound of fried rice: irregular edges and a handful of visible grains. -->
+<path d="M78 125Q67 109 80 97Q82 80 100 80Q109 64 125 73Q142 65 154 79Q172 80 174 98Q188 109 177 125Q180 142 162 149Q151 164 131 157Q111 164 98 151Q78 151 78 125Z" fill="#c68b48" stroke="#805432" stroke-width="3"/>
+<path d="M81 113Q77 96 96 94Q96 78 115 84Q128 72 143 88Q160 85 164 102Q179 111 167 124Q171 140 149 143Q132 154 116 143Q91 150 88 130Z" fill="#e7b66d"/>
+<g fill="none" stroke="#fff0c3" stroke-width="4"><path d="M94 102L100 99M115 89L121 92M138 94L143 90M153 109L159 113M112 109L118 105M97 123L102 127M126 129L133 127M145 139L152 135M133 112L137 117M111 140L116 138"/></g>
+<g fill="none" stroke="#9b6738" stroke-width="3"><path d="M105 114L109 118M131 98L134 102M151 123L156 122M118 131L121 134"/></g>
+<!-- Crisp-edged fried egg overlaps the rice. -->
+<path d="M142 115C138 99 153 91 167 95C176 80 196 84 202 99C222 98 233 113 227 130C244 143 239 163 221 169C216 190 193 194 180 183C160 192 142 180 143 164C125 155 128 136 141 129Z" fill="#d6a25b" stroke="#977047" stroke-width="2.8"/>
+<path d="M147 117C146 104 156 99 170 103C177 90 192 91 197 107C214 104 225 116 218 133C236 146 229 161 215 162C211 181 193 185 181 175C164 185 150 174 151 160C137 153 137 138 150 130Z" fill="#fffdf0"/>
+<path d="M173 120C187 108 210 117 213 135C216 152 204 163 189 162C173 162 164 149 166 135Q167 126 173 120Z" fill="#ffb331" stroke="#dc8b27" stroke-width="2.8"/>
+<path d="M174 132Q177 119 190 122" fill="none" stroke="#ffe895" stroke-width="4"/>
+<!-- Cucumber, sambal and herbs make this a meal rather than a symbol. -->
+<g stroke="#486443" stroke-width="2.5" fill="#acc789"><ellipse cx="102" cy="190" rx="22" ry="18" transform="rotate(-25 102 190)"/><ellipse cx="91" cy="173" rx="22" ry="18" transform="rotate(-28 91 173)"/></g>
+<g fill="#e4e6b9" stroke="#78975d" stroke-width="1.5"><ellipse cx="102" cy="190" rx="14" ry="11" transform="rotate(-25 102 190)"/><ellipse cx="91" cy="173" rx="14" ry="11" transform="rotate(-28 91 173)"/></g>
+<path d="M96 171L102 169M85 176L89 180M97 187L101 183M105 194L111 193" stroke="#708e50" stroke-width="2.5"/>
+<path d="M127 203Q122 193 134 188Q137 178 149 184Q162 180 168 191Q180 194 173 206Q177 217 164 219Q152 230 142 221Q128 225 125 215Z" fill="#c65e37" stroke="#87452c" stroke-width="2.5"/>
+<path d="M136 199L140 197M148 190L154 193M155 210L161 208" stroke="#f7ad67" stroke-width="3"/>
+<path d="M196 215Q181 204 186 191Q199 187 205 203Q207 184 222 184Q231 198 211 210Q228 209 231 220Q214 231 201 216Z" fill="#66894e" stroke="#3e5834" stroke-width="2.5"/>
+<path d="M195 198L207 216M218 192L207 214" fill="none" stroke="#c0d298" stroke-width="2"/>
+</g></svg>

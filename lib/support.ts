@@ -19,7 +19,7 @@
 //  - Display name: never state a cooldown duration. main has 5 minutes; the
 //    settled product decision is 30 days and has not landed.
 //  - Reports: never state a review turnaround. Nothing in code promises one.
-//  - Android: never state a date. Both Android submit profiles are "draft".
+//  - Android: Google Play listing with Install verified 6 November 2026; do not claim device compatibility.
 //  - Privacy requests: never state a response deadline. The Privacy Policy says
 //    only "within the time limits required by law".
 //
@@ -55,7 +55,7 @@ export const SUPPORT_FAQS: SupportFaqItem[] = [
   },
   {
     q: 'Is Makan on Android?',
-    a: 'Not yet — Makan is iPhone-only today. Android is in the works, and we don’t have a release date to share.',
+    a: 'Yes. Makan is available on Google Play. Open Get Makan to find the store link for your phone.',
   },
   {
     q: 'How do I get a copy of my data?',
@@ -86,7 +86,7 @@ export const SUPPORT_FAQS_ID: SupportFaqItem[] = [
   },
   {
     q: 'Apakah Makan tersedia di Android?',
-    a: 'Belum. Saat ini Makan hanya tersedia di iPhone. Versi Android sedang dikerjakan, tetapi kami belum punya tanggal rilis.',
+    a: 'Ya. Makan tersedia di Google Play. Buka Unduh Makan untuk menemukan tautan toko aplikasi untuk ponselmu.',
   },
   {
     q: 'Bagaimana cara mendapatkan salinan dataku?',

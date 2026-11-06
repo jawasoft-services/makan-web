@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="food-illustration" viewBox="0 0 320 280" aria-hidden="true" focusable="false">
+<g stroke-linecap="round" stroke-linejoin="round">
+<!-- Die-cut perimeter and the two tapered wooden chopsticks. -->
+<path d="M40 125Q45 89 152 89L255 20Q263 15 267 23L192 100L284 41Q291 37 294 46L220 111Q279 125 279 149Q267 212 200 236L201 247Q157 264 111 248L112 234Q49 212 40 147Z" fill="#fffaf3" stroke="#fffaf3" stroke-width="13"/>
+<path d="M142 119L257 20Q261 17 265 23L149 126Z" fill="#b87638" stroke="#583a23" stroke-width="2.8"/>
+<path d="M161 135L285 41Q289 39 292 46L168 142Z" fill="#d89b52" stroke="#583a23" stroke-width="2.8"/>
+<path d="M160 105L255 25M181 121L281 48" fill="none" stroke="#f5cd89" stroke-width="2"/>
+<!-- Foot and ceramic body share the rim's perspective. -->
+<path d="M116 222L111 248Q153 265 201 247L197 224Z" fill="#df7231" stroke="#573923" stroke-width="3"/>
+<path d="M120 243Q158 255 193 242" fill="none" stroke="#ffbc73" stroke-width="4"/>
+<path d="M41 135C46 202 88 240 158 243C224 241 268 202 278 137Z" fill="#ff9932" stroke="#573923" stroke-width="3.5"/>
+<path d="M239 150Q242 214 171 239Q250 234 271 156Z" fill="#dd7131"/>
+<path d="M56 156Q62 188 80 199" fill="none" stroke="#ffce8b" stroke-width="7"/>
+<path d="M73 194Q148 230 241 194" fill="none" stroke="#c6662e" stroke-width="2.5"/>
+<ellipse cx="160" cy="136" rx="119" ry="45" fill="#fff0d5" stroke="#573923" stroke-width="3.5"/>
+<ellipse cx="160" cy="134" rx="103" ry="32" fill="#8d4e2d" stroke="#bd7b3f" stroke-width="2"/>
+<!-- Noodles sit in the broth, beneath the toppings and chopstick tips. -->
+<g fill="none" stroke="#efbd66" stroke-width="5">
+<path d="M70 137C94 108 116 155 138 128S178 114 194 138S225 145 248 128"/>
+<path d="M72 125C98 143 111 107 135 122S168 154 188 130S220 118 241 137"/>
+<path d="M83 146C107 124 118 156 145 145S174 125 199 144S223 149 236 141"/>
+<path d="M99 115C113 138 138 106 157 125S191 142 209 121"/>
+</g>
+<g fill="none" stroke="#ffe2a4" stroke-width="1.8"><path d="M77 135Q94 121 106 132M135 143Q154 134 164 136M200 146Q217 153 230 144"/></g>
+<!-- Half an egg and a leafy green give the food a clear identity. -->
+<path d="M83 112C83 91 107 78 126 89C144 100 148 127 131 138C111 151 84 133 83 112Z" fill="#fffaf0" stroke="#a77c4b" stroke-width="2.5"/>
+<path d="M99 111C98 99 112 93 122 102C133 112 131 126 120 130C108 133 99 123 99 111Z" fill="#ffad31" stroke="#e48729" stroke-width="2"/>
+<path d="M103 107Q109 100 116 105" fill="none" stroke="#ffdb78" stroke-width="3"/>
+<path d="M198 117Q175 104 182 83Q193 80 201 92Q206 71 222 79Q233 92 211 116Z" fill="#65864b" stroke="#354a30" stroke-width="2.5"/>
+<path d="M202 112L211 87M200 110L189 91" fill="none" stroke="#b6ce88" stroke-width="2"/>
+<path d="M173 132L181 123M213 132L222 126M147 113L156 108" stroke="#7da05b" stroke-width="6"/>
+
+<path d="M81 64Q70 50 83 37M110 62Q101 49 112 35" fill="none" stroke="#ac8c6f" stroke-width="3"/>
+<path d="M98 213Q107 219 116 220M124 223L131 224" fill="none" stroke="#fff0d5" stroke-width="3"/>
+</g></svg>

@@ -1,3 +1,4 @@
+import { WEBSITE_FIXTURES } from '@/lib/website-fixtures'
 import { getVercelOidcToken } from "@vercel/oidc"
 
 /**
@@ -17,6 +18,7 @@ import { getVercelOidcToken } from "@vercel/oidc"
  *   GCP_SHEETS_SERVICE_ACCOUNT_EMAIL  Sheets account (makan-web-sheets@); optional
  */
 export function federatedCredentials(serviceAccountEmail: string | undefined) {
+  if (WEBSITE_FIXTURES) return null
   const provider = process.env.GCP_WORKLOAD_IDENTITY_PROVIDER
   if (!provider || !serviceAccountEmail) return null
   return {

@@ -326,7 +326,7 @@
     "intro": "Ada yang rusak, pertanyaan soal akun, atau ide untuk Makan? Tulis kepada kami. Pesanmu akan dibaca oleh manusia.",
     "emailUs": "Email kami",
     "reply": "Kami berusaha membalas di hari yang sama.",
-    "details": "Akan sangat membantu kalau kamu menjelaskan apa yang terjadi, model iPhone, versi iOS, dan versi Makan yang terlihat di Settings.",
+    "details": "Akan sangat membantu kalau kamu menjelaskan apa yang terjadi, model ponsel, versi sistem operasi, dan versi Makan yang terlihat di Settings.",
     "press": "Untuk urusan pers atau kerja sama?",
     "contact": "Hubungi kami di sini",
     "questions": "Pertanyaan umum",
@@ -432,7 +432,7 @@
   },
   "Decision": {
     "Metadata": {
-      "title": "Makan — Pesan seperti orang lokal",
+      "title": "Makan — Tahu apa yang layak dipesan.",
       "description": "Tempat langgananmu. Pesanan andalanmu. Catat makanan, raih gelar Maître d’, dan bantu orang berikutnya memilih pesanan. Gratis di iPhone.",
       "ogSub": "Kenali tempatmu. Bagikan pesanan andalanmu."
     },
@@ -576,9 +576,10 @@
     "Standings": {
       "eyebrow": "Peringkat",
       "title": "Restoran yang terus dipilih tamu.",
-      "body": "Eats restoran berasal dari pilihan pengguna antara makanan yang mereka simpan sendiri di Eat or Yeet. Ini lima restoran dengan Eats terbanyak, dari tempat dengan setidaknya {floor} perbandingan. Gelar Maître d’ dihitung terpisah, lewat hari makan yang dicatat.",
+      "body": "Lihat seberapa sering tamu memilih makanan tersimpan dari sebuah restoran di Eat or Yeet. Setiap tempat punya setidaknya {floor} perbandingan.",
       "cta": "Lihat peringkat lengkap",
-      "eats": "Eat · {rate}"
+      "eats": "Eat · {rate}",
+      "picked": "Dipilih {eats} dari {matchups}"
     },
     "Maitred": {
       "eyebrow": "Maître d’",
@@ -768,5 +769,163 @@
         "body": "Coba lagi nanti."
       }
     }
+  },
+  "Redesign": {
+    "title": "Tahu apa yang layak dipesan.",
+    "intro": "Lihat makanan nyata, temukan hidangan untuk dicoba, dan ingat yang ingin kamu pesan lagi.",
+    "app": "Unduh Makan",
+    "partner": "Untuk restoran",
+    "theapp": "Aplikasinya",
+    "menu": "Menu",
+    "skip": "Langsung ke konten",
+    "chapters": [
+      "Temukan",
+      "Makananmu",
+      "Eat or Yeet",
+      "Pelanggan tetap"
+    ],
+    "heads": [
+      "Lebih dari sekadar menu.",
+      "Ingat apa yang ingin kamu pesan lagi.",
+      "Mana yang ingin kamu makan lagi?",
+      "Mulai dari pesanan langganan."
+    ],
+    "body": [
+      "Lihat apa yang dipesan, tempat makannya, dan siapa yang membagikannya.",
+      "Makanan, foto, dan tempatnya, tersimpan bersama di diarimu.",
+      "Bandingkan dua makanan tersimpan. Pilih mana yang ingin kamu makan lagi—atau keduanya sama-sama oke.",
+      "Lihat pesanan langganan pelanggan tetap, jika sudah mereka bagikan."
+    ],
+    "view": "Lihat gambar aplikasi lengkap",
+    "restaurant": "Punya restoran?",
+    "restaurantheadline": "Biar langgananmu memandu tamu baru.",
+    "restaurantbody": "Langgananmu tahu menumu. Lewat Maître d’, pesanan andalan mereka bisa membantu tamu baru memilih hidangan.",
+    "restaurantbenefits": [
+      [
+        "Diraih di restoranmu.",
+        "Gelar Maître d’ berasal dari hari makan yang disimpan di tempatmu. Gelar ini tidak bisa dibeli."
+      ],
+      [
+        "Andalan mereka. Pilihan pertama tamu baru.",
+        "Saat pemegang gelar membagikan pesanan andalannya, tamu bisa menemukannya di halaman restoranmu."
+      ]
+    ],
+    "restaurantcta": "Lihat Makan untuk restoran",
+    "end": "Buat pesanan berikutnya lebih berkesan.",
+    "scan": "Pindai dengan ponselmu",
+    "downloadhelp": "Pilih toko aplikasimu.",
+    "story": "Cerita kami",
+    "blog": "Cerita makanan",
+    "standings": "Peringkat",
+    "help": "Bantuan",
+    "contact": "Kontak",
+    "privacy": "Kebijakan privasi",
+    "terms": "Ketentuan",
+    "deleteaccount": "Hapus akun",
+    "deletedata": "Hapus data",
+    "rights": "Hak cipta dilindungi.",
+    "sourcelabel": "Makanan di Makan",
+    "meallabel": "makanan tersimpan di Makan",
+    "pauselabel": "Jeda gerakan visual",
+    "motionlabel": "Lanjutkan gerakan visual",
+    "widget": {
+      "regularsLabel": "Langganan",
+      "usualLabel": "Pesanan andalan",
+      "regularsAlt": "Contoh langganan di Café Batavia, Jakarta: Dimas Pratama, Sari Putri, dan Alex Chen, diurutkan berdasarkan hari makan dalam 60 hari terakhir.",
+      "usualAlt": "Contoh pesanan andalan: Dimas Pratama, Maître d’ di Café Batavia, Jakarta. Pesanan andalannya Nasi Goreng Roa.",
+      "widgetLabel": "Contoh Maître d’ di Café Batavia, Jakarta",
+      "rulesLabel": "Cara kerja Maître d’",
+      "rulesTitle": "Maître d’",
+      "rulesQualify": "Simpan makanan yang memenuhi syarat di sini pada setidaknya dua hari berbeda dalam 60 hari terakhir.",
+      "rulesHolder": "Hari terhitung terbanyak menang. Saat seri, pemegang yang masih memenuhi syarat tetap memegang gelar.",
+      "rulesUsual": "Maître d’ bisa membagikan pesanan andalannya untuk membantu pengunjung berikutnya."
+    }
+  },
+  "PartnerRedesign": {
+    "hero": "Biar langgananmu memandu tamu baru.",
+    "intro": "Lewat Maître d’, pelanggan tetap bisa membagikan pesanan andalannya untuk membantu tamu baru memilih. Hidanganmu, dengan sedikit saran dari orang yang mengenalnya.",
+    "enquire": "Ngobrol dengan Devon",
+    "how": "Kenali Maître d’-mu",
+    "offer": "Saat ini gratis untuk tampil. Tanpa komisi dari makanan.",
+    "hero_alt": "Harissa prawns dengan sourdough panggang dan lemon di Kendal Street Kitchen",
+    "hero_caption": "Harissa prawns · Kendal Street Kitchen",
+    "proof_title": "Langgananmu tahu menumu.",
+    "proof_intro": "Beri tamu berikutnya titik awal untuk memilih.",
+    "proof_body": "Gelar Maître d’ diraih lewat hari makan yang memenuhi syarat di restoranmu. Saat pemegang gelar membagikan pesanan andalannya, tamu bisa menemukannya di halaman restoranmu.",
+    "proof_end": "Pilihan pelanggan tetap sendiri. Lebih sedikit menebak saat melihat menu.",
+    "benefit_title": "Namamu ikut di setiap makanan.",
+    "benefits": [
+      [
+        "Dibagikan ke orang terdekat.",
+        "Saat tamu menyimpan makanan dan membagikannya ke teman, nama restoranmu tetap bersama fotonya."
+      ],
+      [
+        "Disimpan ke Cravings. Ditemukan di dekatmu.",
+        "Tamu bisa menyimpan hidangan teman ke Cravings. Discover menampilkannya lagi saat mereka berada di dekatmu, lengkap dengan jaraknya."
+      ],
+      [
+        "Diingat dalam pilihan favorit.",
+        "Di Eat or Yeet, tamu membandingkan makanan mereka sendiri yang telah disimpan. Hidangan yang ingin dimakan lagi bisa menjadi favorit pribadi, dengan nama restoranmu tetap tercantum."
+      ],
+      [
+        "Satu pindai ke restoranmu.",
+        "Kode QR tempatmu membuka halaman restoranmu di Makan. Tanyakan tentang kode untuk tempatmu saat menghubungi kami."
+      ]
+    ],
+    "feed_alt": "Gambar aplikasi Makan yang sudah ada, menampilkan seafood risotto publik Devon di Kendal Street Kitchen",
+    "story_title": "Makanan nyata. Tempat untuk diingat.",
+    "story_body": "Prawns sebagai pembuka. Carbonara, mushroom risotto, dan truffle fries. Tiramisu untuk berbagi. Setiap bagian dari pengalaman makan memberi gambaran yang lebih spesifik daripada nama restoran saja.",
+    "story_link": "Baca cerita makanan Kendal Street Kitchen",
+    "dining_alt": "Carbonara, mushroom risotto, dan truffle fries di Kendal Street Kitchen",
+    "dining_caption": "Carbonara & mushroom risotto · @ridorichard",
+    "dessert_alt": "Tiramisu dalam gelas di Kendal Street Kitchen",
+    "dessert_caption": "Tiramisu · @ridorichard",
+    "offer_title": "Mulai dari restoranmu.",
+    "offer_body": "Saat ini tampil di Makan gratis, tanpa komisi dari makanan. Ceritakan tempatmu kepada Devon dan tanyakan aktivitas di daerahmu.",
+    "offer_note": "Langganan restoran mungkin diperkenalkan nanti. Bergabung sekarang tidak mengunci harga di masa depan.",
+    "faq_title": "Beberapa pertanyaan yang wajar.",
+    "faqs": [
+      [
+        "Bagaimana tamu menjadi Maître d’ di sebuah restoran?",
+        "Tamu perlu menyimpan makanan yang memenuhi syarat pada setidaknya dua hari berbeda di restoran itu dalam 60 hari terakhir. Hari terhitung terbanyak memegang gelar; saat seri, pemegang yang masih memenuhi syarat tetap memegangnya. Pesanan andalan muncul hanya jika mereka memilih untuk membagikannya."
+      ],
+      [
+        "Apakah saya perlu menawarkan diskon atau hadiah?",
+        "Kamu memilih apakah ingin menawarkan sesuatu. Hidangan yang enak dan sambutan hangat adalah awalnya. Hadiah sebaiknya menghargai kunjungan, bukan bergantung pada pilihan, ulasan, atau keterangan foto."
+      ],
+      [
+        "Bisakah saya membayar untuk posisi yang lebih tinggi?",
+        "Tidak. Penempatan berbayar tidak menentukan peringkat atau rekomendasi. Maître d’ diraih lewat pengalaman makan di restoranmu."
+      ],
+      [
+        "Bisakah Makan menjamin lebih banyak pelanggan?",
+        "Kami tidak bisa menjanjikan tambahan pelanggan atau reservasi. Makan masih berkembang dan aktivitas berbeda di setiap daerah. Tanyakan kepada Devon tentang daerahmu dan apakah Makan cocok untuk tempatmu."
+      ],
+      [
+        "Apa yang terjadi setelah saya menghubungi kalian?",
+        "Formulir aktif mengirimkan pertanyaan dari restoran kepada Devon, pendiri Makan. Gunakan catatan opsional untuk bertanya tentang cara memulai, aktivitas di daerahmu, kode QR tempatmu, atau lebih dari satu restoran."
+      ]
+    ],
+    "form_title": "Ceritakan tentang tempatmu.",
+    "form_intro": "Ceritakan lokasimu dan apa yang ingin kamu bahas dengan Devon.",
+    "required_note": "Semua kolom wajib diisi kecuali catatan.",
+    "labels": {
+      "name": "Namamu",
+      "email": "Email",
+      "restaurant": "Nama restoran",
+      "city": "Kota",
+      "message": "Ada yang ingin ditambahkan? (opsional)"
+    },
+    "errors": {
+      "name": "Masukkan namamu.",
+      "email": "Masukkan alamat email yang valid, misalnya kamu@contoh.com.",
+      "restaurant": "Masukkan nama restoranmu.",
+      "city": "Masukkan kota tempat restoranmu berada."
+    },
+    "too_long": "Gunakan maksimal {max} karakter.",
+    "invalid": "Periksa kolom yang ditandai. Belum ada pertanyaan yang dikirim.",
+    "terms": "Ketentuan",
+    "and": "dan",
+    "privacy": "Kebijakan Privasi"
   }
 }
