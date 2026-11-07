@@ -61,7 +61,13 @@ export default function MaitredDemo({ copy, locale }: { copy: MaitredDemoCopy; l
       const top = Math.max(0, window.scrollY + storyStops(root)[index])
       // The phone and highlight travel with the page, including keyboard selection.
       followPosition()
-      if (window.__lenis) window.__lenis.scrollTo(top, { immediate: motion.matches, force: true })
+      if (window.__lenis) {
+        const current = scrollProgress(root)
+        const shareTravel = Math.abs(Math.max(0, index - 2) - Math.max(0, current - 2))
+        // Give the editor, typing, preview and publication time to be read.
+        const duration = Math.max(1.2, Math.abs(index - current) * 2.5 + shareTravel * 4.5)
+        window.__lenis.scrollTo(top, { immediate: motion.matches, force: true, duration, lerp: 0, easing: t => t })
+      }
       else window.scrollTo({ top, behavior: motion.matches ? 'instant' : 'smooth' })
       if (motion.matches) publish(index)
     }

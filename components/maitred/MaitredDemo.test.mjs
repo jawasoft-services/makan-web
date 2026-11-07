@@ -537,10 +537,15 @@ for (const lenis of [false, true]) test(`step clicks and keyboard selection foll
     assert.equal(app.window.scrollY, 1234, 'requesting a destination does not jump the page')
     assert.ok(Math.abs(app.snapshot().story.progress - startProgress) < 1e-9)
     assert.equal(app.checked(), 'qualify', 'the highlight stays with actual movement rather than the requested destination')
-    assert.deepEqual(app.pageScrolls.at(-1), lenis
-      ? { target: 'lenis', top: destinations[index], immediate: false, force: true }
+    const { duration, easing, ...request } = app.pageScrolls.at(-1)
+    assert.deepEqual(request, lenis
+      ? { target: 'lenis', top: destinations[index], immediate: false, force: true, lerp: 0 }
       : { target: 'window', top: destinations[index], behavior: 'smooth' })
-    if (lenis) assert.equal(app.window.__lenis.targetScroll, destinations[index])
+    if (lenis) {
+      assert.equal(app.window.__lenis.targetScroll, destinations[index])
+      assert.ok(Number.isFinite(duration) && duration >= 1.2)
+      assert.deepEqual([0, .25, .5, .75, 1].map(easing), [0, .25, .5, .75, 1], 'readable pacing uses linear easing')
+    }
     const waiting = app.snapshot()
     for (let frame = 0; frame < 5; frame++) app.flushFrames()
     assert.equal(app.snapshot(), waiting, 'the component cannot animate independently of actual page movement')
@@ -577,17 +582,22 @@ for (const lenis of [false, true]) test(`selection can retarget an unfinished sm
   app.scroll(600)
   app.click(3)
   assert.equal(app.pageScrolls.at(-1).top, 3000)
+  if (lenis) assert.equal(app.pageScrolls.at(-1).duration, 12)
   assert.equal(app.snapshot().story.progress, 0)
   app.scroll(1500, false)
   app.click(0)
   assert.equal(app.pageScrolls.at(-1).top, 600)
+  if (lenis) assert.equal(app.pageScrolls.at(-1).duration, 3.75, 'retargeting times the journey from actual progress rather than the abandoned destination')
   assert.equal(app.window.scrollY, 1500)
   assert.equal(app.snapshot().story.progress, 1.5)
   assert.equal(app.checked(), 'lead')
   app.scroll(1200, false)
   app.click(2)
   assert.equal(app.pageScrolls.at(-1).top, 1800)
-  if (lenis) assert.equal(app.window.__lenis.targetScroll, 1800)
+  if (lenis) {
+    assert.equal(app.window.__lenis.targetScroll, 1800)
+    assert.equal(app.pageScrolls.at(-1).duration, 2.5)
+  }
   assert.equal(app.window.scrollY, 1200)
   assert.equal(app.snapshot().story.progress, 1)
   assert.equal(app.checked(), 'qualify')
@@ -598,6 +608,31 @@ for (const lenis of [false, true]) test(`selection can retarget an unfinished sm
   assert.equal(app.checked(), 'lead')
   assert.equal(app.frames(), 0)
   assert.equal(app.timers(), 0)
+  app.unmount()
+})
+
+test('selection gives the full usual-order sequence seven seconds in either direction and scales partial travel', () => {
+  const app = controller('en', false, 'save', { lenis: true })
+  app.flushFrames()
+  const destinations = [600, 1200, 1800, 3000]
+  for (const [y, index, duration] of [
+    [600, 1, 2.5], [1200, 2, 2.5], [1800, 3, 7],
+    [3000, 2, 7], [1800, 1, 2.5], [1200, 0, 2.5],
+    [600, 3, 12], [3000, 0, 12],
+    [2400, 3, 3.5], [2400, 2, 3.5], [2400, 1, 6],
+    [2940, 3, 1.2], [1170, 1, 1.2],
+  ]) {
+    app.scroll(y)
+    const before = app.snapshot().story.progress
+    app.click(index)
+    const { easing, ...request } = app.pageScrolls.at(-1)
+    assert.deepEqual(request, { target: 'lenis', top: destinations[index], immediate: false, force: true, duration, lerp: 0 })
+    assert.deepEqual([0, .1, .5, .9, 1].map(easing), [0, .1, .5, .9, 1])
+    assert.equal(app.window.scrollY, y)
+    assert.equal(app.snapshot().story.progress, before, 'duration config never advances the story ahead of the page')
+    assert.equal(app.frames(), 0)
+    assert.equal(app.timers(), 0)
+  }
   app.unmount()
 })
 
@@ -615,9 +650,14 @@ for (const lenis of [false, true]) test(`reduced motion reaches each selected en
     assert.equal(app.snapshot().story.progress, index)
     assert.equal(app.checked(), steps[index])
     assert.deepEqual(app.checkedWrites.slice(-4), steps.map((step, candidate) => [step, candidate === index]))
-    assert.deepEqual(app.pageScrolls.at(-1), lenis
-      ? { target: 'lenis', top: destinations[index], immediate: true, force: true }
+    const { duration, easing, ...request } = app.pageScrolls.at(-1)
+    assert.deepEqual(request, lenis
+      ? { target: 'lenis', top: destinations[index], immediate: true, force: true, lerp: 0 }
       : { target: 'window', top: destinations[index], behavior: 'instant' })
+    if (lenis) {
+      assert.ok(Number.isFinite(duration) && duration >= 1.2, 'immediate mode overrides the configured reading duration')
+      assert.equal(easing(.5), .5)
+    }
     app.scroll(destinations[index])
     assert.equal(app.snapshot().story.progress, index, 'the next scroll event retains the selected endpoint')
   }
