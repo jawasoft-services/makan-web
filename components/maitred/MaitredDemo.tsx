@@ -59,10 +59,11 @@ export default function MaitredDemo({ copy, locale }: { copy: MaitredDemoCopy; l
       if (frame !== undefined) window.cancelAnimationFrame(frame)
       frame = undefined
       const top = Math.max(0, window.scrollY + storyStops(root)[index])
-      // Keep the page and the scene on the same timeline, including keyboard selection.
-      if (window.__lenis) window.__lenis.scrollTo(top, { immediate: true, force: true })
-      else window.scrollTo({ top, behavior: 'instant' })
-      publish(index)
+      // The phone and highlight travel with the page, including keyboard selection.
+      followPosition()
+      if (window.__lenis) window.__lenis.scrollTo(top, { immediate: motion.matches, force: true })
+      else window.scrollTo({ top, behavior: motion.matches ? 'instant' : 'smooth' })
+      if (motion.matches) publish(index)
     }
     function preferenceChanged() { setReducedMotion(motion.matches) }
     const hydrate = window.requestAnimationFrame(() => {

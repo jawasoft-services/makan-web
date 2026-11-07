@@ -295,13 +295,17 @@ function controller(locale = 'en', reducedMotion = false, restored = 'save', { i
   const stage = { top: 400 }
   const track = { height: 2400, getBoundingClientRect() { return { height: this.height } } }
   app.window.scrollY = initialY
-  app.window.scrollTo = options => { pageScrolls.push({ target: 'window', ...options }); app.window.scrollY = options.top }
+  app.window.scrollTo = options => {
+    pageScrolls.push({ target: 'window', ...options })
+    if (options.behavior === 'instant') app.window.scrollY = options.top
+  }
   const scroller = lenis ? {
     actualScroll: initialY, targetScroll: initialY,
     on(name, callback) { lenisListeners.set(name, callback); return () => lenisListeners.delete(name) },
     scrollTo(top, options) {
       pageScrolls.push({ target: 'lenis', top, ...options })
-      app.window.scrollY = this.actualScroll = this.targetScroll = top
+      this.targetScroll = top
+      if (options.immediate) app.window.scrollY = this.actualScroll = top
     },
   } : undefined
   if (!delayedLenis) app.window.__lenis = scroller
@@ -516,37 +520,107 @@ test('wheel reversal cancels only opposite Lenis momentum inside the story', () 
   assert.equal(app.listenerCount(), 0)
 })
 
-for (const lenis of [false, true]) test(`click and keyboard destinations share the exact page position, Lenis ${lenis}`, () => {
+for (const lenis of [false, true]) test(`step clicks and keyboard selection follow smooth page travel, Lenis ${lenis}`, () => {
   const app = controller('en', false, 'save', { lenis })
   app.flushFrames()
   const destinations = [600, 1200, 1800, 3000]
+  const steps = ['save', 'qualify', 'lead', 'share']
+  const startProgress = 1 + 34 / 600
   for (let index = 0; index < 4; index++) {
     app.scroll(1234, false)
     if (lenis) app.dispatch('resize')
     assert.equal(app.frames(), 1)
     const writes = app.checkedWrites.length
     app.click(index)
-    assert.deepEqual(app.checkedWrites.slice(writes), ['save', 'qualify', 'lead', 'share'].map((step, candidate) => [step, candidate === index]), 'update every radio explicitly so React tracks automatic unchecking before a later click')
+    assert.deepEqual(app.checkedWrites.slice(writes), steps.map(step => [step, step === 'qualify']), 'reset every radio to actual page progress, including React tracking of automatic unchecking')
     assert.equal(app.frames(), 0, 'selection cancels stale pending position work')
+    assert.equal(app.window.scrollY, 1234, 'requesting a destination does not jump the page')
+    assert.ok(Math.abs(app.snapshot().story.progress - startProgress) < 1e-9)
+    assert.equal(app.checked(), 'qualify', 'the highlight stays with actual movement rather than the requested destination')
+    assert.deepEqual(app.pageScrolls.at(-1), lenis
+      ? { target: 'lenis', top: destinations[index], immediate: false, force: true }
+      : { target: 'window', top: destinations[index], behavior: 'smooth' })
+    if (lenis) assert.equal(app.window.__lenis.targetScroll, destinations[index])
+    const waiting = app.snapshot()
+    for (let frame = 0; frame < 5; frame++) app.flushFrames()
+    assert.equal(app.snapshot(), waiting, 'the component cannot animate independently of actual page movement')
+    app.scroll((1234 + destinations[index]) / 2)
+    assert.ok(app.snapshot().story.progress > Math.min(startProgress, index) && app.snapshot().story.progress < Math.max(startProgress, index), 'forward and reverse travel pass through an intermediate story frame')
+    assert.equal(app.checked(), app.snapshot().story.step)
+    app.scroll(destinations[index])
+    assert.equal(app.snapshot().story.progress, index)
+    assert.equal(app.checked(), steps[index])
+    assert.equal(app.timers(), 0)
+  }
+  app.scroll(1500)
+  app.reselect(true)
+  assert.equal(app.pageScrolls.at(-1).top, 1800, 'Space on the selected instruction requests its endpoint')
+  assert.equal(app.window.scrollY, 1500)
+  assert.equal(app.snapshot().story.progress, 1.5)
+  app.scroll(1650)
+  assert.equal(app.snapshot().story.progress, 1.75)
+  app.reselect()
+  assert.equal(app.pageScrolls.at(-1).top, 1800, 'pointer reselection shares the keyboard destination')
+  assert.equal(app.window.scrollY, 1650)
+  app.scroll(1800)
+  assert.equal(app.snapshot().story.progress, 2)
+  assert.equal(app.events.length, 4, 'reselecting with Space or pointer does not fabricate a selection event')
+  assert.ok(app.events.every(event => Object.keys(event.payload).sort().join(',') === 'locale,location,step'))
+  app.scroll(1750)
+  assert.ok(app.snapshot().story.progress < 2, 'manual scrolling continues to drive the story after arrival')
+  app.unmount()
+})
+
+for (const lenis of [false, true]) test(`selection can retarget an unfinished smooth journey in either direction, Lenis ${lenis}`, () => {
+  const app = controller('en', false, 'save', { lenis })
+  app.flushFrames()
+  app.scroll(600)
+  app.click(3)
+  assert.equal(app.pageScrolls.at(-1).top, 3000)
+  assert.equal(app.snapshot().story.progress, 0)
+  app.scroll(1500, false)
+  app.click(0)
+  assert.equal(app.pageScrolls.at(-1).top, 600)
+  assert.equal(app.window.scrollY, 1500)
+  assert.equal(app.snapshot().story.progress, 1.5)
+  assert.equal(app.checked(), 'lead')
+  app.scroll(1200, false)
+  app.click(2)
+  assert.equal(app.pageScrolls.at(-1).top, 1800)
+  if (lenis) assert.equal(app.window.__lenis.targetScroll, 1800)
+  assert.equal(app.window.scrollY, 1200)
+  assert.equal(app.snapshot().story.progress, 1)
+  assert.equal(app.checked(), 'qualify')
+  app.scroll(1500)
+  assert.equal(app.snapshot().story.progress, 1.5)
+  app.scroll(1800)
+  assert.equal(app.snapshot().story.progress, 2)
+  assert.equal(app.checked(), 'lead')
+  assert.equal(app.frames(), 0)
+  assert.equal(app.timers(), 0)
+  app.unmount()
+})
+
+for (const lenis of [false, true]) test(`reduced motion reaches each selected endpoint immediately, Lenis ${lenis}`, () => {
+  const app = controller('en', true, 'save', { lenis })
+  app.flushFrames()
+  const destinations = [600, 1200, 1800, 3000]
+  const steps = ['save', 'qualify', 'lead', 'share']
+  for (const index of [0, 1, 2, 3, 2, 1, 0]) {
+    app.scroll(1234, false)
+    if (lenis) app.dispatch('resize')
+    app.click(index)
+    assert.equal(app.frames(), 0)
     assert.equal(app.window.scrollY, destinations[index])
     assert.equal(app.snapshot().story.progress, index)
-    assert.equal(app.checked(), ['save', 'qualify', 'lead', 'share'][index])
+    assert.equal(app.checked(), steps[index])
+    assert.deepEqual(app.checkedWrites.slice(-4), steps.map((step, candidate) => [step, candidate === index]))
     assert.deepEqual(app.pageScrolls.at(-1), lenis
       ? { target: 'lenis', top: destinations[index], immediate: true, force: true }
       : { target: 'window', top: destinations[index], behavior: 'instant' })
-    if (lenis) app.lenisEvent('scroll')
-    else app.dispatch('scroll')
-    app.flushFrames()
-    assert.equal(app.snapshot().story.progress, index, 'the browser scroll event cannot overwrite a click with an earlier frame')
-    assert.equal(app.timers(), 0)
+    app.scroll(destinations[index])
+    assert.equal(app.snapshot().story.progress, index, 'the next scroll event retains the selected endpoint')
   }
-  app.reselect(true)
-  app.reselect()
-  assert.equal(app.snapshot().story.progress, 3)
-  assert.equal(app.events.length, 4, 'reselecting with Space or pointer does not fabricate a selection event')
-  assert.ok(app.events.every(event => Object.keys(event.payload).sort().join(',') === 'locale,location,step'))
-  app.scroll(2999)
-  assert.ok(app.snapshot().story.progress < 3, 'any later actual scroll resumes scrubbing immediately')
   app.unmount()
 })
 
