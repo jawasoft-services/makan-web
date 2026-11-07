@@ -19,14 +19,15 @@ function harness({ hash = '', reducedMotion = false, initialY = 0 } = {}) {
   const timers = new Map()
   const scrolls = []
   const nativeScrolls = []
+  const nativeAnchorScrolls = []
   const historyWrites = []
   let timerId = 0
   let effectIndex = 0
   let destroyed = false
   const outer = { open: false, parentElement: null }
   const inner = { open: false, parentElement: { closest: () => outer } }
-  const answer = { closest: () => inner }
-  const section = { closest: () => null }
+  const answer = { closest: () => inner, scrollIntoView: options => nativeAnchorScrolls.push({ target: answer, options, innerOpen: inner.open, outerOpen: outer.open }) }
+  const section = { closest: () => null, scrollIntoView: options => nativeAnchorScrolls.push({ target: section, options }) }
   const location = { hash, pathname: '/maitre-d' }
   const document = {
     hidden: false,
@@ -81,7 +82,7 @@ function harness({ hash = '', reducedMotion = false, initialY = 0 } = {}) {
   }
   render()
   return {
-    outer, inner, answer, section, scrolls, nativeScrolls, historyWrites, window, document,
+    outer, inner, answer, section, scrolls, nativeScrolls, nativeAnchorScrolls, historyWrites, window, document,
     rerender(pathname = location.pathname, hash = location.hash) {
       location.pathname = pathname
       location.hash = hash
@@ -154,7 +155,12 @@ for (const reducedMotion of [false, true]) test(`hash routes preserve anchor nav
   assert.equal(app.scrolls.length, before.lenis)
   assert.equal(app.nativeScrolls.length, before.native)
   app.hashChange('#answer')
-  if (reducedMotion) assert.equal(app.scrolls.length, before.lenis, 'native anchor handling remains in charge')
+  if (reducedMotion) {
+    assert.equal(app.scrolls.length, before.lenis)
+    assert.equal(app.nativeAnchorScrolls.at(-1).target, app.answer)
+    assert.equal(app.nativeAnchorScrolls.at(-1).innerOpen, true)
+    assert.equal(app.nativeAnchorScrolls.at(-1).outerOpen, true)
+  }
   else {
     assert.equal(app.scrolls.at(-1).target, app.answer)
     assert.equal(app.scrolls.at(-1).innerOpen, true)
@@ -205,11 +211,30 @@ test('initial hash, delayed landing and hash changes use the same disclosure rev
   app.cleanup()
 })
 
-test('reduced motion leaves anchors and disclosure reveal to the browser', () => {
+test('reduced motion keeps router history and reveals disclosures with instant native scrolling', () => {
   const app = harness({ hash: '#answer', reducedMotion: true })
   assert.equal(app.window.__lenis, undefined)
-  assert.equal(app.click('#answer').defaultPrevented, false)
   app.runTimers(0)
+  assert.equal(app.nativeAnchorScrolls.at(-1).target, app.answer)
+  assert.equal(app.inner.open, true)
+  assert.equal(app.outer.open, true)
+  assert.equal(app.click('#section').defaultPrevented, true)
+  app.runTimers(0)
+  assert.deepEqual(app.historyWrites, ['#section'])
+  assert.equal(app.nativeAnchorScrolls.at(-1).target, app.section)
+  assert.deepEqual({ ...app.nativeAnchorScrolls.at(-1).options }, { behavior: 'instant', block: 'start' })
   assert.equal(app.scrolls.length, 0)
+  app.cleanup()
+})
+
+for (const reducedMotion of [false, true]) test(`repeated section clicks do not add duplicate Back destinations, reduced motion ${reducedMotion}`, () => {
+  const app = harness({ reducedMotion })
+  app.runTimers(0)
+  app.click('#section')
+  app.runTimers(0)
+  app.click('#section')
+  app.runTimers(0)
+  assert.deepEqual(app.historyWrites, ['#section'])
+  assert.equal((reducedMotion ? app.nativeAnchorScrolls : app.scrolls).at(-1).target, app.section)
   app.cleanup()
 })

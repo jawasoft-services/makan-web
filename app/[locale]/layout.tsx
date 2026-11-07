@@ -4,7 +4,6 @@ import { NextIntlClientProvider, hasLocale } from "next-intl"
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server"
 import { notFound } from "next/navigation"
 import SafeAnalytics from "@/components/SafeAnalytics"
-import { ViewTransitions } from "next-view-transitions"
 import Navbar from "@/components/Navbar"
 import SmoothScroll from "@/components/motion/SmoothScroll"
 import { routing } from "@/i18n/routing"
@@ -80,7 +79,6 @@ export default async function RootLayout({
   )
 
   return (
-    <ViewTransitions>
       <html lang={locale} className={jakarta.variable} data-scroll-behavior="smooth">
         <body className="redesign-site font-sans antialiased">
           <NextIntlClientProvider messages={clientMessages}>
@@ -97,6 +95,5 @@ export default async function RootLayout({
           </NextIntlClientProvider>
         </body>
       </html>
-    </ViewTransitions>
   )
 }

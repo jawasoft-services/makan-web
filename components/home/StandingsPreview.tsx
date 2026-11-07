@@ -24,7 +24,7 @@ export default async function StandingsPreview() {
     <section id="standings" className="scroll-mt-[86px] w-full bg-brand-cream px-6 py-20 md:px-10 md:py-28">
       <Reveal className="mx-auto grid max-w-5xl grid-cols-1 items-start gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
         <div>
-          <p data-beat className="text-[0.82rem] font-semibold uppercase tracking-[0.16em] text-brand-orange">
+          <p data-beat className="text-[0.82rem] font-semibold uppercase tracking-[0.16em] text-brand-muted">
             {t("eyebrow")}
           </p>
           <h2
@@ -52,7 +52,7 @@ export default async function StandingsPreview() {
         <ol data-beat style={{ "--beat": 2 } as React.CSSProperties} className="divide-y divide-brand-line rounded-2xl border border-brand-line bg-brand-card">
           {rows.map((row, i) => (
             <li key={row.placeId} className="flex items-center gap-4 px-5 py-4">
-              <span className="w-6 shrink-0 text-[1.1rem] font-bold tabular-nums text-brand-orange">{i + 1}</span>
+              <span className="w-6 shrink-0 text-[1.1rem] font-bold tabular-nums text-brand-muted">{i + 1}</span>
               <span className="min-w-0 flex-1">
                 <Link
                   href={localizePath(locale, `/places/${row.slug}`)}

@@ -47,6 +47,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  experimental: { globalNotFound: true },
   env: { NEXT_PUBLIC_MAKAN_WEBSITE_FIXTURES: process.env.MAKAN_WEBSITE_FIXTURES === "1" ? "1" : "0" },
   // Fixture caches and HTML must never become production output.
   distDir: process.env.MAKAN_WEBSITE_FIXTURES === "1" ? ".next-fixtures" : ".next",

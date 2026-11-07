@@ -21,7 +21,7 @@ function renderInline(text: string): ReactNode[] {
         <Link
           key={key++}
           href={m[2]}
-          className="text-brand-orange underline underline-offset-2 hover:opacity-80"
+          className="text-brand-ink underline decoration-brand-orange underline-offset-2"
         >
           {m[1]}
         </Link>,
@@ -66,7 +66,7 @@ function Faq({ review }: { review: Review }) {
   return (
     <section className={styles.faq} aria-labelledby="review-faq">
       <h2 id="review-faq">{review.restaurant.name}: quick questions</h2>
-      {review.faq.map(faq => <details key={faq.q}><summary className="playful-disclosure">{faq.q}<PlayfulArrow direction="down" /></summary><p>{faq.a}</p></details>)}
+      {review.faq.map(faq => <details name="review-faq" key={faq.q}><summary className="playful-disclosure">{faq.q}<PlayfulArrow direction="down" /></summary><p>{faq.a}</p></details>)}
     </section>
   )
 }
@@ -75,7 +75,7 @@ function Cta() {
   return (
     <section className={styles.cta}>
       <h2>Remember your own meals</h2>
-      <p>Makan is a food journal for the meals that matter — free on the App Store.</p>
+      <p>Makan is a food journal for the meals that matter — free on iPhone and Android.</p>
       <StoreLink location="review" className={styles.button}>Download on the App Store</StoreLink>
     </section>
   )

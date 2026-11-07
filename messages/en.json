@@ -286,7 +286,7 @@
     "topPlacesTitle": "Places with the most meals saved",
     "topPlacesMeals": "{count, plural, one {# meal} other {# meals}}",
     "maitreDTell": "See your Maître d’ in the app, by first name, so you can recognise the right person.",
-    "cityError": "Which city is your restaurant in? The standings are by city.",
+    "cityError": "Enter the city your restaurant is in.",
     "standingsCta": "See the standings",
     "eatsLine": "A star is awarded. An Eat is earned, one diner at a time.",
     "heroCta": "Talk to Devon",

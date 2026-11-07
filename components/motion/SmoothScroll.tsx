@@ -34,9 +34,9 @@ export default function SmoothScroll() {
   }, [pathname])
 
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const lenis = new Lenis({ autoRaf: true, anchors: false })
-    window.__lenis = lenis
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const lenis = reducedMotion ? null : new Lenis({ autoRaf: true, anchors: false })
+    if (lenis) window.__lenis = lenis
 
     const targetFor = (hash: string): HTMLElement | null => {
       const id = decodeURIComponent(hash.replace(/^#/, ''))
@@ -51,7 +51,8 @@ export default function SmoothScroll() {
       }
       // Sections carry scroll-margin-top equal to the nav, so no offset here:
       // native jumps and Lenis land in the same place.
-      lenis.scrollTo(el, { immediate, force: true })
+      if (lenis) lenis.scrollTo(el, { immediate, force: true })
+      else el.scrollIntoView({ behavior: 'instant', block: 'start' })
     }
 
     // Landing on a hash: the scenes arm on mount and grow the page, so scroll
@@ -83,7 +84,8 @@ export default function SmoothScroll() {
       const el = targetFor(href.slice(hashAt))
       if (!el) return
       event.preventDefault()
-      history.pushState(null, '', href.slice(hashAt))
+      // Keep Next's route state even without Lenis; native hash entries lose it on Back.
+      if (location.hash !== href.slice(hashAt)) history.pushState(null, '', href.slice(hashAt))
       // A link inside the mobile drawer: let the drawer close first.
       const inDrawer = Boolean(anchor.closest('[data-vaul-drawer]'))
       // A hidden tab has no animation frames to animate with: jump instead.
@@ -101,7 +103,7 @@ export default function SmoothScroll() {
       document.removeEventListener('click', onClick)
       window.removeEventListener('hashchange', onHashChange)
       delete window.__lenis
-      lenis.destroy()
+      lenis?.destroy()
     }
   }, [])
   return null

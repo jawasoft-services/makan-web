@@ -3,14 +3,18 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
+import { useSyncExternalStore } from 'react'
 import localFont from 'next/font/local'
 import styles from './not-found.module.css'
 
 const jakarta = localFont({ src: '../public/fonts/PlusJakartaSans-Latin-Variable.woff2', weight: '400 800', display: 'swap' })
+const subscribe = () => () => {}
 
-export default function NotFound() {
-  const isId = usePathname()?.startsWith('/id/')
-  return <main id="main-content" className={`${styles.page} ${jakarta.className}`}>
+export default function NotFound({ global = false }: { global?: boolean }) {
+  // The static global fallback has no request pathname until hydration.
+  const hydrated = useSyncExternalStore(subscribe, () => true, () => false)
+  const isId = usePathname()?.startsWith('/id/') && (!global || hydrated)
+  return <main id="main-content" lang={isId ? 'id' : 'en'} className={`${styles.page} ${jakarta.className}`}>
     <Image className={styles.logo} src="/redesign/logo-orange.svg" alt="Makan" width={168} height={40} />
     <Image src="/redesign/food-noodles.svg" alt="" width={160} height={140} />
     <p>404</p>

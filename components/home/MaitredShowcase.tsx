@@ -25,7 +25,7 @@ export default async function MaitredShowcase({ dedicated = false }: { dedicated
   return (
     <section id="maitred" className="scroll-mt-[86px] w-full bg-brand-cream px-5 py-20 md:px-10 md:py-28">
       <Reveal className="mx-auto max-w-5xl">
-        <p data-beat className="text-[0.82rem] font-semibold uppercase tracking-[0.16em] text-brand-orange">
+        <p data-beat className="text-[0.82rem] font-semibold uppercase tracking-[0.16em] text-brand-muted">
           {t("eyebrow")}
         </p>
         <h2

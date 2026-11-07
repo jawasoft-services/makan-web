@@ -61,7 +61,7 @@ export default async function SupportPage({ params }: { params: Promise<{ locale
           </aside>
           <section className={styles.questions} aria-labelledby="support-questions">
             <h2 id="support-questions">{t("questions")}</h2>
-            {faqs.map(f => <details key={f.q} className={styles.faq}>
+            {faqs.map(f => <details name="support-faq" key={f.q} className={styles.faq}>
               <summary>{f.q}<span aria-hidden>+</span></summary><p>{f.a}</p>
             </details>)}
           </section>
