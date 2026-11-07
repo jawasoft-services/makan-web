@@ -2,8 +2,8 @@ import { WEBSITE_FIXTURES, fixtureDirectory, fixturePlaceIndex } from '@/lib/web
 import 'server-only'
 import { unstable_cache } from 'next/cache'
 import { getDb } from '@/lib/firebase-admin'
-import { computePlaceDirectory, indexOf } from '@/lib/aggregates/compute'
-import { readMaitredHolders } from '@/lib/aggregates/maitred'
+import { computePlaceDirectory, computePlaceDirectoryForPlace, indexOf } from '@/lib/aggregates/compute'
+import { getVerifiedMaitredSource } from '@/lib/aggregates/maitred'
 import { MAX_AGE_MS, readLastRun, readPlace, readPlaceIndex, readPlaces } from '@/lib/aggregates/store'
 import type { DirectoryPlace, PlaceIndexEntry } from '@/lib/aggregates/types'
 
@@ -30,12 +30,12 @@ async function fallbackDirectory(reason: string): Promise<DirectoryPlace[]> {
   const db = getDb()
   if (!db) throw new Error('Place directory database unavailable.')
   console.warn(`place-directory: aggregate ${reason}; falling back to a live scan.`)
-  const holders = await readMaitredHolders(db)
-  return computePlaceDirectory(db, holders.map((h) => h.placeId))
+  const source = await getVerifiedMaitredSource(db)
+  return computePlaceDirectory(db, source.holders.map((h) => h.placeId))
 }
 
 /** The small index: slug, name, city, indexable, meal count, for every place. One or two reads. */
-export const getPlaceIndex = unstable_cache(
+const getCachedPlaceIndex = unstable_cache(
   async (): Promise<PlaceIndexEntry[]> => {
     if (WEBSITE_FIXTURES) return fixturePlaceIndex()
     try {
@@ -52,6 +52,46 @@ export const getPlaceIndex = unstable_cache(
   ['makan-place-index', 'v2-maitred-states'],
   { revalidate: 3600 },
 )
+
+/** Cache venue content separately from the five-minute holder eligibility check. */
+const getCachedSupplementalPlace = unstable_cache(async (placeId: string): Promise<DirectoryPlace> => {
+  const db = getDb()
+  if (!db) throw new Error('Place directory database unavailable.')
+  return await readPlace(db, placeId) ?? computePlaceDirectoryForPlace(db, placeId)
+}, ['makan-maitred-place', 'v1'], { revalidate: 3600 })
+const pendingPlaces = new Map<string, Promise<DirectoryPlace>>()
+
+function getSupplementalPlace(placeId: string): Promise<DirectoryPlace> {
+  const pending = pendingPlaces.get(placeId)
+  if (pending) return pending
+  const read = getCachedSupplementalPlace(placeId).finally(() => {
+    if (pendingPlaces.get(placeId) === read) pendingPlaces.delete(placeId)
+  })
+  pendingPlaces.set(placeId, read)
+  return read
+}
+
+async function getMissingHolderPlaces(existing: { placeId: string }[], requestedId?: string): Promise<DirectoryPlace[]> {
+  const db = getDb()
+  if (!db) throw new Error('Place directory database unavailable.')
+  const source = await getVerifiedMaitredSource(db)
+  const present = new Set(existing.map(place => place.placeId))
+  const ids = [...new Set(source.holders.map(holder => holder.placeId))]
+    .filter(id => !present.has(id) && (requestedId === undefined || id === requestedId))
+  return Promise.all(ids.map(getSupplementalPlace))
+}
+
+export async function getPlaceIndex(): Promise<PlaceIndexEntry[]> {
+  if (WEBSITE_FIXTURES) return fixturePlaceIndex()
+  let index: PlaceIndexEntry[] = []
+  try {
+    index = await getCachedPlaceIndex()
+    return [...index, ...indexOf(await getMissingHolderPlaces(index))]
+  } catch (err) {
+    console.error('place-directory: failed to complete the index.', err)
+    return index
+  }
+}
 
 /** Cache successful full directories only; a provider failure is not an empty catalogue. */
 const getCachedPlaceDirectory = unstable_cache(
@@ -71,7 +111,9 @@ const getCachedPlaceDirectory = unstable_cache(
 /** Maître callers must preserve failed joins as unavailable, separately from a real empty list. */
 export async function getPlaceDirectoryStrict(): Promise<DirectoryPlace[] | null> {
   try {
-    return await getCachedPlaceDirectory()
+    const directory = await getCachedPlaceDirectory()
+    if (WEBSITE_FIXTURES) return directory
+    return [...directory, ...await getMissingHolderPlaces(directory)]
   } catch (err) {
     console.error('place-directory: failed to build the directory.', err)
     return null
@@ -85,17 +127,16 @@ export async function getPlaceDirectory(): Promise<DirectoryPlace[]> {
 
 /**
  * One place by its Google Place id: a single document read, never a scan.
- * Missing from the aggregate means not a page (not a food venue, no public
- * meals) or the cron has not run yet; the cron repairs the second case. A
- * request path must not scan `meals`: this is reached by every shared meal
- * link, and an unknown id would otherwise cost a full collection read per hit.
+ * Only a current eligible holder can recover an absent aggregate. Unknown IDs
+ * never trigger meal queries; recovery reads public meals at that venue only.
  */
 export async function getDirectoryPlaceById(placeId: string): Promise<DirectoryPlace | null> {
   if (WEBSITE_FIXTURES) return fixtureDirectory().find(place => place.placeId === placeId) ?? null
   try {
     const db = getDb()
     if (!db) return null
-    return await readPlace(db, placeId)
+    const stored = await readPlace(db, placeId)
+    return stored ?? (await getMissingHolderPlaces([], placeId))[0] ?? null
   } catch (err) {
     console.error('place-directory: failed to read a place.', err)
     return null

@@ -21,31 +21,28 @@ function database(seed = {}) {
   const data = new Map(Object.entries(seed))
   const reads = []
   const writes = []
+  const queries = []
   let onRead = null
   async function read(path) { reads.push(path); if (onRead) await onRead(path); return doc(path, data.get(path)) }
   const reference = path => ({ path, get: () => read(path), collection: name => collection(`${path}/${name}`) })
-  const collection = path => {
-    let filter = null
-    let mask = null
-    const query = {
-      doc: id => reference(`${path}/${id}`),
-      where(field, op, value) { filter = { field, op, value }; return query },
-      select(...fields) { mask = fields; return query },
-      async get() {
-        reads.push(`${path}/*`)
-        if (onRead) await onRead(`${path}/*`)
-        let rows = [...data].filter(([key]) => key.startsWith(`${path}/`) && !key.slice(path.length + 1).includes('/'))
-        if (filter) rows = rows.filter(([, value]) => filter.op === 'in' ? filter.value.includes(value[filter.field]) : value[filter.field] === filter.value)
-        return { docs: rows.map(([key, value]) => doc(key, mask ? Object.fromEntries(mask.map(field => [field, value[field]])) : value)) }
-      },
-    }
-    return query
-  }
+  const collection = (path, filters = [], mask = null) => ({
+    doc: id => reference(`${path}/${id}`),
+    where: (field, op, value) => collection(path, [...filters, { field, op, value }], mask),
+    select: (...fields) => collection(path, filters, fields),
+    async get() {
+      reads.push(`${path}/*`)
+      queries.push({ path, filters: copy(filters), fields: mask ? [...mask] : null })
+      if (onRead) await onRead(`${path}/*`, queries.at(-1))
+      let rows = [...data].filter(([key]) => key.startsWith(`${path}/`) && !key.slice(path.length + 1).includes('/'))
+      for (const filter of filters) rows = rows.filter(([, value]) => filter.op === 'in' ? filter.value.includes(value[filter.field]) : value[filter.field] === filter.value)
+      return { size: rows.length, docs: rows.map(([key, value]) => doc(key, mask ? Object.fromEntries(mask.map(field => [field, value[field]])) : value)) }
+    },
+  })
   const db = { doc: reference, collection,
     async getAll(...refs) { const mask = refs.at(-1)?.fieldMask; if (mask) refs.pop(); return Promise.all(refs.map(async ref => { const value = await read(ref.path); return mask ? doc(ref.path, value.exists ? Object.fromEntries(mask.map(field => [field, value.get(field)])) : undefined) : value })) },
     bulkWriter() { return { onWriteError() {}, set(ref, value) { writes.push(['set', ref.path]);data.set(ref.path, value);return Promise.resolve() }, delete(ref) { writes.push(['delete', ref.path]);data.delete(ref.path);return Promise.resolve() }, close: async () => {} } },
   }
-  return { db, data, reads, writes, setReadHook: hook => { onRead = hook } }
+  return { db, data, reads, writes, queries, setReadHook: hook => { onRead = hook } }
 }
 function seeded(ids = ['retained', 'transferred', 'vacant', 'unresolved']) {
   const seed = { 'maitredFeature/current': { enabled: true } }
@@ -64,10 +61,10 @@ function seeded(ids = ['retained', 'transferred', 'vacant', 'unresolved']) {
 function lane(options = {}) {
   const modules = new Map()
   const clock = { now: time }
-  const calls = { source: 0, directory: 0, stored: 0, heartbeat: 0, photos: 0 }
+  const calls = { source: 0, directory: 0, stored: 0, heartbeat: 0, photos: 0, caches: [], locations: [] }
   const external = []
   class ClockDate extends Date { static now() { return clock.now } }
-  class Timestamp { constructor(ms) { this.ms = ms } static now() { return new Timestamp(clock.now) } toDate() { return new Date(this.ms) } }
+  class Timestamp { constructor(ms) { this.ms = ms } static now() { return new Timestamp(clock.now) } static fromMillis(ms) { return new Timestamp(ms) } toDate() { return new Date(this.ms) } toMillis() { return this.ms } }
   const control = { stored: null, lastRun: null, source: { status: 'ready', holders: [], places: [] }, directory: [], ...options }
   function load(relative) {
     let file = resolve(relative)
@@ -75,22 +72,42 @@ function lane(options = {}) {
     if (modules.has(file)) return modules.get(file)
     const exports = {}; modules.set(file, exports)
     const code = ts.transpileModule(readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText
-    runInNewContext(code, { exports, Date: ClockDate, Buffer, Request, Response, console: { error() {}, warn() {}, log() {} }, process: { env: { NODE_ENV: 'test', CRON_SECRET: 'fixture-cron-token' } },
+    runInNewContext(code, { exports, Date: ClockDate, Buffer, Request, Response, URL, console: { error() {}, warn() {}, log() {} }, process: { env: { NODE_ENV: 'test', CRON_SECRET: 'fixture-cron-token' } },
       fetch() { external.push('fetch'); throw new Error('External traffic forbidden') },
       require(id) {
         if (id === 'node:crypto') return { createHash, timingSafeEqual }
         if (id === 'server-only') return {}
         if (id === 'firebase-admin/firestore') return { Timestamp }
-        if (id === 'next/cache') return { unstable_cache: fn => {
-          if (!control.memoizeCache) return fn
-          let pending = null
-          return () => pending ??= fn().catch(error => { pending = null; throw error })
+        if (id === 'next/cache') return { unstable_cache: (fn, keys = [], options = {}) => {
+          const entries = new Map()
+          const cache = { keys: copy(keys), options: copy(options), args: [], misses: [] }
+          calls.caches.push(cache)
+          return (...args) => {
+            cache.args.push(copy(args))
+            if (!control.memoizeCache) return fn(...args)
+            const key = JSON.stringify(args)
+            const previous = entries.get(key)
+            const maxAge = typeof options.revalidate === 'number' ? options.revalidate * 1000 : Infinity
+            if (previous && clock.now >= previous.at && clock.now - previous.at < maxAge) return previous.pending
+            cache.misses.push(copy(args))
+            const entry = { at: clock.now, pending: null }
+            entry.pending = Promise.resolve().then(() => fn(...args)).catch(error => {
+              if (entries.get(key) === entry) entries.delete(key)
+              throw error
+            })
+            entries.set(key, entry)
+            return entry.pending
+          }
         } }
         if (id === 'next/server') return { NextResponse: Response }
         if (id === '@/lib/website-fixtures') return { WEBSITE_FIXTURES: false }
         if (id === '@/lib/firebase-admin') return { getDb: () => control.db ?? {} }
         if (id === '@/lib/place-directory' && !control.actualDirectory) return { getPlaceDirectoryStrict: async () => { calls.directory++; return typeof control.directory === 'function' ? control.directory() : control.directory } }
-        if (id === '@/lib/aggregates/compute') return {
+        if (id === '@/lib/place-city' && control.actualCompute) return {
+          getPlaceSeed: () => undefined, hasSeededWhere: () => false, isFoodVenue: () => true, placeLabel: () => null,
+          getPlaceWhere: async ids => { calls.locations.push(copy(ids)); return new Map(ids.map(id => [id, { city: 'Fixture city', country: 'Fixture country' }])) },
+        }
+        if (id === '@/lib/aggregates/compute' && !control.actualCompute) return {
           computeEatStandings: async () => ({ rows: [], computedAt: 'fixture' }),
           computePlaceStats: async () => ({}), indexOf: () => [],
           computePlaceDirectory: async (_db, ids) => { calls.directoryIds = copy(ids); return control.directory },
@@ -99,9 +116,10 @@ function lane(options = {}) {
           readMaitred: async () => { calls.stored++; return load('lib/aggregates/maitred.ts').parseMaitredList(control.stored) },
           readLastRun: async () => { calls.heartbeat++; return control.lastRun },
         }
-        if (id === '@/lib/aggregates/maitred' && !control.actualSource) return {
-          ...load('lib/aggregates/maitred.ts'), readMaitredSource: async () => { calls.source++; const verifiedAt = clock.now; const value = await (typeof control.source === 'function' ? control.source() : control.source); return { verifiedAt, ...value } },
-          readMaitredPhotos: async () => { calls.photos++; return new Map() },
+        if (id === '@/lib/aggregates/maitred' && !control.actualSource) {
+          const source = async () => { calls.source++; const verifiedAt = clock.now; const value = await (typeof control.source === 'function' ? control.source() : control.source); return { verifiedAt, ...value } }
+          return { ...load('lib/aggregates/maitred.ts'), readMaitredSource: source, getVerifiedMaitredSource: source,
+            readMaitredPhotos: async () => { calls.photos++; return new Map() } }
         }
         if (id.startsWith('@/')) return load(id.slice(2))
         if (id.startsWith('.')) return load(resolve(dirname(file), id))
@@ -402,5 +420,274 @@ test('actual cron carries producer states and read-start proof through store to 
   assert.equal((await api.getMaitredStateAt('vacant')).status, 'vacant')
   assert.equal((await api.getMaitredStateAt('unresolved')).status, 'unresolved')
   assert.equal((await api.getMaitredStateAt('missing')).status, 'unavailable')
+  assert.deepEqual(run.external, [])
+})
+
+function completeDirectoryLane({ aggregateIds = ['catalogue'] } = {}) {
+  const db = seeded(['retained', 'transferred'])
+  const run = lane({ db: db.db, actualSource: true, actualStore: true, actualDirectory: true, actualCompute: true, memoizeCache: true })
+  const slug = run.load('lib/slug.ts')
+  const places = aggregateIds.map(placeId => ({
+    placeId, slug: slug.placeSlug(`Aggregate ${placeId}`, placeId), hash: slug.shortHash(placeId),
+    name: `Aggregate ${placeId}`, where: null, address: '', lat: null, lng: null, cuisine: [], since: null,
+    meals: [], indexable: false,
+  }))
+  const compute = run.load('lib/aggregates/compute.ts')
+  db.data.set('webAggregates/meta', { lastRunAt: new run.Timestamp(time) })
+  db.data.set('webAggregates/placeIndex', { shards: 1 })
+  db.data.set('webAggregates/placeIndex/shards/0', { entries: compute.indexOf(places) })
+  for (const place of places) db.data.set(`webAggregates/places/items/${place.placeId}`, { payload: place })
+  for (const id of ['retained', 'transferred']) Object.assign(db.data.get(`restaurants/${id}`), {
+    displayName: `Current ${id}`, cuisine: { categories: [{ label: 'Local' }] }, latitude: 1, longitude: 2,
+  })
+  db.data.delete('maitredMenus/transferred')
+  const meal = (placeId, patch = {}) => ({ placeProviderId: placeId, locationName: `Old ${placeId}`, isPublic: true,
+    moderationStatus: 'active', imageURL: `https://firebasestorage.googleapis.com/${placeId}.jpg`,
+    thumbnailUrl: `https://firebasestorage.googleapis.com/${placeId}-thumb.jpg`, caption: 'A memorable lunch',
+    mealType: 'Lunch', userName: 'public_diner', createdAt: new run.Timestamp(time - 1_000), ...patch })
+  db.data.set('meals/retained-public', meal('retained'))
+  db.data.set('meals/retained-private', meal('retained', { isPublic: false }))
+  db.data.set('meals/retained-hidden', meal('retained', { moderationStatus: 'hidden' }))
+  db.data.set('meals/retained-untrusted', meal('retained', { imageURL: 'https://untrusted.example/photo.jpg' }))
+  db.data.set('meals/unrelated-public', meal('unrelated'))
+  return { db, run, api: run.load('lib/place-directory.ts'), maitred: run.load('lib/maitred.ts') }
+}
+const idsOf = values => copy(values.map(value => value.placeId).sort())
+const mealQueries = db => db.queries.filter(query => query.path === 'meals')
+function assertExactPublicMealQueries(db, expectedIds) {
+  const queries = mealQueries(db)
+  assert.deepEqual(queries.map(query => query.filters.find(filter => filter.field === 'placeProviderId' && filter.op === '==')?.value).sort(), [...expectedIds].sort())
+  assert(queries.every(query => query.filters.some(filter => filter.field === 'isPublic' && filter.op === '==' && filter.value === true)), 'recovery queries only public meals for the exact eligible venue')
+}
+
+test('actual index/full/exact/slug routes recover every eligible missing holder, including no published order or meal', async () => {
+  const { db, run, api, maitred } = completeDirectoryLane()
+  const [index, full, exact] = await Promise.all([api.getPlaceIndex(), api.getPlaceDirectoryStrict(), api.getDirectoryPlaceById('transferred')])
+  assert.deepEqual(idsOf(index), ['catalogue', 'retained', 'transferred'])
+  assert.deepEqual(idsOf(full), ['catalogue', 'retained', 'transferred'])
+  assert.equal(exact.placeId, 'transferred'); assert.equal(exact.name, 'Current transferred')
+  assert.equal(exact.meals.length, 0); assert.equal(exact.indexable, false)
+  const entry = index.find(place => place.placeId === 'transferred')
+  assert.equal((await api.getDirectoryPlace(entry.slug)).placeId, 'transferred')
+  assert.equal((await api.getDirectoryPlace(`previous-name-${entry.hash}`)).placeId, 'transferred', 'renamed slugs retain their hash-based destination')
+  const retained = await api.getDirectoryPlaceById('retained')
+  assert.deepEqual(copy(retained.meals.map(meal => meal.id)), ['retained-public'])
+  const publicState = await maitred.getMaitredDirectory()
+  assert.equal(publicState.status, 'ready'); assert.deepEqual(idsOf(publicState.venues), ['retained', 'transferred'])
+  assert.deepEqual(copy(publicState.venues.find(value => value.placeId === 'transferred').notes), { always: '', another: '', why: '', tip: '' })
+  assertExactPublicMealQueries(db, ['retained', 'transferred'])
+  assert.equal(db.reads.filter(path => path === 'maitredFeature/current').length, 1, 'directory and holder identity share one verified source read')
+  assert.equal(db.writes.length, 0); assert.deepEqual(run.external, [])
+})
+
+test('existing aggregate metadata wins and an unrelated or malformed ID never triggers a meal query', async () => {
+  const { db, run, api } = completeDirectoryLane({ aggregateIds: ['catalogue', 'retained'] })
+  const index = await api.getPlaceIndex()
+  const full = await api.getPlaceDirectoryStrict()
+  assert.equal(index.find(place => place.placeId === 'retained').name, 'Aggregate retained')
+  assert.equal(full.find(place => place.placeId === 'retained').name, 'Aggregate retained')
+  assert.equal((await api.getDirectoryPlaceById('retained')).name, 'Aggregate retained')
+  const before = mealQueries(db).length
+  assert.equal(await api.getDirectoryPlaceById('unrelated'), null)
+  assert.equal(await api.getDirectoryPlaceById('unknown'), null)
+  assert.equal(await api.getDirectoryPlaceById('bad/path'), null)
+  assert.equal(await api.getDirectoryPlace('not-a-valid-slug'), null)
+  assert.equal(mealQueries(db).length, before)
+  assertExactPublicMealQueries(db, ['transferred'])
+  assert.deepEqual(run.external, [])
+})
+
+test('per-venue metadata cache keys retain ID arguments and coalesce cold concurrent callers', async () => {
+  const { db, run, api } = completeDirectoryLane()
+  let release; const gate = new Promise(resolve => { release = resolve })
+  db.setReadHook(path => path === 'meals/*' ? gate : undefined)
+  const pending = [api.getDirectoryPlaceById('retained'), api.getDirectoryPlaceById('retained'),
+    api.getDirectoryPlaceById('transferred'), api.getPlaceIndex(), api.getPlaceDirectoryStrict()]
+  await new Promise(resolve => setImmediate(resolve)); release()
+  const [first, same, other] = await Promise.all(pending)
+  assert.equal(first.placeId, 'retained'); assert.equal(same.placeId, 'retained'); assert.equal(other.placeId, 'transferred')
+  assertExactPublicMealQueries(db, ['retained', 'transferred'])
+  const metadataCache = run.calls.caches.find(cache => cache.args.some(args => args[0] === 'retained') && cache.args.some(args => args[0] === 'transferred'))
+  assert(metadataCache, 'the metadata cache receives distinct place IDs as arguments')
+  assert.equal(metadataCache.options.revalidate, 3600)
+  assert.deepEqual(metadataCache.misses.map(args => args[0]).sort(), ['retained', 'transferred'])
+  const count = mealQueries(db).length
+  await Promise.all([api.getPlaceIndex(), api.getPlaceDirectoryStrict(), api.getDirectoryPlaceById('retained'), api.getDirectoryPlaceById('transferred')])
+  assert.equal(mealQueries(db).length, count)
+  assert.deepEqual(run.external, [])
+})
+
+test('opt-out, feature disable and account deletion suppress missing-holder routes after five minutes despite warm metadata', async () => {
+  for (const change of ['opt-out', 'disabled', 'profile-deleted', 'deletion-fence']) {
+    const { db, run, api, maitred } = completeDirectoryLane()
+    assert.equal((await maitred.getMaitredStateAt('retained')).status, 'held')
+    assert((await api.getPlaceIndex()).some(place => place.placeId === 'retained'))
+    const queryCount = mealQueries(db).length
+    if (change === 'opt-out') db.data.set('users/retained-user/maitredSettings/participation', { enabled: false })
+    if (change === 'disabled') db.data.set('maitredFeature/current', { enabled: false })
+    if (change === 'profile-deleted') db.data.delete('users/retained-user')
+    if (change === 'deletion-fence') db.data.set(`accountDeletionFences/${createHash('sha256').update('retained-user').digest('hex')}`, {})
+    run.clock.now += 300_000
+    const [index, full, exact, state] = await Promise.all([api.getPlaceIndex(), api.getPlaceDirectoryStrict(), api.getDirectoryPlaceById('retained'), maitred.getMaitredStateAt('retained')])
+    assert(!index.some(place => place.placeId === 'retained'), change)
+    assert(!full.some(place => place.placeId === 'retained'), change)
+    assert.equal(exact, null, change)
+    assert.equal(state.status, change === 'disabled' ? 'disabled' : 'unavailable', change)
+    assert.equal(mealQueries(db).length, queryCount, 'privacy revocation does not need another metadata query')
+    assert.deepEqual(run.external, [])
+  }
+})
+
+test('failed metadata recovery is unavailable and retries rather than caching an empty recovered directory', async () => {
+  const { db, run, api, maitred } = completeDirectoryLane()
+  db.setReadHook(path => { if (path === 'meals/*') throw new Error('exact public meals unavailable') })
+  assert.equal(await api.getDirectoryPlaceById('retained'), null)
+  assert.equal(await api.getPlaceDirectoryStrict(), null)
+  assert.deepEqual(copy(await maitred.getMaitredDirectory()), { status: 'unavailable', venues: [] })
+  db.setReadHook(null); run.clock.now += 10_000
+  assert.equal((await api.getDirectoryPlaceById('retained')).name, 'Current retained')
+  assert.deepEqual(idsOf(await api.getPlaceDirectoryStrict()), ['catalogue', 'retained', 'transferred'])
+  assert.equal((await maitred.getMaitredStateAt('retained')).status, 'held')
+  assert(mealQueries(db).length > 2, 'the failed recovery was attempted again')
+  assert.deepEqual(run.external, [])
+})
+
+test('verified source keeps its read-start time, expires at five minutes and raw cron reads remain fresh', async () => {
+  const db = seeded(['retained']); const run = lane(); const api = run.load('lib/aggregates/maitred.ts')
+  const first = await api.getVerifiedMaitredSource(db.db)
+  assert.equal(first.verifiedAt, time)
+  db.data.set('users/retained-user/maitredSettings/participation', { enabled: false })
+  run.clock.now += 299_999
+  const warm = await api.getVerifiedMaitredSource(db.db)
+  assert.equal(warm.verifiedAt, time); assert.equal(warm.holders.length, 1)
+  assert.equal(db.reads.filter(path => path === 'maitredFeature/current').length, 1)
+  assert.equal((await api.readMaitredSource(db.db)).holders.length, 0, 'cron source bypasses the public five-minute cache')
+  run.clock.now += 1
+  const expired = await api.getVerifiedMaitredSource(db.db)
+  assert.equal(expired.holders.length, 0); assert.equal(expired.verifiedAt, time + 300_000)
+  assert.equal(db.reads.filter(path => path === 'maitredFeature/current').length, 3)
+  assert.deepEqual(run.external, [])
+})
+
+test('verified source coalesces and expired failure cannot revive old identity; a later read retries', async () => {
+  const db = seeded(['retained']); const run = lane(); const api = run.load('lib/aggregates/maitred.ts')
+  let release; const gate = new Promise(resolve => { release = resolve })
+  db.setReadHook(path => path === 'maitredFeature/current' ? gate : undefined)
+  const first = api.getVerifiedMaitredSource(db.db); const second = api.getVerifiedMaitredSource(db.db)
+  release(); await Promise.all([first, second])
+  assert.equal(db.reads.filter(path => path === 'maitredFeature/current').length, 1)
+  run.clock.now += 300_000; db.setReadHook(() => { throw new Error('source unavailable') })
+  await assert.rejects(api.getVerifiedMaitredSource(db.db), /source unavailable/)
+  db.setReadHook(null); run.clock.now += 10_000
+  db.data.set('users/retained-user/maitredSettings/participation', { enabled: false })
+  const recovered = await api.getVerifiedMaitredSource(db.db)
+  assert.equal(recovered.holders.length, 0); assert.equal(recovered.verifiedAt, run.clock.now)
+  assert.deepEqual(run.external, [])
+})
+
+test('source or supplemental failure preserves known index, slug and claim routes while strict identity fails closed', async () => {
+  for (const failingRead of ['source', 'projection']) {
+    const { db, run, api, maitred } = completeDirectoryLane()
+    db.data.set('claimLinks/prepared-catalogue', { placeId: 'catalogue', displayName: 'Prepared catalogue', area: 'Fixture city' })
+    const claims = run.load('lib/claim-venues.ts')
+    const knownSlug = db.data.get('webAggregates/places/items/catalogue').payload.slug
+    db.setReadHook(path => {
+      if (path === (failingRead === 'source' ? 'maitredFeature/current' : 'meals/*')) throw new Error(`${failingRead} unavailable`)
+    })
+    assert.deepEqual(idsOf(await api.getPlaceIndex()), ['catalogue'], failingRead)
+    assert.equal((await api.getDirectoryPlace(knownSlug)).placeId, 'catalogue', failingRead)
+    const claimEntries = await claims.getClaimSearchEntries()
+    assert.deepEqual(idsOf(claimEntries), ['catalogue'], failingRead)
+    assert.equal(claimEntries[0].path, '/claim/prepared-catalogue')
+    assert.equal(await api.getPlaceDirectoryStrict(), null, failingRead)
+    assert.deepEqual(copy(await maitred.getMaitredDirectory()), { status: 'unavailable', venues: [] }, failingRead)
+    assert(mealQueries(db).every(query => query.filters.some(filter => filter.field === 'placeProviderId' && filter.op === '==')), 'partial failure never falls back to an unscoped scan')
+    db.setReadHook(null); run.clock.now += 10_000
+    assert.deepEqual(idsOf(await api.getPlaceIndex()), ['catalogue', 'retained', 'transferred'], failingRead)
+    assert.deepEqual(idsOf(await claims.getClaimSearchEntries()), ['catalogue', 'retained', 'transferred'], failingRead)
+    assert.equal((await maitred.getMaitredStateAt('retained')).status, 'held', failingRead)
+    assert.equal(db.reads.filter(path => path === 'claimLinks/*').length, 1, 'prepared claim links remain cached during recovery')
+    assert.deepEqual(run.external, [])
+  }
+})
+
+test('claim search includes a newly recovered holder and drops it on expiry without caching the merged list for an hour', async () => {
+  const { db, run, api } = completeDirectoryLane()
+  db.data.set('claimLinks/prepared-catalogue', { placeId: 'catalogue', displayName: 'Prepared catalogue', area: 'Fixture city' })
+  const claims = run.load('lib/claim-venues.ts')
+  const search = run.load('app/api/claim-search/route.ts')
+  const first = await claims.getClaimSearchEntries()
+  assert.deepEqual(idsOf(first), ['catalogue', 'retained', 'transferred'])
+  assert.equal(first.find(entry => entry.placeId === 'catalogue').path, '/claim/prepared-catalogue')
+  const recovered = await api.getDirectoryPlaceById('transferred')
+  const response = await search.GET(new Request('http://localhost/api/claim-search?q=transferred'))
+  assert.equal(response.status, 200)
+  assert.deepEqual(await response.json(), { results: [{ name: 'Current transferred', area: 'Fixture city', path: `/claim/${recovered.slug}` }] })
+  assert.equal(db.reads.filter(path => path === 'claimLinks/*').length, 1)
+  db.data.set('users/transferred-user/maitredSettings/participation', { enabled: false })
+  run.clock.now += 300_000
+  const next = await claims.getClaimSearchEntries()
+  assert.deepEqual(idsOf(next), ['catalogue', 'retained'])
+  const suppressed = await search.GET(new Request('http://localhost/api/claim-search?q=transferred'))
+  assert.deepEqual(await suppressed.json(), { results: [] })
+  assert.equal(db.reads.filter(path => path === 'claimLinks/*').length, 1)
+  assertExactPublicMealQueries(db, ['retained', 'transferred'])
+  assert.deepEqual(run.external, [])
+})
+
+test('a later Maître reader does not extend a warm source verification window through nested metadata caches', async () => {
+  const { db, run, api, maitred } = completeDirectoryLane()
+  assert.deepEqual(idsOf(await api.getPlaceIndex()), ['catalogue', 'retained', 'transferred'])
+  run.clock.now += 299_000
+  assert.equal((await maitred.getMaitredStateAt('retained')).status, 'held')
+  const queries = mealQueries(db).length
+  db.data.set('users/retained-user/maitredSettings/participation', { enabled: false })
+  run.clock.now += 1_000
+  assert.equal((await maitred.getMaitredStateAt('retained')).status, 'unavailable')
+  assert(!(await api.getPlaceIndex()).some(place => place.placeId === 'retained'))
+  assert.equal(mealQueries(db).length, queries, 'metadata remains warm while identity is reverified')
+  assert.deepEqual(run.external, [])
+})
+
+test('slow verification expires from read start and cannot enter the verified source cache', async () => {
+  const db = seeded(['retained']); const run = lane(); const api = run.load('lib/aggregates/maitred.ts')
+  db.setReadHook(path => { if (path === 'maitredFeature/current') run.clock.now += 300_000 })
+  await assert.rejects(api.getVerifiedMaitredSource(db.db), /expired/)
+  db.setReadHook(null)
+  const next = await api.getVerifiedMaitredSource(db.db)
+  assert.equal(next.verifiedAt, time + 300_000); assert.equal(next.holders.length, 1)
+  assert.equal(db.reads.filter(path => path === 'maitredFeature/current').length, 2)
+  const other = seeded(['retained'])
+  other.data.set('maitredFeature/current', { enabled: false })
+  assert.equal((await api.getVerifiedMaitredSource(other.db)).status, 'disabled', 'independent databases never share cached identity')
+  assert.deepEqual(run.external, [])
+})
+
+test('production per-ID pending work coalesces even when the framework cache adapter does not', async () => {
+  const { db, run, api } = completeDirectoryLane()
+  run.control.memoizeCache = false
+  let release; const gate = new Promise(resolve => { release = resolve })
+  db.setReadHook(path => path === 'meals/*' ? gate : undefined)
+  const requests = [api.getDirectoryPlaceById('retained'), api.getDirectoryPlaceById('retained'),
+    api.getPlaceDirectoryStrict(), api.getPlaceIndex()]
+  await new Promise(resolve => setImmediate(resolve)); release()
+  const [first, second] = await Promise.all(requests)
+  assert.equal(first.placeId, 'retained'); assert.equal(second.placeId, 'retained')
+  assertExactPublicMealQueries(db, ['retained', 'transferred'])
+  assert.equal(db.reads.filter(path => path === 'maitredFeature/current').length, 1)
+  assert.deepEqual(run.external, [])
+})
+
+test('warm per-venue metadata expires after one hour without extending five-minute eligibility', async () => {
+  const { db, run, api } = completeDirectoryLane()
+  assert.equal((await api.getDirectoryPlaceById('retained')).name, 'Current retained')
+  db.data.get('restaurants/retained').displayName = 'Renamed restaurant'
+  run.clock.now += 3_599_999
+  assert.equal((await api.getDirectoryPlaceById('retained')).name, 'Current retained')
+  assertExactPublicMealQueries(db, ['retained'])
+  run.clock.now += 1
+  assert.equal((await api.getDirectoryPlaceById('retained')).name, 'Renamed restaurant')
+  assertExactPublicMealQueries(db, ['retained', 'retained'])
+  assert.equal(db.reads.filter(path => path === 'maitredFeature/current').length, 2)
   assert.deepEqual(run.external, [])
 })

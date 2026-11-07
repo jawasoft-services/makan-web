@@ -108,6 +108,8 @@ The site should run on a **least-privilege service account**, not the Firebase p
 
 The **daily cron** (`/api/cron/aggregates`, bearer-token protected) writes the public venue, statistics and Eat-or-Yeet aggregates. Pages normally reuse these documents, but list/statistics readers can fall back to collection scans when the aggregate is missing or its heartbeat is over 36 hours old. The homepage also reads a live meal count and a bounded selection of public meal posts. Maître d’ identity and published orders use a separate five-minute verification window and read their current source records when that public aggregate is absent or stale; this fallback does not write an aggregate.
 
+Eligible Maître d’ venues missing from the stored directory are recovered by querying public meals at that exact venue, including venues with no public meals. Cards, venue pages, metadata and restaurant search share this recovery. Venue content is cached for an hour; eligibility is checked against the original five-minute verification timestamp before adding it to the directory. Failed recovery keeps the existing base index available and never writes replacement aggregates.
+
 Restaurant photos reuse the existing Firestore photo cache. A missing or expired photo can call Google Places and update that cache, so opening a live-data page is not guaranteed to be free of paid calls or cache writes. Fixture mode bypasses these integrations. Public output is filtered by the loaders' visibility and moderation rules; credentials stay on the server.
 
 ## A note on the code being public

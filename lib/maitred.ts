@@ -1,7 +1,7 @@
 import { WEBSITE_FIXTURES, fixtureMaitred } from '@/lib/website-fixtures'
 import 'server-only'
 import { getDb } from '@/lib/firebase-admin'
-import { buildMaitredList, readMaitredPhotos, readMaitredSource } from '@/lib/aggregates/maitred'
+import { buildMaitredList, readMaitredPhotos, getVerifiedMaitredSource, MAITRED_PUBLIC_MAX_AGE_MS } from '@/lib/aggregates/maitred'
 import { readMaitred } from '@/lib/aggregates/store'
 import type { MaitredList, MaitredVenue, MaitredDirectoryState, MaitredPlaceState } from '@/lib/aggregates/types'
 import { getPlaceDirectoryStrict } from '@/lib/place-directory'
@@ -13,7 +13,7 @@ export type { MaitredNotes, MaitredVenue, MaitredDirectoryState, MaitredPlaceSta
  * dynamic, while their unrelated data keeps its existing caches. Simultaneous
  * consumers share one refresh; a failed/slow refresh never revives old identity.
  */
-export const MAITRED_PUBLIC_MAX_AGE_MS = 5 * 60 * 1000
+export { MAITRED_PUBLIC_MAX_AGE_MS } from '@/lib/aggregates/maitred'
 interface VerifiedSnapshot { snapshot: MaitredList; verifiedAt: number }
 let cached: VerifiedSnapshot | null = null
 let pending: Promise<MaitredList | null> | null = null
@@ -33,7 +33,7 @@ async function refreshMaitred(): Promise<VerifiedSnapshot | null> {
   if (stored && stored.verifiedAt <= startedAt && isFresh(stored.verifiedAt)) {
     return { snapshot: stored, verifiedAt: stored.verifiedAt }
   }
-  const [source, directory] = await Promise.all([readMaitredSource(db), getPlaceDirectoryStrict()])
+  const [source, directory] = await Promise.all([getVerifiedMaitredSource(db), getPlaceDirectoryStrict()])
   if (source.status === 'disabled') return { snapshot: buildMaitredList(source, [], new Map()), verifiedAt: source.verifiedAt }
   if (!directory) return null
   const photos = await readMaitredPhotos(db, source, directory)

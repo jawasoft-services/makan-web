@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { getClaimSearchEntries } from '@/lib/claim-venues'
 import { MAX_QUERY, searchVenues } from '@/lib/claim-search'
 
-/** RM20364 — "Find your restaurant" on /partner. Reads only the hourly cached venue list. */
+/** RM20364 — "Find your restaurant" uses cached venues plus eligible Maître d’ additions. */
 export async function GET(request: Request) {
   const query = new URL(request.url).searchParams.get('q') ?? ''
   if (query.length > MAX_QUERY * 2) return NextResponse.json({ results: [] }, { status: 400 })

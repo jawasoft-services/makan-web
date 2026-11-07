@@ -1,4 +1,4 @@
-import { Timestamp, type Firestore } from 'firebase-admin/firestore'
+import { Timestamp, type Firestore, type QueryDocumentSnapshot } from 'firebase-admin/firestore'
 import { getPlaceSeed, getPlaceWhere, hasSeededWhere, isFoodVenue, placeLabel } from '@/lib/place-city'
 import { isCleanCaption } from '@/lib/captions'
 import { placeSlug, shortHash, slugify } from '@/lib/slug'
@@ -182,19 +182,29 @@ export async function computeEatStandings(db: Firestore): Promise<EatStandings> 
  * places Google types as somewhere people eat; handles only where the
  * account chose one; captions only when clean.
  */
+const DIRECTORY_MEAL_FIELDS = ['placeProviderId', 'locationName', 'createdAt', 'isPublic', 'moderationStatus', 'imageURL', 'thumbnailUrl', 'caption', 'mealType', 'userID', 'uid', 'userName']
+
 export async function computePlaceDirectory(db: Firestore, include: string[] = []): Promise<DirectoryPlace[]> {
+  const snap = await db.collection('meals').select(...DIRECTORY_MEAL_FIELDS).get()
+  return projectPlaceDirectory(db, snap.docs, include)
+}
+
+/** Recover one verified holder's missing venue without scanning other venues or private meals. */
+export async function computePlaceDirectoryForPlace(db: Firestore, placeId: string): Promise<DirectoryPlace> {
+  const snap = await db.collection('meals').where('placeProviderId', '==', placeId).where('isPublic', '==', true)
+    .select(...DIRECTORY_MEAL_FIELDS).get()
+  const [place] = await projectPlaceDirectory(db, snap.docs, [placeId])
+  return place
+}
+
+async function projectPlaceDirectory(db: Firestore, docs: QueryDocumentSnapshot[], include: string[]): Promise<DirectoryPlace[]> {
   // Restaurants that must have a page whatever their meals (a current
   // Maître d'): they are real venues in the app, so the food-type check and
   // the one-public-meal floor do not apply to them.
   const extra = new Set(include)
-  const snap = await db
-    .collection('meals')
-    .select('placeProviderId', 'locationName', 'createdAt', 'isPublic', 'moderationStatus', 'imageURL', 'thumbnailUrl', 'caption', 'mealType', 'userID', 'uid', 'userName')
-    .get()
-
   type Raw = { id: string; src: string; thumb: string; caption: string; mealType: string; uid: string; legacyName: string; at: number }
   const byPlace = new Map<string, { name: Map<string, number>; first: number; meals: Raw[] }>()
-  for (const doc of snap.docs) {
+  for (const doc of docs) {
     const d = doc.data()
     const placeId = str(d.placeProviderId)
     if (!placeId) continue

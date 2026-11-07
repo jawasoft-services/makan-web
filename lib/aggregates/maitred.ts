@@ -22,6 +22,26 @@ const STORAGE = 'https://firebasestorage.googleapis.com/'
 const NO_NOTES: MaitredNotes = { always: '', another: '', why: '', tip: '' }
 const OUTCOMES = ['retained', 'transferred', 'vacant', 'unresolved']
 const inFlight = new WeakMap<Firestore, Promise<MaitredSource>>()
+const verifiedSources = new WeakMap<Firestore, MaitredSource>()
+const verifiedInFlight = new WeakMap<Firestore, Promise<MaitredSource>>()
+export const MAITRED_PUBLIC_MAX_AGE_MS = 5 * 60 * 1000
+
+/** Share web eligibility without extending the original verification window. Cron still reads fresh. */
+export function getVerifiedMaitredSource(db: Firestore): Promise<MaitredSource> {
+  const fresh = (source: MaitredSource) => source.verifiedAt <= Date.now() && Date.now() - source.verifiedAt < MAITRED_PUBLIC_MAX_AGE_MS
+  const cached = verifiedSources.get(db)
+  if (cached && fresh(cached)) return Promise.resolve(cached)
+  verifiedSources.delete(db)
+  const pending = verifiedInFlight.get(db)
+  if (pending) return pending
+  const read = readMaitredSource(db).then(source => {
+    if (!fresh(source)) throw new Error('Maître d’ source verification expired.')
+    verifiedSources.set(db, source)
+    return source
+  }).finally(() => { if (verifiedInFlight.get(db) === read) verifiedInFlight.delete(db) })
+  verifiedInFlight.set(db, read)
+  return read
+}
 
 /** Coalesce simultaneous directory/aggregate rebuilds, without keeping a stale privacy result. */
 export function readMaitredSource(db: Firestore): Promise<MaitredSource> {
