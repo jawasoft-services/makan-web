@@ -1,0 +1,36 @@
+.composer{position:absolute;inset:0;z-index:4;pointer-events:none;color:#11181c;font-family:MakanNativeJakarta,sans-serif;font-size:16px;font-weight:400;line-height:24px;letter-spacing:0;text-align:left}
+.composer *{box-sizing:border-box}
+.composer p{margin:0}
+.backdrop{position:absolute;inset:0;background:#000}
+.sheet{position:absolute;left:0;right:0;bottom:0;height:75%;overflow:hidden;border-radius:24px 24px 0 0;background:#fff}
+.grabber{position:absolute;top:8px;left:50%;width:36px;height:5px;border-radius:3px;background:#c7c7cc;transform:translateX(-50%)}
+.content{display:flex;flex-direction:column;gap:18px;padding:32px 24px 40px}
+.editorContent{position:absolute;top:0;left:0;right:0}
+.previewContent{position:relative;padding:24px}
+.person{display:flex;align-items:center;gap:16px}
+.avatar{position:relative;display:block;flex-shrink:0;width:48px;height:48px;margin-top:18px}
+.crown{position:absolute;top:-22px;left:50%;transform:translateX(-50%) rotate(-9deg)}
+.personCopy{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px}
+.author{font-size:16px;line-height:23px;font-weight:700}
+.role{font-size:16px;line-height:24px;color:#2c3b4d}
+.question,.fieldGroup{display:flex;flex-direction:column;gap:8px}
+.title{font-size:26px;line-height:34px;font-weight:700}
+.support{color:#2c3b4d}
+.fieldLabel{font-size:16px;line-height:23px;font-weight:700}
+.field{min-height:96px;padding:16px;border:1px solid #e3e8e5;border-radius:16px;background:#fff;color:#11181c;font-size:20px;line-height:28px;font-weight:700;overflow-wrap:anywhere}
+.placeholder{position:relative;color:#374151}
+.caret{display:inline-block;vertical-align:-3px;width:2px;height:24px;margin-left:1px;background:#ff9932}
+.emptyCaret{position:absolute;left:0;top:1px;margin-left:0}
+.action{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:12px 14px;border:1px solid transparent;border-radius:13px;background:#ff9932;color:#fff;font-size:16px;line-height:23px;font-weight:700;text-align:center}
+.arrow{font-family:MakanNativeIonicons;line-height:1;font-size:20px;font-weight:400;font-synthesis:none}
+.previewCard{display:flex;flex-direction:column;gap:16px;padding:16px;border:1px solid #e3e8e5;border-radius:16px;background:#fff}
+.previewPerson{gap:12px}
+.previewAvatar{width:40px;height:40px}
+.previewPerson .personCopy{gap:2px}
+.previewPerson .author{font-size:14px;line-height:22px;font-weight:400}
+.previewPerson .role{font-size:18px;line-height:26px;font-weight:700;color:#11181c}
+.previewOrder{display:flex;flex-direction:column;gap:6px}
+.previewOrder p{font-size:14px;line-height:22px;color:#2c3b4d}
+.previewOrder strong{font-size:20px;line-height:28px;font-weight:700}
+.privatePreview{color:#2c3b4d}
+.secondaryAction{background:transparent;border-color:#e3e8e5;color:#11181c}

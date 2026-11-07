@@ -30,3 +30,6 @@
 
 .demo[data-motion-ready] .panel{opacity:0;visibility:hidden;pointer-events:none}
 .demo[data-motion-ready] .panel[data-demo-panel="save"]{opacity:1;visibility:visible;pointer-events:auto}
+
+.step:last-child{margin-top:38svh}
+.demo[data-motion-ready] .sceneCrown{transition:none}

@@ -1,5 +1,7 @@
 import Image from 'next/image'
 import type { ReactNode } from 'react'
+import type { MaitredStorySnapshot } from './maitred-story'
+import MaitredOrderComposer from './MaitredOrderComposer'
 import { NATIVE_MAITRED_COPY, NATIVE_RESTAURANT_COPY } from './native-copy'
 import { ILLUSTRATION_DINERS, ILLUSTRATION_EOY, ILLUSTRATION_MEALS, IllustrationPortrait, MaitredCardContent, illustrationTable, illustrationViewerMeals, type NativeMaitredState } from './MaitredIllustration'
 import styles from './maitred-native-mockup.module.css'
@@ -12,18 +14,24 @@ function Icon({ name, size = 20 }: { name: keyof typeof glyphs; size?: number })
   return <span aria-hidden="true" className={styles.icon} style={{ fontSize: size }}>{glyphs[name]}</span>
 }
 
-function MealThumbs({ meals }: { meals: readonly { image: string; caption: string }[] }) {
-  return <div className={styles.thumbs}>{meals.slice(0, 4).map((meal, index) => <Image key={`${meal.image}-${index}`} src={meal.image} alt={meal.caption} width={160} height={160} sizes="85px" />)}</div>
+function MealThumbs({ meals, landing }: { meals: readonly { image: string; caption: string }[]; landing?: number }) {
+  return <div className={styles.thumbs}>{meals.slice(0, 4).map((meal, index) => <Image key={`${meal.image}-${index}`} src={meal.image} alt={meal.caption} width={160} height={160} sizes="85px"
+    data-landing-meal={landing !== undefined && index === 1 || undefined}
+    aria-hidden={landing !== undefined && index === 1 && landing < 1 || undefined}
+    style={landing !== undefined && index === 1 ? { opacity: Math.min(1, landing * 4), transform: `translate(${(1 - landing) * 60}px, ${(1 - landing) * 12}px) rotate(${(1 - landing) * 9}deg) scale(${.85 + .15 * landing})` } : undefined} />)}</div>
 }
 
 /** Native restaurantPage + MaitredPresentation at main18d991a75, with an
  * explicitly authored fictional story. Source/provenance: NATIVE-MOCKUP-SOURCE.md. */
-export default function MaitredNativeMockup({ locale, state = 'order', priority = false, viewerDays, standings }: {
+export default function MaitredNativeMockup({ locale, state = 'order', priority = false, viewerDays, standings, story, reducedMotion = false, locked = false }: {
   locale: string
   state?: NativeMaitredState
   priority?: boolean
   viewerDays?: number
   standings?: ReactNode
+  story?: MaitredStorySnapshot
+  reducedMotion?: boolean
+  locked?: boolean
 }) {
   const language = locale === 'id' ? 'id' : 'en'
   const copy = NATIVE_MAITRED_COPY[language]
@@ -38,9 +46,9 @@ export default function MaitredNativeMockup({ locale, state = 'order', priority 
   return <div className={styles.scaleBox} data-native-mockup="18d991a75" data-native-state={state}>
     <svg className={styles.canvas} style={{ width: '100%', height: '100%' }} viewBox="0 0 390 844" role="presentation">
       <foreignObject width="390" height="844">
-        <div className={styles.viewport} data-native-viewport="390x844">
+        <div className={`${styles.viewport} ${locked ? styles.scrubbed : ''}`} data-native-viewport="390x844">
           <div className={styles.heroImage}><Image src="/redesign/prawns.jpg" alt="" width={2048} height={2048} sizes="390px" priority={priority} /></div>
-          <div className={styles.scrollContent} data-lenis-prevent role="region" aria-label={scrollLabel} tabIndex={0}>
+          <div className={`${styles.scrollContent} ${locked ? styles.lockedScreen : ''}`} data-story-screen={locked || undefined} data-lenis-prevent={!locked || undefined} role="region" aria-label={locked ? copy.maitredAt.replace('{{placeName}}', 'Kendal Street Kitchen') : scrollLabel} tabIndex={locked ? undefined : 0}>
             <div className={styles.heroSpacer} />
             <div className={styles.restaurantContent}>
               <div className={styles.infoSheet}>
@@ -59,7 +67,7 @@ export default function MaitredNativeMockup({ locale, state = 'order', priority 
                       <div className={styles.tabs}><span className={hasMenu && state !== 'order' ? styles.selectedTab : ''}>{copy.regularsTab}</span>{hasMenu && <span className={state === 'order' ? styles.selectedTab : ''}>{copy.orderTab}</span>}</div>
                       <span className={styles.information}><Icon name="info" /></span>
                     </div>
-                    <MaitredCardContent locale={locale} stage={state} tab={state === 'order' ? 'order' : 'regulars'} viewerDays={viewerDays} standings={standings} />
+                    <MaitredCardContent locale={locale} stage={state} tab={state === 'order' ? 'order' : 'regulars'} viewerDays={viewerDays} standings={standings} publication={story ? reducedMotion ? Number(story.publication >= .5) : story.publication : undefined} />
                     {own && <div className={styles.ownerActions}><span>{hasMenu ? copy.editMenu : copy.addMenu}</span><span className={styles.shareAction} data-native-disabled={!hasMenu}><Icon name="share" />{copy.shareButton}</span></div>}
                   </div>
                 </div>
@@ -70,9 +78,9 @@ export default function MaitredNativeMockup({ locale, state = 'order', priority 
               </div>
               <div className={styles.restaurantBand} data-native-section="your-meals">
                 <p className={styles.bandEyebrow}>YOU</p>
-                <p className={styles.bandTitle}>You&apos;ve eaten here {visits === 1 ? 'once' : `${visits} times`}</p>
+                <p className={styles.bandTitle}>You&apos;ve eaten here {visits === 1 ? 'once' : visits === 2 ? 'twice' : `${visits} times`}</p>
                 <p className={styles.visitSpan}>{visits < 3 ? 'Visited Nov 2026' : 'First visit Oct 2026 · last Nov 2026'}</p>
-                <MealThumbs meals={ownMeals} />
+                <MealThumbs meals={story && story.progress < 1 ? illustrationViewerMeals('qualify') : ownMeals} landing={story && story.progress < 1 ? reducedMotion ? Number(visits >= 2) : story.mealLanding : undefined} />
               </div>
               <div className={`${styles.restaurantBand} ${styles.decision}`} data-native-section="dish-guidance">
                 <p className={styles.decisionHeading}>{restaurantCopy.decisionHeading}</p>
@@ -105,6 +113,7 @@ export default function MaitredNativeMockup({ locale, state = 'order', priority 
           <div className={`${styles.floating} ${styles.share}`} aria-hidden="true"><Icon name="share" /></div>
           <div className={`${styles.floating} ${styles.bookmark}`} aria-hidden="true"><Icon name="bookmark" /></div>
           <div className={styles.sticky} aria-hidden="true"><span><Icon name="add" size={18} />Post a meal here</span></div>
+          {story && <MaitredOrderComposer locale={locale} openness={reducedMotion ? Number(story.editorOpen >= .5) : story.editorOpen} typedText={story.typedText} preview={story.preview} previewProgress={reducedMotion ? Number(story.preview) : Math.max(0, Math.min(1, (story.progress - 2.54) / .12))} publishProgress={reducedMotion ? Number(story.publishProgress === 1) : story.publishProgress} />}
         </div>
       </foreignObject>
     </svg>

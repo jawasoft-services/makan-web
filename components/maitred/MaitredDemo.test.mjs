@@ -15,7 +15,7 @@ const messages = Object.fromEntries(['en', 'id'].map(locale => [locale, JSON.par
 
 // Execute the real presentation components and metadata helpers. The public
 // directory is a deliberate stub: these tests must never read provider data.
-function harness(locale, reducedMotion = false, environment = {}) {
+function harness(locale, reducedMotion = false) {
   const events = []
   const frames = new Map()
   const timers = new Map()
@@ -35,7 +35,7 @@ function harness(locale, reducedMotion = false, environment = {}) {
     matchMedia: () => motion,
     requestAnimationFrame: callback => { frames.set(++frameId, callback); return frameId },
     cancelAnimationFrame: id => frames.delete(id),
-    setTimeout: (callback, delay) => { timers.set(++frameId, { callback, due: time + delay }); return frameId },
+    setTimeout: callback => { timers.set(++frameId, callback); return frameId },
     clearTimeout: id => timers.delete(id),
     addEventListener: (name, callback) => listeners.set(name, callback),
     removeEventListener: name => listeners.delete(name),
@@ -89,13 +89,6 @@ function harness(locale, reducedMotion = false, environment = {}) {
       runtime.observe?.(runtime.tree)
     }
   }
-  function runDueTimers() {
-    for (const [id, timer] of [...timers]) {
-      if (timer.due > time || !timers.delete(id)) continue
-      timer.callback()
-      commit()
-    }
-  }
   const cache = new Map()
   const translate = namespace => {
     const dictionary = namespace.split('.').reduce((value, key) => value[key], messages[locale])
@@ -129,7 +122,7 @@ function harness(locale, reducedMotion = false, environment = {}) {
     const exports = {}
     cache.set(path, exports)
     const output = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, target: ts.ScriptTarget.ES2022, esModuleInterop: true } }).outputText
-    runInNewContext(output, { ...environment, exports, URL, window: browserWindow, require: name => {
+    runInNewContext(output, { exports, URL, window: browserWindow, require: name => {
       if (name in modules) return modules[name]
       if (name.endsWith('.module.css')) return defaults(new Proxy({}, { get: (_, key) => String(key) }))
       const local = name.startsWith('@/') ? resolve(root, name.slice(2)) : name.startsWith('.') ? resolve(dirname(path), name) : null
@@ -147,15 +140,10 @@ function harness(locale, reducedMotion = false, environment = {}) {
       commit()
     },
     tree: () => runtime.tree,
-    update(props) { runtime.props = props; runtime.dirty = true; commit() },
     dispatch(name, event = {}) { listeners.get(name)?.({ type: name, ...event }); commit() },
     invoke(callback) { callback(); commit() },
     frames: () => frames.size,
     timers: () => timers.size,
-    flushTimers() {
-      if (timers.size) time = Math.max(time, ...[...timers.values()].map(timer => timer.due))
-      runDueTimers()
-    },
     flushFrames() {
       time += 16
       // Only this frame's batch: newly scheduled work belongs to the next frame.
@@ -164,11 +152,6 @@ function harness(locale, reducedMotion = false, environment = {}) {
         callback(time)
         commit()
       }
-      runDueTimers()
-    },
-    settle(limit = 120) {
-      while (frames.size && limit-- > 0) api.flushFrames()
-      assert.equal(frames.size, 0, 'animation must settle within the bounded frame budget')
     },
     reduce(value) { motion.matches = value; motionListeners.get('change')?.({ matches: value }); commit() },
     listenerCount: () => listeners.size + motionListeners.size,
@@ -293,153 +276,181 @@ for (const locale of ['en', 'id']) {
   })
 }
 
-function controller(locale = 'en', reducedMotion = false, restored = 'save') {
+function controller(locale = 'en', reducedMotion = false, restored = 'save', { initialY = 0, lenis = false } = {}) {
   const app = harness(locale, reducedMotion)
   const steps = ['save', 'qualify', 'lead', 'share']
   let checked = restored
-  const reveals = []
-  const history = []
+  const reveals = [], pageScrolls = [], history = []
+  const scene = { height: 620, bottom: 9999 }
+  app.window.scrollY = initialY
+  app.window.scrollTo = options => { pageScrolls.push({ target: 'window', ...options }); app.window.scrollY = options.top }
+  if (lenis) app.window.__lenis = { scrollTo(top, options) { pageScrolls.push({ target: 'lenis', top, ...options }); app.window.scrollY = top } }
   const inputs = steps.map((value, index) => ({
     value, get checked() { return checked === value }, set checked(valueChecked) { if (valueChecked) checked = value },
     closest: () => ({ getBoundingClientRect: () => ({ top: 1050 + index * 600 - app.window.scrollY, height: 100 }) }),
   }))
   const screen = { scrollTop: 0, scrollTo(options) { reveals.push(options); this.scrollTop = options.top } }
   const panels = steps.map(demoPanel => ({ dataset: { demoPanel }, inert: false,
-    querySelector: selector => selector === '[role="region"]' ? screen : { offsetTop: selector.includes('your-meals') ? 900 : 400 },
+    querySelector: selector => selector === '[data-story-screen]' ? screen : { offsetTop: selector.includes('your-meals') ? 900 : 400 },
   }))
   const node = {
     getBoundingClientRect: () => ({ top: 1000 - app.window.scrollY, bottom: 3500 - app.window.scrollY }),
     querySelectorAll: selector => selector === '[data-demo-panel]' ? panels : inputs,
-    querySelector: selector => selector === '[data-demo-scene]' ? { getBoundingClientRect: () => ({ bottom: 620 }) }
+    querySelector: selector => selector === '[data-demo-scene]' ? { getBoundingClientRect: () => scene }
       : panels.find(panel => selector.includes(`"${panel.dataset.demoPanel}"`)),
   }
-  const snapshot = tree => {
-    const panel = allElements(tree).find(element => element.props?.['data-demo-panel'] === 'save')
-    return panel.props.children.props
-  }
-  const Demo = app.load('components/maitred/MaitredDemo.tsx').default
-  app.mount(Demo, { copy: messages[locale].MaitredPage.demo, locale }, tree => { tree.props.ref.current = node }, tree => {
-    const { viewerDays: days, state } = snapshot(tree)
-    history.push({ days, state })
+  const snapshot = tree => allElements(tree).find(element => element.props?.['data-demo-panel'] === 'save').props.children.props
+  app.mount(app.load('components/maitred/MaitredDemo.tsx').default, { copy: messages[locale].MaitredPage.demo, locale }, tree => { tree.props.ref.current = node }, tree => {
+    const { viewerDays: days, state, story } = snapshot(tree)
+    history.push({ days, state, progress: story?.progress })
   })
   const radio = index => allElements(app.tree()).filter(element => element.type === 'input')[index]
-  return { ...app, panels, screen, reveals, history, checked: () => checked,
+  return { ...app, panels, screen, scene, reveals, pageScrolls, history, checked: () => checked,
     snapshot: () => snapshot(app.tree()),
     click(index) { checked = steps[index]; app.invoke(() => radio(index).props.onChange()) },
     reselect(keyboard = false) {
       const input = radio(steps.indexOf(checked))
       app.invoke(() => keyboard ? input.props.onKeyDown({ key: ' ', currentTarget: { checked: true } }) : input.props.onPointerDown({ currentTarget: { checked: true } }))
     },
-    scroll(y, settle = true) { app.window.scrollY = y; app.dispatch('scroll'); if (settle) app.settle() },
+    scroll(y, flush = true) { app.window.scrollY = y; app.dispatch('scroll'); if (flush) app.flushFrames() },
   }
 }
 
-for (const reducedMotion of [false, true]) test(`persistent phone follows every whole day and reverses, reduced motion ${reducedMotion}`, () => {
+for (const reducedMotion of [false, true]) test(`persistent phone scrubs every whole day and reverses, reduced motion ${reducedMotion}`, () => {
   const app = controller('en', reducedMotion)
-  app.settle()
+  app.flushFrames()
   assert.equal(app.tree().props['data-motion-ready'], true)
+  assert.equal(app.tree().props['data-lenis-prevent'], true, 'this section uses native page scrolling without Lenis inertia')
   assert.deepEqual(app.panels.filter(panel => !panel.inert).map(panel => panel.dataset.demoPanel), ['save'])
   assert.ok(allElements(app.tree()).filter(element => element.type === 'input').every(input => input.props['aria-controls'] === 'test-maitred-demo-save-phone'))
   const phoneType = allElements(app.tree()).find(element => element.props?.['data-demo-panel'] === 'save').props.children.type
-  const samples = [[600, 1], [1200, 2], [1300, 3], [1400, 4], [1500, 5], [1600, 6], [1700, 7], [1800, 8]]
+  const samples = [[600, 1], [930, 2], [1200, 2], [1300, 3], [1400, 4], [1500, 5], [1600, 6], [1700, 7], [1800, 8]]
   for (const [y, days] of [...samples, ...[...samples].reverse()]) {
     app.scroll(y)
     assert.equal(app.snapshot().viewerDays, days)
     assert.equal(app.snapshot().state, days < 2 ? 'regulars' : days < 8 ? 'qualify' : 'holder')
     assert.equal(app.tree().props['data-story-holder'], days === 8 || undefined)
-    assert.equal(allElements(app.tree()).find(element => element.props?.['data-demo-panel'] === 'save').props.children.type, phoneType, 'the phone component remains mounted across milestones')
-    assert.equal(app.snapshot().standings.props.days, days, 'animated rows and surrounding phone share one count')
+    assert.equal(allElements(app.tree()).find(element => element.props?.['data-demo-panel'] === 'save').props.children.type, phoneType)
+    assert.equal(app.snapshot().standings.props.days, days)
+    assert.equal(app.snapshot().locked, true)
+    assert.equal(app.frames(), 0, 'the current scroll frame must never schedule continuation')
+    assert.equal(app.timers(), 0)
   }
-  app.scroll(2400)
+  app.scroll(2100)
+  assert.equal(app.snapshot().state, 'holder', 'selecting step four while typing does not publish')
+  app.scroll(2298)
+  assert.equal(app.snapshot().state, 'holder', 'publication begins only after progress2.83')
+  app.scroll(2340)
   assert.equal(app.snapshot().state, 'order')
-  assert.equal(app.snapshot().viewerDays, 8)
-  assert.equal(app.events.length, 0, 'automatic story progress never sends click analytics')
-  if (reducedMotion) assert.ok(app.reveals.every(call => call.behavior === 'instant'))
+  app.scroll(2400)
+  assert.equal(app.snapshot().story.editorOpen, 0)
+  assert.equal(app.events.length, 0)
+  assert.ok(app.reveals.every(call => call.behavior === 'instant'), 'camera is scrubbed even when normal motion is enabled')
   app.unmount()
   assert.equal(app.listenerCount(), 0)
 })
 
-test('click animation counts through intermediate days and a new choice continues from its current state', () => {
+test('scroll bursts share one frame, stopping freezes it and reversing revisits the identical snapshot', () => {
   const app = controller()
-  app.settle()
-  app.scroll(600)
-  app.click(2)
+  app.flushFrames()
+  app.scroll(1700, false)
+  app.scroll(1750, false)
+  app.dispatch('scroll')
   assert.equal(app.frames(), 1)
   app.flushFrames()
-  assert.equal(app.frames(), 1, 'a frame flush must not drain newly scheduled frames')
-  assert.equal(app.snapshot().viewerDays, 1, 'one frame cannot teleport from one to eight')
-  app.settle()
-  assert.deepEqual([...new Set(app.history.map(snapshot => snapshot.days))], [1, 2, 3, 4, 5, 6, 7, 8])
-  assert.equal(app.snapshot().state, 'holder')
-  app.click(0)
+  const stopped = app.snapshot()
+  assert.ok(Math.abs(stopped.story.dayProgress - 7.5) < 1e-9)
+  assert.equal(stopped.viewerDays, 7)
+  assert.equal(app.frames(), 0)
+  const count = app.history.length
+  for (let i = 0; i < 10; i++) app.flushFrames()
+  assert.equal(app.snapshot(), stopped, 'elapsed frames without scrolling cannot move the scene')
+  assert.equal(app.history.length, count)
+  assert.equal(app.timers(), 0)
+  app.scroll(2400)
+  app.scroll(1750)
+  assert.deepEqual({ ...app.snapshot().story }, { ...stopped.story })
+  assert.deepEqual({ ...app.snapshot().standings.props }, { ...stopped.standings.props })
+  app.unmount()
+})
+
+for (const lenis of [false, true]) test(`click and keyboard destinations share the exact page position, Lenis ${lenis}`, () => {
+  const app = controller('en', false, 'save', { lenis })
   app.flushFrames()
-  const interrupted = app.snapshot().viewerDays
-  assert.ok(interrupted > 1 && interrupted < 8)
-  app.click(2)
-  assert.equal(app.snapshot().viewerDays, interrupted, 'retargeting starts from the currently displayed count')
-  assert.equal(app.frames(), 1, 'interruptions share the pending animation frame')
-  app.settle()
-  assert.equal(app.snapshot().viewerDays, 8)
-  assert.equal(app.events.length, 3)
+  for (let index = 0; index < 4; index++) {
+    app.scroll(1234, false)
+    assert.equal(app.frames(), 1)
+    app.click(index)
+    assert.equal(app.frames(), 0, 'selection cancels stale pending scroll work')
+    assert.equal(app.window.scrollY, 600 + 600 * index)
+    assert.equal(app.snapshot().story.progress, index)
+    assert.equal(app.checked(), ['save', 'qualify', 'lead', 'share'][index])
+    assert.deepEqual(app.pageScrolls.at(-1), lenis
+      ? { target: 'lenis', top: 600 + 600 * index, immediate: true, force: true }
+      : { target: 'window', top: 600 + 600 * index, behavior: 'instant' })
+    app.dispatch('scroll')
+    app.flushFrames()
+    assert.equal(app.snapshot().story.progress, index, 'the browser scroll event cannot overwrite a click with an earlier frame')
+    assert.equal(app.timers(), 0)
+  }
+  app.reselect(true)
+  assert.equal(app.snapshot().story.progress, 3)
+  assert.equal(app.events.length, 4, 'reselecting with Space does not fabricate a selection event')
   assert.ok(app.events.every(event => Object.keys(event.payload).sort().join(',') === 'locale,location,step'))
+  app.scroll(2399)
+  assert.ok(app.snapshot().story.progress < 3, 'any later actual scroll resumes scrubbing immediately')
   app.unmount()
 })
 
-test('scroll interruption cancels a stale click destination, while tiny scrolls preserve explicit choice', () => {
-  const app = controller()
-  app.settle()
-  app.scroll(600)
-  app.click(3)
-  app.flushFrames()
-  app.scroll(601, false)
-  app.settle()
-  assert.equal(app.snapshot().state, 'order', 'tiny movement inside the held reading step does not undo a click')
-  app.click(0)
-  app.flushFrames()
-  app.flushTimers()
-  app.scroll(1200, false)
-  app.settle()
-  assert.equal(app.snapshot().viewerDays, 2)
-  assert.equal(app.snapshot().state, 'qualify', 'scroll crossing a new step boundary replaces the click destination')
-  const final = app.snapshot()
-  app.flushFrames()
-  assert.equal(app.snapshot(), final, 'no stale callback changes the settled story')
-  app.unmount()
-})
-
-test('viewport changes recompute geometry, the mobile reading line follows the phone, and off-section scroll does nothing', () => {
+test('viewport changes use the mobile scene height, not its moving bottom coordinate', () => {
   const app = controller('en', true)
-  app.settle()
+  app.flushFrames()
   app.scroll(1200)
   assert.equal(app.snapshot().viewerDays, 2)
   app.window.innerHeight = 1400
   app.dispatch('resize')
-  assert.equal(app.snapshot().viewerDays, 4, 'resize must recompute even when scrollY is unchanged')
+  assert.equal(app.frames(), 1)
+  app.flushFrames()
+  assert.equal(app.snapshot().viewerDays, 4)
   app.window.innerHeight = 1000
   app.window.innerWidth = 390
   app.dispatch('resize')
-  assert.equal(app.snapshot().viewerDays, 5, 'mobile reads halfway between the sticky phone bottom and the viewport bottom')
-  app.scroll(5000)
+  app.flushFrames()
   assert.equal(app.snapshot().viewerDays, 5)
+  const mobileProgress = app.snapshot().story.progress
+  app.scene.bottom = -5000
+  app.dispatch('resize')
+  app.flushFrames()
+  assert.equal(app.snapshot().story.progress, mobileProgress)
+  app.click(2)
+  assert.equal(app.window.scrollY, 1490, 'the selected center aligns with the reading line below the620px scene')
+  app.dispatch('scroll')
+  app.flushFrames()
+  assert.equal(app.snapshot().story.progress, 2)
+  app.scroll(5000)
+  assert.equal(app.snapshot().viewerDays, 8, 'off-section scrolling leaves the last scene unchanged')
   app.unmount()
 })
 
-test('motion preference changes settle pending animation and cleanup removes listeners and queued frames', () => {
+test('camera follows position directly and reduced motion snaps without starting a clock', () => {
   const app = controller()
-  app.settle()
-  app.click(3)
   app.flushFrames()
-  assert.equal(app.frames(), 1)
-  app.reduce(true)
-  assert.equal(app.frames(), 0)
-  assert.equal(app.snapshot().state, 'order')
+  app.scroll(1110) // Progress .85: half-way camera travel.
+  assert.ok(Math.abs(app.reveals.at(-1).top - 474) < 1e-8)
   assert.equal(app.reveals.at(-1).behavior, 'instant')
+  const snapshot = app.snapshot()
+  app.reduce(true)
+  assert.equal(app.snapshot().story.progress, snapshot.story.progress)
+  assert.equal(app.snapshot().reducedMotion, true)
+  assert.equal(app.reveals.at(-1).top, 176)
+  assert.equal(app.frames(), 0)
+  assert.equal(app.timers(), 0)
   app.reduce(false)
-  app.click(0)
+  assert.ok(Math.abs(app.reveals.at(-1).top - 474) < 1e-8)
+  app.scroll(1750, false)
   assert.equal(app.frames(), 1)
   app.unmount()
   assert.equal(app.frames(), 0)
-  assert.equal(app.timers(), 0)
   assert.equal(app.listenerCount(), 0)
   const history = app.history.length
   app.dispatch('scroll')
@@ -448,44 +459,21 @@ test('motion preference changes settle pending animation and cleanup removes lis
   const beforeHydration = controller()
   assert.equal(beforeHydration.frames(), 1)
   beforeHydration.unmount()
-  assert.equal(beforeHydration.frames(), 0, 'unmount also cancels initial hydration work')
+  assert.equal(beforeHydration.frames(), 0)
 })
 
-test('browser focus scrolling cannot replace a clicked lead endpoint with a seven-day intermediate state', () => {
-  const app = controller()
-  app.settle()
-  app.scroll(600)
-  app.click(2)
-  app.flushFrames()
-  assert.equal(app.timers(), 1)
-  app.scroll(1716, false) // The focused row moves the reading line to progress1.86.
-  app.settle()
-  assert.equal(app.snapshot().viewerDays, 8)
-  assert.equal(app.snapshot().state, 'holder', 'the explicit target must reach eight despite browser focus scrolling')
-  app.flushTimers()
-  assert.equal(app.timers(), 0)
-  app.scroll(1717)
-  assert.equal(app.snapshot().viewerDays, 8, 'small movement inside the settled reading step retains the chosen endpoint')
-  app.scroll(1200)
-  assert.equal(app.snapshot().viewerDays, 2, 'a later user scroll across a boundary resumes normal progress')
-  app.unmount()
-})
-
-test('restored selection hydrates into the persistent phone and reselecting restores its detail', () => {
-  const app = controller('en', false, 'share')
-  app.settle()
-  assert.equal(app.snapshot().state, 'order')
-  assert.equal(app.snapshot().viewerDays, 8)
-  assert.equal(app.checked(), 'share')
-  app.screen.scrollTop = 1500
-  app.reselect()
-  assert.equal(app.reveals.at(-1).top, 176)
-  app.screen.scrollTop = 1200
-  app.reselect(true)
-  assert.equal(app.reveals.at(-1).top, 176)
-  app.settle()
-  assert.equal(app.events.length, 0, 'restoring an active step does not fabricate a selection event')
-  app.unmount()
+test('hydration restores an off-section selection but actual reading position wins within the story', () => {
+  const restored = controller('en', false, 'share')
+  restored.flushFrames()
+  assert.equal(restored.snapshot().state, 'order')
+  assert.equal(restored.checked(), 'share')
+  assert.equal(restored.reveals.at(-1).top, 176)
+  restored.unmount()
+  const scrolled = controller('en', false, 'share', { initialY: 1200 })
+  scrolled.flushFrames()
+  assert.equal(scrolled.snapshot().viewerDays, 2)
+  assert.equal(scrolled.checked(), 'qualify')
+  scrolled.unmount()
 })
 
 test('neither public language catalogue contains a Demo label', () => {
@@ -550,7 +538,7 @@ for (const locale of ['en', 'id']) test(`${locale}: each intermediate count keep
     const tree = Mockup({ locale, state, viewerDays: days })
     const elements = allElements(tree)
     const history = elements.find(element => element.props?.['data-native-section'] === 'your-meals')
-    assert.ok(renderToStaticMarkup(history).includes(days === 1 ? 'once' : `${days} times`))
+    assert.ok(renderToStaticMarkup(history).includes(days === 1 ? 'once' : days === 2 ? 'twice' : `${days} times`))
     const meta = elements.find(element => element.props?.['data-native-section'] === 'restaurant-meta')
     assert.ok(renderToStaticMarkup(meta).includes(`${36 + days} meals`))
     const action = elements.find(element => element.props?.className === 'decisionAction')
@@ -566,95 +554,149 @@ for (const locale of ['en', 'id']) test(`${locale}: each intermediate count keep
   assert.ok(published.includes('data-native-disabled="false"'))
 })
 
-for (const reducedMotion of [false, true]) test(`measured rows retain actors and a single crown through transfer and reversal, reduced motion ${reducedMotion}`, () => {
-  const observers = []
-  const animations = []
-  const rowNodes = new Map()
-  let orderedRows = []
-  const crown = {
-    style: {}, visualTransform: undefined,
-    getAnimations: () => animations.filter(animation => !animation.cancelled),
-    animate(keyframes, options) {
-      const animation = { keyframes, options, cancelled: false, cancel() { this.cancelled = true } }
-      animations.push(animation)
-      return animation
-    },
+for (const locale of ['en', 'id']) test(`${locale}: only the earning phone is locked and the second meal lands beside the prawns`, () => {
+  const app = harness(locale)
+  const Mockup = app.load('components/maitred/MaitredNativeMockup.tsx').default
+  const { storyAtProgress } = app.load('components/maitred/maitred-story.ts')
+  const frame = (progress, reducedMotion = false) => {
+    const story = storyAtProgress(progress)
+    const tree = Mockup({ locale, state: story.state, viewerDays: story.days, story, locked: true, reducedMotion })
+    const elements = allElements(tree)
+    const region = elements.find(element => element.props?.['data-story-screen'])
+    assert.equal(region.props.tabIndex, undefined)
+    assert.equal(region.props['data-lenis-prevent'], undefined, 'wheel/touch must continue to the page instead of an inner scroller')
+    assert.ok(!region.props['aria-label'].includes('Scroll for restaurant details'))
+    const history = elements.find(element => element.props?.['data-native-section'] === 'your-meals')
+    const thumbnailComponent = allElements(history).find(element => element.props?.landing !== undefined)
+    const images = allElements(thumbnailComponent.type(thumbnailComponent.props)).filter(element => element.props?.src)
+    assert.equal(images.length, 2)
+    assert.equal(images[0].props.alt, 'Harissa prawns')
+    assert.equal(images[0].props.style, undefined, 'the existing prawn meal remains in place')
+    assert.equal(images[1].props.alt, 'Carbonara and mushroom risotto')
+    assert.equal(images[1].props['data-landing-meal'], true)
+    return { history: renderToStaticMarkup(history), landing: { ...images[1].props.style }, hidden: images[1].props['aria-hidden'] }
   }
-  const node = {
-    style: {}, dataset: {},
-    querySelector: selector => { assert.equal(selector, '[data-moving-crown]'); return crown },
-    querySelectorAll: selector => { assert.equal(selector, '[data-illustration-row]'); return orderedRows },
+  const start = frame(0), halfway = frame(.3), landed = frame(.55)
+  assert.equal(start.landing.opacity, 0)
+  assert.equal(start.hidden, true)
+  assert.ok(start.history.includes('once'))
+  assert.ok(halfway.history.includes('once'))
+  assert.notDeepEqual(halfway.landing, start.landing)
+  assert.notDeepEqual(halfway.landing, landed.landing)
+  assert.equal(landed.landing.opacity, 1)
+  const landedTransform = landed.landing.transform.match(/-?\d+(?:\.\d+)?/g).map(Number)
+  assert.deepEqual(landedTransform.slice(0, 3), [0, 0, 0])
+  assert.ok(Math.abs(landedTransform[3] - 1) < 1e-9)
+  assert.equal(landed.hidden, undefined)
+  assert.ok(landed.history.includes('twice'))
+  assert.deepEqual(frame(.3), halfway, 'revisiting a partial landing restores the exact frame')
+  assert.deepEqual(frame(.3, true).landing, start.landing)
+  assert.deepEqual(frame(.55, true).landing, landed.landing)
+  const staticPhone = Mockup({ locale, state: 'order' })
+  const staticRegion = allElements(staticPhone).find(element => element.props?.role === 'region')
+  assert.equal(staticRegion.props.tabIndex, 0, 'the separate hero phone retains its existing scrolling')
+  assert.equal(staticRegion.props['data-story-screen'], undefined)
+})
+
+for (const locale of ['en', 'id']) test(`${locale}: usual-order editor, private preview and published card consume one reversible timeline`, () => {
+  const app = harness(locale)
+  const Mockup = app.load('components/maitred/MaitredNativeMockup.tsx').default
+  const { storyAtProgress } = app.load('components/maitred/maitred-story.ts')
+  const { NATIVE_ORDER_COMPOSER_COPY } = app.load('components/maitred/composer-copy.ts')
+  const copy = NATIVE_ORDER_COMPOSER_COPY[locale]
+  const at = (progress, reducedMotion = false) => {
+    const story = storyAtProgress(progress)
+    const tree = Mockup({ locale, state: story.state, viewerDays: story.days, story, locked: true, reducedMotion })
+    const elements = allElements(tree)
+    const composer = elements.find(element => element.props?.typedText !== undefined && element.props?.openness !== undefined)
+    const card = elements.find(element => element.props?.publication !== undefined && element.props?.stage !== undefined)
+    return { story, composer: { ...composer.props }, html: renderToStaticMarkup(composer), card: { ...card.props } }
   }
-  const app = harness('en', reducedMotion, {
-    getComputedStyle: target => { assert.equal(target, crown); return { transform: crown.visualTransform ?? crown.style.transform ?? 'none' } },
-    ResizeObserver: class {
-      constructor(callback) { this.callback = callback; this.targets = []; this.disconnected = false; observers.push(this) }
-      observe(target) { this.targets.push(target) }
-      disconnect() { this.disconnected = true }
-    },
-  })
+  const opening = at(2.14)
+  assert.ok(opening.composer.openness > 0 && opening.composer.openness < 1)
+  assert.equal(opening.composer.typedText, '')
+  assert.ok(opening.html.includes(copy.orderQuestion))
+  const typing = at(2.37)
+  assert.equal(typing.composer.typedText, 'Harissa')
+  assert.equal(typing.composer.preview, false)
+  assert.equal(typing.card.publication, 0)
+  const preview = at(2.6)
+  assert.equal(preview.composer.typedText, 'Harissa prawns')
+  assert.equal(preview.composer.preview, true)
+  assert.ok(preview.html.includes(copy.notPublished))
+  assert.equal(preview.card.stage, 'holder')
+  assert.equal(preview.card.publication, 0)
+  const saving = at(2.74)
+  assert.ok(saving.composer.publishProgress > 0 && saving.composer.publishProgress < 1)
+  assert.ok(saving.html.includes(copy.saving))
+  assert.equal(saving.card.stage, 'holder')
+  const reveal = at(2.89)
+  assert.ok(reveal.composer.openness > 0 && reveal.composer.openness < 1)
+  assert.ok(reveal.card.publication > 0 && reveal.card.publication < 1)
+  assert.equal(reveal.card.stage, 'order')
+  const done = at(3)
+  assert.equal(done.composer.openness, 0)
+  assert.equal(done.card.publication, 1)
+  assert.equal(done.card.tab, 'order')
+  assert.deepEqual(at(2.37).composer, typing.composer)
+  const reducedOpening = at(2.14, true)
+  assert.ok([0, 1].includes(reducedOpening.composer.openness))
+  assert.ok([0, 1].includes(at(2.89, true).card.publication))
+  assert.equal(app.frames(), 0)
+  assert.equal(app.timers(), 0)
+})
+
+test('standings retain four stable actors, native row heights and one crown at every endpoint', () => {
+  const app = harness('en')
   const Standings = app.load('components/maitred/MaitredStandings.tsx').default
-  function attach(tree) {
-    tree.props.ref.current = node
-    const elements = allElements(tree).filter(element => element.props?.['data-illustration-row'])
-    orderedRows = elements.map(element => {
-      const id = element.props['data-illustration-row']
-      assert.equal(element.key, id, 'stable person identity is the React key')
-      if (!rowNodes.has(element.key)) rowNodes.set(element.key, { id, style: {}, dataset: {},
-        getAttribute(name) { return name === 'aria-hidden' && this.hidden ? 'true' : null },
-        querySelector(selector) { assert.equal(selector, '[data-row-avatar]'); return { offsetTop: this.dataset.illustrationHolder ? 4 : 6 } },
-      })
-      const row = rowNodes.get(element.key)
-      row.hidden = element.props['aria-hidden'] === true
-      row.dataset.illustrationHolder = element.props['data-illustration-holder'] ? 'true' : undefined
-      row.offsetHeight = row.dataset.illustrationHolder ? 52 : 40
-      return row
-    })
+  const render = days => Standings({ locale: 'en', state: days < 8 ? 'qualify' : 'holder', days, dayProgress: days })
+  const actorIds = tree => allElements(tree).filter(element => element.props?.['data-illustration-row']).map(element => element.key).sort()
+  for (const days of [1, 2, 3, 4, 5, 6, 7, 8, 7, 1]) {
+    const tree = render(days)
+    const rows = allElements(tree).filter(element => element.props?.['data-illustration-row'])
+    assert.deepEqual(actorIds(tree), ['alex', 'jamie', 'maya', 'sam'])
+    assert.equal(rows.filter(row => !row.props['aria-hidden']).length, days < 4 ? 4 : 3)
+    assert.equal(tree.props.style.height, days < 4 ? 184 : 140)
+    const holder = rows.find(row => row.props['data-illustration-holder'])
+    assert.equal(holder.props['data-illustration-row'], days === 8 ? 'alex' : 'jamie')
+    assert.equal(holder.props.style.height, 52)
+    assert.ok(rows.every(row => row.props.style.zIndex === (row.props['data-illustration-row'] === 'alex' ? 2 : 1)), 'the opaque viewer card passes above other profiles at a paused crossover')
+    assert.equal(holder.props.style.transform, 'translateY(0px)')
+    assert.ok(rows.filter(row => !row.props['data-illustration-holder']).every(row => row.props.style.height === 40))
+    assert.equal(allElements(tree).filter(element => element.props?.['data-moving-crown']).length, 1)
+    assert.equal((renderToStaticMarkup(tree).match(/<svg\b/g) ?? []).length, 1)
   }
-  const update = days => app.update({ locale: 'en', state: days < 8 ? 'qualify' : 'holder', days })
-  const positions = () => Object.fromEntries(orderedRows.map(row => [row.id, row.style.transform]))
-  app.mount(Standings, { locale: 'en', state: 'regulars', days: 1 }, attach)
-  const originalNodes = new Map(rowNodes)
-  assert.deepEqual(positions(), { jamie: 'translateY(0px)', sam: 'translateY(56px)', maya: 'translateY(100px)', alex: 'translateY(144px)' })
-  assert.equal(node.style.height, '184px')
-  assert.equal(crown.style.transform, 'translateY(2px)')
-  assert.equal(animations.length, 0)
-  assert.equal(node.dataset.positioned, 'true')
-  update(4)
-  assert.equal(rowNodes.get('maya').hidden, true)
-  assert.equal(rowNodes.get('alex').style.transform, 'translateY(100px)')
-  assert.equal(node.style.height, '140px', 'hidden Maya contributes no extra row to native top-three sizing')
-  update(7)
-  assert.equal(rowNodes.get('jamie').dataset.illustrationHolder, 'true')
-  assert.equal(rowNodes.get('alex').style.transform, 'translateY(56px)')
-  assert.equal(animations.length, 0, 'tying seven does not transfer or animate the crown')
-  update(8)
-  assert.equal(rowNodes.get('alex').dataset.illustrationHolder, 'true')
-  assert.equal(rowNodes.get('alex').style.transform, 'translateY(0px)')
-  assert.equal(rowNodes.get('jamie').style.transform, 'translateY(56px)')
-  assert.equal(allElements(app.tree()).filter(element => element.props?.['data-moving-crown']).length, 1)
-  assert.equal((renderToStaticMarkup(app.tree()).match(/<svg\b/g) ?? []).length, 1, 'rows do not duplicate the moving crown')
-  assert.equal(animations.length, reducedMotion ? 0 : 1)
-  orderedRows[0].offsetHeight = 60
-  observers.at(-1).callback()
-  assert.equal(node.style.height, '148px', 'ResizeObserver uses newly measured row height')
-  assert.equal(animations.length, reducedMotion ? 0 : 1)
-  if (!reducedMotion) assert.equal(animations[0].cancelled, false, 'a resize must not cancel an in-flight transfer')
-  crown.visualTransform = 'matrix(1, 0, 0, 1, 0, -9)'
-  update(7)
-  assert.equal(rowNodes.get('jamie').dataset.illustrationHolder, 'true')
-  assert.equal(animations.length, reducedMotion ? 0 : 2)
-  if (!reducedMotion) {
-    assert.equal(animations[0].cancelled, true)
-    assert.equal(animations[1].keyframes[0].transform, crown.visualTransform, 'reverse transfer starts at the currently visible crown position')
-    assert.equal(animations[1].keyframes.at(-1).transform, 'translateY(2px)')
+  assert.equal(app.frames(), 0)
+  assert.equal(app.timers(), 0)
+})
+
+test('fractional row and crown positions freeze and reverse exactly, while reduced motion snaps', () => {
+  const app = harness('en')
+  const Standings = app.load('components/maitred/MaitredStandings.tsx').default
+  const visual = (value, reducedMotion = false) => {
+    const days = Math.floor(value)
+    const tree = Standings({ locale: 'en', state: days < 8 ? 'qualify' : 'holder', days, dayProgress: value, reducedMotion })
+    return JSON.parse(JSON.stringify({
+      height: tree.props.style.height,
+      rows: allElements(tree).filter(element => element.props?.['data-illustration-row']).map(row => ({ id: row.props['data-illustration-row'], style: row.props.style })).sort((a, b) => a.id.localeCompare(b.id)),
+      crown: allElements(tree).find(element => element.props?.['data-moving-crown']).props.style,
+    }))
   }
-  update(1)
-  assert.equal(rowNodes.get('maya').hidden, false)
-  assert.equal(node.style.height, '184px')
-  assert.equal(rowNodes.size, 4)
-  for (const [id, row] of originalNodes) assert.equal(rowNodes.get(id), row)
-  assert.ok(observers.slice(0, -1).every(observer => observer.disconnected))
-  app.unmount()
-  assert.ok(observers.every(observer => observer.disconnected))
+  const seven = visual(7), midway = visual(7.5), eight = visual(8)
+  assert.notDeepEqual(midway.rows, seven.rows)
+  assert.notDeepEqual(midway.rows, eight.rows)
+  assert.notDeepEqual(midway.crown, seven.crown, 'the crown is partway through its flight before the new title lands')
+  assert.ok(midway.rows.filter(row => ['alex', 'jamie'].includes(row.id)).every(row => row.style.height === 46))
+  const positions = [1, 2, 3.25, 3.5, 4, 4.5, 5, 7, 7.25, 7.5, 7.75, 8]
+  const forward = positions.map(value => visual(value))
+  assert.deepEqual([...positions].reverse().map(value => visual(value)).reverse(), forward)
+  for (const position of [3.5, 4.5, 7.5]) {
+    const paused = visual(position)
+    visual(8)
+    visual(1)
+    assert.deepEqual(visual(position), paused)
+    assert.deepEqual(visual(position, true), visual(Math.floor(position), true))
+  }
+  assert.equal(app.frames(), 0)
+  assert.equal(app.timers(), 0)
 })

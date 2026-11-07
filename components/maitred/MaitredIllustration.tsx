@@ -57,20 +57,20 @@ export function IllustrationPortrait({ portrait }: { portrait: number }) {
   </span>
 }
 
-export function MaitredCardContent({ locale, stage, tab, viewerDays, standings }: { locale: string; stage: NativeMaitredState; tab: 'regulars' | 'order'; viewerDays?: number; standings?: ReactNode }) {
+export function MaitredCardContent({ locale, stage, tab, viewerDays, standings, publication }: { locale: string; stage: NativeMaitredState; tab: 'regulars' | 'order'; viewerDays?: number; standings?: ReactNode; publication?: number }) {
   const copy = NATIVE_MAITRED_COPY[locale === 'id' ? 'id' : 'en']
   const { own, rows, holder } = illustrationTable(stage, viewerDays)
   const hasOrder = stage !== 'holder'
   const holderName = own ? copy.you : holder.name
   return <div className={`${styles.carousel} ${styles.cardContent}`}>
-    {hasOrder && <div className={`${styles.order} ${tab !== 'order' ? styles.hiddenPage : ''}`}>
+    {hasOrder && <div className={`${styles.order} ${tab !== 'order' ? styles.hiddenPage : ''}`} aria-hidden={publication !== undefined ? publication < .5 : undefined} style={publication !== undefined ? { visibility: 'visible', opacity: publication } : undefined}>
       <div className={styles.person}>
         <div className={styles.orderAvatar}><NativeCrown size={22} /><IllustrationPortrait portrait={holder.portrait} /></div>
         <div className={styles.personText}><p>{holderName}</p><strong>{copy.maitredAt.replace('{{placeName}}', 'Kendal Street Kitchen')}</strong></div>
       </div>
       <div className={styles.orderText}><p>{own ? copy.yourUsualOrder : copy.usualOrder.replace('{{name}}', holderName)}</p><strong>Harissa prawns</strong></div>
     </div>}
-    <div className={`${styles.regulars} ${tab === 'order' && hasOrder ? styles.hiddenPage : ''}`}>
+    <div className={`${styles.regulars} ${tab === 'order' && hasOrder ? styles.hiddenPage : ''}`} aria-hidden={publication !== undefined ? publication >= .5 : undefined} style={publication !== undefined ? { visibility: 'visible', opacity: 1 - publication } : undefined}>
       <p className={styles.window}>{copy.countingWindow}</p>
       {standings ?? rows.map(person => <div key={person.id} data-illustration-row={person.id} data-illustration-holder={person.isHolder || undefined} className={`${styles.regularRow} ${person.isYou ? styles.ownRow : ''}`}>
         <span className={styles.rank}>{person.rank}</span>

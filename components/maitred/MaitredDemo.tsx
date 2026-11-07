@@ -14,20 +14,15 @@ export type MaitredDemoCopy = {
   steps: { id: DemoStep; title: string; body: string }[]
 }
 
-function revealStep(fieldset: HTMLFieldSetElement | null, step: DemoStep, animate: boolean) {
-  const panel = fieldset?.querySelector<HTMLElement>('[data-demo-panel="save"]')
-  const screen = panel?.querySelector<HTMLElement>('[role="region"]')
-  const section = panel?.querySelector<HTMLElement>(`[data-native-section="${step === 'save' ? 'your-meals' : 'maitred'}"]`)
-  if (!screen || !section) return
-  screen.scrollTo({ top: Math.max(0, section.offsetTop - (step === 'save' ? 128 : 224)),
-    behavior: animate && !window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' : 'instant' })
+function readingLine(fieldset: HTMLFieldSetElement) {
+  if (window.innerWidth > 700) return window.innerHeight / 2
+  const height = fieldset.querySelector('[data-demo-scene]')?.getBoundingClientRect().height ?? 0
+  return Math.min(window.innerHeight - 40, (height + window.innerHeight) / 2)
 }
 
 function scrollProgress(fieldset: HTMLFieldSetElement) {
   const bounds = fieldset.getBoundingClientRect()
-  const phoneBottom = window.innerWidth <= 700 ? fieldset.querySelector('[data-demo-scene]')?.getBoundingClientRect().bottom : undefined
-  const line = phoneBottom === undefined ? window.innerHeight / 2
-    : Math.min(window.innerHeight - 40, (phoneBottom + window.innerHeight) / 2)
+  const line = readingLine(fieldset)
   if (bounds.top > line || bounds.bottom < line) return
   const centers = Array.from(fieldset.querySelectorAll<HTMLInputElement>('input[type="radio"]'), input => {
     const row = input.closest('label')!.getBoundingClientRect()
@@ -36,96 +31,77 @@ function scrollProgress(fieldset: HTMLFieldSetElement) {
   return progressAtLine(centers, line)
 }
 
-/** One persistent phone; four complete CSS-controlled snapshots remain before hydration. */
+/** Scroll position is the clock. No spring, delay or autonomous animation. */
 export default function MaitredDemo({ copy, locale }: { copy: MaitredDemoCopy; locale: string }) {
   const id = useId()
   const fieldset = useRef<HTMLFieldSetElement>(null)
   const select = useRef<(index: number) => void>(() => {})
-  const [story, setStory] = useState(() => storyAtProgress(0))
+  const [progress, setProgress] = useState(0)
   const [ready, setReady] = useState(false)
+  const [reducedMotion, setReducedMotion] = useState(false)
+  const story = storyAtProgress(progress)
 
   useEffect(() => {
     const root = fieldset.current!
     const inputs = Array.from(root.querySelectorAll<HTMLInputElement>('input[type="radio"]'))
-    let progress = Math.max(0, inputs.findIndex(input => input.checked))
-    let target = progress
-    let frame: number | undefined
-    let lastTime = 0
-    let heldStep: number | undefined
-    let selectionSettling = false
-    let selectionTimer: number | undefined
-    let pageY = window.scrollY
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    let frame: number | undefined
     function publish(value: number) {
-      progress = value
-      const snapshot = storyAtProgress(value)
-      inputs.find(input => input.value === snapshot.step)!.checked = true
-      setStory(previous => previous.days === snapshot.days && previous.step === snapshot.step && previous.state === snapshot.state ? previous : snapshot)
+      inputs.find(input => input.value === storyAtProgress(value).step)!.checked = true
+      setProgress(value)
     }
-    function tick(time: number) {
-      frame = undefined
-      const delta = lastTime ? Math.min(64, time - lastTime) : 16
-      lastTime = time
-      const next = progress + (target - progress) * (1 - Math.exp(-delta / 85))
-      publish(Math.abs(next - target) < .002 ? target : next)
-      if (progress !== target) frame = window.requestAnimationFrame(tick)
-    }
-    function moveTo(value: number) {
-      target = value
-      if (motion.matches) {
-        if (frame !== undefined) window.cancelAnimationFrame(frame)
+    function followScroll() {
+      if (frame !== undefined) return
+      frame = window.requestAnimationFrame(() => {
         frame = undefined
-        publish(target)
-      } else if (frame === undefined) {
-        lastTime = 0
-        frame = window.requestAnimationFrame(tick)
-      }
+        const measured = scrollProgress(root)
+        if (measured !== undefined) publish(measured)
+      })
     }
     select.current = index => {
-      pageY = window.scrollY
-      const measured = scrollProgress(root)
-      heldStep = measured === undefined ? undefined : Math.round(measured)
-      // Let the browser finish scrolling a newly focused radio before resuming the story.
-      selectionSettling = true
-      window.clearTimeout(selectionTimer)
-      selectionTimer = window.setTimeout(() => { selectionSettling = false }, 250)
-      moveTo(index)
-      if (storyAtProgress(progress).step === inputs[index].value) revealStep(root, inputs[index].value as DemoStep, true)
+      if (frame !== undefined) window.cancelAnimationFrame(frame)
+      frame = undefined
+      const row = inputs[index].closest('label')!.getBoundingClientRect()
+      const top = Math.max(0, window.scrollY + row.top + row.height / 2 - readingLine(root))
+      // Keep the page and the scene on the same timeline, including keyboard selection.
+      if (window.__lenis) window.__lenis.scrollTo(top, { immediate: true, force: true })
+      else window.scrollTo({ top, behavior: 'instant' })
+      publish(index)
     }
-    function followScroll(event: Event) {
-      if (window.scrollY === pageY && event.type !== 'resize') return
-      pageY = window.scrollY
-      const measured = scrollProgress(root)
-      if (measured === undefined) return
-      if (selectionSettling) { heldStep = Math.round(measured); return }
-      if (heldStep === Math.round(measured)) return
-      heldStep = undefined
-      moveTo(measured)
-    }
-    function reduceMotion() { if (motion.matches) moveTo(target) }
-    const hydrate = window.requestAnimationFrame(() => { publish(progress); setReady(true) })
+    function preferenceChanged() { setReducedMotion(motion.matches) }
+    const hydrate = window.requestAnimationFrame(() => {
+      publish(scrollProgress(root) ?? Math.max(0, inputs.findIndex(input => input.checked)))
+      preferenceChanged()
+      setReady(true)
+    })
     root.querySelectorAll<HTMLElement>('[data-demo-panel]').forEach(panel => { panel.inert = panel.dataset.demoPanel !== 'save' })
     window.addEventListener('scroll', followScroll, { passive: true })
     window.addEventListener('resize', followScroll)
-    motion.addEventListener('change', reduceMotion)
+    motion.addEventListener('change', preferenceChanged)
     return () => {
       window.cancelAnimationFrame(hydrate)
-      window.clearTimeout(selectionTimer)
       if (frame !== undefined) window.cancelAnimationFrame(frame)
       window.removeEventListener('scroll', followScroll)
       window.removeEventListener('resize', followScroll)
-      motion.removeEventListener('change', reduceMotion)
+      motion.removeEventListener('change', preferenceChanged)
     }
   }, [])
 
-  const previousStep = useRef<DemoStep | undefined>(undefined)
   useLayoutEffect(() => {
     if (!ready) return
-    revealStep(fieldset.current, story.step, previousStep.current !== undefined)
-    previousStep.current = story.step
-  }, [ready, story.step])
+    const panel = fieldset.current?.querySelector<HTMLElement>('[data-demo-panel="save"]')
+    const screen = panel?.querySelector<HTMLElement>('[data-story-screen]')
+    const history = panel?.querySelector<HTMLElement>('[data-native-section="your-meals"]')
+    const table = panel?.querySelector<HTMLElement>('[data-native-section="maitred"]')
+    if (!screen || !history || !table) return
+    const from = Math.max(0, history.offsetTop - 128)
+    const to = Math.max(0, table.offsetTop - 224)
+    const camera = reducedMotion ? Number(story.camera >= .5) : story.camera
+    screen.scrollTo({ top: from + (to - from) * camera, behavior: 'instant' })
+  }, [ready, reducedMotion, story.camera, story.days])
 
-  return <fieldset className={styles.demo} ref={fieldset} data-motion-ready={ready || undefined} data-story-holder={story.days === 8 || undefined}>
+  const crown = reducedMotion ? Number(story.days === 8) : Math.max(0, Math.min(1, story.dayProgress - 7))
+  return <fieldset className={styles.demo} ref={fieldset} data-lenis-prevent data-motion-ready={ready || undefined} data-story-progress={progress} data-story-holder={story.days === 8 || undefined}>
     <legend className={styles.srOnly}>{copy.legend}</legend>
     <div className={styles.steps}>
       {copy.steps.map((step, index) => <label className={styles.step} key={step.id} htmlFor={`${id}-${step.id}`}>
@@ -145,14 +121,14 @@ export default function MaitredDemo({ copy, locale }: { copy: MaitredDemoCopy; l
       <div className={styles.phone}>
         <div className={styles.island} />
         <div className={styles.panels}>
-          <div id={`${id}-save-phone`} className={`${styles.panel} ${styles.initialPanel}`} data-demo-panel="save"><MaitredNativeMockup locale={locale} state={story.state} viewerDays={story.days} standings={ready ? <MaitredStandings locale={locale} state={story.state} days={story.days} /> : undefined} /></div>
-          <div id={`${id}-qualify-phone`} className={styles.panel} data-demo-panel="qualify"><MaitredNativeMockup locale={locale} state="qualify" /></div>
-          <div id={`${id}-lead-phone`} className={styles.panel} data-demo-panel="lead"><MaitredNativeMockup locale={locale} state="holder" /></div>
-          <div id={`${id}-share-phone`} className={styles.panel} data-demo-panel="share"><MaitredNativeMockup locale={locale} state="order" /></div>
+          <div id={`${id}-save-phone`} className={`${styles.panel} ${styles.initialPanel}`} data-demo-panel="save"><MaitredNativeMockup locale={locale} state={story.state} viewerDays={story.days} story={ready ? story : undefined} reducedMotion={reducedMotion} locked standings={ready ? <MaitredStandings locale={locale} state={story.state} days={story.days} dayProgress={story.dayProgress} reducedMotion={reducedMotion} /> : undefined} /></div>
+          <div id={`${id}-qualify-phone`} className={styles.panel} data-demo-panel="qualify"><MaitredNativeMockup locale={locale} state="qualify" locked /></div>
+          <div id={`${id}-lead-phone`} className={styles.panel} data-demo-panel="lead"><MaitredNativeMockup locale={locale} state="holder" locked /></div>
+          <div id={`${id}-share-phone`} className={styles.panel} data-demo-panel="share"><MaitredNativeMockup locale={locale} state="order" locked /></div>
         </div>
         <div className={styles.homeIndicator} />
       </div>
-      <Image className={styles.sceneCrown} src="/redesign/maitred-crown.svg" alt="" width={160} height={120} />
+      <Image style={ready ? { opacity: crown, transform: `translateY(${(1 - crown) * -20}px) rotate(${-8 + 23 * crown}deg) scale(${.85 + .15 * crown})` } : undefined} className={styles.sceneCrown} src="/redesign/maitred-crown.svg" alt="" width={160} height={120} />
       <p className={styles.credit}>Kendal Street Kitchen · @ridorichard</p>
     </div>
   </fieldset>
