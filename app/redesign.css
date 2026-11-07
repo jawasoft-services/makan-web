@@ -317,6 +317,8 @@ html{font-size:100%}.redesign-site{background:var(--cream);color:var(--ink)}
 .hero-motion,.rating-pause{opacity:0;pointer-events:none}
 .hero-motion:focus-visible,.rating-pause:focus-within{opacity:1;pointer-events:auto}
 
+.benefit-copy > .button{margin-top:32px}
+
 /* Named FAQ groups keep native interaction; motion is a progressive enhancement. */
 @media(prefers-reduced-motion:no-preference){
  @supports (interpolate-size:allow-keywords) and (transition-behavior:allow-discrete) and selector(::details-content){
