@@ -15,11 +15,11 @@ export type { DirectoryMeal, DirectoryPlace, PlaceIndexEntry } from '@/lib/aggre
 
 /**
  * Every restaurant on Makan that has public meals, as the app's place screen
- * would show it. Read from the aggregate documents the daily cron writes:
+ * would show it. Read from the aggregate documents the hourly Firebase Scheduler job writes:
  * a small sharded index for lists, and one document per place for a page.
  * The full scan (lib/aggregates/compute.ts) runs only for the cached index
  * and directory lists, when the aggregate is missing or the cron has been
- * silent for 36 hours, which is logged; single-place reads never scan.
+ * silent for two hours, which is logged; single-place reads never scan.
  */
 
 async function aggregateIsFresh(): Promise<boolean> {

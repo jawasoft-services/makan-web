@@ -299,3 +299,14 @@ test('standings producer excludes known bad restaurant states even without count
   assert.equal(result.rows[0].lat, 51.5)
   assert.equal(run.writes.length, 0)
 })
+
+test('hourly standings tolerate one missed run and fall back once two hours old',async()=>{
+ for(const [age,expectedScans] of [[119*60*1000,0],[120*60*1000,1]]){
+  const run=lane();seedStandings(run)
+  run.data.set('webAggregates/meta',{lastRunAt:new run.Timestamp(time-age)})
+  const snapshot=await run.load('lib/eat-standings.ts').getEatStandingsSnapshot()
+  assert.equal(snapshot.standings.rows.length,1)
+  assert.equal(run.control.computations,expectedScans)
+  assert.equal(snapshot.checkedAt,new Date(expectedScans?time:time-age).toISOString())
+ }
+})

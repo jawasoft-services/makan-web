@@ -12,12 +12,9 @@ export const maxDuration = 60
 
 /**
  * The one place the site scans `meals` and reads the app's Eat evidence
- * totals (`eatEvidenceAggregateState`). Vercel
- * Cron calls it daily at 03:00 UTC (vercel.json; Hobby plans reject anything
- * more frequent) and the GitHub Actions workflow in
- * .github/workflows/aggregates.yml can call it hourly once the repository has
- * a CRON_SECRET secret. Both send `Authorization: Bearer $CRON_SECRET`;
- * without the secret it is a 401, so it cannot be triggered from outside.
+ * totals (`eatEvidenceAggregateState`). Firebase Cloud Scheduler calls this
+ * endpoint hourly (makan-web-aggregates, us-central1) using its existing
+ * bearer credential. Missing or incorrect credentials return 401.
  * It writes to webAggregates/* only, and only the documents whose content
  * changed (lib/aggregates/store.ts); most hours write just the heartbeat.
  *

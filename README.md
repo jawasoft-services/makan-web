@@ -106,7 +106,7 @@ The site should run on a **least-privilege service account**, not the Firebase p
 
 ## How the data works
 
-The **daily cron** (`/api/cron/aggregates`, bearer-token protected) writes the public venue, statistics and Eat-or-Yeet aggregates. Pages normally reuse these documents, but list/statistics readers can fall back to collection scans when the aggregate is missing or its heartbeat is over 36 hours old. The homepage also reads a live meal count and a bounded selection of public meal posts. Maître d’ identity and published orders use a separate five-minute verification window and read their current source records when that public aggregate is absent or stale; this fallback does not write an aggregate.
+The **hourly Firebase Cloud Scheduler job** (`makan-web-aggregates`, project `munchies-expo`, region `us-central1`, `0 * * * *` in UTC) calls the existing bearer-protected `/api/cron/aggregates` endpoint to write the public venue, statistics and Eat-or-Yeet aggregates. Pages normally reuse these documents, but list/statistics readers can fall back to collection scans when the aggregate is missing or its heartbeat is over two hours old. The homepage also reads a live meal count and a bounded selection of public meal posts. Maître d’ identity and published orders use a separate five-minute verification window and read their current source records when that public aggregate is absent or stale; this fallback does not write an aggregate.
 
 The directory also joins the app's current public restaurant projections, so new venues do not depend on the old city seed. Missing public venues, standings venues and eligible Maître d’ venues are recovered with exact-venue public-meal queries. Cards, venue pages, metadata and owner search share this recovery; arbitrary unknown IDs cannot trigger a meal scan. Restaurant metadata, total public-meal counts and venue content share successful hour-long caches and concurrent reads. Maître d’ eligibility retains its separate five-minute verification window. Test, retired and moved venue projections are excluded. Meal totals are separate from the gallery's 60-photo limit.
 
@@ -131,3 +131,12 @@ This is a marketing/content site — no secrets live in it (they're all environm
 ### Local real-delivery review
 
 Keep delivery credentials in ignored `.env.local`, never in source or screenshots. Firebase App Hosting uses its existing website service account automatically. For a local preview using the same identity, set `GOOGLE_SHEET_ID` and `GOOGLE_SHEETS_IMPERSONATE_SERVICE_ACCOUNT` to the approved spreadsheet and website service account. The signed-in local ADC user must have the explicitly approved Token Creator role on that service account; generated tokens are Sheets-scoped and last one hour. The spreadsheet must be shared with that service account as Editor. No service-account key is needed. This local configuration does not change the live site's environment.
+
+The obsolete GitHub aggregate schedule and Vercel cron are retired. Standings/EOY snapshots share the existing one-hour reader cache and refresh on use; an already-open page needs navigation or reload. The two-hour heartbeat tolerance permits one missed hourly run before the live fallback. To inspect or exercise the existing job without deploying the website:
+
+```bash
+gcloud scheduler jobs describe makan-web-aggregates --project=munchies-expo --location=us-central1 --format='json(name,schedule,timeZone,state,lastAttemptTime,status)'
+gcloud scheduler jobs run makan-web-aggregates --project=munchies-expo --location=us-central1
+```
+
+The run command writes the website aggregates through the deployed producer; it is an operational action, not a read-only check. Schedule changes should preserve the existing target, bearer credential, retry settings and deadline.
