@@ -86,6 +86,11 @@ export async function POST(request: Request) {
     }
     if (!secretMatches(data.tokenHash, body.secret)) return invalidPreview()
 
+    const state = inviteState(data, Date.now())
+    if (state !== "active") {
+      return json({ state, hostDisplayName: "", hostAvatarUrl: "", expiresAt: null })
+    }
+
     const expiresAt = data.expiresAt as { toDate?: () => Date } | undefined
     const displayName = typeof data.hostDisplayName === "string"
       ? data.hostDisplayName.trim().slice(0, 80)
@@ -95,7 +100,7 @@ export async function POST(request: Request) {
       : ""
 
     return json({
-      state: inviteState(data, Date.now()),
+      state,
       hostDisplayName: displayName || "A Makan friend",
       hostAvatarUrl: avatarUrl,
       expiresAt: expiresAt?.toDate?.().toISOString() || null,

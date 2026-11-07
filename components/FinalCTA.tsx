@@ -11,7 +11,7 @@ const EASE_OUT = [0.23, 1, 0.32, 1] as const
 
 interface FinalCTAProps {
   /** Live total meal count — the launch proof in the "Live now" badge. */
-  mealCount: number
+  mealCount: number | null
 }
 
 export default function FinalCTA({ mealCount }: FinalCTAProps) {
@@ -32,9 +32,9 @@ export default function FinalCTA({ mealCount }: FinalCTAProps) {
         >
           <span className="cta-ping h-2 w-2 rounded-full bg-brand-orange" aria-hidden />
           {t('live')}
-          <span className="font-semibold text-brand-orange/80 normal-case tracking-normal">
+          {mealCount !== null ? <span className="font-semibold text-brand-orange/80 normal-case tracking-normal">
             · <StatTicker value={mealCount} inView={inView} /> {t('logged')}
-          </span>
+          </span> : null}
         </motion.p>
 
         <motion.h2

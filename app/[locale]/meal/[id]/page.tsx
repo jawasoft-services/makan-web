@@ -1,6 +1,7 @@
 import { WEBSITE_FIXTURES, fixtureMeal } from '@/lib/website-fixtures'
 import { redirect } from "next/navigation"
 import { Metadata } from "next"
+import { cache } from "react"
 import { getDb } from "@/lib/firebase-admin"
 import Image from "next/image"
 import Footer from "@/components/Footer"
@@ -10,16 +11,11 @@ import Link from "next/link"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { getDirectoryPlaceById } from "@/lib/place-directory"
 import { localizePath } from "@/i18n/paths"
+import { isPublicMeal } from "@/lib/public-meal"
 
-// A public meal rarely changes once shared, so each page is cached for an
-// hour: one Firestore read per meal per hour, not one per visitor. Nothing is
-// prebuilt (ids are only known when a link is shared), but a dynamic segment
-// is cacheable only when it declares generateStaticParams, even an empty one.
-export const revalidate = 3600
-export const dynamicParams = true
-export function generateStaticParams() {
-  return []
-}
+// Visibility can change after a link is shared. Check it on every request;
+// React's request cache shares the one meal read between metadata and the page.
+export const dynamic = "force-dynamic"
 
 interface PageProps {
   params: Promise<{ id: string; locale: string }>
@@ -33,33 +29,49 @@ interface MealData {
   shareCardUrl?: string
   locationName?: string
   userID?: string
+  uid?: string
+  userName?: string
   username?: string
   isPublic?: boolean | null
   placeProviderId?: string
 }
 
-async function getMeal(id: string): Promise<MealData | null> {
+const getMeal = cache(async (id: string): Promise<MealData | null> => {
   try {
+    const db = WEBSITE_FIXTURES ? null : getDb()
     let meal: MealData | null
     if (WEBSITE_FIXTURES) {
       meal = fixtureMeal(id)
     } else {
-      const db = getDb()
       if (!db) return null
       const doc = await db.collection("meals").doc(id).get()
       if (!doc.exists) return null
       meal = { id: doc.id, ...doc.data() } as MealData
     }
     if (!meal) return null
-    // Fail closed: only return meals explicitly marked public.
-    // Any missing/null/false isPublic is treated as private and yields null,
-    // so both generateMetadata and the page inherit the same gate.
-    if (meal.isPublic !== true) return null
-    return meal
+    // Match the public meal gate used by taste invites. A public flag can remain
+    // on a draft, deleted or moderated record; none may reach the page or metadata.
+    if (!isPublicMeal(meal)) return null
+    const chosenHandle = (value: unknown): string => {
+      const handle = typeof value === "string" ? value.trim() : ""
+      return handle && !/^user_/i.test(handle) ? handle : ""
+    }
+    let username = ""
+    const uid = meal.userID || meal.uid
+    if (db && typeof uid === "string" && uid.trim()) {
+      try {
+        const [profile] = await db.getAll(db.collection("users").doc(uid.trim()), { fieldMask: ["username"] })
+        username = chosenHandle(profile.data()?.username)
+      } catch {
+        // The optional byline must not hide a verified public meal on failure.
+        console.error("meal: author handle unavailable; using the saved handle.")
+      }
+    }
+    return { ...meal, username: username || chosenHandle(meal.userName) || chosenHandle(meal.username) }
   } catch {
     return null
   }
-}
+})
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params

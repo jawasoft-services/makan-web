@@ -25,16 +25,20 @@ function database(seed = {}) {
   let onRead = null
   async function read(path) { reads.push(path); if (onRead) await onRead(path); return doc(path, data.get(path)) }
   const reference = path => ({ path, get: () => read(path), collection: name => collection(`${path}/${name}`) })
-  const collection = (path, filters = [], mask = null) => ({
+  const collection = (path, filters = [], mask = null, order = null, maximum = Infinity) => ({
     doc: id => reference(`${path}/${id}`),
     where: (field, op, value) => collection(path, [...filters, { field, op, value }], mask),
-    select: (...fields) => collection(path, filters, fields),
+    select: (...fields) => collection(path, filters, fields, order, maximum),
+    orderBy: (field, direction) => collection(path, filters, mask, { field, direction }, maximum),
+    limit: count => collection(path, filters, mask, order, count),
     async get() {
       reads.push(`${path}/*`)
       queries.push({ path, filters: copy(filters), fields: mask ? [...mask] : null })
       if (onRead) await onRead(`${path}/*`, queries.at(-1))
       let rows = [...data].filter(([key]) => key.startsWith(`${path}/`) && !key.slice(path.length + 1).includes('/'))
-      for (const filter of filters) rows = rows.filter(([, value]) => filter.op === 'in' ? filter.value.includes(value[filter.field]) : value[filter.field] === filter.value)
+      for (const filter of filters) rows = rows.filter(([, value]) => filter.op === 'in' ? filter.value.includes(value[filter.field]) : filter.op === '>=' ? value[filter.field] >= filter.value : value[filter.field] === filter.value)
+      if (order) rows.sort((a,b) => ((a[1][order.field]?.toMillis?.() ?? 0) - (b[1][order.field]?.toMillis?.() ?? 0)) * (order.direction === 'desc' ? -1 : 1))
+      rows = rows.slice(0, maximum)
       return { size: rows.length, docs: rows.map(([key, value]) => doc(key, mask ? Object.fromEntries(mask.map(field => [field, value[field]])) : value)) }
     },
   })
@@ -99,6 +103,7 @@ function lane(options = {}) {
             return entry.pending
           }
         } }
+        if (id === '@/lib/eat-standings') return { getEatStandings: async () => control.standings ?? { all: [], rows: [], cities: [] } }
         if (id === 'next/server') return { NextResponse: Response }
         if (id === '@/lib/website-fixtures') return { WEBSITE_FIXTURES: false }
         if (id === '@/lib/firebase-admin') return { getDb: () => control.db ?? {} }
@@ -108,13 +113,14 @@ function lane(options = {}) {
           getPlaceWhere: async ids => { calls.locations.push(copy(ids)); return new Map(ids.map(id => [id, { city: 'Fixture city', country: 'Fixture country' }])) },
         }
         if (id === '@/lib/aggregates/compute' && !control.actualCompute) return {
-          computeEatStandings: async () => ({ rows: [], computedAt: 'fixture' }),
+          computeEatStandings: async () => ({ all: [], rows: [], cities: [], computedAt: 'fixture' }),
           computePlaceStats: async () => ({}), indexOf: () => [],
           computePlaceDirectory: async (_db, ids) => { calls.directoryIds = copy(ids); return control.directory },
         }
         if (id === '@/lib/aggregates/store' && !control.actualStore) return {
           readMaitred: async () => { calls.stored++; return load('lib/aggregates/maitred.ts').parseMaitredList(control.stored) },
           readLastRun: async () => { calls.heartbeat++; return control.lastRun },
+          readStats: async () => control.stats ?? null,
         }
         if (id === '@/lib/aggregates/maitred' && !control.actualSource) {
           const source = async () => { calls.source++; const verifiedAt = clock.now; const value = await (typeof control.source === 'function' ? control.source() : control.source); return { verifiedAt, ...value } }
@@ -690,4 +696,82 @@ test('warm per-venue metadata expires after one hour without extending five-minu
   assertExactPublicMealQueries(db, ['retained', 'retained'])
   assert.equal(db.reads.filter(path => path === 'maitredFeature/current').length, 2)
   assert.deepEqual(run.external, [])
+})
+
+
+test('public projection completes unseeded venues, ranked zero-photo venues and legacy counts', async () => {
+  const {db,run,api} = completeDirectoryLane()
+  db.data.set('restaurants/new-public', { state:'active', displayName:'New restaurant', publicMealCount:7, canonicalPlaceId:'new-public', latitude:1, longitude:2 })
+  db.data.set('restaurants/ranked', { state:'active', displayName:'Ranked restaurant', publicMealCount:0, canonicalPlaceId:'ranked' })
+  db.data.set('restaurants/catalogue', { state:'active', displayName:'Current catalogue', publicMealCount:61 })
+  db.data.set('restaurants/test-venue', { state:'active', displayName:'Hidden venue', publicMealCount:5, isTestVenue:true })
+  db.data.set('restaurants/moved', { state:'active', displayName:'Moved venue', publicMealCount:5, canonicalPlaceId:'somewhere-else' })
+  run.control.standings = { all:[{placeId:'ranked'}],rows:[],cities:[] }
+  const [index,full] = await Promise.all([api.getPlaceIndex(),api.getPlaceDirectoryStrict()])
+  assert(index.some(v=>v.placeId==='new-public'));assert(index.some(v=>v.placeId==='ranked'))
+  assert(!index.some(v=>['test-venue','moved'].includes(v.placeId)))
+  assert.equal(index.find(v=>v.placeId==='catalogue').meals,61)
+  assert.equal(full.find(v=>v.placeId==='catalogue').publicMealCount,61)
+  assert.equal((await api.getDirectoryPlaceById('new-public')).name,'New restaurant')
+  assert.equal((await api.getDirectoryPlace(index.find(v=>v.placeId==='ranked').slug)).placeId,'ranked')
+  assert(db.queries.filter(q=>q.path==='meals').every(q=>q.filters.some(f=>f.field==='placeProviderId')))
+  assert.equal(db.queries.filter(q=>q.path==='restaurants').length,1,'concurrent public projection reads share one cached query')
+  assert.equal(db.writes.length,0)
+})
+
+test('index failures recover on the next call and unknown exact IDs never scan standings or meals', async () => {
+  const {db,run,api}=completeDirectoryLane()
+  db.setReadHook(path=>{if(path==='webAggregates/placeIndex')throw new Error('temporary index failure')})
+  assert.deepEqual(copy(await api.getPlaceIndex()),[])
+  db.setReadHook(null)
+  assert((await api.getPlaceIndex()).length>0)
+  run.control.standings={get all(){throw new Error('Unknown route must not touch standings')}}
+  const before=mealQueries(db).length
+  assert.equal(await api.getDirectoryPlaceById('arbitrary'),null)
+  assert.equal(mealQueries(db).length,before)
+})
+
+test('directory totals include photo-less public meals beyond gallery limit and exclude private drafts', async () => {
+  const {db,run}=completeDirectoryLane()
+  for(let i=0;i<65;i++)db.data.set(`meals/large-${i}`,{placeProviderId:'large',isPublic:true,imageURL:'https://firebasestorage.googleapis.com/photo.jpg',createdAt:new run.Timestamp(time+i),userName:'public'})
+  db.data.set('meals/no-photo',{placeProviderId:'large',isPublic:true})
+  for(const [i,patch] of [{isPublic:false},{moderationStatus:'hidden'},{isDeleted:true},{isPublicDraft:true},{isLocalOnly:true}].entries())db.data.set(`meals/excluded-${i}`,{placeProviderId:'large',isPublic:true,...patch})
+  const compute=run.load('lib/aggregates/compute.ts')
+  const place=await compute.computePlaceDirectoryForPlace(db.db,'large')
+  assert.equal(place.meals.length,60);assert.equal(place.publicMealCount,66)
+  assert.equal(compute.indexOf([place])[0].meals,66)
+})
+
+test('real meal-count loader uses persisted count then unavailable without inventing a number', async () => {
+  let failure=false
+  const run=lane({db:{collection(){return{count(){return{get:async()=>{if(failure)throw new Error('down');return{data:()=>({count:5806})}}}}}}},stats:{mealCount:5801}})
+  const api=run.load('lib/makan-stats.ts')
+  assert.equal(await api.getMealCount(),5806)
+  failure=true;assert.equal(await api.getMealCount(),5801)
+  for(const stats of [null,{}, {mealCount:NaN},{mealCount:-1}]){run.control.stats=stats;assert.equal(await api.getMealCount(),null)}
+})
+
+test('gallery considers every fetched candidate and uses the current Makan handle', async () => {
+  const db=database();const run=lane({db:db.db})
+  for(let i=0;i<35;i++){
+    const uid=i<24?'crowded':`diner-${i}`
+    db.data.set(`meals/gallery-${i}`,{isPublic:true,imageURL:`https://firebasestorage.googleapis.com/${i}.jpg`,caption:`Distinct lunch ${i}`,locationName:'Venue',placeProviderId:'venue',userID:uid,userName:'Old display name',createdAt:new run.Timestamp(time-i)})
+    db.data.set(`users/${uid}`,{username:uid})
+  }
+  const meals=await run.load('lib/makan-stats.ts').getRecentPublicMeals()
+  assert.equal(meals.length,12)
+  assert.equal(meals.filter(m=>m.username==='crowded').length,2)
+  assert(meals.every(m=>m.username!=='Old display name'))
+  assert.deepEqual(run.external,[])
+})
+
+test('failed public venue verification cannot revive test venues from an old index', async () => {
+  const {db,api}=completeDirectoryLane({aggregateIds:['catalogue','test-venue']})
+  db.data.set('restaurants/test-venue',{displayName:'Test venue',isTestVenue:true,publicMealCount:1})
+  db.setReadHook(path=>{if(path==='restaurants/*')throw new Error('projection unavailable')})
+  assert.deepEqual(copy(await api.getPlaceIndex()),[])
+  assert.equal(await api.getDirectoryPlaceById('test-venue'),null)
+  db.setReadHook(null)
+  assert(!(await api.getPlaceIndex()).some(p=>p.placeId==='test-venue'))
+  assert.equal(await api.getDirectoryPlaceById('test-venue'),null)
 })

@@ -94,7 +94,9 @@ export interface DirectoryPlace {
   cuisine: string[]
   /** ISO date of the first meal ever tagged here, or null. */
   since: string | null
-  /** Public meals saved here, newest first. */
+  /** Total public meals, independent of the recent photo gallery limit. Absent in legacy aggregates. */
+  publicMealCount?: number
+  /** Public meal photos, newest first. */
   meals: DirectoryMeal[]
   /** Whether search engines should index the page (enough on it to be worth a result). */
   indexable: boolean

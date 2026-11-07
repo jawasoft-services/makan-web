@@ -5,33 +5,20 @@ import { getDb } from '@/lib/firebase-admin'
 import { computePlaceStats } from '@/lib/aggregates/compute'
 import { MAX_AGE_MS, readLastRun, readStats } from '@/lib/aggregates/store'
 import { FALLBACK_PLACE_STATS, type PlaceStats } from '@/lib/aggregates/types'
+import { isPublicMeal, PUBLIC_MEAL_FIELDS } from '@/lib/public-meal'
 import { isCleanCaption } from '@/lib/captions'
 
-// Shown if Firestore is unreachable at render time. The previous hardcoded
-// copy value — a safe floor that's never "worse than today".
-export const FALLBACK_MEAL_COUNT = 581
-
-/**
- * Returns the live total meal count via a Firestore aggregation query
- * (.count() — billed at ~1 read per 1000 docs, vs 1 per doc for a fetch).
- *
- * Server-only: the `server-only` import causes build failure if any client
- * component imports this file, so the Firebase Admin credential cannot leak
- * into a browser bundle.
- *
- * On any error / missing env / unreachable Firebase, falls back to the last
- * count the daily cron persisted (webAggregates/stats, at most ~a day old and
- * real), and only to FALLBACK_MEAL_COUNT if even that read fails. The homepage
- * cannot break on this path.
- */
-export async function getMealCount(): Promise<number> {
+/** Live count first; persisted real count on failure, never a fabricated total. */
+export async function getMealCount(): Promise<number | null> {
   if (WEBSITE_FIXTURES) return fixturePlaceStats().mealCount
   try {
     const db = getDb()
-    if (!db) return FALLBACK_MEAL_COUNT
+    if (!db) return null
 
     const snap = await db.collection('meals').count().get()
-    return clamp(snap.data().count, FALLBACK_MEAL_COUNT)
+    const count = snap.data().count
+    if (!Number.isSafeInteger(count) || count < 0) throw new Error('Invalid meal count.')
+    return count
   } catch {
     // Live count failed: reuse the persisted aggregate the cron wrote, so the
     // fallback tracks live state instead of a frozen constant.
@@ -39,20 +26,12 @@ export async function getMealCount(): Promise<number> {
     try {
       const db = getDb()
       const stored = db ? await readStats(db) : null
-      if (stored) return stored.mealCount
+      if (stored && Number.isSafeInteger(stored.mealCount) && stored.mealCount >= 0) return stored.mealCount
     } catch {
-      // fall through to the constant floor
+      // Leave the total unavailable when neither source can verify it.
     }
-    return FALLBACK_MEAL_COUNT
+    return null
   }
-}
-
-/** Coerce to a non-negative integer or fall back to a safe floor. */
-function clamp(value: number, fallback: number): number {
-  if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) {
-    return fallback
-  }
-  return Math.floor(value)
 }
 
 export { FALLBACK_PLACE_STATS, TOP_PLACES } from '@/lib/aggregates/types'
@@ -63,25 +42,25 @@ export type { PlaceStats } from '@/lib/aggregates/types'
  * daily cron writes (webAggregates/stats). The scan runs only when the
  * aggregate is missing or stale, which is logged.
  */
-export const getPlaceStats = unstable_cache(
+const getCachedPlaceStats = unstable_cache(
   async (): Promise<PlaceStats> => {
     if (WEBSITE_FIXTURES) return fixturePlaceStats()
     const db = getDb()
-    if (!db) return FALLBACK_PLACE_STATS
-    try {
-      const [stored, lastRun] = await Promise.all([readStats(db), readLastRun(db)])
-      const fresh = lastRun !== null && Date.now() - lastRun.getTime() < MAX_AGE_MS
-      if (stored && fresh) return stored
-      console.warn(`makan-stats: aggregate ${stored ? 'stale' : 'missing'}; falling back to a live scan.`)
-      return await computePlaceStats(db)
-    } catch {
-      console.error('makan-stats: failed to read or compute place stats; using fallback.')
-      return FALLBACK_PLACE_STATS
-    }
+    if (!db) throw new Error('Place statistics database unavailable.')
+    const [stored, lastRun] = await Promise.all([readStats(db), readLastRun(db)])
+    const fresh = lastRun !== null && Date.now() >= lastRun.getTime() && Date.now() - lastRun.getTime() < MAX_AGE_MS
+    if (stored && fresh) return stored
+    console.warn(`makan-stats: aggregate ${stored ? 'stale' : 'missing'}; falling back to a live scan.`)
+    return computePlaceStats(db)
   },
-  ['makan-place-stats', 'v3'],
+  ['makan-place-stats', 'v4-recovery'],
   { revalidate: 3600 },
 )
+
+export async function getPlaceStats(): Promise<PlaceStats> {
+  try { return await getCachedPlaceStats() }
+  catch { console.error('makan-stats: failed to read place statistics.'); return FALLBACK_PLACE_STATS }
+}
 
 /** One homepage share-card "post" — the app's export-as-a-post format. */
 export interface PublicMeal {
@@ -120,8 +99,6 @@ const DELIVERY_VENUE = /\b(delivery|gofood|grabfood|shopeefood|deliveroo|uber ?e
 const MIN_CAPTION_WORDS = 2
 // Twelve cards from three accounts reads as one family's diary. Two per handle.
 const MAX_PER_HANDLE = 2
-// Candidates over the target so the handle filters below still leave a full strip.
-const HANDLE_FILTER_SLACK = 12
 
 /**
  * Returns up to `limit` of the most recent PUBLIC meal posts for the homepage
@@ -155,8 +132,7 @@ export async function getRecentPublicMeals(
       .orderBy('createdAt', 'desc')
       .limit(limit * OVERFETCH)
       .select(
-        'isPublic',
-        'moderationStatus',
+        ...PUBLIC_MEAL_FIELDS,
         'imageURL',
         'caption',
         'locationName',
@@ -176,8 +152,7 @@ export async function getRecentPublicMeals(
     const plain: Raw[] = []
     for (const doc of snap.docs) {
       const d = doc.data()
-      if (d.isPublic !== true) continue
-      if (d.moderationStatus !== undefined && d.moderationStatus !== 'active') continue
+      if (!isPublicMeal(d)) continue
       const src = typeof d.imageURL === 'string' ? d.imageURL : ''
       if (!src.startsWith('https://firebasestorage.googleapis.com/')) continue
       const locationName = str(d.locationName)
@@ -201,25 +176,25 @@ export async function getRecentPublicMeals(
       else plain.push(raw)
     }
 
-    const raws = interleaveByShare(venue, plain, limit + HANDLE_FILTER_SLACK, VENUE_SHARE)
+    const raws = interleaveByShare(venue, plain, venue.length + plain.length, VENUE_SHARE)
 
     // Join @usernames for meals that don't carry the legacy field.
-    const uids = [...new Set(raws.filter((r) => !r.legacyName && r.uid).map((r) => r.uid))]
+    const uids = [...new Set(raws.filter((r) => r.uid).map((r) => r.uid))]
     const nameByUid = new Map<string, string>()
     if (uids.length) {
       const refs = uids.map((u) => db.collection('users').doc(u))
-      const users = await db.getAll(...refs, { fieldMask: ['username', 'name'] })
+      const users = await db.getAll(...refs, { fieldMask: ['username'] })
       for (const u of users) {
         if (!u.exists) continue
         const data = u.data()
-        const handle = str(data?.username) || str(data?.name)
+        const handle = str(data?.username)
         if (handle) nameByUid.set(u.id, handle)
       }
     }
 
-    return raws
+    const eligible = raws
       .map((r) => {
-        const username = r.legacyName || nameByUid.get(r.uid) || ''
+        const username = nameByUid.get(r.uid) || r.legacyName || ''
         return {
           src: r.src,
           caption: r.caption,
@@ -230,9 +205,10 @@ export async function getRecentPublicMeals(
         }
       })
       .filter((m) => m.username && !AUTO_HANDLE.test(m.username))
-      .filter(perHandleCap(MAX_PER_HANDLE))
       .filter(uniqueDishAtPlace())
-      .slice(0, limit)
+      .filter(perHandleCap(MAX_PER_HANDLE))
+    const venueSources = new Set(venue.map(meal => meal.src))
+    return interleaveByShare(eligible.filter(meal => venueSources.has(meal.src)), eligible.filter(meal => !venueSources.has(meal.src)), limit, VENUE_SHARE)
   } catch {
     console.error('makan-stats: failed to fetch public meals; using bundled fallback.')
     return []

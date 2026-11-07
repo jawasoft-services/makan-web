@@ -1,5 +1,7 @@
 import { Timestamp, type Firestore, type QueryDocumentSnapshot } from 'firebase-admin/firestore'
 import { getPlaceSeed, getPlaceWhere, hasSeededWhere, isFoodVenue, placeLabel } from '@/lib/place-city'
+import { readPublicVenues, excludesPublicVenue } from '@/lib/public-venues'
+import { isPublicMeal, PUBLIC_MEAL_FIELDS } from '@/lib/public-meal'
 import { isCleanCaption } from '@/lib/captions'
 import { placeSlug, shortHash, slugify } from '@/lib/slug'
 import {
@@ -51,7 +53,7 @@ const byEatRate = (x: StandingRow, y: StandingRow) =>
 
 export async function computeEatStandings(db: Firestore): Promise<EatStandings> {
   const [mealsSnap, evidenceSnap] = await Promise.all([
-    db.collection('meals').select('placeProviderId', 'locationName', 'createdAt', 'isPublic', 'moderationStatus', 'caption').get(),
+    db.collection('meals').select('placeProviderId', 'locationName', 'createdAt', 'caption', ...PUBLIC_MEAL_FIELDS).get(),
     db.collection('eatEvidenceAggregateState').select('eat', 'yeet', 'tie').get(),
   ])
 
@@ -72,7 +74,7 @@ export async function computeEatStandings(db: Firestore): Promise<EatStandings> 
     }
     const at = toMillis(d.createdAt)
     if (at && (!firstMeal.has(id) || at < (firstMeal.get(id) as number))) firstMeal.set(id, at)
-    const isPublic = d.isPublic === true && (d.moderationStatus === undefined || d.moderationStatus === 'active')
+    const isPublic = isPublicMeal(d)
     if (isPublic) {
       publicMeals.set(id, (publicMeals.get(id) ?? 0) + 1)
       const caption = str(d.caption)
@@ -102,16 +104,21 @@ export async function computeEatStandings(db: Firestore): Promise<EatStandings> 
   // Canonical display names where the app has them; the most-used tag otherwise.
   const ids = [...tally.keys()]
   const canonical = new Map<string, string>()
+  const coordinates = new Map<string, { lat: number | null; lng: number | null }>()
+  const excluded = new Set<string>()
   for (let i = 0; i < ids.length; i += 100) {
-    const docs = await db.getAll(...ids.slice(i, i + 100).map((id) => db.collection('restaurants').doc(id)), { fieldMask: ['displayName', 'locationName'] })
+    const docs = await db.getAll(...ids.slice(i, i + 100).map((id) => db.collection('restaurants').doc(id)), { fieldMask: ['displayName', 'locationName', 'latitude', 'longitude', 'state', 'isTestVenue', 'canonicalPlaceId', 'replacedByCanonicalPlaceId'] })
     for (const d of docs) {
       if (!d.exists) continue
-      const name = str(d.data()?.displayName) || str(d.data()?.locationName)
+      const v = d.data() ?? {}
+      if (excludesPublicVenue(v, d.id)) { excluded.add(d.id); continue }
+      const name = str(v.displayName) || str(v.locationName)
       if (name) canonical.set(d.id, name)
+      coordinates.set(d.id, { lat: typeof v.latitude === 'number' && Number.isFinite(v.latitude) && Math.abs(v.latitude) <= 90 ? v.latitude : null, lng: typeof v.longitude === 'number' && Number.isFinite(v.longitude) && Math.abs(v.longitude) <= 180 ? v.longitude : null })
     }
   }
 
-  const all: StandingRow[] = ids.map((id) => {
+  const all: StandingRow[] = ids.filter(id => !excluded.has(id)).map((id) => {
     const t = tally.get(id) as { eats: number; yeets: number; ties: number }
     const n = t.eats + t.yeets + t.ties
     const since = firstMeal.get(id)
@@ -137,22 +144,26 @@ export async function computeEatStandings(db: Firestore): Promise<EatStandings> 
       eatRate: n ? t.eats / n : 0,
       since: since ? new Date(since).toISOString() : null,
       where: null,
-      lat: getPlaceSeed(id)?.lat ?? null,
-      lng: getPlaceSeed(id)?.lng ?? null,
+      lat: getPlaceSeed(id)?.lat ?? coordinates.get(id)?.lat ?? null,
+      lng: getPlaceSeed(id)?.lng ?? coordinates.get(id)?.lng ?? null,
       publicMeals: publicMeals.get(id) ?? 0,
       recentCaptions,
       rank: null,
       cityRank: null,
     }
   })
-  all.sort(byEatRate)
-
   // Locate every place that is either already known (free) or big enough
   // to earn a paid lookup; tiny unseeded places stay unlocated.
   const locate = all.filter((r) => hasSeededWhere(r.placeId) || r.matchups >= CITY_FLOOR).map((r) => r.placeId)
   const where = await getPlaceWhere(locate)
   for (const r of all) r.where = where.get(r.placeId) ?? null
 
+  return assembleEatStandings(all, matchups, new Date().toISOString())
+}
+
+/** Rebuild every ranking view after visibility filtering without mutating a cached snapshot. */
+export function assembleEatStandings(candidates: StandingRow[], matchups: number, computedAt: string): EatStandings {
+  const all = candidates.filter(row => row.matchups > 0).map(row => ({ ...row, rank: null, cityRank: null } as StandingRow)).sort(byEatRate)
   // Ranked by Eat rate, as the app ranks Makan Picks (Devon, 31 Oct 2026).
   const rows = all.filter((r) => r.matchups >= EVIDENCE_FLOOR)
   rows.forEach((r, i) => (r.rank = i + 1))
@@ -173,7 +184,9 @@ export async function computeEatStandings(db: Firestore): Promise<EatStandings> 
 
   const countries = new Set(rows.map((r) => r.where?.country).filter(Boolean)).size
 
-  return { rows, all, cities, belowFloor: all.length - rows.length, matchups, countries, computedAt: new Date().toISOString() }
+  // The supplied total counts distinct comparisons. A filtered set of venue
+  // endpoints cannot reconstruct it, so retain the recorded evidence total.
+  return { rows, all, cities, belowFloor: all.length - rows.length, matchups, countries, computedAt }
 }
 
 /**
@@ -182,11 +195,11 @@ export async function computeEatStandings(db: Firestore): Promise<EatStandings> 
  * places Google types as somewhere people eat; handles only where the
  * account chose one; captions only when clean.
  */
-const DIRECTORY_MEAL_FIELDS = ['placeProviderId', 'locationName', 'createdAt', 'isPublic', 'moderationStatus', 'imageURL', 'thumbnailUrl', 'caption', 'mealType', 'userID', 'uid', 'userName']
+const DIRECTORY_MEAL_FIELDS = ['placeProviderId', 'locationName', 'createdAt', 'isPublic', 'moderationStatus', 'imageURL', 'thumbnailUrl', 'caption', 'mealType', 'userID', 'uid', 'userName', ...PUBLIC_MEAL_FIELDS]
 
 export async function computePlaceDirectory(db: Firestore, include: string[] = []): Promise<DirectoryPlace[]> {
-  const snap = await db.collection('meals').select(...DIRECTORY_MEAL_FIELDS).get()
-  return projectPlaceDirectory(db, snap.docs, include)
+  const [snap, venues] = await Promise.all([db.collection('meals').select(...DIRECTORY_MEAL_FIELDS).get(), readPublicVenues(db)])
+  return projectPlaceDirectory(db, snap.docs, [...new Set([...include, ...venues.filter(v => v.publicMealCount > 0).map(v => v.placeId)])])
 }
 
 /** Recover one verified holder's missing venue without scanning other venues or private meals. */
@@ -194,6 +207,7 @@ export async function computePlaceDirectoryForPlace(db: Firestore, placeId: stri
   const snap = await db.collection('meals').where('placeProviderId', '==', placeId).where('isPublic', '==', true)
     .select(...DIRECTORY_MEAL_FIELDS).get()
   const [place] = await projectPlaceDirectory(db, snap.docs, [placeId])
+  if (!place) throw new Error('Restaurant is not publicly eligible.')
   return place
 }
 
@@ -203,17 +217,18 @@ async function projectPlaceDirectory(db: Firestore, docs: QueryDocumentSnapshot[
   // the one-public-meal floor do not apply to them.
   const extra = new Set(include)
   type Raw = { id: string; src: string; thumb: string; caption: string; mealType: string; uid: string; legacyName: string; at: number }
-  const byPlace = new Map<string, { name: Map<string, number>; first: number; meals: Raw[] }>()
+  const byPlace = new Map<string, { name: Map<string, number>; first: number; publicMealCount: number; meals: Raw[] }>()
   for (const doc of docs) {
     const d = doc.data()
     const placeId = str(d.placeProviderId)
     if (!placeId) continue
-    const entry: { name: Map<string, number>; first: number; meals: Raw[] } = byPlace.get(placeId) ?? { name: new Map<string, number>(), first: Infinity, meals: [] }
+    const entry: { name: Map<string, number>; first: number; publicMealCount: number; meals: Raw[] } = byPlace.get(placeId) ?? { name: new Map<string, number>(), first: Infinity, publicMealCount: 0, meals: [] }
     const name = str(d.locationName)
     if (name) entry.name.set(name, (entry.name.get(name) ?? 0) + 1)
     const at = toMillis(d.createdAt) ?? 0
     if (at && at < entry.first) entry.first = at
-    const isPublic = d.isPublic === true && (d.moderationStatus === undefined || d.moderationStatus === 'active')
+    const isPublic = isPublicMeal(d)
+    if (isPublic) entry.publicMealCount += 1
     const src = str(d.imageURL)
     if (isPublic && src.startsWith('https://firebasestorage.googleapis.com/')) {
       const thumb = str(d.thumbnailUrl)
@@ -231,16 +246,18 @@ async function projectPlaceDirectory(db: Firestore, docs: QueryDocumentSnapshot[
     byPlace.set(placeId, entry)
   }
 
-  for (const id of extra) if (!byPlace.has(id)) byPlace.set(id, { name: new Map<string, number>(), first: Infinity, meals: [] })
-  const candidates = [...byPlace.entries()].filter(([id, e]) => extra.has(id) || (e.meals.length && isFoodVenue(getPlaceSeed(id)?.types)))
+  for (const id of extra) if (!byPlace.has(id)) byPlace.set(id, { name: new Map<string, number>(), first: Infinity, publicMealCount: 0, meals: [] })
+  let candidates = [...byPlace.entries()].filter(([id, e]) => extra.has(id) || (e.meals.length && isFoodVenue(getPlaceSeed(id)?.types)))
 
   const canonical = new Map<string, { name: string; cuisine: string[]; claimed: boolean; lat: number | null; lng: number | null }>()
+  const excludedIds = new Set<string>()
   const refs = candidates.map(([id]) => db.collection('restaurants').doc(id))
   for (let i = 0; i < refs.length; i += 100) {
-    const docs = await db.getAll(...refs.slice(i, i + 100), { fieldMask: ['displayName', 'locationName', 'cuisine', 'claimed', 'latitude', 'longitude'] })
+    const docs = await db.getAll(...refs.slice(i, i + 100), { fieldMask: ['displayName', 'locationName', 'cuisine', 'claimed', 'latitude', 'longitude', 'state', 'isTestVenue', 'canonicalPlaceId', 'replacedByCanonicalPlaceId'] })
     for (const d of docs) {
       if (!d.exists) continue
       const data = d.data() ?? {}
+      if (excludesPublicVenue(data, d.id)) { excludedIds.add(d.id); continue }
       const cats = (data.cuisine?.categories ?? []) as { label?: string }[]
       canonical.set(d.id, {
         name: str(data.displayName) || str(data.locationName),
@@ -251,9 +268,11 @@ async function projectPlaceDirectory(db: Firestore, docs: QueryDocumentSnapshot[
       })
     }
   }
+  candidates = candidates.filter(([id]) => !excludedIds.has(id))
   // Unseeded extras: the month-cached city lookup the standings already use.
   const lookedUp = await getPlaceWhere(candidates.filter(([id]) => extra.has(id) && !getPlaceSeed(id)).map(([id]) => id))
 
+  for (const [, entry] of candidates) entry.meals.sort((x, y) => y.at - x.at)
   const uids = new Set<string>()
   for (const [, e] of candidates) for (const m of e.meals.slice(0, MAX_MEALS_ON_PAGE)) if (!m.legacyName && m.uid) uids.add(m.uid)
   const handle = new Map<string, string>()
@@ -294,6 +313,7 @@ async function projectPlaceDirectory(db: Firestore, docs: QueryDocumentSnapshot[
         cuisine: canonical.get(placeId)?.cuisine ?? [],
         since: Number.isFinite(e.first) ? new Date(e.first).toISOString() : null,
         meals,
+        publicMealCount: e.publicMealCount,
         indexable: meals.length >= INDEX_MIN_MEALS,
         ...(canonical.get(placeId)?.claimed ? { claimed: true } : {}),
       }
@@ -310,7 +330,7 @@ export function indexOf(directory: DirectoryPlace[]): PlaceIndexEntry[] {
     name: p.name,
     city: p.where?.city ?? null,
     indexable: p.indexable,
-    meals: p.meals.length,
+    meals: p.publicMealCount ?? p.meals.length,
   }))
 }
 

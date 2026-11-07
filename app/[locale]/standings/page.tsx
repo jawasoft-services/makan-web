@@ -91,7 +91,7 @@ export default async function StandingsPage({
   return (
     <div className={styles.page}>
       <SiteSchema locale={locale} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(schema) }} />
+      {checkedAt ? <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(schema) }} /> : null}
       <main id="main-content" className={styles.wrap}>
         <header className={styles.heading}>
         <p className={styles.kicker}>{t('eyebrow')}</p>
@@ -120,7 +120,7 @@ export default async function StandingsPage({
           </>
         ) : (
           <p className={styles.empty}>
-            {t('empty', { floor: EVIDENCE_FLOOR })}
+            {checkedAt ? t('empty', { floor: EVIDENCE_FLOOR }) : t('checkUnavailable')}
           </p>
         )}
 

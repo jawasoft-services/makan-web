@@ -2,7 +2,8 @@ import { WEBSITE_FIXTURES, FIXTURE_STATE, FIXTURE_CHECKED_AT, fixtureStandings }
 import 'server-only'
 import { unstable_cache } from 'next/cache'
 import { getDb } from '@/lib/firebase-admin'
-import { computeEatStandings } from '@/lib/aggregates/compute'
+import { getPublicVenues, getExcludedPublicVenueIds } from '@/lib/public-venues'
+import { assembleEatStandings, computeEatStandings } from '@/lib/aggregates/compute'
 import { MAX_AGE_MS, readLastRun, readStandings } from '@/lib/aggregates/store'
 import { EMPTY_STANDINGS, type CityStanding, type EatStandings, type StandingRow } from '@/lib/aggregates/types'
 
@@ -28,25 +29,52 @@ const getCachedEatStandingsSnapshot = unstable_cache(
   async (): Promise<EatStandingsSnapshot> => {
     if (WEBSITE_FIXTURES) return { standings: fixtureStandings(), checkedAt: FIXTURE_STATE === "unavailable" ? null : FIXTURE_CHECKED_AT }
     const db = getDb()
-    if (!db) return { standings: EMPTY_STANDINGS, checkedAt: null }
-    try {
-      const [stored, lastRun] = await Promise.all([readStandings(db), readLastRun(db)])
-      const fresh = lastRun !== null && Date.now() - lastRun.getTime() < MAX_AGE_MS
-      if (stored && fresh) return { standings: stored, checkedAt: lastRun.toISOString() }
-      console.warn(`eat-standings: aggregate ${stored ? `stale (last run ${lastRun?.toISOString() ?? 'never'})` : 'missing'}; falling back to a live scan.`)
-      const standings = await computeEatStandings(db)
-      return { standings, checkedAt: new Date().toISOString() }
-    } catch (err) {
-      console.error('eat-standings: failed to read or compute standings; page shows the empty state.', err)
-      return { standings: EMPTY_STANDINGS, checkedAt: null }
-    }
+    if (!db) throw new Error('Standings database unavailable.')
+    const [stored, lastRun] = await Promise.all([readStandings(db), readLastRun(db)])
+    const age = lastRun === null ? Infinity : Date.now() - lastRun.getTime()
+    const fresh = age >= 0 && age < MAX_AGE_MS
+    if (stored && fresh) return { standings: stored, checkedAt: lastRun!.toISOString() }
+    console.warn(`eat-standings: aggregate ${stored ? `stale (last run ${lastRun?.toISOString() ?? 'never'})` : 'missing'}; falling back to a live scan.`)
+    const standings = await computeEatStandings(db)
+    return { standings, checkedAt: new Date().toISOString() }
   },
-  ['makan-eat-standings', 'v7'],
+  ['makan-eat-standings', 'v8-validated-success'],
   { revalidate: 3600 },
 )
 
 export async function getEatStandingsSnapshot(): Promise<EatStandingsSnapshot> {
-  return getCachedEatStandingsSnapshot()
+  try {
+    const snapshot = await getCachedEatStandingsSnapshot()
+    if (WEBSITE_FIXTURES) return snapshot
+    let { standings } = snapshot
+    const rows = [...standings.all, ...standings.rows, ...standings.cities.flatMap(city => city.rows)]
+    if (!rows.length) return snapshot
+    const excluded = new Set(await getExcludedPublicVenueIds())
+    if (rows.some(row => excluded.has(row.placeId))) {
+      standings = assembleEatStandings(standings.all.filter(row => !excluded.has(row.placeId)), standings.matchups, standings.computedAt)
+    }
+    const visible = standings === snapshot.standings ? snapshot : { ...snapshot, standings }
+    if (!standings.all.some(row => row.lat === null || row.lng === null)) return visible
+    try {
+      // Complete coordinates outside the standings cache. A failed optional
+      // projection read preserves the table and can recover on the next call.
+      const venues = new Map((await getPublicVenues()).map(venue => [venue.placeId, venue]))
+      const locate = (row: StandingRow): StandingRow => {
+        const venue = venues.get(row.placeId)
+        const lat = row.lat ?? venue?.lat ?? null
+        const lng = row.lng ?? venue?.lng ?? null
+        return lat === row.lat && lng === row.lng ? row : { ...row, lat, lng }
+      }
+      return { ...visible, standings: { ...standings, rows: standings.rows.map(locate), all: standings.all.map(locate),
+        cities: standings.cities.map(city => ({ ...city, rows: city.rows.map(locate) })) } }
+    } catch (error) {
+      console.error('eat-standings: optional venue coordinates unavailable.', error)
+      return visible
+    }
+  } catch (err) {
+    console.error('eat-standings: failed to read or compute standings; page shows the empty state.', err)
+    return { standings: EMPTY_STANDINGS, checkedAt: null }
+  }
 }
 
 export async function getEatStandings(): Promise<EatStandings> {

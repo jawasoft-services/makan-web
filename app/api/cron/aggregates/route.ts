@@ -50,14 +50,15 @@ export async function GET(request: Request) {
     const timings: Record<string, number> = {}
     // Maître d' venues get a page even without public meals, so the
     // directory is built after the holders are read.
+    const standingsWork = timed('standings', computeEatStandings(db))
     const directoryWithMaitred = async () => {
-      const source = await readMaitredSource(db)
-      const directory = await computePlaceDirectory(db, source.holders.map((holder) => holder.placeId))
+      const [source, standings] = await Promise.all([readMaitredSource(db), standingsWork])
+      const directory = await computePlaceDirectory(db, [...new Set([...source.holders.map(holder => holder.placeId), ...standings.all.map(row => row.placeId)])])
       const photos = await readMaitredPhotos(db, source, directory)
       return { directory, maitred: buildMaitredList(source, directory, photos) }
     }
     const [standings, { directory, maitred }, stats] = await Promise.all([
-      timed('standings', computeEatStandings(db)),
+      standingsWork,
       timed('directory', directoryWithMaitred()),
       timed('stats', computePlaceStats(db)),
     ])

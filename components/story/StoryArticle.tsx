@@ -9,10 +9,10 @@ import EditorialCta from './EditorialCta'
 import { storyCopy } from './story-copy'
 import styles from './editorial.module.css'
 
-export default function StoryArticle({ locale, mealCount }: { locale: string; mealCount: number }) {
+export default function StoryArticle({ locale, mealCount }: { locale: string; mealCount: number | null }) {
   const isId = locale === 'id'
   const copy = storyCopy[isId ? 'id' : 'en']
-  const count = mealCount.toLocaleString(isId ? 'id-ID' : 'en-GB')
+  const count = mealCount?.toLocaleString(isId ? 'id-ID' : 'en-GB')
   return (
     <main id="main-content" className={styles.page}>
       <header className={`${styles.hero} ${styles.storyHero}`}>
@@ -37,9 +37,9 @@ export default function StoryArticle({ locale, mealCount }: { locale: string; me
           <Link className={styles.textLink} href={localizePath(locale, '/manifesto')}>{isId ? 'Baca manifesto kami' : 'Read our manifesto'} <PlayfulArrow /></Link>
         </aside>
         <article className={styles.prose}>
-          {copy.slice(3).map(([tag, text], i) => tag === 'h2'
+          {copy.slice(3).filter(([, text]) => mealCount !== null || !text.includes('{mealCount}')).map(([tag, text], i) => tag === 'h2'
             ? <h2 key={i} id={`chapter-${i + 3}`}>{text}</h2>
-            : <p key={i}>{text.replace('{mealCount}', count)}</p>)}
+            : <p key={i}>{text.replace('{mealCount}', count ?? '')}</p>)}
           <StoreLink location="story" className={styles.button}>{isId ? 'Mulai dari makanan berikutnya' : 'Start with your next meal'}</StoreLink>
           <section className={styles.press} aria-labelledby="press-title">
             <h2 id="press-title">{isId ? 'Untuk media' : 'For press'}</h2>

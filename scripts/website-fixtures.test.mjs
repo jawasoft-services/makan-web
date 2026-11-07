@@ -48,6 +48,7 @@ function lane(overrides = {}) {
         if (id === 'googleapis') return { google: { auth: { GoogleAuth: ForbiddenClient }, sheets: reject('Sheets') } }
         if (id === 'resend') return { Resend: ForbiddenClient }
         if (id === 'react/jsx-runtime') return { jsx() {}, jsxs() {} }
+        if (id === 'react') return { cache: fn => fn }
         if (id === 'next/navigation') return { redirect: reject('unexpected redirect'), notFound: reject('unexpected notFound') }
         if (id === 'next-intl/server') return { getTranslations: async () => key => key, setRequestLocale() {} }
         if (id === 'next/image' || id === 'next/link' || id.startsWith('@/components/')) return {}

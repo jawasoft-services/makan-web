@@ -49,6 +49,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const found = await load(slug)
   if (!found) return {}
   const { place, row, indexable } = found
+  const publicMealCount = place.publicMealCount ?? place.meals.length
   const t = await getTranslations({ locale, namespace: 'Places' })
   const path = `${locale === 'id' ? '/id' : ''}/places/${place.slug}`
   const placeText = place.where ? `${place.name}, ${place.where.city}, ${place.where.country}` : place.name
@@ -58,9 +59,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       : t('metaTitle', { name: place.name }),
     description:
       row && row.rank !== null
-        ? t('metaDescriptionRanked', { place: placeText, count: place.meals.length, eats: row.eats, rank: row.rank })
-        : place.meals.length
-          ? t('metaDescriptionMeals', { place: placeText, count: place.meals.length })
+        ? t('metaDescriptionRanked', { place: placeText, count: publicMealCount, eats: row.eats, rank: row.rank })
+        : publicMealCount
+          ? t('metaDescriptionMeals', { place: placeText, count: publicMealCount })
           : t('metaDescriptionEmpty', { place: placeText }),
     path,
     locale,
@@ -76,6 +77,7 @@ export default async function PlacePage({ params }: Props) {
   const found = await load(slug)
   if (!found) notFound()
   const { place, row } = found
+  const publicMealCount = place.publicMealCount ?? place.meals.length
   // A renamed place keeps its hash; send old links to the current slug.
   if (place.slug !== slug) permanentRedirect(localizePath(locale, `/places/${place.slug}`))
   const t = await getTranslations('Places')
@@ -108,8 +110,8 @@ export default async function PlacePage({ params }: Props) {
     ...(googlePhoto || place.meals.length ? { image: [...(googlePhoto ? [googlePhoto.uri] : []), ...place.meals.slice(0, 6).map((m) => m.src)] } : {}),
     ...(directionsUrl ? { hasMap: directionsUrl } : {}),
     description: ranked && row
-      ? `${row.eats} Eats, ${row.yeets} Yeets from ${row.matchups} Eat or Yeet matchups on Makan. ${place.meals.length} public meals saved here.`
-      : `${place.meals.length} public meals saved here on Makan.`,
+      ? `${row.eats} Eats, ${row.yeets} Yeets from ${row.matchups} Eat or Yeet matchups on Makan. ${publicMealCount} public meals saved here.`
+      : `${publicMealCount} public meals saved here on Makan.`,
     subjectOf: {
       '@type': 'WebPage',
       '@id': pageUrl,
@@ -140,7 +142,7 @@ export default async function PlacePage({ params }: Props) {
   // Meta row: cuisine · meals · since, leaving out what this place lacks.
   const meta = [
     place.cuisine.join(', '),
-    place.meals.length ? t('mealsShort', { count: place.meals.length }) : '',
+    publicMealCount ? t('mealsShort', { count: publicMealCount }) : '',
     place.since ? t('since', { date: monthYear.format(new Date(place.since)) }) : '',
   ].filter(Boolean)
 
@@ -187,7 +189,7 @@ export default async function PlacePage({ params }: Props) {
         </div>
 
         <section className={styles.meals}>
-          <div className={styles.sectionHeading}><h2>{t('recentMeals')}</h2><span>{t('savedCount', { count: place.meals.length })}</span></div>
+          <div className={styles.sectionHeading}><h2>{t('recentMeals')}</h2><span>{t('savedCount', { count: publicMealCount })}</span></div>
           <ul className={styles.mealGrid}>
             {place.meals.map((m) => <li key={m.id}>
               <Link href={`/meal/${m.id}`} className={styles.mealCard}>

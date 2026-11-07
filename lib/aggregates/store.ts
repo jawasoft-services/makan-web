@@ -46,6 +46,74 @@ interface Stored<T> {
   updatedAt: Timestamp
 }
 
+class AggregateIntegrityError extends Error {}
+const record = (value: unknown): Record<string, unknown> | null => value !== null && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : null
+const count = (value: unknown): value is number => Number.isSafeInteger(value) && (value as number) >= 0
+const text = (value: unknown): value is string => typeof value === 'string' && value.trim().length > 0
+const date = (value: unknown) => typeof value === 'string' && Number.isFinite(Date.parse(value))
+const position = (value: unknown) => value === null || (count(value) && value > 0)
+const coordinate = (value: unknown, bound: number) => value === null || (typeof value === 'number' && Number.isFinite(value) && Math.abs(value) <= bound)
+const unique = (values: unknown[], key: string) => new Set(values.map(value => record(value)?.[key])).size === values.length
+// Match indexOf's legacy hash order; Firestore map key order is not a content change.
+const orderedIndex = (entries: PlaceIndexEntry[]) => entries.map(({ placeId, slug, hash, name, city, indexable, meals }) => ({ placeId, slug, hash, name, city, indexable, meals }))
+const matchesIndexHash = (entries: PlaceIndexEntry[], expected: string) => hashOf(entries) === expected || hashOf(orderedIndex(entries)) === expected
+
+function standingRow(value: unknown): boolean {
+  const row = record(value)
+  if (!row) return false
+  const where = record(row.where)
+  return ['placeId', 'slug', 'name'].every(key => text(row[key]))
+    && ['eats', 'yeets', 'ties', 'matchups', 'publicMeals'].every(key => count(row[key]))
+    && typeof row.eatRate === 'number' && Number.isFinite(row.eatRate) && row.eatRate >= 0 && row.eatRate <= 1
+    && (row.since === null || date(row.since))
+    && (row.where === null || Boolean(where && text(where.city) && text(where.country)))
+    && coordinate(row.lat, 90) && coordinate(row.lng, 180)
+    && Array.isArray(row.recentCaptions) && row.recentCaptions.every(caption => typeof caption === 'string')
+    && position(row.rank) && position(row.cityRank)
+}
+
+function validStandings(value: unknown): value is EatStandings {
+  const data = record(value)
+  if (!data || !Array.isArray(data.rows) || !Array.isArray(data.all) || !Array.isArray(data.cities)) return false
+  return data.rows.every(standingRow) && unique(data.rows, 'placeId')
+    && data.all.every(standingRow) && unique(data.all, 'placeId')
+    && data.cities.every(value => {
+      const city = record(value)
+      return city && ['slug', 'city', 'country'].every(key => text(city[key]))
+        && Array.isArray(city.rows) && city.rows.every(standingRow) && unique(city.rows, 'placeId')
+    }) && unique(data.cities, 'slug')
+    && ['belowFloor', 'matchups', 'countries'].every(key => count(data[key]))
+    && (date(data.computedAt) || (data.computedAt === '' && !data.rows.length && !data.all.length && !data.cities.length))
+}
+
+function compatibleStandings(value: unknown): unknown {
+  const data = record(value)
+  if (!data) return value
+  // Coordinates were added after the first standings payloads. Missing fields
+  // mean unlocated, not malformed evidence; the reader can hydrate them later.
+  const locate = (value: unknown) => {
+    const row = record(value)
+    return row ? { ...row, lat: row.lat === undefined ? null : row.lat, lng: row.lng === undefined ? null : row.lng } : value
+  }
+  return { ...data,
+    rows: Array.isArray(data.rows) ? data.rows.map(locate) : data.rows,
+    all: Array.isArray(data.all) ? data.all.map(locate) : data.all,
+    cities: Array.isArray(data.cities) ? data.cities.map(value => {
+      const city = record(value)
+      return city ? { ...city, rows: Array.isArray(city.rows) ? city.rows.map(locate) : city.rows } : value
+    }) : data.cities,
+  }
+}
+
+function validStats(value: unknown): value is PlaceStats {
+  const data = record(value)
+  return Boolean(data && ['places', 'recentMeals', 'mealCount'].every(key => count(data[key]))
+    && Array.isArray(data.topPlaces) && data.topPlaces.every(value => {
+      const place = record(value)
+      return place && text(place.name) && count(place.meals)
+    }))
+}
+
 async function readDoc<T>(db: Firestore, ref: FirebaseFirestore.DocumentReference): Promise<T | null> {
   const snap = await ref.get()
   if (!snap.exists) return null
@@ -57,11 +125,16 @@ async function readDoc<T>(db: Firestore, ref: FirebaseFirestore.DocumentReferenc
 export async function readLastRun(db: Firestore): Promise<Date | null> {
   const snap = await db.collection(ROOT).doc('meta').get()
   const at = snap.exists ? (snap.data()?.lastRunAt as Timestamp | undefined) : undefined
-  return at instanceof Timestamp ? at.toDate() : null
+  if (!(at instanceof Timestamp)) return null
+  const value = at.toDate()
+  return Number.isFinite(value.getTime()) && value.getTime() <= Date.now() ? value : null
 }
 
 export async function readStandings(db: Firestore): Promise<EatStandings | null> {
-  return readDoc<EatStandings>(db, db.collection(ROOT).doc('standings'))
+  const value = compatibleStandings(await readDoc<unknown>(db, db.collection(ROOT).doc('standings')))
+  if (value === null) return null
+  if (!validStandings(value)) throw new AggregateIntegrityError('Invalid standings aggregate.')
+  return value
 }
 
 export async function readMaitred(db: Firestore): Promise<MaitredList | null> {
@@ -89,20 +162,33 @@ function maitredContentHash(payload: MaitredList): string {
 }
 
 export async function readStats(db: Firestore): Promise<PlaceStats | null> {
-  return readDoc<PlaceStats>(db, db.collection(ROOT).doc('stats'))
+  const value = await readDoc<unknown>(db, db.collection(ROOT).doc('stats'))
+  if (value === null) return null
+  if (!validStats(value)) throw new AggregateIntegrityError('Invalid statistics aggregate.')
+  return value
 }
 
 export async function readPlaceIndex(db: Firestore): Promise<PlaceIndexEntry[] | null> {
   const meta = await db.collection(ROOT).doc('placeIndex').get()
   if (!meta.exists) return null
-  const shards = Number(meta.data()?.shards ?? 0)
-  if (!shards) return []
-  const docs = await db.getAll(...Array.from({ length: shards }, (_, i) => db.collection(ROOT).doc('placeIndex').collection('shards').doc(String(i))))
+  const manifest = meta.data() ?? {}
+  const shards: unknown = manifest.shards
+  if (!count(shards) || (manifest.count !== undefined && !count(manifest.count))
+    || (manifest.contentHash !== undefined && !text(manifest.contentHash))) throw new AggregateIntegrityError('Invalid place index manifest.')
+  if (manifest.count !== undefined && shards !== Math.ceil(manifest.count / SHARD_SIZE)) throw new AggregateIntegrityError('Place index shard count mismatch.')
+  const docs = shards ? await db.getAll(...Array.from({ length: shards }, (_, i) => db.collection(ROOT).doc('placeIndex').collection('shards').doc(String(i)))) : []
+  if (docs.length !== shards) throw new AggregateIntegrityError('Missing place index shards.')
   const out: PlaceIndexEntry[] = []
   for (const d of docs) {
-    const entries = (d.data()?.entries ?? []) as PlaceIndexEntry[]
+    const entries: unknown = d.data()?.entries
+    if (!d.exists || !Array.isArray(entries) || !entries.length || entries.length > SHARD_SIZE
+      || entries.some(entry => !text(record(entry)?.placeId))) throw new AggregateIntegrityError('Missing or invalid place index shard.')
     out.push(...entries)
   }
+  if (!unique(out, 'placeId')) throw new AggregateIntegrityError('Duplicate place IDs in index.')
+  // Older valid manifests did not carry count/hash; verify either whenever supplied.
+  if (manifest.count !== undefined && out.length !== manifest.count) throw new AggregateIntegrityError('Place index entry count mismatch.')
+  if (manifest.contentHash !== undefined && !matchesIndexHash(out, manifest.contentHash)) throw new AggregateIntegrityError('Place index content hash mismatch.')
   return out
 }
 
@@ -151,20 +237,29 @@ export async function writeAggregates(
   const placeHash = new Map<string, string>()
   for (const d of existingPlaces.docs) placeHash.set(d.id, String(d.data()?.contentHash ?? ''))
 
-  // BulkWriter reports a failed write only through onWriteError and the
-  // per-write promise; without both, a rejected write (for instance a
-  // service account that can only read) leaves close() resolving and the
-  // run looking successful. Collect the failures and throw after the flush.
-  const writer = db.bulkWriter()
-  const failures: string[] = []
-  writer.onWriteError((err) => {
-    if (err.failedAttempts < 3) return true
-    failures.push(`${err.documentRef.path}: ${err.message}`)
-    return false
-  })
-  const swallow = (p: Promise<unknown>) => void p.catch(() => undefined)
+  // Each publication phase waits for every write promise: close() alone can
+  // resolve after permanent per-document failures. Never publish proof for it.
+  const phase = () => {
+    const batch = db.bulkWriter()
+    batch.onWriteError(err => err.failedAttempts < 3)
+    const failures: string[] = []
+    const pending: Promise<void>[] = []
+    const track = (ref: FirebaseFirestore.DocumentReference, operation: Promise<unknown>) => {
+      pending.push(operation.then(() => undefined, error => { failures.push(`${ref.path}: ${String(error)}`) }))
+    }
+    return {
+      set: (ref: FirebaseFirestore.DocumentReference, value: FirebaseFirestore.DocumentData) => track(ref, batch.set(ref, value)),
+      delete: (ref: FirebaseFirestore.DocumentReference) => track(ref, batch.delete(ref)),
+      async close() {
+        await batch.close()
+        await Promise.all(pending)
+        if (failures.length) throw new Error(`${failures.length} aggregate writes failed; first: ${failures[0]}`)
+      },
+    }
+  }
+  const writer = phase()
   const put = (ref: FirebaseFirestore.DocumentReference, payload: unknown, hash: string) => {
-    swallow(writer.set(ref, { payload, contentHash: hash, updatedAt: now }))
+    writer.set(ref, { payload, contentHash: hash, updatedAt: now })
     summary.written += 1
   }
 
@@ -187,15 +282,28 @@ export async function writeAggregates(
 
   // Index: sharded, one hash over the whole list on the meta document.
   const indexHash = hashOf(data.index)
-  if (indexMetaSnap.data()?.contentHash === indexHash) summary.skipped += 1
-  else {
-    const shards = Math.ceil(data.index.length / SHARD_SIZE)
-    for (let i = 0; i < shards; i += 1) {
-      swallow(writer.set(root.doc('placeIndex').collection('shards').doc(String(i)), { entries: data.index.slice(i * SHARD_SIZE, (i + 1) * SHARD_SIZE), updatedAt: now }))
+  let unchangedIndex = false
+  if (indexMetaSnap.data()?.contentHash === indexHash) {
+    try {
+      const existing = await readPlaceIndex(db)
+      unchangedIndex = existing !== null && matchesIndexHash(existing, indexHash)
+    } catch (error) {
+      if (!(error instanceof AggregateIntegrityError)) {
+        await writer.close()
+        throw error
+      }
+      // A prior partial publication needs repair even when its manifest hash matches.
     }
-    const previous = Number(indexMetaSnap.data()?.shards ?? 0)
-    for (let i = shards; i < previous; i += 1) swallow(writer.delete(root.doc('placeIndex').collection('shards').doc(String(i))))
-    swallow(writer.set(root.doc('placeIndex'), { shards, count: data.index.length, contentHash: indexHash, updatedAt: now }))
+  }
+  const shards = Math.ceil(data.index.length / SHARD_SIZE)
+  if (unchangedIndex) summary.skipped += 1
+  else {
+    for (let i = 0; i < shards; i += 1) {
+      writer.set(root.doc('placeIndex').collection('shards').doc(String(i)), { entries: data.index.slice(i * SHARD_SIZE, (i + 1) * SHARD_SIZE), updatedAt: now })
+    }
+    const previousValue: unknown = indexMetaSnap.data()?.shards
+    const previous = count(previousValue) ? previousValue : 0
+    for (let i = shards; i < previous; i += 1) writer.delete(root.doc('placeIndex').collection('shards').doc(String(i)))
     summary.written += 1
   }
 
@@ -210,15 +318,21 @@ export async function writeAggregates(
   }
   for (const id of placeHash.keys()) {
     if (keep.has(id)) continue
-    swallow(writer.delete(root.doc('places').collection('items').doc(id)))
+    writer.delete(root.doc('places').collection('items').doc(id))
     summary.removed += 1
   }
 
-  swallow(writer.set(root.doc('meta'), {
+  await writer.close()
+  if (!unchangedIndex) {
+    const publication = phase()
+    publication.set(root.doc('placeIndex'), { shards, count: data.index.length, contentHash: indexHash, updatedAt: now })
+    await publication.close()
+  }
+  const completion = phase()
+  completion.set(root.doc('meta'), {
     lastRunAt: now, places: data.directory.length, standingsRows: data.standings.rows.length,
     maitredVerification: { schemaVersion: maitred.schemaVersion, contentHash: maitredHash, verifiedAt: maitred.verifiedAt },
-  }))
-  await writer.close()
-  if (failures.length > 0) throw new Error(`${failures.length} of ${summary.written + 1} writes failed; first: ${failures[0]}`)
+  })
+  await completion.close()
   return summary
 }

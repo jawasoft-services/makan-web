@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import { motion, useInView } from 'framer-motion'
 
 interface WhyMakanProps {
-  mealCount: number
+  mealCount: number | null
 }
 
 export default function WhyMakan({ mealCount }: WhyMakanProps) {
@@ -17,7 +17,7 @@ export default function WhyMakan({ mealCount }: WhyMakanProps) {
   }))
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
-  const formattedMealCount = new Intl.NumberFormat(locale === 'id' ? 'id-ID' : 'en-GB').format(mealCount)
+  const formattedMealCount = mealCount === null ? null : new Intl.NumberFormat(locale === 'id' ? 'id-ID' : 'en-GB').format(mealCount)
 
   return (
     <section className="bg-brand-espresso px-5 py-20 sm:px-8 sm:py-32">
@@ -44,9 +44,9 @@ export default function WhyMakan({ mealCount }: WhyMakanProps) {
             <p>
               {t('body1')}
             </p>
-            <p>
+            {formattedMealCount !== null ? <p>
               {t('body2', { count: formattedMealCount })}
-            </p>
+            </p> : null}
             <p className="font-medium text-white">
               {t('body3')}
             </p>

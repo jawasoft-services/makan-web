@@ -30,7 +30,15 @@ const getPreparedClaimEntries = unstable_cache(
 
 export async function getClaimSearchEntries(): Promise<ClaimSearchEntry[]> {
   if (WEBSITE_FIXTURES) return fixturePlaceIndex().map(place => ({ placeId: place.placeId, name: place.name, area: place.city ?? '', path: `/claim/${place.slug}` }))
-  const [index, prepared] = await Promise.all([getPlaceIndex(), getPreparedClaimEntries()])
+  const [index, prepared] = await Promise.all([
+    getPlaceIndex(),
+    getPreparedClaimEntries().catch(() => {
+      // Prepared links supplement the directory; an optional-source failure must
+      // not hide known venues. Catch outside its cache so the next call retries.
+      console.error('claim-venues: prepared links unavailable; using the place index.')
+      return []
+    }),
+  ])
   const listed = index.map(place => ({ placeId: place.placeId, name: place.name, area: place.city ?? '', path: `/claim/${place.slug}` }))
   return mergeVenues(prepared, listed)
 }

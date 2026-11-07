@@ -16,6 +16,8 @@ assert.deepEqual(searchVenues(entries, 'lucky london').map((e) => e.placeId), ['
 assert.deepEqual(searchVenues(entries, 'zzz'), [])
 assert.deepEqual(searchVenues(entries, 'l'), [], 'one letter is too short')
 assert.deepEqual(searchVenues(entries, '   '), [])
+assert.equal(normalize('丰浩园餐厅'), '丰浩园餐厅')
+assert.equal(searchVenues([{ placeId: 'cn', name: '丰浩园餐厅', area: '', path: '/claim/restaurant-123abc' }], '丰浩园')[0]?.placeId, 'cn', 'venue names keep non-Latin letters')
 assert.equal(searchVenues(entries, 'a', 2).length, 0, 'a single character never lists the whole directory')
 assert.equal(searchVenues(Array.from({ length: 30 }, (_, i) => ({ placeId: String(i), name: `Warung ${i}`, area: '', path: `/claim/w${i}` })), 'warung').length, 8, 'results are capped')
 

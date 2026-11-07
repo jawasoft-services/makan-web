@@ -14,7 +14,7 @@ export const MAX_QUERY = 60
 export const MAX_RESULTS = 8
 
 export const normalize = (value: string): string =>
-  value.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
+  value.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim()
 
 export function searchVenues(entries: readonly ClaimSearchEntry[], rawQuery: string, limit = MAX_RESULTS): ClaimSearchEntry[] {
   const words = normalize(rawQuery.slice(0, MAX_QUERY)).split(' ').filter(Boolean)

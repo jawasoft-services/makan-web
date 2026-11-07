@@ -38,13 +38,13 @@ async function readClaimVenue(token: string): Promise<ClaimVenue | null> {
   if (!db) return null
   const link = await db.collection('claimLinks').doc(token).get()
   let placeId = text(link.data()?.placeId)
-  let fallback: { name: string; city: string | null } | null = null
+  let fallback: { name: string; city: string | null; meals: number } | null = null
   if (!placeId) {
     // RM20364 — a venue nobody prepared still has a public page: its slug is a claim path too, from the cached index.
     const entry = (await getPlaceIndex()).find((place) => place.slug === token)
     if (!entry) return null
     placeId = entry.placeId
-    fallback = { name: entry.name, city: entry.city }
+    fallback = { name: entry.name, city: entry.city, meals: entry.meals }
   }
   const [restaurant, businesses] = await Promise.all([
     db.collection('restaurants').doc(placeId).get(),
@@ -55,12 +55,17 @@ async function readClaimVenue(token: string): Promise<ClaimVenue | null> {
   if (venue && (venue.state === 'tombstone' || venue.state === 'unresolved' || venue.replacedByCanonicalPlaceId
     || (typeof venue.canonicalPlaceId === 'string' && venue.canonicalPlaceId !== placeId))) return null
   const count = venue?.publicMealCount
+  const hasCount = Number.isSafeInteger(count) && count >= 0
+  // A directory-backed claim can predate the restaurant projection. Its known
+  // public meal count is better evidence than presenting a missing field as zero.
+  const listedCount = hasCount ? undefined : fallback?.meals
+    ?? (await getPlaceIndex()).find((place) => place.placeId === placeId)?.meals
   return {
     token,
     placeId,
     name: text(venue?.displayName) || text(link.data()?.displayName) || fallback?.name || '',
     area: text(link.data()?.area) || fallback?.city || '',
-    mealCount: Number.isSafeInteger(count) && count > 0 ? count : 0,
+    mealCount: hasCount ? count : Number.isSafeInteger(listedCount) && Number(listedCount) > 0 ? Number(listedCount) : 0,
     claimed: !businesses.empty,
     appLink: !fallback,
   }
