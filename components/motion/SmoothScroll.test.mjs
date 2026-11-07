@@ -11,14 +11,17 @@ const compiled = ts.transpileModule(source, { compilerOptions: {
 
 // Run the actual component effects/handlers. Only the DOM boundary and Lenis
 // are replaced; no exported helper or separate implementation is under test.
-function harness({ hash = '', reducedMotion = false } = {}) {
+function harness({ hash = '', reducedMotion = false, initialY = 0 } = {}) {
   const effects = []
+  const pendingEffects = []
   const clicks = new Map()
   const events = new Map()
   const timers = new Map()
   const scrolls = []
+  const nativeScrolls = []
   const historyWrites = []
   let timerId = 0
+  let effectIndex = 0
   let destroyed = false
   const outer = { open: false, parentElement: null }
   const inner = { open: false, parentElement: { closest: () => outer } }
@@ -32,15 +35,21 @@ function harness({ hash = '', reducedMotion = false } = {}) {
     removeEventListener: (name, fn) => { if (clicks.get(name) === fn) clicks.delete(name) },
   }
   const window = {
+    scrollY: initialY,
     matchMedia: () => ({ matches: reducedMotion }),
-    scrollTo: () => {},
+    scrollTo: options => { nativeScrolls.push({ ...options }); window.scrollY = options.top },
     setTimeout: (fn, delay) => { const id = ++timerId; timers.set(id, { fn, delay }); return id },
     clearTimeout: id => timers.delete(id),
     addEventListener: (name, fn) => events.set(name, fn),
     removeEventListener: (name, fn) => { if (events.get(name) === fn) events.delete(name) },
   }
   class Lenis {
-    scrollTo(target, options) { scrolls.push({ target, options, innerOpen: inner.open, outerOpen: outer.open }) }
+    constructor() { this.actualScroll = this.targetScroll = window.scrollY }
+    scrollTo(target, options) {
+      scrolls.push({ target, options, innerOpen: inner.open, outerOpen: outer.open })
+      this.targetScroll = target
+      if (typeof target === 'number' && options.immediate) window.scrollY = this.actualScroll = target
+    }
     destroy() { destroyed = true }
   }
   const exports = {}
@@ -48,16 +57,40 @@ function harness({ hash = '', reducedMotion = false } = {}) {
     exports, window, document, location,
     history: { pushState: (_state, _unused, value) => { historyWrites.push(value); location.hash = value } },
     require: name => {
-      if (name === 'react') return { useEffect: fn => effects.push(fn) }
+      if (name === 'react') return { useEffect: (run, dependencies) => {
+        const previous = effects[effectIndex]
+        if (!previous || dependencies.some((value, index) => !Object.is(value, previous.dependencies[index]))) {
+          const effect = { run, dependencies, cleanup: previous?.cleanup }
+          effects[effectIndex] = effect
+          pendingEffects.push(effect)
+        }
+        effectIndex++
+      } }
       if (name === 'next/navigation') return { usePathname: () => location.pathname }
       if (name === 'lenis') return { default: Lenis }
       throw new Error(`Unexpected dependency ${name}`)
     },
   })
-  exports.default()
-  const cleanups = effects.map(effect => effect()).filter(Boolean)
+  const render = () => {
+    effectIndex = 0
+    exports.default()
+    for (const effect of pendingEffects.splice(0)) {
+      effect.cleanup?.()
+      effect.cleanup = effect.run()
+    }
+  }
+  render()
   return {
-    outer, inner, answer, section, scrolls, historyWrites, window, document,
+    outer, inner, answer, section, scrolls, nativeScrolls, historyWrites, window, document,
+    rerender(pathname = location.pathname, hash = location.hash) {
+      location.pathname = pathname
+      location.hash = hash
+      render()
+    },
+    setPosition(actual, target = actual) {
+      window.scrollY = actual
+      if (window.__lenis) Object.assign(window.__lenis, { actualScroll: actual, targetScroll: target })
+    },
     runTimers(delay) {
       for (const [id, timer] of [...timers]) {
         if (timer.delay === delay) { timers.delete(id); timer.fn() }
@@ -72,7 +105,7 @@ function harness({ hash = '', reducedMotion = false } = {}) {
     },
     hashChange(value) { location.hash = value; events.get('hashchange')?.() },
     cleanup() {
-      cleanups.forEach(cleanup => cleanup())
+      effects.forEach(effect => effect.cleanup?.())
       assert.equal(clicks.size, 0)
       assert.equal(events.size, 0)
       assert.equal(window.__lenis, undefined)
@@ -80,6 +113,56 @@ function harness({ hash = '', reducedMotion = false } = {}) {
     },
   }
 }
+
+for (const reducedMotion of [false, true]) test(`new routes open at the top while same-path rerenders preserve position, reduced motion ${reducedMotion}`, () => {
+  const app = harness({ reducedMotion, initialY: 1600 })
+  assert.equal(app.window.scrollY, 0, 'initial entry resets before the scroller is constructed')
+  assert.deepEqual(app.nativeScrolls, [{ top: 0, left: 0, behavior: 'instant' }])
+  const scroller = app.window.__lenis
+  for (const pathname of ['/partner', '/maitre-d']) {
+    app.setPosition(1750, 2100)
+    const before = { lenis: app.scrolls.length, native: app.nativeScrolls.length }
+    app.rerender()
+    assert.equal(app.window.scrollY, 1750, 'same-page rendering must not restart the story')
+    assert.equal(app.scrolls.length, before.lenis)
+    assert.equal(app.nativeScrolls.length, before.native)
+    if (scroller) assert.equal(scroller.targetScroll, 2100)
+    app.rerender(pathname, '')
+    assert.equal(app.window.scrollY, 0)
+    assert.equal(app.window.__lenis, scroller, 'route changes retain the existing scroller')
+    if (reducedMotion) {
+      assert.deepEqual(app.nativeScrolls.at(-1), { top: 0, left: 0, behavior: 'instant' })
+      assert.equal(app.scrolls.length, 0)
+    } else {
+      assert.equal(app.scrolls.at(-1).target, 0)
+      assert.deepEqual({ ...app.scrolls.at(-1).options }, { immediate: true, force: true })
+      assert.equal(scroller.actualScroll, 0)
+      assert.equal(scroller.targetScroll, 0, 'the previous page momentum cannot pull the new route away from the top')
+      assert.equal(app.nativeScrolls.length, 1, 'active Lenis owns subsequent route resets')
+    }
+  }
+  app.cleanup()
+})
+
+for (const reducedMotion of [false, true]) test(`hash routes preserve anchor navigation instead of resetting to the top, reduced motion ${reducedMotion}`, () => {
+  const app = harness({ reducedMotion })
+  app.runTimers(0)
+  app.setPosition(1750, 2100)
+  const before = { lenis: app.scrolls.length, native: app.nativeScrolls.length }
+  app.rerender('/partner', '#answer')
+  assert.equal(app.window.scrollY, 1750)
+  assert.equal(app.scrolls.length, before.lenis)
+  assert.equal(app.nativeScrolls.length, before.native)
+  app.hashChange('#answer')
+  if (reducedMotion) assert.equal(app.scrolls.length, before.lenis, 'native anchor handling remains in charge')
+  else {
+    assert.equal(app.scrolls.at(-1).target, app.answer)
+    assert.equal(app.scrolls.at(-1).innerOpen, true)
+    assert.equal(app.scrolls.at(-1).outerOpen, true)
+  }
+  assert.equal(app.nativeScrolls.length, before.native)
+  app.cleanup()
+})
 
 test('same-page anchor reveals all enclosing details before Lenis measures and keeps ordinary anchors working', () => {
   const app = harness()

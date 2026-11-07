@@ -21,23 +21,16 @@ declare global {
  * fixed header. A link whose target is not on this page is left to the
  * browser, which navigates to the page that has it.
  *
- * Skipped entirely for prefers-reduced-motion users — they keep native
- * scrolling, and the `html { scroll-behavior: smooth }` fallback in
- * globals.css still applies.
+ * Reduced-motion users keep native scrolling and the same instant page reset.
  */
 export default function SmoothScroll() {
   const pathname = usePathname()
 
-  // Reset the scroll to the top on a route change. next-view-transitions does a
-  // client-side navigation and Lenis keeps its own scroll position, so without
-  // this a link to another page (e.g. Standings) lands wherever the previous
-  // page was scrolled — on a short page, that's the footer. Skip when the new
-  // URL carries a hash, so an anchor landing (handled below) still wins.
+  // Reset both the page and Lenis on navigation; explicit section links keep their target.
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     if (location.hash) return
     if (window.__lenis) window.__lenis.scrollTo(0, { immediate: true, force: true })
-    else window.scrollTo(0, 0)
+    else window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
   }, [pathname])
 
   useEffect(() => {

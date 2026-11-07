@@ -49,7 +49,7 @@ export default function Navbar() {
   return <header className={`site-header ready ${scrolled || !darkHero ? 'scrolled' : ''} ${hidden && !open ? 'out-of-view' : ''}`}>
     <Link className="brand" href={home} aria-label={locale === 'id' ? 'Beranda Makan' : 'Makan home'}><Image className="logo-light" src="/redesign/logo.svg" alt="Makan" width={168} height={40} priority /><Image className="logo-dark" src="/redesign/logo-orange.svg" alt="" width={168} height={40} /></Link>
     <nav className="desktop-nav" aria-label={nav('menu')}><a className="nav-plain" href={hash('#features')}>{t('theapp')}</a><Link className="nav-plain" href={localizePath(locale, '/maitre-d')} aria-current={bare === '/maitre-d' ? 'page' : undefined}>Maître d’</Link><a className="button orange text-white" href={primary} onClick={() => track('Store CTA Clicked', { location: 'navigation', locale })}>{primaryLabel}{arrow}</a><Link className="button outline" href={secondary}>{secondaryLabel}</Link><LanguageSwitcher compact /></nav>
-    <div className="mobile-menu-trigger"><Drawer.Root open={open} onOpenChange={setOpen} direction="right">
+    <div className="mobile-menu-trigger"><Drawer.Root open={open} onOpenChange={setOpen} direction="right" preventScrollRestoration>
       <Drawer.Trigger asChild><button aria-label={nav('openMenu')} aria-expanded={open} aria-controls="mobile-navigation" className="menu-toggle"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" /></svg></button></Drawer.Trigger>
       <Drawer.Portal><Drawer.Overlay className="fixed inset-0 z-[60] bg-black/40" /><Drawer.Content id="mobile-navigation" aria-describedby={undefined} className="redesign-menu inverse-ground">
         <Drawer.Title className="sr-only">{nav('menu')}</Drawer.Title>

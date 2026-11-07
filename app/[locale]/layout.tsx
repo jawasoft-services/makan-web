@@ -81,7 +81,7 @@ export default async function RootLayout({
 
   return (
     <ViewTransitions>
-      <html lang={locale} className={jakarta.variable}>
+      <html lang={locale} className={jakarta.variable} data-scroll-behavior="smooth">
         <body className="redesign-site font-sans antialiased">
           <NextIntlClientProvider messages={clientMessages}>
             <a
