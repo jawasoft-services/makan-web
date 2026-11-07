@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import type { ReactNode } from 'react'
 import { NATIVE_MAITRED_COPY, NATIVE_RESTAURANT_COPY } from './native-copy'
 import { ILLUSTRATION_DINERS, ILLUSTRATION_EOY, ILLUSTRATION_MEALS, IllustrationPortrait, MaitredCardContent, illustrationTable, illustrationViewerMeals, type NativeMaitredState } from './MaitredIllustration'
 import styles from './maitred-native-mockup.module.css'
@@ -17,17 +18,19 @@ function MealThumbs({ meals }: { meals: readonly { image: string; caption: strin
 
 /** Native restaurantPage + MaitredPresentation at main18d991a75, with an
  * explicitly authored fictional story. Source/provenance: NATIVE-MOCKUP-SOURCE.md. */
-export default function MaitredNativeMockup({ locale, state = 'order', priority = false }: {
+export default function MaitredNativeMockup({ locale, state = 'order', priority = false, viewerDays, standings }: {
   locale: string
   state?: NativeMaitredState
   priority?: boolean
+  viewerDays?: number
+  standings?: ReactNode
 }) {
   const language = locale === 'id' ? 'id' : 'en'
   const copy = NATIVE_MAITRED_COPY[language]
   const restaurantCopy = NATIVE_RESTAURANT_COPY[language]
-  const { own, rows, holder } = illustrationTable(state)
+  const { own, rows, holder } = illustrationTable(state, viewerDays)
   const visits = rows.find(person => person.isYou)!.days
-  const ownMeals = illustrationViewerMeals(state)
+  const ownMeals = illustrationViewerMeals(state, viewerDays)
   const canCompare = new Set(ownMeals.map(meal => meal.dishId)).size >= 2
   const hasMenu = state !== 'holder'
   const score = ILLUSTRATION_EOY
@@ -56,7 +59,7 @@ export default function MaitredNativeMockup({ locale, state = 'order', priority 
                       <div className={styles.tabs}><span className={hasMenu && state !== 'order' ? styles.selectedTab : ''}>{copy.regularsTab}</span>{hasMenu && <span className={state === 'order' ? styles.selectedTab : ''}>{copy.orderTab}</span>}</div>
                       <span className={styles.information}><Icon name="info" /></span>
                     </div>
-                    <MaitredCardContent locale={locale} stage={state} tab={state === 'order' ? 'order' : 'regulars'} />
+                    <MaitredCardContent locale={locale} stage={state} tab={state === 'order' ? 'order' : 'regulars'} viewerDays={viewerDays} standings={standings} />
                     {own && <div className={styles.ownerActions}><span>{hasMenu ? copy.editMenu : copy.addMenu}</span><span className={styles.shareAction} data-native-disabled={!hasMenu}><Icon name="share" />{copy.shareButton}</span></div>}
                   </div>
                 </div>
