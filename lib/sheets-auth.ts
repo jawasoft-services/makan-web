@@ -1,6 +1,7 @@
 import { WEBSITE_FIXTURES } from '@/lib/website-fixtures'
 import 'server-only'
 import { google } from 'googleapis'
+import { Impersonated } from 'google-auth-library'
 import { federatedCredentials } from './gcp-federation'
 
 // Module-scoped flag so the "fallback used" warning fires at most once per
@@ -57,6 +58,15 @@ export function getSheetsAuth() {
   if (credentials) {
     return new google.auth.GoogleAuth({ credentials, scopes: ['https://www.googleapis.com/auth/spreadsheets'] })
   }
+
+  // Local previews can reuse the website identity without exporting a service-account key.
+  const localPrincipal = process.env.GOOGLE_SHEETS_IMPERSONATE_SERVICE_ACCOUNT
+  if (localPrincipal) return (async () => new Impersonated({
+    sourceClient: await new google.auth.GoogleAuth({ scopes: ['https://www.googleapis.com/auth/cloud-platform'] }).getClient(),
+    targetPrincipal: localPrincipal,
+    targetScopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    lifetime: 3600,
+  }))()
 
   const sheetsEmail = process.env.GOOGLE_SHEETS_CLIENT_EMAIL
   const sheetsKey = process.env.GOOGLE_SHEETS_PRIVATE_KEY

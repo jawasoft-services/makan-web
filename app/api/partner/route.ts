@@ -30,7 +30,7 @@ async function appendToSheet(
   const sheetId = process.env.GOOGLE_SHEET_ID
   if (!sheetId) return
 
-  const auth = getSheetsAuth()
+  const auth = await getSheetsAuth()
   const sheets = google.sheets({ version: "v4", auth })
   const now = new Date().toISOString()
 

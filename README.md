@@ -54,7 +54,7 @@ Hold the seat and you publish a tiny menu for strangers deciding what to order �
 - **[Firebase Admin](https://firebase.google.com/docs/admin/setup)** — reads public aggregates and verifies live source records before exposing eligible public content
 - **[Tailwind CSS](https://tailwindcss.com)** · **[Framer Motion](https://www.framer.com/motion/)** · **[Lenis](https://lenis.darkroom.engineering/)** — cream-and-saffron brand, scroll-driven scenes
 - **[Leaflet](https://leafletjs.com)** + OpenStreetMap — the maps · **[Resend](https://resend.com)** + Google Sheets — the forms
-- Deployed on **Vercel**
+- Deployed on **Firebase App Hosting**
 
 ## Getting started
 
@@ -127,3 +127,7 @@ This is a marketing/content site — no secrets live in it (they're all environm
 </div>
 
 <!-- deploy: repo public + Vercel reconnected to jawasoft-services/makan-web (2026-09-19) -->
+
+### Local real-delivery review
+
+Keep delivery credentials in ignored `.env.local`, never in source or screenshots. Firebase App Hosting uses its existing website service account automatically. For a local preview using the same identity, set `GOOGLE_SHEET_ID` and `GOOGLE_SHEETS_IMPERSONATE_SERVICE_ACCOUNT` to the approved spreadsheet and website service account. The signed-in local ADC user must have the explicitly approved Token Creator role on that service account; generated tokens are Sheets-scoped and last one hour. The spreadsheet must be shared with that service account as Editor. No service-account key is needed. This local configuration does not change the live site's environment.

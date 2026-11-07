@@ -30,11 +30,12 @@ env:
     secret: RESEND_API_KEY
     availability:
       - RUNTIME
+  - variable: GOOGLE_SHEET_ID
+    value: "1kNc6G-TDat2hPhH2sh90whbd5DWl4i8VlRXZPUqnbu8"
+    availability:
+      - RUNTIME
   # RM20333 — Android App Links. The MakanDev build's signing-certificate SHA-256 (public, not a
   # secret). The production fingerprint (ANDROID_APP_LINK_SHA256) stays unset until the app
   # without the https /invite filter is on Play; with it unset assetlinks.json lists no production app.
   - variable: ANDROID_DEV_APP_LINK_SHA256
     value: "91:6B:18:70:28:C5:30:3F:C0:6F:0F:67:1E:85:B5:F2:37:55:6D:43:81:B6:92:BA:5E:FE:07:84:35:F7:1E:05"
-  # ponytail: GOOGLE_SHEET_ID is added here once Devon has stored it (a missing
-  # secret fails the build); until then the partner form returns its existing
-  # error response.
