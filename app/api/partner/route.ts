@@ -80,11 +80,11 @@ export async function POST(request: Request) {
     const { name, email, restaurant, city, message } = body
 
     // 4. Per-field validation + length caps.
-    if (!name?.trim() || name.length > FIELD_MAX.name) {
+    if (typeof name !== 'string' || !name.trim() || name.length > FIELD_MAX.name) {
       return NextResponse.json({ error: "Name is required." }, { status: 400 })
     }
     if (
-      !email?.trim() ||
+      typeof email !== 'string' || !email.trim() ||
       email.length > FIELD_MAX.email ||
       !EMAIL_RE.test(email.trim())
     ) {
@@ -93,16 +93,16 @@ export async function POST(request: Request) {
         { status: 400 },
       )
     }
-    if (!restaurant?.trim() || restaurant.length > FIELD_MAX.restaurant) {
+    if (typeof restaurant !== 'string' || !restaurant.trim() || restaurant.length > FIELD_MAX.restaurant) {
       return NextResponse.json(
         { error: "Restaurant name is required." },
         { status: 400 },
       )
     }
-    if (city && city.length > FIELD_MAX.city) {
+    if (city !== undefined && (typeof city !== 'string' || city.length > FIELD_MAX.city)) {
       return NextResponse.json({ error: "City is too long." }, { status: 400 })
     }
-    if (message && message.length > FIELD_MAX.message) {
+    if (message !== undefined && (typeof message !== 'string' || message.length > FIELD_MAX.message)) {
       return NextResponse.json(
         { error: "Message is too long." },
         { status: 400 },

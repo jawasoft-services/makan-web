@@ -78,11 +78,11 @@ export async function POST(request: Request) {
     const source: ContactSource = body.source ?? "contact"
 
     // 4. Per-field validation + length caps.
-    if (source === "contact" && (!name?.trim() || name.length > FIELD_MAX.name)) {
+    if (source === "contact" && (typeof name !== 'string' || !name.trim() || name.length > FIELD_MAX.name)) {
       return NextResponse.json({ error: "Name is required." }, { status: 400 })
     }
     if (
-      !email?.trim() ||
+      typeof email !== 'string' || !email.trim() ||
       email.length > FIELD_MAX.email ||
       !EMAIL_RE.test(email.trim())
     ) {

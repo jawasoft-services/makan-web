@@ -8,7 +8,7 @@ import ts from 'typescript'
 import sharp from 'sharp'
 
 // Execute real server exports; any provider client construction or fetch is a failing test.
-function lane(overrides = {}) {
+function lane(overrides = {}, delivery = null) {
   const env = { NODE_ENV: 'development', MAKAN_WEBSITE_FIXTURES: '1', ...overrides }
   const cache = new Map()
   const attempted = []
@@ -45,6 +45,9 @@ function lane(overrides = {}) {
         if (id === 'firebase-admin/firestore') return { Firestore: ForbiddenClient, getFirestore: reject('getFirestore'), Timestamp }
         if (id === 'google-auth-library') return { GoogleAuth: ForbiddenClient, JWT: ForbiddenClient }
         if (id === '@vercel/oidc') return { getVercelOidcToken: reject('OIDC') }
+        if (id === '@/lib/sheets-auth' && delivery) return { getSheetsAuth: () => ({}) }
+        if (id === 'googleapis' && delivery) return { google: { sheets: () => ({spreadsheets:{values:{append:async body=>{delivery.sheets.push(body);if(delivery.sheetFails)throw new Error('Sheet failed')}}}}) } }
+        if (id === 'resend' && delivery) return { Resend: class { emails={send:async body=>{delivery.emails.push(body);return delivery.emailFails?{error:{message:'Delivery failed'}}:{data:{id:'controlled-test'}}}} } }
         if (id === 'googleapis') return { google: { auth: { GoogleAuth: ForbiddenClient }, sheets: reject('Sheets') } }
         if (id === 'resend') return { Resend: ForbiddenClient }
         if (id === 'react/jsx-runtime') return { jsx() {}, jsxs() {} }
@@ -233,4 +236,39 @@ test('Maître d’ fixture states preserve unknown, explicit vacancy, unresolved
     assert.equal(directory.status, state === 'unavailable' ? 'unavailable' : state === 'maitred-disabled' ? 'disabled' : 'ready')
     assert.deepEqual(run.attempted, [])
   }
+})
+
+
+test('actual delivery branches build escaped email and RAW sheet records, and report provider failure', async () => {
+  for (const kind of ['contact','partner']) for (const emailFails of [false,true]) {
+    const delivery={emails:[],sheets:[],emailFails,sheetFails:!emailFails}
+    const run=lane({MAKAN_WEBSITE_FIXTURES:'',RESEND_API_KEY:'controlled-key',GOOGLE_SHEET_ID:'controlled-sheet'},delivery)
+    const {POST}=run.load(`app/api/${kind}/route.ts`)
+    const response=await POST(request(`/api/${kind}`,{name:' <Alex> ',email:'alex@example.test',restaurant:'=Kitchen <&>',message:'<script>bad</script>'}))
+    assert.equal(response.status,emailFails?500:200)
+    assert.equal(delivery.emails.length,1);assert.equal(delivery.sheets.length,1)
+    assert(delivery.emails[0].html.includes('&lt;Alex&gt;'))
+    assert(!delivery.emails[0].html.includes('<script>'))
+    assert.equal(delivery.sheets[0].valueInputOption,'RAW')
+    assert.deepEqual(run.attempted,[])
+  }
+})
+
+test('malformed JSON field types are validation failures before any delivery', async () => {
+  for(const kind of ['contact','partner']) for(const patch of [{name:42},{name:null},{email:[]},...(kind==='partner'?[{restaurant:{}},{city:42},{message:[]}]:[])]){
+    const run=lane();const {POST}=run.load(`app/api/${kind}/route.ts`)
+    assert.equal((await POST(request(`/api/${kind}`,{name:'Alex',email:'alex@example.test',restaurant:'Kitchen',...patch}))).status,400)
+    assert.deepEqual(run.attempted,[])
+  }
+})
+
+test('Android source reaches its actual notification email and sheet delivery branch',async()=>{
+ const delivery={emails:[],sheets:[]}
+ const run=lane({MAKAN_WEBSITE_FIXTURES:'',RESEND_API_KEY:'controlled-key',GOOGLE_SHEET_ID:'controlled-sheet'},delivery)
+ const response=await run.load('app/api/contact/route.ts').POST(request('/api/contact',{source:'android-waitlist',email:'android@example.test'}))
+ assert.equal(response.status,200)
+ assert.match(delivery.emails[0].subject,/Android launch notification/)
+ assert.equal(delivery.sheets[0].requestBody.values[0][1],'Android waitlist')
+ assert.equal(delivery.sheets[0].requestBody.values[0][3],'android-waitlist')
+ assert.deepEqual(run.attempted,[])
 })

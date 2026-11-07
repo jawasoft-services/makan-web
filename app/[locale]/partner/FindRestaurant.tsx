@@ -19,7 +19,7 @@ export default function FindRestaurant() {
   useEffect(() => {
     const trimmed = query.trim()
     const request = ++latest.current
-    if (trimmed.length < 2) { setResults(null); setFailed(false); return }
+    if (trimmed.length < 2) return
     const timer = setTimeout(async () => {
       try {
         const response = await fetch(`/api/claim-search?q=${encodeURIComponent(trimmed)}`)
@@ -40,7 +40,12 @@ export default function FindRestaurant() {
         id="find-restaurant"
         type="search"
         value={query}
-        onChange={(event) => setQuery(event.target.value)}
+        onChange={(event) => {
+          const value = event.target.value
+          latest.current += 1
+          setQuery(value)
+          if (value.trim().length < 2) { setResults(null); setFailed(false) }
+        }}
         placeholder={t('findPlaceholder')}
         autoComplete="off"
         maxLength={60}

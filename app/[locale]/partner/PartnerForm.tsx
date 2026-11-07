@@ -90,7 +90,7 @@ export default function PartnerForm() {
     <div className="w-full">
       <h3 className="text-2xl font-bold tracking-tight text-brand-ink">{t('title')}</h3>
       <p className="mt-3 text-base leading-relaxed text-brand-muted">{t('body')}</p>
-      <form onSubmit={handleSubmit} noValidate className="mt-6 space-y-4" aria-busy={status === 'loading'}>
+      <form onSubmit={handleSubmit} method="dialog" noValidate className="mt-6 space-y-4" aria-busy={status === 'loading'}>
         {fields.map(field => (
           <div key={field}>
             <label htmlFor={'partner-' + field} className="mb-2 block text-sm font-semibold text-brand-ink">{t(field)}</label>

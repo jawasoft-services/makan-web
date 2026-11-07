@@ -16,6 +16,7 @@ export default function AndroidWaitlist() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (status === 'loading') return
     const trimmedEmail = email.trim()
 
     if (!EMAIL_RE.test(trimmedEmail)) {
@@ -66,7 +67,7 @@ export default function AndroidWaitlist() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto mt-4 max-w-md" aria-label={t('label')}>
+    <form method="dialog" onSubmit={handleSubmit} className="mx-auto mt-4 max-w-md" aria-label={t('label')}>
       <div className="flex flex-col gap-2 sm:flex-row">
         <label htmlFor="android-waitlist-email" className="sr-only">
           {t('emailLabel')}
@@ -77,6 +78,8 @@ export default function AndroidWaitlist() {
           inputMode="email"
           autoComplete="email"
           required
+          maxLength={254}
+          disabled={status === 'loading'}
           value={email}
           onChange={(event) => {
             setEmail(event.target.value)

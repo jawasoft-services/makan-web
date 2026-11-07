@@ -49,9 +49,8 @@ export default function Turnstile({ onToken }: { onToken: (token: string) => voi
   useEffect(() => {
     // The script may already be on the page from an earlier navigation.
     render()
-    const id = widget.current
     return () => {
-      if (id) window.turnstile?.remove(id)
+      if (widget.current) window.turnstile?.remove(widget.current)
       widget.current = null
     }
   }, [])
