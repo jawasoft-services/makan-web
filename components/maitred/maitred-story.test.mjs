@@ -46,8 +46,14 @@ test('the second meal lands before its count changes, then the camera moves to t
   assert.equal(story(1).camera, 1)
 })
 
+test('the active instruction follows meal arrival, the lead sequence and editor opening in either direction', () => {
+  const samples = [[0, 'save'], [.55 - 1e-6, 'save'], [.55, 'qualify'], [1.5 - 1e-6, 'qualify'], [1.5, 'lead'], [2.08 - 1e-6, 'lead'], [2.08, 'share'], [2.2, 'share'], [3, 'share']]
+  for (const [progress, step] of [...samples, ...[...samples].reverse()]) assert.equal(story(progress).step, step)
+  assert.deepEqual(milestone(2.2), { step: 'share', days: 8, state: 'holder' }, 'opening the editor selects sharing before publication')
+})
+
 test('continuous profile movement does not round a partial day into the title', () => {
-  assert.deepEqual(milestone(.5), { step: 'qualify', days: 1, state: 'regulars' })
+  assert.deepEqual(milestone(.5), { step: 'save', days: 1, state: 'regulars' })
   assert.deepEqual(milestone(1.5), { step: 'lead', days: 5, state: 'qualify' })
   assert.equal(story(1 + 5 / 6).days, 7)
   near(story(1 + 5.5 / 6).dayProgress, 7.5)

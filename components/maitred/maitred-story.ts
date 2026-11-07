@@ -13,7 +13,6 @@ export type MaitredStorySnapshot = {
   publication: number
 }
 
-const steps = ['save', 'qualify', 'lead', 'share'] as const
 // Absorb arithmetic noise at a whole-day boundary, never round partial days up.
 const dayTolerance = 1e-9
 
@@ -29,7 +28,7 @@ function ease(position: number, start: number, end: number) {
 /** Every visual value comes from position, so stopping and reversing need no clock. */
 export function storyAtProgress(progress: number): MaitredStorySnapshot {
   const position = Number.isFinite(progress) ? Math.max(0, Math.min(3, progress)) : 0
-  const step = steps[Math.round(position)]
+  const step = position < .55 ? 'save' : position < 1.5 ? 'qualify' : position < 2.08 ? 'lead' : 'share'
   const days = position < .55 ? 1 : position < 1 ? 2 : Math.min(8, Math.floor(2 + (position - 1) * 6 + dayTolerance))
   const dayProgress = position < 1 ? days : Math.min(8, 2 + (position - 1) * 6)
   const publication = ease(position, 2.83, 2.95)

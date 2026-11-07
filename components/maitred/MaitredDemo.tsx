@@ -14,21 +14,15 @@ export type MaitredDemoCopy = {
   steps: { id: DemoStep; title: string; body: string }[]
 }
 
-function readingLine(fieldset: HTMLFieldSetElement) {
-  if (window.innerWidth > 700) return window.innerHeight / 2
-  const height = fieldset.querySelector('[data-demo-scene]')?.getBoundingClientRect().height ?? 0
-  return Math.min(window.innerHeight - 40, (height + window.innerHeight) / 2)
+function storyStops(fieldset: HTMLFieldSetElement) {
+  const stage = fieldset.querySelector<HTMLElement>('[data-story-stage]')!
+  const distance = fieldset.querySelector('[data-story-track]')!.getBoundingClientRect().height
+  const start = fieldset.getBoundingClientRect().top - (parseFloat(window.getComputedStyle(stage).top) || 0)
+  return [start, start + distance / 4, start + distance / 2, start + distance]
 }
 
 function scrollProgress(fieldset: HTMLFieldSetElement) {
-  const bounds = fieldset.getBoundingClientRect()
-  const line = readingLine(fieldset)
-  if (bounds.top > line || bounds.bottom < line) return
-  const centers = Array.from(fieldset.querySelectorAll<HTMLInputElement>('input[type="radio"]'), input => {
-    const row = input.closest('label')!.getBoundingClientRect()
-    return row.top + row.height / 2
-  })
-  return progressAtLine(centers, line)
+  return progressAtLine(storyStops(fieldset), 0)
 }
 
 /** Scroll position is the clock. No spring, delay or autonomous animation. */
@@ -46,23 +40,25 @@ export default function MaitredDemo({ copy, locale }: { copy: MaitredDemoCopy; l
     const inputs = Array.from(root.querySelectorAll<HTMLInputElement>('input[type="radio"]'))
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
     let frame: number | undefined
+    let stopFollowing: (() => void) | undefined
+    let stopReversing: (() => void) | undefined
     function publish(value: number) {
-      inputs.find(input => input.value === storyAtProgress(value).step)!.checked = true
+      const step = storyAtProgress(value).step
+      inputs.forEach(input => { input.checked = input.value === step })
       setProgress(value)
     }
+    function followPosition() { publish(scrollProgress(root)) }
     function followScroll() {
       if (frame !== undefined) return
       frame = window.requestAnimationFrame(() => {
         frame = undefined
-        const measured = scrollProgress(root)
-        if (measured !== undefined) publish(measured)
+        followPosition()
       })
     }
     select.current = index => {
       if (frame !== undefined) window.cancelAnimationFrame(frame)
       frame = undefined
-      const row = inputs[index].closest('label')!.getBoundingClientRect()
-      const top = Math.max(0, window.scrollY + row.top + row.height / 2 - readingLine(root))
+      const top = Math.max(0, window.scrollY + storyStops(root)[index])
       // Keep the page and the scene on the same timeline, including keyboard selection.
       if (window.__lenis) window.__lenis.scrollTo(top, { immediate: true, force: true })
       else window.scrollTo({ top, behavior: 'instant' })
@@ -70,7 +66,19 @@ export default function MaitredDemo({ copy, locale }: { copy: MaitredDemoCopy; l
     }
     function preferenceChanged() { setReducedMotion(motion.matches) }
     const hydrate = window.requestAnimationFrame(() => {
-      publish(scrollProgress(root) ?? Math.max(0, inputs.findIndex(input => input.checked)))
+      const scroller = window.__lenis
+      if (scroller) {
+        window.removeEventListener('scroll', followScroll)
+        stopFollowing = scroller.on('scroll', followPosition)
+        stopReversing = scroller.on('virtual-scroll', ({ deltaY, event }) => {
+          if (event.type !== 'wheel' || event.ctrlKey || !root.contains(event.target as Node)) return
+          // Discard old-direction momentum before Lenis applies the new wheel delta.
+          if (deltaY * (scroller.targetScroll - scroller.actualScroll) < 0) {
+            scroller.scrollTo(scroller.actualScroll, { immediate: true, force: true })
+          }
+        })
+      }
+      followPosition()
       preferenceChanged()
       setReady(true)
     })
@@ -81,6 +89,8 @@ export default function MaitredDemo({ copy, locale }: { copy: MaitredDemoCopy; l
     return () => {
       window.cancelAnimationFrame(hydrate)
       if (frame !== undefined) window.cancelAnimationFrame(frame)
+      stopFollowing?.()
+      stopReversing?.()
       window.removeEventListener('scroll', followScroll)
       window.removeEventListener('resize', followScroll)
       motion.removeEventListener('change', preferenceChanged)
@@ -101,8 +111,10 @@ export default function MaitredDemo({ copy, locale }: { copy: MaitredDemoCopy; l
   }, [ready, reducedMotion, story.camera, story.days])
 
   const crown = reducedMotion ? Number(story.days === 8) : Math.max(0, Math.min(1, story.dayProgress - 7))
-  return <fieldset className={styles.demo} ref={fieldset} data-lenis-prevent data-motion-ready={ready || undefined} data-story-progress={progress} data-story-holder={story.days === 8 || undefined}>
+  return <fieldset className={styles.demo} ref={fieldset} data-motion-ready={ready || undefined} data-story-progress={progress} data-story-holder={story.days === 8 || undefined}>
     <legend className={styles.srOnly}>{copy.legend}</legend>
+    <noscript><style>{`.${styles.stage}{position:static}.${styles.track},.${styles.mobileDescription}{display:none!important}.${styles.stepBody}{display:block!important}`}</style></noscript>
+    <div className={styles.stage} data-story-stage>
     <div className={styles.steps}>
       {copy.steps.map((step, index) => <label className={styles.step} key={step.id} htmlFor={`${id}-${step.id}`}>
         <input className={styles.radio} type="radio" name={`${id}-step`} id={`${id}-${step.id}`} value={step.id}
@@ -122,14 +134,19 @@ export default function MaitredDemo({ copy, locale }: { copy: MaitredDemoCopy; l
         <div className={styles.island} />
         <div className={styles.panels}>
           <div id={`${id}-save-phone`} className={`${styles.panel} ${styles.initialPanel}`} data-demo-panel="save"><MaitredNativeMockup locale={locale} state={story.state} viewerDays={story.days} story={ready ? story : undefined} reducedMotion={reducedMotion} locked standings={ready ? <MaitredStandings locale={locale} state={story.state} days={story.days} dayProgress={story.dayProgress} reducedMotion={reducedMotion} /> : undefined} /></div>
-          <div id={`${id}-qualify-phone`} className={styles.panel} data-demo-panel="qualify"><MaitredNativeMockup locale={locale} state="qualify" locked /></div>
+          {!ready && <><div id={`${id}-qualify-phone`} className={styles.panel} data-demo-panel="qualify"><MaitredNativeMockup locale={locale} state="qualify" locked /></div>
           <div id={`${id}-lead-phone`} className={styles.panel} data-demo-panel="lead"><MaitredNativeMockup locale={locale} state="holder" locked /></div>
-          <div id={`${id}-share-phone`} className={styles.panel} data-demo-panel="share"><MaitredNativeMockup locale={locale} state="order" locked /></div>
+          <div id={`${id}-share-phone`} className={styles.panel} data-demo-panel="share"><MaitredNativeMockup locale={locale} state="order" locked /></div></>}
         </div>
         <div className={styles.homeIndicator} />
       </div>
       <Image style={ready ? { opacity: crown, transform: `translateY(${(1 - crown) * -20}px) rotate(${-8 + 23 * crown}deg) scale(${.85 + .15 * crown})` } : undefined} className={styles.sceneCrown} src="/redesign/maitred-crown.svg" alt="" width={160} height={120} />
       <p className={styles.credit}>Kendal Street Kitchen · @ridorichard</p>
     </div>
+    <div className={styles.mobileDescription} aria-hidden="true">
+      {copy.steps.map(step => <p key={step.id} data-current={step.id === story.step || undefined}>{step.body}</p>)}
+    </div>
+    </div>
+    <div className={styles.track} data-story-track aria-hidden="true" />
   </fieldset>
 }

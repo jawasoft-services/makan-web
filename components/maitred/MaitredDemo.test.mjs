@@ -33,6 +33,7 @@ function harness(locale, reducedMotion = false) {
   const browserWindow = {
     scrollY: 0, innerHeight: 1000, innerWidth: 1440,
     matchMedia: () => motion,
+    getComputedStyle: node => ({ top: `${node.top}px` }),
     requestAnimationFrame: callback => { frames.set(++frameId, callback); return frameId },
     cancelAnimationFrame: id => frames.delete(id),
     setTimeout: callback => { timers.set(++frameId, callback); return frameId },
@@ -208,10 +209,18 @@ for (const locale of ['en', 'id']) {
     const elements = allElements(tree)
     const inputs = elements.filter(element => element.type === 'input')
     assert.equal(inputs.length, 4)
+    const stage = elements.find(element => element.props?.['data-story-stage'] !== undefined)
+    assert.ok(stage, 'the instructions and phone share one pinned stage')
+    const stageElements = allElements(stage)
+    assert.deepEqual(stageElements.filter(element => element.type === 'input'), inputs, 'all four controls remain together beside the phone')
+    assert.ok(stageElements.some(element => element.props?.['data-demo-scene'] !== undefined))
+    const scrollTrack = elements.find(element => element.props?.['data-story-track'] !== undefined)
+    assert.ok(scrollTrack && !stageElements.includes(scrollTrack), 'scroll distance stays outside the pinned stage')
     assert.equal(new Set(inputs.map(input => input.props.name)).size, 1, 'native arrow-key selection requires one radio group')
     assert.equal(inputs.filter(input => input.props.defaultChecked).length, 1)
     assert.equal(inputs.find(input => input.props.defaultChecked).props.value, 'save', 'the demo must not initially imply a title was awarded')
     const panels = elements.filter(element => element.props?.['data-demo-panel'])
+    assert.equal(panels.length, 4, 'server output retains a native phone for every no-JavaScript choice')
     for (const input of inputs) {
       assert.equal(input.props.type, 'radio')
       assert.ok(elements.some(element => element.type === 'label' && element.props.htmlFor === input.props.id))
@@ -276,52 +285,85 @@ for (const locale of ['en', 'id']) {
   })
 }
 
-function controller(locale = 'en', reducedMotion = false, restored = 'save', { initialY = 0, lenis = false } = {}) {
+function controller(locale = 'en', reducedMotion = false, restored = 'save', { initialY = 0, lenis = false, delayedLenis = false } = {}) {
   const app = harness(locale, reducedMotion)
   const steps = ['save', 'qualify', 'lead', 'share']
   let checked = restored
-  const reveals = [], pageScrolls = [], history = []
+  const reveals = [], pageScrolls = [], history = [], checkedWrites = []
+  const lenisListeners = new Map()
   const scene = { height: 620, bottom: 9999 }
+  const stage = { top: 400 }
+  const track = { height: 2400, getBoundingClientRect() { return { height: this.height } } }
   app.window.scrollY = initialY
   app.window.scrollTo = options => { pageScrolls.push({ target: 'window', ...options }); app.window.scrollY = options.top }
-  if (lenis) app.window.__lenis = { scrollTo(top, options) { pageScrolls.push({ target: 'lenis', top, ...options }); app.window.scrollY = top } }
-  const inputs = steps.map((value, index) => ({
-    value, get checked() { return checked === value }, set checked(valueChecked) { if (valueChecked) checked = value },
-    closest: () => ({ getBoundingClientRect: () => ({ top: 1050 + index * 600 - app.window.scrollY, height: 100 }) }),
+  const scroller = lenis ? {
+    actualScroll: initialY, targetScroll: initialY,
+    on(name, callback) { lenisListeners.set(name, callback); return () => lenisListeners.delete(name) },
+    scrollTo(top, options) {
+      pageScrolls.push({ target: 'lenis', top, ...options })
+      app.window.scrollY = this.actualScroll = this.targetScroll = top
+    },
+  } : undefined
+  if (!delayedLenis) app.window.__lenis = scroller
+  const inputs = steps.map(value => ({
+    value, get checked() { return checked === value }, set checked(valueChecked) {
+      checkedWrites.push([value, valueChecked])
+      if (valueChecked) checked = value
+    },
   }))
   const screen = { scrollTop: 0, scrollTo(options) { reveals.push(options); this.scrollTop = options.top } }
   const panels = steps.map(demoPanel => ({ dataset: { demoPanel }, inert: false,
     querySelector: selector => selector === '[data-story-screen]' ? screen : { offsetTop: selector.includes('your-meals') ? 900 : 400 },
   }))
+  let mountedPanels = panels
   const node = {
-    getBoundingClientRect: () => ({ top: 1000 - app.window.scrollY, bottom: 3500 - app.window.scrollY }),
-    querySelectorAll: selector => selector === '[data-demo-panel]' ? panels : inputs,
+    contains: target => target === node || target === screen || inputs.includes(target) || mountedPanels.includes(target),
+    getBoundingClientRect: () => ({ top: 1000 - app.window.scrollY, bottom: 1000 + scene.height + track.height - app.window.scrollY }),
+    querySelectorAll: selector => selector === '[data-demo-panel]' ? mountedPanels : inputs,
     querySelector: selector => selector === '[data-demo-scene]' ? { getBoundingClientRect: () => scene }
-      : panels.find(panel => selector.includes(`"${panel.dataset.demoPanel}"`)),
+      : selector === '[data-story-stage]' ? stage
+      : selector === '[data-story-track]' ? track
+      : mountedPanels.find(panel => selector.includes(`"${panel.dataset.demoPanel}"`)),
   }
   const snapshot = tree => allElements(tree).find(element => element.props?.['data-demo-panel'] === 'save').props.children.props
-  app.mount(app.load('components/maitred/MaitredDemo.tsx').default, { copy: messages[locale].MaitredPage.demo, locale }, tree => { tree.props.ref.current = node }, tree => {
+  app.mount(app.load('components/maitred/MaitredDemo.tsx').default, { copy: messages[locale].MaitredPage.demo, locale }, tree => {
+    tree.props.ref.current = node
+    const panelIds = allElements(tree).map(element => element.props?.['data-demo-panel'])
+    mountedPanels = panels.filter(panel => panelIds.includes(panel.dataset.demoPanel))
+  }, tree => {
     const { viewerDays: days, state, story } = snapshot(tree)
     history.push({ days, state, progress: story?.progress })
   })
   const radio = index => allElements(app.tree()).filter(element => element.type === 'input')[index]
-  return { ...app, panels, screen, scene, reveals, pageScrolls, history, checked: () => checked,
+  return { ...app, root: node, get panels() { return mountedPanels }, screen, scene, stage, track, reveals, pageScrolls, history, checkedWrites, checked: () => checked,
+    listenerCount: () => app.listenerCount() + lenisListeners.size,
+    installLenis() { app.window.__lenis = scroller },
+    lenisEvent(name, event) { app.invoke(() => lenisListeners.get(name)?.(event)) },
     snapshot: () => snapshot(app.tree()),
     click(index) { checked = steps[index]; app.invoke(() => radio(index).props.onChange()) },
     reselect(keyboard = false) {
       const input = radio(steps.indexOf(checked))
       app.invoke(() => keyboard ? input.props.onKeyDown({ key: ' ', currentTarget: { checked: true } }) : input.props.onPointerDown({ currentTarget: { checked: true } }))
     },
-    scroll(y, flush = true) { app.window.scrollY = y; app.dispatch('scroll'); if (flush) app.flushFrames() },
+    scroll(y, flush = true) {
+      app.window.scrollY = y
+      if (app.window.__lenis) {
+        app.window.__lenis.actualScroll = y
+        app.invoke(() => lenisListeners.get('scroll')?.())
+      } else app.dispatch('scroll')
+      if (flush) app.flushFrames()
+    },
   }
 }
 
 for (const reducedMotion of [false, true]) test(`persistent phone scrubs every whole day and reverses, reduced motion ${reducedMotion}`, () => {
   const app = controller('en', reducedMotion)
+  assert.equal(app.panels.length, 4)
   app.flushFrames()
   assert.equal(app.tree().props['data-motion-ready'], true)
-  assert.equal(app.tree().props['data-lenis-prevent'], true, 'this section uses native page scrolling without Lenis inertia')
+  assert.equal(app.tree().props['data-lenis-prevent'], undefined, 'page scrolling keeps the existing sitewide smoothing')
   assert.deepEqual(app.panels.filter(panel => !panel.inert).map(panel => panel.dataset.demoPanel), ['save'])
+  assert.deepEqual(allElements(app.tree()).filter(element => element.props?.['data-demo-panel']).map(element => element.props['data-demo-panel']), ['save'], 'hydration removes the three fallback phones')
   assert.ok(allElements(app.tree()).filter(element => element.type === 'input').every(input => input.props['aria-controls'] === 'test-maitred-demo-save-phone'))
   const phoneType = allElements(app.tree()).find(element => element.props?.['data-demo-panel'] === 'save').props.children.type
   const samples = [[600, 1], [930, 2], [1200, 2], [1300, 3], [1400, 4], [1500, 5], [1600, 6], [1700, 7], [1800, 8]]
@@ -333,21 +375,43 @@ for (const reducedMotion of [false, true]) test(`persistent phone scrubs every w
     assert.equal(allElements(app.tree()).find(element => element.props?.['data-demo-panel'] === 'save').props.children.type, phoneType)
     assert.equal(app.snapshot().standings.props.days, days)
     assert.equal(app.snapshot().locked, true)
+    assert.equal(app.checked(), app.snapshot().story.step, 'the active control follows the same story snapshot as the phone')
     assert.equal(app.frames(), 0, 'the current scroll frame must never schedule continuation')
     assert.equal(app.timers(), 0)
   }
-  app.scroll(2100)
-  assert.equal(app.snapshot().state, 'holder', 'selecting step four while typing does not publish')
-  app.scroll(2298)
-  assert.equal(app.snapshot().state, 'holder', 'publication begins only after progress2.83')
-  app.scroll(2340)
-  assert.equal(app.snapshot().state, 'order')
   app.scroll(2400)
+  assert.equal(app.snapshot().story.progress, 2.5, 'the editor keeps twice the scroll distance of each earning interval')
+  assert.equal(app.checked(), 'share')
+  assert.equal(app.snapshot().state, 'holder', 'selecting step four while typing does not publish')
+  app.scroll(2796)
+  assert.equal(app.snapshot().state, 'holder', 'publication begins only after progress2.83')
+  app.scroll(2880)
+  assert.equal(app.snapshot().state, 'order')
+  app.scroll(3000)
   assert.equal(app.snapshot().story.editorOpen, 0)
   assert.equal(app.events.length, 0)
   assert.ok(app.reveals.every(call => call.behavior === 'instant'), 'camera is scrubbed even when normal motion is enabled')
   app.unmount()
   assert.equal(app.listenerCount(), 0)
+})
+
+test('all four pinned controls stay present and their highlight follows each chapter forward and backward', () => {
+  const app = controller()
+  app.flushFrames()
+  const samples = [[600, 'save'], [929, 'save'], [930, 'qualify'], [1499, 'qualify'], [1500, 'lead'], [1895, 'lead'], [1896, 'share'], [2040, 'share'], [3000, 'share']]
+  for (const [y, step] of [...samples, ...[...samples].reverse()]) {
+    app.scroll(y)
+    const stage = allElements(app.tree()).find(element => element.props?.['data-story-stage'] !== undefined)
+    assert.deepEqual(allElements(stage).filter(element => element.type === 'input').map(input => input.props.value), ['save', 'qualify', 'lead', 'share'])
+    assert.equal(app.checked(), step)
+    assert.equal(app.snapshot().story.step, step)
+    const mobileDescription = allElements(stage).find(element => element.props?.className === 'mobileDescription')
+    const descriptions = allElements(mobileDescription).filter(element => element.type === 'p')
+    assert.deepEqual(descriptions.map(element => element.props.children), messages.en.MaitredPage.demo.steps.map(candidate => candidate.body), 'all four descriptions remain in the layout to reserve the tallest height')
+    assert.deepEqual(descriptions.filter(element => element.props['data-current']).map(element => element.props.children), [messages.en.MaitredPage.demo.steps.find(candidate => candidate.id === step).body])
+    if (y === 2040) assert.equal(app.snapshot().state, 'holder', 'the sharing instruction follows the open editor before publication')
+  }
+  app.unmount()
 })
 
 test('scroll bursts share one frame, stopping freezes it and reversing revisits the identical snapshot', () => {
@@ -367,68 +431,154 @@ test('scroll bursts share one frame, stopping freezes it and reversing revisits 
   assert.equal(app.snapshot(), stopped, 'elapsed frames without scrolling cannot move the scene')
   assert.equal(app.history.length, count)
   assert.equal(app.timers(), 0)
-  app.scroll(2400)
+  app.scroll(3000)
   app.scroll(1750)
   assert.deepEqual({ ...app.snapshot().story }, { ...stopped.story })
   assert.deepEqual({ ...app.snapshot().standings.props }, { ...stopped.standings.props })
   app.unmount()
 })
 
+for (const lenis of [false, true]) test(`fast overshoots clamp to the first and final story, Lenis ${lenis}`, () => {
+  const app = controller('en', false, 'save', { lenis })
+  app.flushFrames()
+  app.scroll(2040)
+  assert.equal(app.snapshot().story.progress, 2.2)
+  for (const [y, progress, step, state] of [[0, 0, 'save', 'regulars'], [5000, 3, 'share', 'order'], [0, 0, 'save', 'regulars']]) {
+    app.scroll(y)
+    assert.equal(app.snapshot().story.progress, progress)
+    assert.equal(app.checked(), step)
+    assert.equal(app.snapshot().state, state)
+  }
+  app.unmount()
+})
+
+for (const delayedLenis of [false, true]) test(`Lenis follows actual position in its own frame and unsubscribes, delayed setup ${delayedLenis}`, () => {
+  const app = controller('en', false, 'save', { lenis: true, delayedLenis })
+  if (delayedLenis) {
+    assert.equal(app.window.__lenis, undefined, 'the demo effect can precede sitewide scroller setup')
+    app.installLenis()
+  }
+  app.flushFrames()
+  assert.equal(app.listenerCount(), 4, 'only resize, motion preference and the two Lenis subscriptions remain')
+  app.window.scrollY = 1700
+  app.dispatch('scroll')
+  assert.equal(app.frames(), 0, 'native scroll events cannot schedule a second update behind Lenis')
+  assert.equal(app.snapshot().story.progress, 0)
+  app.scroll(1750, false)
+  assert.equal(app.snapshot().viewerDays, 7, 'the Lenis event publishes without another animation frame')
+  assert.equal(app.frames(), 0)
+  const stopped = app.snapshot()
+  for (let i = 0; i < 10; i++) app.flushFrames()
+  assert.equal(app.snapshot(), stopped)
+  app.scroll(2400, false)
+  app.scroll(1750, false)
+  assert.deepEqual({ ...app.snapshot().story }, { ...stopped.story })
+  assert.equal(app.frames(), 0)
+  app.unmount()
+  assert.equal(app.listenerCount(), 0)
+  const count = app.history.length
+  app.scroll(3000)
+  app.lenisEvent('virtual-scroll', { deltaY: -100, event: { type: 'wheel', target: app.root } })
+  assert.equal(app.history.length, count)
+  assert.equal(app.pageScrolls.length, 0, 'unmounted Lenis callbacks cannot change the page')
+})
+
+test('wheel reversal cancels only opposite Lenis momentum inside the story', () => {
+  const app = controller('en', false, 'save', { lenis: true })
+  app.flushFrames()
+  app.scroll(1700, false)
+  const scroller = app.window.__lenis
+  for (const [pending, deltaY] of [[300, -40], [-300, 40]]) {
+    scroller.targetScroll = scroller.actualScroll + pending
+    app.lenisEvent('virtual-scroll', { deltaY, event: { type: 'wheel', ctrlKey: false, target: app.screen } })
+    assert.deepEqual(app.pageScrolls.at(-1), { target: 'lenis', top: 1700, immediate: true, force: true })
+    assert.equal(scroller.targetScroll, scroller.actualScroll, 'old momentum clears at the current page position')
+    assert.equal(app.window.scrollY, 1700)
+  }
+  assert.equal(app.pageScrolls.length, 2)
+  for (const { name, pending = 300, deltaY = -40, event = {} } of [
+    { name: 'same downward direction', deltaY: 40 },
+    { name: 'same upward direction', pending: -300 },
+    { name: 'no outstanding momentum', pending: 0 },
+    { name: 'zero wheel delta', deltaY: 0 },
+    { name: 'touch event', event: { type: 'touchmove' } },
+    { name: 'zoom gesture', event: { ctrlKey: true } },
+    { name: 'outside the story', event: { target: {} } },
+  ]) {
+    scroller.targetScroll = scroller.actualScroll + pending
+    app.lenisEvent('virtual-scroll', { deltaY, event: { type: 'wheel', ctrlKey: false, target: app.root, ...event } })
+    assert.equal(app.pageScrolls.length, 2, name)
+    assert.equal(scroller.targetScroll, scroller.actualScroll + pending, name)
+  }
+  assert.equal(app.frames(), 0)
+  assert.equal(app.timers(), 0)
+  app.unmount()
+  assert.equal(app.listenerCount(), 0)
+})
+
 for (const lenis of [false, true]) test(`click and keyboard destinations share the exact page position, Lenis ${lenis}`, () => {
   const app = controller('en', false, 'save', { lenis })
   app.flushFrames()
+  const destinations = [600, 1200, 1800, 3000]
   for (let index = 0; index < 4; index++) {
     app.scroll(1234, false)
+    if (lenis) app.dispatch('resize')
     assert.equal(app.frames(), 1)
+    const writes = app.checkedWrites.length
     app.click(index)
-    assert.equal(app.frames(), 0, 'selection cancels stale pending scroll work')
-    assert.equal(app.window.scrollY, 600 + 600 * index)
+    assert.deepEqual(app.checkedWrites.slice(writes), ['save', 'qualify', 'lead', 'share'].map((step, candidate) => [step, candidate === index]), 'update every radio explicitly so React tracks automatic unchecking before a later click')
+    assert.equal(app.frames(), 0, 'selection cancels stale pending position work')
+    assert.equal(app.window.scrollY, destinations[index])
     assert.equal(app.snapshot().story.progress, index)
     assert.equal(app.checked(), ['save', 'qualify', 'lead', 'share'][index])
     assert.deepEqual(app.pageScrolls.at(-1), lenis
-      ? { target: 'lenis', top: 600 + 600 * index, immediate: true, force: true }
-      : { target: 'window', top: 600 + 600 * index, behavior: 'instant' })
-    app.dispatch('scroll')
+      ? { target: 'lenis', top: destinations[index], immediate: true, force: true }
+      : { target: 'window', top: destinations[index], behavior: 'instant' })
+    if (lenis) app.lenisEvent('scroll')
+    else app.dispatch('scroll')
     app.flushFrames()
     assert.equal(app.snapshot().story.progress, index, 'the browser scroll event cannot overwrite a click with an earlier frame')
     assert.equal(app.timers(), 0)
   }
   app.reselect(true)
+  app.reselect()
   assert.equal(app.snapshot().story.progress, 3)
-  assert.equal(app.events.length, 4, 'reselecting with Space does not fabricate a selection event')
+  assert.equal(app.events.length, 4, 'reselecting with Space or pointer does not fabricate a selection event')
   assert.ok(app.events.every(event => Object.keys(event.payload).sort().join(',') === 'locale,location,step'))
-  app.scroll(2399)
+  app.scroll(2999)
   assert.ok(app.snapshot().story.progress < 3, 'any later actual scroll resumes scrubbing immediately')
   app.unmount()
 })
 
-test('viewport changes use the mobile scene height, not its moving bottom coordinate', () => {
+test('responsive scroll geometry uses the sticky stage top and track height, independent of the phone position', () => {
   const app = controller('en', true)
   app.flushFrames()
   app.scroll(1200)
   assert.equal(app.snapshot().viewerDays, 2)
   app.window.innerHeight = 1400
+  app.window.innerWidth = 390
   app.dispatch('resize')
   assert.equal(app.frames(), 1)
   app.flushFrames()
-  assert.equal(app.snapshot().viewerDays, 4)
-  app.window.innerHeight = 1000
-  app.window.innerWidth = 390
+  assert.equal(app.snapshot().story.progress, 1, 'viewport changes alone do not move the pinned stage timeline')
+  app.stage.top = 200
+  app.track.height = 3200
   app.dispatch('resize')
   app.flushFrames()
-  assert.equal(app.snapshot().viewerDays, 5)
+  assert.equal(app.snapshot().story.progress, .5, 'resize reads the current CSS sticky inset and scroll distance')
   const mobileProgress = app.snapshot().story.progress
   app.scene.bottom = -5000
   app.dispatch('resize')
   app.flushFrames()
   assert.equal(app.snapshot().story.progress, mobileProgress)
   app.click(2)
-  assert.equal(app.window.scrollY, 1490, 'the selected center aligns with the reading line below the620px scene')
+  assert.equal(app.window.scrollY, 2400, 'the destination includes the new sticky inset and half the new track height')
   app.dispatch('scroll')
   app.flushFrames()
   assert.equal(app.snapshot().story.progress, 2)
   app.scroll(5000)
-  assert.equal(app.snapshot().viewerDays, 8, 'off-section scrolling leaves the last scene unchanged')
+  assert.equal(app.snapshot().viewerDays, 8, 'scrolling beyond the section clamps to the completed story')
+  assert.equal(app.snapshot().state, 'order')
   app.unmount()
 })
 
@@ -462,18 +612,15 @@ test('camera follows position directly and reduced motion snaps without starting
   assert.equal(beforeHydration.frames(), 0)
 })
 
-test('hydration restores an off-section selection but actual reading position wins within the story', () => {
-  const restored = controller('en', false, 'share')
-  restored.flushFrames()
-  assert.equal(restored.snapshot().state, 'order')
-  assert.equal(restored.checked(), 'share')
-  assert.equal(restored.reveals.at(-1).top, 176)
-  restored.unmount()
-  const scrolled = controller('en', false, 'share', { initialY: 1200 })
-  scrolled.flushFrames()
-  assert.equal(scrolled.snapshot().viewerDays, 2)
-  assert.equal(scrolled.checked(), 'qualify')
-  scrolled.unmount()
+test('hydration uses actual page position before, within and beyond the story instead of restored radio state', () => {
+  for (const [initialY, restored, step, days, state] of [[0, 'share', 'save', 1, 'regulars'], [1200, 'share', 'qualify', 2, 'qualify'], [5000, 'save', 'share', 8, 'order']]) {
+    const app = controller('en', false, restored, { initialY })
+    app.flushFrames()
+    assert.equal(app.snapshot().viewerDays, days)
+    assert.equal(app.snapshot().state, state)
+    assert.equal(app.checked(), step)
+    app.unmount()
+  }
 })
 
 test('neither public language catalogue contains a Demo label', () => {
