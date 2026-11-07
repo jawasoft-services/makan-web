@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { track } from '@vercel/analytics'
+import { track } from '@/lib/website-analytics'
 import styles from './maitred-demo.module.css'
 import MaitredNativeMockup from './MaitredNativeMockup'
 import MaitredStandings from './MaitredStandings'

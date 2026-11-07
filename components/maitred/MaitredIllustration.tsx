@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import StaticPicture from '@/components/StaticPicture'
 import type { CSSProperties, ReactNode } from 'react'
 import { NATIVE_MAITRED_COPY } from './native-copy'
 import styles from './maitred-native-mockup.module.css'
@@ -53,7 +53,7 @@ export function NativeCrown({ size }: { size: number }) {
 
 export function IllustrationPortrait({ portrait }: { portrait: number }) {
   return <span className={styles.portrait} style={{ '--portrait-column': portrait % 3, '--portrait-row': Math.floor(portrait / 3) } as CSSProperties}>
-    <Image src="/redesign/fictional-diners.webp" alt="" width={1536} height={1024} sizes="300px" />
+    <StaticPicture basePath="/static-images/v1/redesign/fictional-diners" widths={[400, 600, 800, 1066]} alt="" width={1536} height={1024} sizes="180px" loading="lazy" />
   </span>
 }
 

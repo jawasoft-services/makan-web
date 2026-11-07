@@ -26,8 +26,9 @@
 
 .gallery-foot{justify-content:center;padding:36px 24px 12px;color:var(--ink)}
 .meal-total{display:flex;align-items:baseline;justify-content:center;flex-wrap:wrap;gap:12px;font-size:20px;line-height:1.4;text-align:center}
-.meal-total strong{font-size:44px;letter-spacing:-.04em;line-height:1.1}
-.restaurants{max-width:1210px;margin:72px auto 0;padding:72px 0;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.meal-total strong{max-width:100%;min-width:0;font-size:44px;letter-spacing:-.04em;line-height:1.1}
+.restaurants{max-width:1210px;margin:72px auto 0;padding:72px 0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:80px;align-items:center}
+.restaurant-copy{min-width:0;overflow-wrap:anywhere}
 .restaurant-photo{position:relative;margin:0;align-self:stretch;min-height:580px;overflow:hidden;border-radius:28px}
 .restaurant-photo img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
 .restaurant-photo .venue-tag{bottom:22px;left:22px;font-size:14px}
@@ -45,7 +46,7 @@
 @font-face{font-family:MakanBubble;src:url('/redesign/DynaPuff.ttf') format('truetype');font-weight:400 700;font-display:swap}
 .meal-total{align-items:center;gap:22px}
 .meal-total strong.bubble-number{font-family:MakanBubble,var(--font-jakarta),sans-serif;font-weight:700;font-size:82px;line-height:1.25;letter-spacing:0;color:var(--orange);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;text-shadow:0 4px 0 var(--ink)}
-.bubble-glyphs{display:inline-flex;white-space:nowrap;isolation:isolate}
+.bubble-glyphs{display:inline-flex;flex-wrap:wrap;justify-content:center;max-width:100%;isolation:isolate}
 .bubble-digit{display:inline-block;width:.65em;transform:rotate(var(--tilt));transform-origin:50% 80%}
 .bubble-digit.bubble-punctuation{width:.28em}
 @media(prefers-reduced-motion:no-preference){.count-in .bubble-digit{animation:meal-bubble-pop 760ms cubic-bezier(.2,.7,.25,1) var(--delay) backwards}@keyframes meal-bubble-pop{0%,100%{transform:translateY(0) rotate(var(--tilt)) scale(1)}28%{transform:translateY(-.2em) rotate(calc(var(--tilt)*-1)) scale(.96,1.07)}52%{transform:translateY(.025em) rotate(var(--tilt)) scale(1.08,.93)}74%{transform:translateY(-.045em) rotate(var(--tilt)) scale(.99,1.02)}}}

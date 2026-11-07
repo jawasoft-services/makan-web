@@ -20,7 +20,7 @@ function form({ siteKey = '', responses = [200], component = 'contact' } = {}) {
     FormData:class { get(key) { return key==='website'?'':'' } },
     fetch:async(url,options)=>{requests.push({url,options});const status=responses.shift()??200;return {ok:status===200,json:async()=>status===200?{success:true}:{error:'Fixture delivery failed'}}},
     require(id){
-      if(id==='@vercel/analytics') return {track(){}}
+      if(id==='@/lib/website-analytics') return {track(){}}
       if(id==='@/lib/api-validation') return {FIELD_MAX:{name:100,email:254,restaurant:200,city:120,message:2000}}
       if(id==='react') return react
       if(id==='react/jsx-runtime') return {jsx,jsxs:jsx}

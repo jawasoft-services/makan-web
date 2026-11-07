@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl"
 import { usePathname } from "next/navigation"
-import { track } from "@vercel/analytics"
+import { track } from "@/lib/website-analytics"
 import { isIndonesianRoute, stripLocalePrefix } from "@/i18n/availability"
 import { localizePath } from "@/i18n/paths"
 
@@ -28,7 +28,7 @@ export default function LanguageSwitcher({
       href={targetHref}
       hrefLang={targetLocale}
       lang={targetLocale}
-      aria-label={`${t("language")}: ${targetLabel}`}
+      aria-label={`${locale === "id" ? "ID / EN" : "EN / ID"} — ${t("language")}: ${targetLabel}`}
       onClick={(event) => {
         document.cookie = `NEXT_LOCALE=${targetLocale}; path=/; max-age=31536000; samesite=lax`
         track("Language Changed", { from: locale, to: targetLocale })

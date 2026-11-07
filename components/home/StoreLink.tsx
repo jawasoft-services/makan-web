@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
-import { track } from "@vercel/analytics"
+import { track } from "@/lib/website-analytics"
 import { APP_STORE_URL, GOOGLE_PLAY_URL } from "@/lib/links"
 
 /** Every App Store CTA includes its Google Play counterpart. */

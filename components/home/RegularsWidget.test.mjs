@@ -42,7 +42,7 @@ for (const locale of ['en', 'id']) {
     const html = renderToStaticMarkup(createElement(Widget, props(locale)))
     assert.equal((html.match(/role="tab"/g) ?? []).length, 2)
     assert.equal((html.match(/role="tabpanel"/g) ?? []).length, 2)
-    assert.match(html, /fictional-diners\.webp/)
+    assert.match(html, /fictional-diners-1066\.webp/)
     assert.match(html, /data-illustration-row="alex"/)
     assert.match(html, /data-illustration-row="jamie"/)
     assert.match(html, /data-illustration-row="sam"/)

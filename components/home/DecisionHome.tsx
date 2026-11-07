@@ -1,6 +1,7 @@
 import RatingCarousel from './RatingCarousel'
 import PlayfulArrow from '@/components/PlayfulArrow'
 import Image from 'next/image'
+import StaticPicture from '@/components/StaticPicture'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import Footer from '@/components/Footer'
@@ -59,7 +60,7 @@ export default async function DecisionHome({ locale }: { locale: string }) {
     {rating ? <RatingCarousel rating={rating.rating} locale={locale} /> : null}
     <div id="how-it-works">
       {['features', 'memory', 'eat-or-yeet', 'regulars'].map((id, i) => <section key={id} id={id} className={`benefit ${i % 2 ? 'reverse' : ''}`} aria-labelledby={`h-${id}`}><Reveal className="benefit-inner">
-        {i < 3 ? <div className={`phone-scene scene-${['feed', 'diary', 'choice'][i]}`}><a className="art art-phone" href={`/redesign/${images[i]}`} target="_blank" rel="noopener" aria-label={`${t('view')}: ${alts[i]}`}><Image src={`/redesign/${images[i]}`} width={1066} height={2198} alt={alts[i]} /></a>{i === 0 ? <figure className="scene-meal"><Image src="/redesign/dining.jpg" width={2048} height={2048} alt="Kendal Street Kitchen" /><figcaption>Kendal Street Kitchen</figcaption></figure> : null}<div className="scene-art"><Image src={`/redesign/${['food-fork.svg', 'food-noodles.svg', 'food-plate.svg'][i]}`} alt="" width={240} height={320} /></div></div> : <RedesignRegulars locale={locale} />}
+        {i < 3 ? <div className={`phone-scene scene-${['feed', 'diary', 'choice'][i]}`}><a className="art art-phone" href={`/redesign/${images[i]}`} target="_blank" rel="noopener" aria-label={`${t('view')}: ${alts[i]}`}><StaticPicture basePath={`/static-images/v1/redesign/${images[i].replace(/\.(png|webp)$/, "")}`} widths={[400, 600, 800, 1066]} width={1066} height={2198} sizes="(min-width: 800px) 370px, 70vw" loading="lazy" alt={alts[i]} /></a>{i === 0 ? <figure className="scene-meal"><Image src="/redesign/dining.jpg" width={2048} height={2048} alt="Kendal Street Kitchen" /><figcaption>Kendal Street Kitchen</figcaption></figure> : null}<div className="scene-art"><Image src={`/redesign/${['food-fork.svg', 'food-noodles.svg', 'food-plate.svg'][i]}`} alt="" width={240} height={320} /></div></div> : <RedesignRegulars locale={locale} />}
         <div className="benefit-copy"><h2 id={`h-${id}`}>{heads[i]}</h2><p>{bodies[i]}</p>{i === 3 ? <Link className="button outline" href={localizePath(locale, "/maitre-d")}>{locale === "id" ? "Jadi Maître d’" : "Become a Maître d’"}{arrow}</Link> : null}</div>
       </Reveal></section>)}
     </div>

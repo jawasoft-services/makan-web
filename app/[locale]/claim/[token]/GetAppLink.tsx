@@ -1,6 +1,6 @@
 "use client"
 
-import { track } from "@vercel/analytics"
+import { track } from "@/lib/website-analytics"
 import Link from "next/link"
 import { APP_STORE_URL, GOOGLE_PLAY_URL } from "@/lib/links"
 

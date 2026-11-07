@@ -57,7 +57,7 @@ export default function PrivacyPolicyId() {
         <header className={styles.legalHeading}>
         <p>Hukum</p>
         <h1>Kebijakan Privasi</h1>
-        <p>Terakhir diperbarui: 6 November 2026</p>
+        <p>Terakhir diperbarui: 7 November 2026</p>
 
         </header>
         <div className={styles.legalLayout}>
@@ -392,7 +392,7 @@ export default function PrivacyPolicyId() {
               <Bullets>
                 <li>Google LLC (Firebase) — backend Aplikasi. Kami memakai Firebase Authentication, Cloud Firestore, Cloud Storage, Cloud Functions, dan Firebase Analytics untuk menyimpan dan menyinkronkan data akun dan makanan, menjalankan fitur inti, dan memahami penggunaan.</li>
                 <li>Functional Software, Inc. (Sentry) — pelaporan kerusakan dan kesalahan Aplikasi. Menerima data diagnostik tentang gangguan, termasuk pengenal pengguna dan urutan tindakan sebelum kerusakan, agar kami dapat menemukan dan memperbaikinya.</li>
-                <li>Vercel Inc. — hosting Situs, dan Vercel Web Analytics, yang mengukur penggunaan Situs secara agregat.</li>
+                <li>Google LLC (Firebase App Hosting dan Google Analytics) — hosting Situs dan, bila diaktifkan, pengukuran agregat kunjungan halaman serta tindakan tertentu.</li>
                 <li>Google LLC (Google Sheets) — penyimpanan aman untuk kiriman formulir kontak dan pertanyaan.</li>
                 <li>Resend — pengiriman email transaksional, seperti notifikasi formulir kontak.</li>
                 <li>Apple Inc. — distribusi Aplikasi lewat App Store.</li>
@@ -416,11 +416,14 @@ export default function PrivacyPolicyId() {
 
           <Section title="7. Cookie dan Teknologi Serupa">
             <p>
-              <strong className={strong}>Situs.</strong> Situs memakai Vercel Web Analytics, yang ramah
-              privasi dan tanpa cookie: ia mengenali kunjungan dengan hash yang diatur ulang setiap hari
-              dan tidak dapat melacakmu lintas hari atau lintas situs lain. Vercel Web Analytics tidak
-              memakai cookie dan tidak mengumpulkan pengenal pribadi. Font di Situs disajikan dari domain
-              kami sendiri, sehingga memuat halaman tidak mengirim datamu ke penyedia font.
+              <strong className={strong}>Situs.</strong> Situs dihosting di Firebase App Hosting.
+              Bila analitik situs diaktifkan, Google Analytics mengukur kunjungan halaman dan
+              tindakan tertentu, seperti klik unduh aplikasi. Penyimpanan analitik dan iklan
+              tetap ditolak: kami tidak memakai cookie analitik atau penyimpanan browser, atau
+              mengirim pengenal akun, isi formulir, rahasia undangan atau klaim, kueri URL maupun
+              fragmen. Google tetap memproses informasi teknis permintaan, seperti alamat IP
+              dan detail browser. Kami menghormati sinyal Do Not Track dan Global Privacy Control
+              dari browsermu. Font disajikan dari domain kami sendiri.
             </p>
             <p>
               <strong className={strong}>Analitik penggunaan Aplikasi.</strong>{' '}
@@ -461,7 +464,7 @@ export default function PrivacyPolicyId() {
 
           <Section title="8. Transfer Data Internasional">
             <p>
-              Sebagian layanan yang tercantum di bagian 6 — termasuk Google, Sentry, Vercel, Resend,
+              Sebagian layanan yang tercantum di bagian 6 — termasuk Google, Sentry, Resend,
               Apple, Klipy, dan Unsplash — menerima atau memproses data pribadi di luar Britania Raya,
               termasuk di Amerika Serikat.
             </p>

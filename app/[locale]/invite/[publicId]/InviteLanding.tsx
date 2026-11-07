@@ -6,7 +6,7 @@ import { goToStoreWithLink, phoneKind } from "@/lib/carry-link"
 
 import Image from "next/image"
 import Link from "next/link"
-import { track } from "@vercel/analytics"
+import { track } from "@/lib/website-analytics"
 import { useEffect, useMemo, useState } from "react"
 
 type InviteState = "active" | "expired" | "revoked" | "full" | "invalid"

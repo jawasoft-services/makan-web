@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { track } from "@vercel/analytics"
+import { track } from "@/lib/website-analytics"
 import { goToStoreWithLink, phoneKind } from "@/lib/carry-link"
 import { GOOGLE_PLAY_URL } from "@/lib/links"
 

@@ -16,7 +16,7 @@ test('both stores track once with only location and locale and preserve the call
     if (id === 'react/jsx-runtime') return jsx
     if (id === 'next-intl') return { useLocale: () => 'id', useTranslations: () => key => key }
     if (id === 'next/image') return { default: 'img' }
-    if (id === '@vercel/analytics') return { track: (...args) => events.push(args) }
+    if (id === '@/lib/website-analytics') return { track: (...args) => events.push(args) }
     if (id === '@/lib/links') return { APP_STORE_URL: 'https://apps.apple.com/app/id6756131450', GOOGLE_PLAY_URL: 'https://play.google.com/store/apps/details?id=com.makanofficial.makanapp' }
     throw new Error(`Unexpected import: ${id}`)
   } })

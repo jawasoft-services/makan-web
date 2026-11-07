@@ -23,8 +23,8 @@ test('the page serves the Indonesian text at /id and English everywhere else', (
 })
 
 test('both carry the same date and the same update notes', () => {
-  assert.match(english, /Last updated: 6 November 2026/)
-  assert.match(indonesian, /Terakhir diperbarui: 6 November 2026/)
+  assert.match(english, /Last updated: 7 November 2026/)
+  assert.match(indonesian, /Terakhir diperbarui: 7 November 2026/)
   for (const date of ['4 November 2026', '30 Agustus 2026', '6 September 2026']) assert.ok(indonesian.includes(date), date)
   for (const date of ['4 November 2026', '30 August 2026', '6 September 2026']) assert.ok(english.includes(date), date)
 })
@@ -126,4 +126,14 @@ test('the sitemap helper types "yearly", and the partner form links to the local
 test('both languages say drinks are left out of the match', () => {
   assert.match(page(english), /leaves out drinks/)
   assert.match(page(indonesian), /minuman tidak ikut/)
+})
+
+// Hosting/provider disclosure must follow the actual Firebase deployment.
+test('both disclose Firebase hosting and conditional cookieless measurement without claiming no personal processing', () => {
+ for (const source of [english, indonesian]) {
+  assert.match(source, /Firebase App Hosting/)
+  assert.match(source, /Google Analytics/)
+  assert.match(source, /Do Not Track.*Global Privacy Control/s)
+  assert.doesNotMatch(source, /Vercel Inc\.|Vercel Web Analytics/)
+ }
 })

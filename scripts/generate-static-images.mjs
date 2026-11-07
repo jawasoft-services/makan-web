@@ -8,6 +8,13 @@ const outputRoot = path.join(publicRoot, 'static-images', 'v1')
 
 const groups = [
   {
+    sourceDir: path.join(publicRoot, 'redesign'),
+    outputDir: path.join(outputRoot, 'redesign'),
+    match: /^(?:diary-iphone|eat-or-yeet-iphone|feed-seafood-risotto|fictional-diners)\.(?:png|webp)$/i,
+    widths: [400, 600, 800, 1066],
+    lossless: true,
+  },
+  {
     sourceDir: path.join(publicRoot, 'meals'),
     outputDir: path.join(outputRoot, 'hero'),
     match: /^card-\d+\.jpg$/i,
@@ -82,6 +89,7 @@ for (const group of groups) {
           fit: 'inside',
         })
         .webp({
+          lossless: group.lossless ?? false,
           quality: group.quality,
           alphaQuality: group.alphaQuality ?? 100,
           effort: 5,

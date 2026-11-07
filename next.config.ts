@@ -8,7 +8,7 @@ const contentSecurityPolicy = [
   "default-src 'self'",
   // Cloudflare Turnstile (contact and partner forms) loads from, and renders
   // its challenge in a frame from, challenges.cloudflare.com.
-  `script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://www.googletagmanager.com${isDev ? " 'unsafe-eval'" : ""}`,
   "script-src-attr 'none'",
   // Framer Motion and React style props require inline styles. Script execution
   // remains strict in production; styles cannot execute JavaScript.
@@ -17,7 +17,7 @@ const contentSecurityPolicy = [
   // Places photos for restaurant heroes (lh3.googleusercontent.com).
   "img-src 'self' blob: data: https://firebasestorage.googleapis.com https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://lh3.googleusercontent.com",
   "font-src 'self' data:",
-  "connect-src 'self' https://firebasestorage.googleapis.com",
+  "connect-src 'self' https://firebasestorage.googleapis.com https://www.google-analytics.com https://region1.google-analytics.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -95,6 +95,27 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/invite/:path*",
+        headers: [
+          { key: "Cache-Control", value: "private, no-store" },
+          { key: "Referrer-Policy", value: "no-referrer" },
+        ],
+      },
+      {
+        source: "/id/invite/:path*",
+        headers: [
+          { key: "Cache-Control", value: "private, no-store" },
+          { key: "Referrer-Policy", value: "no-referrer" },
+        ],
+      },
+      {
+        source: "/claim/:path*",
+        headers: [
+          { key: "Cache-Control", value: "private, no-store" },
+          { key: "Referrer-Policy", value: "no-referrer" },
+        ],
+      },
+      {
+        source: "/id/claim/:path*",
         headers: [
           { key: "Cache-Control", value: "private, no-store" },
           { key: "Referrer-Policy", value: "no-referrer" },

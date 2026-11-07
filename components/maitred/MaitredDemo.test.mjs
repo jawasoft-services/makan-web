@@ -111,7 +111,7 @@ function harness(locale, reducedMotion = false) {
     'next/link': defaults(({ children, ...props }) => React.createElement('a', props, children)),
     'next-intl': { useLocale: () => locale, useTranslations: translate },
     'next-intl/server': { getTranslations: async options => translate(typeof options === 'string' ? options : options.namespace), setRequestLocale: value => assert.equal(value, locale) },
-    '@vercel/analytics': { track: (name, payload) => events.push({ name, payload }) },
+    '@/lib/website-analytics': { track: (name, payload) => events.push({ name, payload }) },
     '@/components/Footer': defaults(() => React.createElement('footer')),
     '@/components/SiteSchema': defaults(() => null),
     '@/components/home/MaitredShowcase': defaults(({ dedicated }) => React.createElement('section', { 'data-proof-dedicated': dedicated })),
@@ -185,7 +185,7 @@ for (const locale of ['en', 'id']) {
       assert.ok(!/[\[\]]/.test(html.replace(/<[^>]*>/g, '')), 'finished native illustration content has no fixture brackets')
       assert.ok(html.includes('Kendal Street Kitchen'))
       assert.equal((html.match(/data-illustration-row=/g) || []).length, state === 'regulars' || state === 'qualify' ? 4 : 3, 'native shows top three plus the viewer when outside them')
-      assert.ok(html.includes('/redesign/fictional-diners.webp'))
+      assert.ok(html.includes('/static-images/v1/redesign/fictional-diners-1066.webp'))
       assert.ok(html.includes('84%') && html.includes('25'))
       assert.ok(html.includes('Closes at 9:30 PM') && html.includes('020 3973 1903'))
       for (const section of ['restaurant-meta', 'address', 'phone', 'website', 'claim', 'your-meals', 'dish-guidance', 'cravings', 'eat-or-yeet', 'friends', 'recent-meals']) assert.ok(html.includes(`data-native-section="${section}"`), section)

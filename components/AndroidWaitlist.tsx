@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { track } from '@vercel/analytics'
+import { track } from '@/lib/website-analytics'
 import Turnstile, { TURNSTILE_SITE_KEY, resetTurnstile } from '@/components/Turnstile'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/

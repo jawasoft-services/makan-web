@@ -91,7 +91,7 @@ export default async function RootLayout({
             <Navbar />
             {children}
             <SmoothScroll />
-            {process.env.VERCEL ? <SafeAnalytics /> : null}
+            <SafeAnalytics />
           </NextIntlClientProvider>
         </body>
       </html>

@@ -1,9 +1,10 @@
-// RM19740 — PUBLISH ONLY with the RM19738 analytics opt-out release: section 7 describes a Settings switch
+// RM19740 — PUBLISH ONLY with release parity for the RM19738 analytics opt-out controls: section 7 describes a Settings switch
 // and section 2.3 a narrowed event payload. Resolve docs/rm19740/PRD.md O-01–08 and recheck both dates before publication.
 // RM20320 — PUBLISH ONLY once counsel has confirmed the wording of sections 2.7, 4, 11, 12, 13 and 14 (the taste
 // picture is now part of the service under contract, and friends see a taste match), and publish this page and its
 // Indonesian twin (components/legal/PrivacyPolicyId.tsx) together, before the app version that shows the notice
 // and the friend match reaches anyone. Recheck the "Last updated" date at publication.
+// Website analytics: enable only after Google automatic collection is off and the revised basis is reviewed.
 // Maître d’ web visibility: 6 Nov product rule; notify existing diners and review its stated basis before publication.
 import PlayfulArrow from '@/components/PlayfulArrow'
 import styles from '@/components/utility.module.css'
@@ -67,7 +68,7 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
 
         {/* Title */}
         <h1>Privacy Policy</h1>
-        <p>Last updated: 6 November 2026</p>
+        <p>Last updated: 7 November 2026</p>
 
         </header>
         <div className={styles.legalLayout}>
@@ -443,7 +444,7 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
                 <ul>
                   <li>Google LLC (Firebase) — the App&apos;s backend. We use Firebase Authentication, Cloud Firestore, Cloud Storage, Cloud Functions, and Firebase Analytics to store and synchronise account and meal data, operate core features, and understand usage.</li>
                   <li>Functional Software, Inc. (Sentry) — crash and error reporting for the App. Receives diagnostic data about faults, including a user identifier and the sequence of actions before a crash, so we can find and fix them.</li>
-                  <li>Vercel Inc. — hosting for the Site, and Vercel Web Analytics, which measures aggregate Site usage.</li>
+                  <li>Google LLC (Firebase App Hosting and Google Analytics) — hosting for the Site and, when enabled, aggregate measurement of page views and selected actions.</li>
                   <li>Google LLC (Google Sheets) — secure storage of contact-form and enquiry submissions.</li>
                   <li>Resend — delivery of transactional emails, such as contact-form notifications.</li>
                   <li>Apple Inc. — distribution of the App through the App Store.</li>
@@ -472,12 +473,14 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
             <h2 id="legal-section-7">7. Cookies and Similar Technologies</h2>
             <div>
               <p>
-                <strong>The Site.</strong> The Site uses
-                Vercel Web Analytics, which is privacy-friendly and cookieless: it identifies visits
-                using a hash that resets daily and cannot track you across days or across other
-                websites. Vercel Web Analytics does not use cookies and collects no personal
-                identifiers. The fonts used on the Site are served from our own domain, so loading a
-                page does not send your details to a font provider.
+                <strong>The Site.</strong> The Site is hosted on Firebase App Hosting. When website
+                analytics is enabled, Google Analytics measures page views and selected actions,
+                such as app-download clicks. Analytics and advertising storage remain denied:
+                we do not use analytics cookies or browser storage, or send account identifiers,
+                form contents, invite or claim secrets, URL queries or fragments. Google still
+                processes technical request information, such as IP address and browser details.
+                We respect your browser&apos;s Do Not Track and Global Privacy Control signals.
+                Fonts are served from our own domain.
               </p>
               <p>
                 <strong>App usage analytics.</strong>{' '}
@@ -524,7 +527,7 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
             <h2 id="legal-section-8">8. International Data Transfers</h2>
             <div>
               <p>
-                Some of the services listed in section 6 — including Google, Sentry, Vercel, Resend,
+                Some of the services listed in section 6 — including Google, Sentry, Resend,
                 Apple, Klipy, and Unsplash — receive or process personal data outside the United
                 Kingdom, including in the United States.
               </p>

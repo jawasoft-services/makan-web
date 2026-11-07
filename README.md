@@ -85,7 +85,7 @@ This serves a local draft; it does not push or deploy. Live reads use `.next`, w
 
 ### Credentials the deployed site needs
 
-The site should run on a **least-privilege service account**, not the Firebase project's full admin key. Aggregates alone are insufficient: the live gallery, Maître d’ verification, venue claims and shared links also read their source records. Review the loaders in `lib/` when provisioning access; the cron writes aggregates and the photo loader writes its cache. A successful local ADC preview does not verify the deployed account's permissions. The forms write leads through a **separate** Sheets-only account: `GOOGLE_SHEETS_CLIENT_EMAIL` and `GOOGLE_SHEETS_PRIVATE_KEY` must be set in Vercel, because `lib/sheets-auth.ts` otherwise falls back to the `FIREBASE_*` key with full project authority and logs a warning. `TURNSTILE_SECRET_KEY` and `NEXT_PUBLIC_TURNSTILE_SITE_KEY` turn on the bot check for the contact and partner forms; without them the check is skipped and logged. See `.env.local.example`.
+The site should run on a **least-privilege service account**, not the Firebase project's full admin key. Aggregates alone are insufficient: the live gallery, Maître d’ verification, venue claims and shared links also read their source records. Review the loaders in `lib/` when provisioning access; the cron writes aggregates and the photo loader writes its cache. A successful local ADC preview does not verify the deployed account's permissions. On Firebase App Hosting the forms use that existing website service account through ADC, with the leads Sheet shared to it as Editor and `GOOGLE_SHEET_ID` configured. No stored Sheets key or local impersonation setting belongs in the hosted runtime. `TURNSTILE_SECRET_KEY` and `NEXT_PUBLIC_TURNSTILE_SITE_KEY` turn on the bot check for the contact and partner forms; without them the check is skipped and logged. Keep local credentials in ignored `.env.local`.
 
 ## Scripts
 
@@ -126,7 +126,7 @@ This is a marketing/content site — no secrets live in it (they're all environm
 
 </div>
 
-<!-- deploy: repo public + Vercel reconnected to jawasoft-services/makan-web (2026-09-19) -->
+
 
 ### Local real-delivery review
 
@@ -140,3 +140,12 @@ gcloud scheduler jobs run makan-web-aggregates --project=munchies-expo --locatio
 ```
 
 The run command writes the website aggregates through the deployed producer; it is an operational action, not a read-only check. Schedule changes should preserve the existing target, bearer credential, retry settings and deadline.
+
+
+### Website measurement release condition
+
+All website events now use the Firebase/Google Analytics adapter in `lib/website-analytics.ts`, independently of the hosting vendor. The existing web stream is `G-QM0LZQW7SZ`. Collection stays **off** while `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID` is unset. Do not set it for a hosted release until automatic/enhanced measurement, automatic user-provided data and Google signals are disabled and verified for that web stream, and the matching privacy disclosure is cleared. The public tag inspected on 7 November still had automatic form/history/outbound and personal-data collection enabled; no provider setting was changed.
+
+Once cleared, set the measurement ID at BUILD time. The adapter queues denied analytics/advertising storage before configuration, disables advertising signals, excludes protected handoff/profile routes, removes URL query/fragment data, and sends only the existing named event/field allowlist. It respects DNT/GPC and never starts in fixture mode. No cookie, browser storage or new client dependency is added. This is cookieless measurement, not a claim that Google processes no personal information. Provider receipt, stream settings and the behaviour of the actual hosted tag remain release checks; offline queue tests do not prove them.
+
+Firebase local-source deployment uploads the working tree and rolls out the backend; a GitHub push alone does not do this for the currently archive-backed backend. `firebase.json` and `.gitignore` exclude local credentials and generated preview output. Keep the current production build for rollback and use the release packet before any deployment. Never use a production rollout as a preview.

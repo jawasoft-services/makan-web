@@ -15,7 +15,7 @@ env:
     value: devon@makanofficial.com
   - variable: RESEND_FROM
     value: "Makan Website <onboarding@resend.dev>"
-  # Lets the forms be tested on the App Hosting address before DNS moves.
+  # Allow the existing Firebase default address as well as the custom domains.
   - variable: EXTRA_ALLOWED_ORIGIN
     value: https://makan-web--munchies-expo.us-central1.hosted.app
     availability:
@@ -34,6 +34,9 @@ env:
     value: "1kNc6G-TDat2hPhH2sh90whbd5DWl4i8VlRXZPUqnbu8"
     availability:
       - RUNTIME
+  # Website measurement stays off until Google automatic/enhanced collection and
+  # automatic user-provided data are disabled, and the revised disclosure is cleared.
+  # Then set NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-QM0LZQW7SZ at BUILD time.
   # RM20333 — Android App Links. The MakanDev build's signing-certificate SHA-256 (public, not a
   # secret). The production fingerprint (ANDROID_APP_LINK_SHA256) stays unset until the app
   # without the https /invite filter is on Play; with it unset assetlinks.json lists no production app.

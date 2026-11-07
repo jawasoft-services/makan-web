@@ -33,6 +33,7 @@ function load(path) {
   runInNewContext(outputText, { exports, ResizeObserver: MeasuredContentObserver, require: name => {
     if (name === 'react/jsx-runtime') return require(name)
     if (name === 'next/image') return defaults(props => React.createElement('img', props))
+    if (name === '@/components/StaticPicture') return load(resolve(directory, '../StaticPicture.tsx'))
     if (name.endsWith('.module.css')) return defaults(new Proxy({}, { get: (_, key) => String(key) }))
     assert.ok(name.startsWith('./'), `Unexpected runtime dependency: ${name}`)
     for (const extension of ['.ts', '.tsx']) {
@@ -99,7 +100,7 @@ for (const [locale, expected] of Object.entries({
     assert.equal(named(node, 'previewContent').props.style.opacity, 1)
     assert.equal(action(node, 'publish').props.children, expected.publish)
     assert.equal(action(tree({ locale, preview: true, publishProgress: .5 }), 'publish').props.children, expected.saving)
-    assert.ok(html.includes('/redesign/fictional-diners.webp'))
+    assert.ok(html.includes('/static-images/v1/redesign/fictional-diners-1066.webp'))
     assert.equal(elements(named(node, 'previewContent')).filter(element => element.type === 'svg').length, 1)
   })
 }

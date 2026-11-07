@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { useLocale } from 'next-intl'
-import { track } from '@vercel/analytics'
+import { track } from '@/lib/website-analytics'
 
 const sections = [
   'how-it-works',
