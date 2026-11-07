@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@types/leaflet": "^1.9.22",
-    "@vercel/oidc": "4.0.1",
+    "@vercel/oidc": "4.0.7",
     "firebase-admin": "^13.6.1",
     "framer-motion": "^12.34.3",
     "google-auth-library": "^10.9.1",
