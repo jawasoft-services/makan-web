@@ -56,7 +56,7 @@ export default async function StandingsPreview() {
               <span className="min-w-0 flex-1">
                 <Link
                   href={localizePath(locale, `/places/${row.slug}`)}
-                  className="block truncate text-[1.05rem] font-semibold leading-[1.3] text-brand-ink underline decoration-brand-orange/50 decoration-2 underline-offset-4 hover:decoration-brand-orange focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
+                  className="block truncate text-[1.05rem] font-semibold leading-[1.3] text-brand-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
                 >
                   {row.name}
                 </Link>

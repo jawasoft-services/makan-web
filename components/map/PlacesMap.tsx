@@ -59,7 +59,7 @@ export default function PlacesMap({
         }).addTo(map)
         const safe = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string)
         marker.bindPopup(
-          `<a href="${safe(m.href)}" style="font-weight:700;color:#2B1503;text-decoration:underline;text-decoration-color:#FF9932;text-underline-offset:3px">${safe(m.name)}</a>` +
+          `<a href="${safe(m.href)}" style="font-weight:700;color:#2B1503;text-decoration:none">${safe(m.name)}</a>` +
             (m.line ? `<div style="color:#785739;margin-top:2px">${safe(m.line)}</div>` : ''),
           { closeButton: false },
         )

@@ -21,7 +21,7 @@ function renderInline(text: string): ReactNode[] {
         <Link
           key={key++}
           href={m[2]}
-          className="text-brand-ink underline decoration-brand-orange underline-offset-2"
+          className="text-brand-ink font-semibold"
         >
           {m[1]}
         </Link>,

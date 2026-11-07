@@ -64,7 +64,7 @@ export default function StandingsTable({
               <th scope="row" className="px-4 py-4 text-base font-semibold text-brand-ink sm:px-5">
                 <Link
                   href={localizePath(locale, `/places/${row.slug}`)}
-                  className="underline decoration-brand-orange/60 decoration-2 underline-offset-4 hover:decoration-brand-orange focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
+                  className="focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink font-semibold"
                 >
                   {row.name}
                 </Link>

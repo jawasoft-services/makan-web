@@ -42,7 +42,7 @@ export default async function PlaceMaitred({
       <p className="text-[0.95rem] leading-[1.5] text-brand-cream/80">{t('maitredExplain')}</p>
       <a
         href={faqHref}
-        className="inline-flex min-h-11 items-center text-[0.95rem] font-semibold text-brand-cream underline decoration-brand-orange/70 underline-offset-4 hover:decoration-brand-orange focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-cream"
+        className="inline-flex min-h-11 items-center text-[0.95rem] font-semibold text-brand-cream focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-cream"
       >
         {t('maitredHow')}
       </a>
@@ -65,7 +65,7 @@ export default async function PlaceMaitred({
         <p className="mt-3.5 text-[1.75rem] font-bold leading-[1.2]" style={{ letterSpacing: '-0.015em' }}>
           {held.notes.always}
         </p>
-        {menuPrice ? <a href={menuPrice.menuUrl} className="mt-1 inline-flex min-h-11 items-center text-base font-semibold leading-[1.4] text-brand-cream underline decoration-brand-orange underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-cream">{t('menuPriceLabel', { price: menuPrice.price })}</a> : null}
+        {menuPrice ? <a href={menuPrice.menuUrl} className="mt-1 inline-flex min-h-11 items-center text-base font-semibold leading-[1.4] text-brand-cream focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-cream">{t('menuPriceLabel', { price: menuPrice.price })}</a> : null}
         <div className="mt-3.5 flex items-center gap-3">
           <HolderPhoto venue={held} />
           <p className="text-[1.0625rem] leading-[1.45]">

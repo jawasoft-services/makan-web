@@ -51,7 +51,7 @@ Hold the seat and you publish a tiny menu for strangers deciding what to order �
 
 - **[Next.js 16](https://nextjs.org)** (App Router) · **React 19** · **TypeScript** (strict)
 - **[next-intl](https://next-intl.dev)** — every page in **English and Indonesian** (`/` and `/id`), because Makan is Indonesia-first, not Indonesia-translated
-- **[Firebase Admin](https://firebase.google.com/docs/admin/setup)** — reads public, privacy-safe aggregates from Firestore (a daily cron does the heavy scan; pages read one small document)
+- **[Firebase Admin](https://firebase.google.com/docs/admin/setup)** — reads public aggregates and verifies live source records before exposing eligible public content
 - **[Tailwind CSS](https://tailwindcss.com)** · **[Framer Motion](https://www.framer.com/motion/)** · **[Lenis](https://lenis.darkroom.engineering/)** — cream-and-saffron brand, scroll-driven scenes
 - **[Leaflet](https://leafletjs.com)** + OpenStreetMap — the maps · **[Resend](https://resend.com)** + Google Sheets — the forms
 - Deployed on **Vercel**
@@ -74,9 +74,18 @@ cp .env.local.example .env.local
 
 Local dev also falls back to `gcloud auth application-default login` if you'd rather not paste a service-account key.
 
+To review the compiled draft against live Makan data with existing local Application Default Credentials:
+
+```bash
+MAKAN_WEBSITE_FIXTURES=0 FIREBASE_PROJECT_ID=munchies-expo ./node_modules/.bin/next build --webpack
+MAKAN_WEBSITE_FIXTURES=0 FIREBASE_PROJECT_ID=munchies-expo ./node_modules/.bin/next start --hostname localhost --port 3471
+```
+
+This serves a local draft; it does not push or deploy. Live reads use `.next`, while `MAKAN_WEBSITE_FIXTURES=1` keeps automated checks in the separate `.next-fixtures` build. Run repeated browser checks with fixtures and use a bounded live check to confirm real content. Do not copy production keys into the repository. Email delivery remains unconfigured unless its separate environment variables are supplied.
+
 ### Credentials the deployed site needs
 
-The site should run on a **least-privilege service account**, not the Firebase project's full admin key: its `FIREBASE_*` account needs only to read the `webAggregates/*` documents (plus `meals/{id}` for shared meal pages and `tableInvites/{id}` for invite previews) and to write `webAggregates/*` from the cron. The forms write leads through a **separate** Sheets-only account: `GOOGLE_SHEETS_CLIENT_EMAIL` and `GOOGLE_SHEETS_PRIVATE_KEY` must be set in Vercel, because `lib/sheets-auth.ts` otherwise falls back to the `FIREBASE_*` key with full project authority and logs a warning. `TURNSTILE_SECRET_KEY` and `NEXT_PUBLIC_TURNSTILE_SITE_KEY` turn on the bot check for the contact and partner forms; without them the check is skipped and logged. See `.env.local.example`.
+The site should run on a **least-privilege service account**, not the Firebase project's full admin key. Aggregates alone are insufficient: the live gallery, Maître d’ verification, venue claims and shared links also read their source records. Review the loaders in `lib/` when provisioning access; the cron writes aggregates and the photo loader writes its cache. A successful local ADC preview does not verify the deployed account's permissions. The forms write leads through a **separate** Sheets-only account: `GOOGLE_SHEETS_CLIENT_EMAIL` and `GOOGLE_SHEETS_PRIVATE_KEY` must be set in Vercel, because `lib/sheets-auth.ts` otherwise falls back to the `FIREBASE_*` key with full project authority and logs a warning. `TURNSTILE_SECRET_KEY` and `NEXT_PUBLIC_TURNSTILE_SITE_KEY` turn on the bot check for the contact and partner forms; without them the check is skipped and logged. See `.env.local.example`.
 
 ## Scripts
 
@@ -97,7 +106,9 @@ The site should run on a **least-privilege service account**, not the Firebase p
 
 ## How the data works
 
-The site never scans Firestore on a page load. A **daily cron** (`/api/cron/aggregates`, bearer-token protected) does the one big scan of meals and Eat-or-Yeet comparisons, writes small privacy-safe aggregate documents, and every page reads just the document it needs. Private data never leaves the app — the projection the web reads is stripped fail-closed.
+The **daily cron** (`/api/cron/aggregates`, bearer-token protected) writes the public venue, statistics and Eat-or-Yeet aggregates. Pages normally reuse these documents, but list/statistics readers can fall back to collection scans when the aggregate is missing or its heartbeat is over 36 hours old. The homepage also reads a live meal count and a bounded selection of public meal posts. Maître d’ identity and published orders use a separate five-minute verification window and read their current source records when that public aggregate is absent or stale; this fallback does not write an aggregate.
+
+Restaurant photos reuse the existing Firestore photo cache. A missing or expired photo can call Google Places and update that cache, so opening a live-data page is not guaranteed to be free of paid calls or cache writes. Fixture mode bypasses these integrations. Public output is filtered by the loaders' visibility and moderation rules; credentials stay on the server.
 
 ## A note on the code being public
 

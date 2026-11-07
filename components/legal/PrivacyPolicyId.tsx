@@ -28,7 +28,7 @@ const Bullets = ({ children }: { children: ReactNode }) => (
   <ul className="list-disc pl-5 space-y-1">{children}</ul>
 )
 const Mail = () => (
-  <a href="mailto:support@makanofficial.com" className="text-brand-orange hover:underline">
+  <a href="mailto:support@makanofficial.com" className="text-brand-orange font-semibold">
     support@makanofficial.com
   </a>
 )

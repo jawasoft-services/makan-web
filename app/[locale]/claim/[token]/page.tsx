@@ -69,7 +69,7 @@ export default async function ClaimPage({ params }: Props) {
                   {/* Google requires the photographer's credit beside a Places photo. */}
                   <p className="absolute bottom-2 right-3 rounded-full bg-brand-ink/60 px-2.5 py-1 text-[0.68rem] text-white/90">
                     {photo.authorUri ? (
-                      <a href={photo.authorUri} rel="noopener" target="_blank" className="hover:underline">{t("photoCredit", { author: photo.author || "Google Maps" })}</a>
+                      <a href={photo.authorUri} rel="noopener" target="_blank" className="font-semibold">{t("photoCredit", { author: photo.author || "Google Maps" })}</a>
                     ) : t("photoCredit", { author: photo.author || "Google Maps" })}
                   </p>
                 </div>

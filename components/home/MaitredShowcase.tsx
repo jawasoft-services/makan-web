@@ -128,7 +128,7 @@ function PickCard({
         ) : null}
         <span className="mt-4 hidden text-[0.72rem] font-extrabold uppercase tracking-[0.14em] text-brand-orange sm:block">{label}</span>
         <span className="mt-2 text-base font-semibold leading-[1.3] text-brand-ink sm:mt-1 sm:text-[1.1875rem]">{venue.notes.always}</span>
-        {menuPrice ? <a href={menuPrice.menuUrl} className="relative z-10 mt-1 inline-flex min-h-11 w-fit items-center text-sm font-semibold leading-[1.4] text-brand-ink underline decoration-brand-orange underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink">{menuPriceLabel(menuPrice.price)}</a> : null}
+        {menuPrice ? <a href={menuPrice.menuUrl} className="relative z-10 mt-1 inline-flex min-h-11 w-fit items-center text-sm font-semibold leading-[1.4] text-brand-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink">{menuPriceLabel(menuPrice.price)}</a> : null}
         <span className="mt-2 flex items-center gap-2 text-sm leading-[1.35] text-brand-ink sm:mt-4 sm:gap-2.5 sm:text-[0.9375rem]">
           <Avatar venue={venue} className="h-7 w-7 sm:h-9 sm:w-9" />
           <span>{byline}</span>

@@ -64,7 +64,7 @@ export default function FindRestaurant() {
       </div>
       <p className="mt-4 text-sm text-brand-muted">
         {t('findCant')}{' '}
-        <a href="#enquire" className="inline-flex min-h-11 items-center font-semibold text-brand-ink underline underline-offset-4">{t('findCantCta')}</a>
+        <a href="#enquire" className="inline-flex min-h-11 items-center font-semibold text-brand-ink">{t('findCantCta')}</a>
       </p>
     </div>
   )

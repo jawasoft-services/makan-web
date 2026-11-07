@@ -82,7 +82,7 @@ export default function PartnerForm() {
       <svg aria-hidden="true" className="h-10 w-10 text-brand-ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 4 4L19 6" /></svg>
       <h3 ref={successRef} tabIndex={-1} className="mt-5 text-2xl font-bold text-brand-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink">{t('successTitle')}</h3>
       <p className="mt-3 text-base leading-relaxed text-brand-muted">{t('successBody')}</p>
-      <Link href={localizePath(locale, '/')} className="mt-6 inline-flex min-h-11 items-center font-semibold text-brand-ink underline decoration-brand-orange underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink">{t('back')}</Link>
+      <Link href={localizePath(locale, '/')} className="mt-6 inline-flex min-h-11 items-center font-semibold text-brand-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink">{t('back')}</Link>
     </div>
   )
 
@@ -120,7 +120,7 @@ export default function PartnerForm() {
         <button type="submit" disabled={status === 'loading'} className="min-h-14 w-full cursor-pointer rounded-xl bg-brand-orange px-4 py-3 text-base font-bold text-white transition-colors hover:bg-brand-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink disabled:cursor-wait disabled:opacity-60">{status === 'loading' ? t('sending') : t('send')}</button>
         {errorMsg && !invalidField && <p role="alert" className="text-sm font-semibold leading-relaxed text-brand-ink">{errorMsg}</p>}
       </form>
-      <p className="mt-5 text-sm leading-relaxed text-brand-muted">{t('agreement')}{' '}<Link href="/tos" className="inline-block py-2 underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-ink">{t('terms')}</Link>{' '}{t('and')}{' '}<Link href={localizePath(locale, '/privacy-policy')} className="inline-block py-2 underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-ink">{t('privacy')}</Link>.</p>
+      <p className="mt-5 text-sm leading-relaxed text-brand-muted">{t('agreement')}{' '}<Link href="/tos" className="inline-block py-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-ink font-semibold">{t('terms')}</Link>{' '}{t('and')}{' '}<Link href={localizePath(locale, '/privacy-policy')} className="inline-block py-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-ink font-semibold">{t('privacy')}</Link>.</p>
     </div>
   )
 }

@@ -104,7 +104,7 @@ export default async function CityStandingsPage({ params }: Props) {
       <main id="main-content" className={styles.wrap}>
         <header className={styles.heading}>
         <p className={styles.kicker}>
-          <Link href={localizePath(locale, '/standings')} className="hover:underline">
+          <Link href={localizePath(locale, '/standings')} className="font-semibold">
             {t('eyebrow')}
           </Link>
           <span aria-hidden> · </span>
@@ -165,7 +165,7 @@ export default async function CityStandingsPage({ params }: Props) {
             </Link>
             <Link
               href={localizePath(locale, '/partner')}
-              className="inline-flex min-h-12 items-center px-2 text-base font-bold text-brand-ink underline decoration-brand-orange decoration-2 underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
+              className="inline-flex min-h-12 items-center px-2 text-base font-bold text-brand-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
             >
               {t('partnerCta')}
             </Link>
