@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import Image from 'next/image'
 import PlayfulArrow from '@/components/PlayfulArrow'
 import MaitredNativeMockup from '@/components/maitred/MaitredNativeMockup'
 import OwnerNativeMockup from './OwnerNativeMockup'
@@ -21,7 +22,7 @@ export default function OwnerTools({ locale, title, label, caption, tools }: { l
       }}>{tools.map((entry, index) => <button key={entry.id} ref={node => { tabs.current[index] = node }} type="button" role="tab" id={`owner-tab-${entry.id}`} aria-controls="owner-tool-panel" aria-selected={selected === index} tabIndex={selected === index ? 0 : -1} onClick={() => setSelected(index)}><span aria-hidden="true">0{index + 1}</span>{entry.label}</button>)}</div>
       <div key={tool.id} role="tabpanel" id="owner-tool-panel" aria-labelledby={`owner-tab-${tool.id}`} tabIndex={0} className="partner-tool-panel" data-owner-screen={tool.id}>
         <div className="partner-tool-copy"><p className="partner-eyebrow">{tool.eyebrow}</p><h3>{tool.title}</h3><p className="partner-tool-intro">{tool.body}</p><ul>{tool.points.map(point => <li key={point}>{point}</li>)}</ul><a href={tool.href} className="button outline">{tool.action}<PlayfulArrow /></a></div>
-        <figure className="partner-tool-figure"><figcaption>{caption}</figcaption><div className="partner-tool-phone">{tool.id === 'restaurant' ? <MaitredNativeMockup locale={locale} state="order" /> : <OwnerNativeMockup locale={locale} screen={tool.id} />}</div></figure>
+        <figure className="partner-tool-figure"><figcaption>{caption}</figcaption><div className="partner-tool-phone">{tool.id === 'restaurant' ? <><MaitredNativeMockup locale={locale} state="order" /><Image className="partner-restaurant-status" src="/redesign/native/reference-status-light.png" width={1170} height={141} alt="" unoptimized /></> : <OwnerNativeMockup locale={locale} screen={tool.id} />}</div></figure>
       </div>
     </div>
   </section>

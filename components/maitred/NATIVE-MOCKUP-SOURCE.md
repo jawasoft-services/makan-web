@@ -1,5 +1,15 @@
 # Maître d’ website phone provenance
 
+## Native comparison refresh — 8 November 2026
+
+The restaurant rendering was rechecked at current app main `baabae57929cadd5f2f3e1fa3331a1b9deacff3c`. Its restaurant visual blocks, Maître presentation/UI, decision section, fonts and colours retain the values from the original reference below; the intervening restaurant diff changes only its details handoff IO. Fresh390×844 iPhone13 captures use those actual native rendering blocks and components in an isolated offline-data harness. This is simulator/component evidence, not a production account, installed release or physical-device check.
+
+The restaurant-page pass corrects browser margin collapsing between the metadata and Maître card (`display:flow-root` retains both native vertical margins), natural Jakarta line metrics where the native source supplies no explicit line height, native hairline dividers and score-card borders, and the bottom meal action's native line height/shadow. The latest explicit1:1 request preserves that existing native shadow inside the phone rather than applying the website's flat-surface rule to the app illustration. The source cards, selector, six fictional identities, meals and privacy conditions are retained. Native output displays its source-selected top three plus the viewer when outside them, not a newly invented six-row app layout.
+
+`OwnerTools` overlays an authentic native light status-bar crop only on its restaurant phone. The black-backed crop uses `mix-blend-mode:screen`, so the native glyphs sit over the actual photograph or scrolling sheet without painting a frozen food rectangle on top. Discover and dashboard use their genuine white-backed native status strip. Current app source intentionally keeps light status glyphs on the loaded restaurant screen even after scrolling; this website pass does not silently change that app behaviour.
+
+The exact current restaurant screen renders opening/closing status, address, telephone, website, price and ratings. It contains no weekly opening-hours table. No weekly schedule, real venue score or diner history is invented for the authored restaurant illustration.
+
 Reference date: 6 November 2026. Native source is main `18d991a7527d76ff14eb2dd23846ad69da79e13f`, verified against the remote reference on this date. Reads used `GIT_NO_LAZY_FETCH=1 git show` in `/Users/devonmakepeace/Developer/MAKAN/MakanGit/munchies-rn-baseline-refresh`. Its older materialized HEAD was not used as the design source. No native files, public restaurant route, live readers or providers were changed.
 
 The user's final scope is **phone mockups, including all restaurant details**. They explicitly requested fictional diners, portraits and an Eat or Yeet score to show the complete story. This supersedes the earlier sparse holder-only illustration. Their removal of visible Demo labels and square brackets remains in effect; provenance is recorded here.
