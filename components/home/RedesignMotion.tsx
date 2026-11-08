@@ -31,9 +31,8 @@ export function HomeHero({ children, pauseLabel, resumeLabel }: { children: Reac
   </section>
 }
 
-export function ReviewsRail({ children, label, pauseLabel, resumeLabel }: { children: ReactNode; label: string; pauseLabel: string; resumeLabel: string }) {
+export function ReviewsRail({ children, label }: { children: ReactNode; label: string }) {
   const ref = useRef<HTMLDivElement>(null)
-  const [paused, setPaused] = useState(false)
   useEffect(() => {
     const node = ref.current
     if (!node) return
@@ -52,8 +51,7 @@ export function ReviewsRail({ children, label, pauseLabel, resumeLabel }: { chil
       document.removeEventListener('visibilitychange', visibility)
     }
   }, [])
-  return <div ref={ref} className={`review-motion ${paused ? 'reviews-paused' : ''}`}>
+  return <div ref={ref} className="review-motion">
     <div className="reviews-viewport" tabIndex={0} role="region" aria-label={label}><div className="reviews-track"><div className="review-set">{children}</div><div className="review-set review-clone" aria-hidden="true">{children}</div></div></div>
-    <div className="review-controls"><button type="button" className="review-pause" aria-pressed={paused} onClick={() => setPaused(!paused)}>{paused ? resumeLabel : pauseLabel}</button></div>
   </div>
 }

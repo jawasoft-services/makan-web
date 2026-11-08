@@ -34,6 +34,9 @@ export default function SmoothScroll() {
   }, [pathname])
 
   useEffect(() => {
+    // Route resets own the position; native Back restoration otherwise races Lenis.
+    const restoration = history.scrollRestoration
+    history.scrollRestoration = 'manual'
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const lenis = reducedMotion ? null : new Lenis({ autoRaf: true, anchors: false })
     if (lenis) window.__lenis = lenis
@@ -99,6 +102,7 @@ export default function SmoothScroll() {
     window.addEventListener('hashchange', onHashChange)
 
     return () => {
+      history.scrollRestoration = restoration
       window.clearTimeout(landTimer)
       document.removeEventListener('click', onClick)
       window.removeEventListener('hashchange', onHashChange)

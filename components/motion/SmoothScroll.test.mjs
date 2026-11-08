@@ -21,6 +21,7 @@ function harness({ hash = '', reducedMotion = false, initialY = 0 } = {}) {
   const nativeScrolls = []
   const nativeAnchorScrolls = []
   const historyWrites = []
+  const history = { scrollRestoration: 'auto', pushState: (_state, _unused, value) => { historyWrites.push(value); location.hash = value } }
   let timerId = 0
   let effectIndex = 0
   let destroyed = false
@@ -56,7 +57,7 @@ function harness({ hash = '', reducedMotion = false, initialY = 0 } = {}) {
   const exports = {}
   vm.runInNewContext(compiled, {
     exports, window, document, location,
-    history: { pushState: (_state, _unused, value) => { historyWrites.push(value); location.hash = value } },
+    history,
     require: name => {
       if (name === 'react') return { useEffect: (run, dependencies) => {
         const previous = effects[effectIndex]
@@ -81,6 +82,7 @@ function harness({ hash = '', reducedMotion = false, initialY = 0 } = {}) {
     }
   }
   render()
+  assert.equal(history.scrollRestoration, 'manual', 'native Back restoration must not race route resets')
   return {
     outer, inner, answer, section, scrolls, nativeScrolls, nativeAnchorScrolls, historyWrites, window, document,
     rerender(pathname = location.pathname, hash = location.hash) {
@@ -111,6 +113,7 @@ function harness({ hash = '', reducedMotion = false, initialY = 0 } = {}) {
       assert.equal(events.size, 0)
       assert.equal(window.__lenis, undefined)
       assert.equal(destroyed, !reducedMotion)
+      assert.equal(history.scrollRestoration, 'auto', 'unmount restores the browser setting')
     },
   }
 }

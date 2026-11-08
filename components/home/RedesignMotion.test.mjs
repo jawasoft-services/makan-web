@@ -65,6 +65,7 @@ function harness(componentName, initiallyHidden = false) {
   mounted = true
   return {
     node,
+    hasButton() { return !!findButton(tree) },
     click() { findButton(tree).props.onClick(); render(); return findButton(tree).props['aria-pressed'] },
     visible(value) { observer.callback([{ isIntersecting: value }]) },
     hidden(value) { document.hidden = value; listeners.get('visibilitychange')() },
@@ -73,16 +74,20 @@ function harness(componentName, initiallyHidden = false) {
 }
 
 for (const name of ['HomeHero', 'ReviewsRail']) {
-  test(`${name}: pause and resume retain readiness and observer state across className commits`, () => {
+  test(`${name}: retains visibility tracking and cleans up motion state`, () => {
     const app = harness(name, true)
     assert.equal(app.node.dataset.documentHidden, 'true', 'initial hidden document is paused immediately')
     app.hidden(false)
     app.visible(true)
     const flags = { ...app.node.dataset }
-    assert.equal(app.click(), true)
-    assert.deepEqual(app.node.dataset, flags)
-    assert.equal(app.click(), false)
-    assert.deepEqual(app.node.dataset, flags)
+    if (name === 'HomeHero') {
+      assert.equal(app.click(), true)
+      assert.deepEqual(app.node.dataset, flags)
+      assert.equal(app.click(), false)
+      assert.deepEqual(app.node.dataset, flags)
+    } else {
+      assert.equal(app.hasButton(), false, 'reviews have no pause button')
+    }
     assert.equal(app.node.dataset.motionReady, 'true')
     app.visible(false)
     assert.equal(name === 'HomeHero' ? app.node.dataset.offscreen : app.node.dataset.inView, name === 'HomeHero' ? 'true' : 'false')
