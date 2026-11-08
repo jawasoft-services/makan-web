@@ -841,7 +841,7 @@
   },
   "PartnerRedesign": {
     "hero": "Let your regulars guide the next guest.",
-    "intro": "With Maître d’, a regular can share their usual order to help someone new choose. Your food, with a little advice from someone who knows it.",
+    "intro": "Help new guests find your food, see what your regulars order and remember your place for next time.",
     "enquire": "Talk to Devon",
     "how": "Meet your Maître d’",
     "offer": "Free to appear today. No commission on meals.",
@@ -851,23 +851,15 @@
     "proof_intro": "Give the next guest a useful place to start.",
     "proof_body": "The Maître d’ title is earned through eligible dining days at your restaurant. When the title holder shares a usual order, diners can find it on your restaurant page.",
     "proof_end": "A regular’s own choice. A little less guesswork at the menu.",
-    "benefit_title": "Your name stays with the meal.",
+    "benefit_title": "A meal worth remembering.",
     "benefits": [
       [
         "Shared with their people.",
-        "When a guest saves a meal and shares it with friends, your restaurant’s name stays with the photo."
-      ],
-      [
-        "Saved to Cravings. Found nearby.",
-        "A diner can save a friend’s dish to Cravings. Discover brings it back when they’re nearby, with the distance to your place."
-      ],
-      [
-        "Remembered in their favourites.",
-        "In Eat or Yeet, diners compare their own saved meals. A dish they would eat again can become a personal favourite, with your restaurant’s name attached."
+        "When a guest shares a meal with friends, your restaurant’s name stays with the photo."
       ],
       [
         "One scan to your restaurant.",
-        "Your venue QR code opens your restaurant page in Makan. Ask about a code for your place when you get in touch."
+        "A venue QR code takes a guest to your restaurant page in Makan. Ask us about a code for your tables."
       ]
     ],
     "feed_alt": "Existing Makan app image showing Devon’s public seafood risotto meal at Kendal Street Kitchen",
@@ -878,30 +870,38 @@
     "dining_caption": "Carbonara & mushroom risotto · @ridorichard",
     "dessert_alt": "Tiramisu in a glass at Kendal Street Kitchen",
     "dessert_caption": "Tiramisu · @ridorichard",
-    "offer_title": "Start with your restaurant.",
-    "offer_body": "Appearing on Makan is currently free, with no commission on meals. Tell Devon about your place and ask what is happening in your area.",
-    "offer_note": "Restaurant subscriptions may follow. Joining today does not lock in future pricing.",
+    "offer_title": "Let’s talk about your restaurant.",
+    "offer_body": "Your restaurant can appear on Makan for free, with no commission on meals. Tell us about your place and we’ll look at what is happening in your area.",
+    "offer_note": "Owner tools depend on verification and access. We’ll explain what is available for your restaurant.",
     "faq_title": "A few fair questions.",
     "faqs": [
+      [
+        "Does my restaurant need to be a partner to appear in Discover?",
+        "Diners can find places through saved meals, Cravings, friends and nearby options. Paying for owner tools does not buy a place in Discover or change the ranking."
+      ],
+      [
+        "What does the dashboard measure?",
+        "It uses meals recorded on Makan. “Visitors” means people who contributed tagged meals, not everyone who walked through your door. Visit breakdowns appear only when enough people have contributed. “Most posted” groups the meal types people recorded; it is not a sales report."
+      ],
+      [
+        "How do I get owner access?",
+        "Find your restaurant below or send Devon an enquiry. Owner access requires verification, and the tools available depend on your restaurant’s access. The screens here illustrate the app; they are not a live dashboard for Kendal Street Kitchen."
+      ],
       [
         "How does a diner become Maître d’ locally?",
         "They need eligible saved meals on at least two different days at that restaurant in the last 60 days. A qualifying regular must take a clear lead to earn the title. A qualifying holder keeps a tie; without one, a tie stays unresolved. A usual order appears only when they choose to share one."
       ],
       [
-        "Do I need to offer discounts or rewards?",
-        "You choose whether to offer anything. A good dish and a warm welcome are your starting point. Any reward should recognise a visit, never depend on a verdict, review or caption."
+        "Can I see a diner’s private meals or contact details?",
+        "No. Private meals and contact details are not shared with restaurants. Any regulars tools must respect the diner’s visibility choices."
       ],
       [
-        "Can I pay for a better position?",
-        "No. Paid placement does not decide rankings or recommendations. Maître d’ is earned through meals at your restaurant."
+        "Do I need to offer discounts or rewards?",
+        "You choose whether to offer anything. Any reward should recognise a visit and must not depend on a verdict, review or caption."
       ],
       [
         "Can Makan guarantee more customers?",
         "We cannot promise extra customers or bookings. Makan is still growing and local activity varies. Ask Devon about your area and whether Makan fits your place."
-      ],
-      [
-        "What happens after I get in touch?",
-        "The live form sends a restaurant enquiry to Devon, Makan’s founder. Use the optional note to ask about getting started, local activity, a venue QR code or more than one restaurant."
       ]
     ],
     "form_title": "Tell us about your place.",
@@ -924,7 +924,72 @@
     "invalid": "Check the highlighted fields. No enquiry has been sent.",
     "terms": "Terms",
     "and": "and",
-    "privacy": "Privacy Policy"
+    "privacy": "Privacy Policy",
+    "eyebrow": "For restaurants",
+    "explore_tools": "Explore the tools",
+    "navigation_label": "For restaurant owners",
+    "tools_title": "Your food. In the picture.",
+    "tools_label": "Explore Makan for your restaurant",
+    "tools_caption": "Illustrated app screens. Restaurant figures are examples. Ask us about owner access.",
+    "tools": [
+      {
+        "id": "discover",
+        "label": "Discover",
+        "eyebrow": "Help them find you",
+        "title": "Be there when they’re choosing.",
+        "body": "Discover brings together saved dishes, places friends have eaten and options nearby.",
+        "points": [
+          "Real meal photos lead diners to your restaurant.",
+          "A dish saved to Cravings can bring your place back to mind.",
+          "Diners can move between the list and map to find a place to eat."
+        ],
+        "action": "Find your restaurant",
+        "href": "#find"
+      },
+      {
+        "id": "restaurant",
+        "label": "Your restaurant",
+        "eyebrow": "Help them choose",
+        "title": "Give them a dish to come for.",
+        "body": "Your restaurant page puts the food beside the details a diner needs to make a plan.",
+        "points": [
+          "Meal photos and a Maître d’s published usual order.",
+          "Address, contact details and available opening information.",
+          "Eat or Yeet results, with the number of comparisons behind them."
+        ],
+        "action": "Meet your Maître d’",
+        "href": "#partner-maitred"
+      },
+      {
+        "id": "dashboard",
+        "label": "Your dashboard",
+        "eyebrow": "For the owner",
+        "title": "See what brings them back.",
+        "body": "The owner dashboard brings together meal posts and repeat visits recorded on Makan.",
+        "points": [
+          "Monthly totals from meals tagged to your restaurant.",
+          "First and return visits, once enough diners have contributed.",
+          "A route straight to the public posts from your place."
+        ],
+        "action": "Ask about owner access",
+        "href": "#enquire"
+      }
+    ],
+    "getting_started_title": "Make it your place.",
+    "getting_started": [
+      [
+        "Find your restaurant.",
+        "Search below to see whether your place is already on Makan."
+      ],
+      [
+        "Tell us you’re the owner.",
+        "We’ll help you through verification and explain which owner tools you can use."
+      ],
+      [
+        "Put your QR on the table.",
+        "Give guests a direct route to your restaurant in Makan, ready to save the meal they’ve just eaten."
+      ]
+    ]
   },
   "MaitredPage": {
     "metaTitle": "Maître d’ — Your usual spot. Your title to earn. | Makan",

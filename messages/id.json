@@ -841,7 +841,7 @@
   },
   "PartnerRedesign": {
     "hero": "Biar langgananmu memandu tamu baru.",
-    "intro": "Lewat Maître d’, pelanggan tetap bisa membagikan pesanan andalannya untuk membantu tamu baru memilih. Hidanganmu, dengan sedikit saran dari orang yang mengenalnya.",
+    "intro": "Bantu tamu baru menemukan hidanganmu, melihat pesanan langgananmu, dan mengingat tempatmu untuk kunjungan berikutnya.",
     "enquire": "Ngobrol dengan Devon",
     "how": "Kenali Maître d’-mu",
     "offer": "Saat ini gratis untuk tampil. Tanpa komisi dari makanan.",
@@ -851,23 +851,15 @@
     "proof_intro": "Beri tamu berikutnya titik awal untuk memilih.",
     "proof_body": "Gelar Maître d’ diraih lewat hari makan yang memenuhi syarat di restoranmu. Saat pemegang gelar membagikan pesanan andalannya, tamu bisa menemukannya di halaman restoranmu.",
     "proof_end": "Pilihan pelanggan tetap sendiri. Lebih sedikit menebak saat melihat menu.",
-    "benefit_title": "Namamu ikut di setiap makanan.",
+    "benefit_title": "Makanan yang ingin diingat.",
     "benefits": [
       [
         "Dibagikan ke orang terdekat.",
-        "Saat tamu menyimpan makanan dan membagikannya ke teman, nama restoranmu tetap bersama fotonya."
-      ],
-      [
-        "Disimpan ke Cravings. Ditemukan di dekatmu.",
-        "Tamu bisa menyimpan hidangan teman ke Cravings. Discover menampilkannya lagi saat mereka berada di dekatmu, lengkap dengan jaraknya."
-      ],
-      [
-        "Diingat dalam pilihan favorit.",
-        "Di Eat or Yeet, tamu membandingkan makanan mereka sendiri yang telah disimpan. Hidangan yang ingin dimakan lagi bisa menjadi favorit pribadi, dengan nama restoranmu tetap tercantum."
+        "Saat tamu membagikan makanan ke teman, nama restoranmu tetap bersama fotonya."
       ],
       [
         "Satu pindai ke restoranmu.",
-        "Kode QR tempatmu membuka halaman restoranmu di Makan. Tanyakan tentang kode untuk tempatmu saat menghubungi kami."
+        "Kode QR tempatmu mengarahkan tamu ke halaman restoranmu di Makan. Tanyakan tentang kode untuk meja-mejamu."
       ]
     ],
     "feed_alt": "Gambar aplikasi Makan yang sudah ada, menampilkan seafood risotto publik Devon di Kendal Street Kitchen",
@@ -878,30 +870,38 @@
     "dining_caption": "Carbonara & mushroom risotto · @ridorichard",
     "dessert_alt": "Tiramisu dalam gelas di Kendal Street Kitchen",
     "dessert_caption": "Tiramisu · @ridorichard",
-    "offer_title": "Mulai dari restoranmu.",
-    "offer_body": "Saat ini tampil di Makan gratis, tanpa komisi dari makanan. Ceritakan tempatmu kepada Devon dan tanyakan aktivitas di daerahmu.",
-    "offer_note": "Langganan restoran mungkin diperkenalkan nanti. Bergabung sekarang tidak mengunci harga di masa depan.",
+    "offer_title": "Mari bahas restoranmu.",
+    "offer_body": "Restoranmu bisa tampil di Makan secara gratis, tanpa komisi dari makanan. Ceritakan tempatmu dan kami akan melihat aktivitas di daerahmu.",
+    "offer_note": "Fitur pemilik bergantung pada verifikasi dan akses. Kami akan menjelaskan apa yang tersedia untuk restoranmu.",
     "faq_title": "Beberapa pertanyaan yang wajar.",
     "faqs": [
       [
+        "Apakah restoran harus menjadi mitra agar muncul di Discover?",
+        "Tamu bisa menemukan tempat lewat makanan yang disimpan, Cravings, teman, dan pilihan sekitar. Membayar fitur pemilik tidak membeli posisi di Discover atau mengubah peringkat."
+      ],
+      [
+        "Apa yang diukur dasbor?",
+        "Dasbor memakai makanan yang tercatat di Makan. “Visitors” berarti orang yang menyimpan makanan bertanda restoran, bukan semua orang yang datang. Rincian kunjungan muncul setelah cukup banyak orang berkontribusi. “Most posted” mengelompokkan jenis waktu makan yang dicatat, bukan laporan penjualan."
+      ],
+      [
+        "Bagaimana cara mendapat akses pemilik?",
+        "Cari restoranmu di bawah atau kirim pertanyaan ke Devon. Akses pemilik memerlukan verifikasi, dan fitur yang tersedia bergantung pada akses restoranmu. Layar di sini adalah ilustrasi aplikasi, bukan dasbor langsung Kendal Street Kitchen."
+      ],
+      [
         "Bagaimana tamu menjadi Maître d’ di sebuah restoran?",
-        "Tamu perlu menyimpan makanan yang memenuhi syarat pada setidaknya dua hari berbeda di restoran itu dalam 60 hari terakhir. Pelanggan tetap yang memenuhi syarat harus unggul sendirian untuk meraih gelar. Saat seri, pemegang yang masih memenuhi syarat tetap memegangnya; tanpa pemegang yang memenuhi syarat, gelar belum ditentukan. Pesanan andalan muncul hanya jika mereka memilih untuk membagikannya."
+        "Tamu perlu menyimpan makanan yang memenuhi syarat pada setidaknya dua hari berbeda di restoran itu dalam 60 hari terakhir. Pelanggan yang memenuhi syarat harus unggul sendirian untuk meraih gelar. Saat seri, pemegang yang masih memenuhi syarat tetap memegangnya; tanpa pemegang yang memenuhi syarat, gelar belum ditentukan. Pesanan andalan muncul hanya jika mereka memilih untuk membagikannya."
+      ],
+      [
+        "Bisakah saya melihat makanan pribadi atau kontak tamu?",
+        "Tidak. Makanan pribadi dan kontak tidak dibagikan kepada restoran. Fitur pelanggan tetap harus mengikuti pilihan visibilitas tamu."
       ],
       [
         "Apakah saya perlu menawarkan diskon atau hadiah?",
-        "Kamu memilih apakah ingin menawarkan sesuatu. Hidangan yang enak dan sambutan hangat adalah awalnya. Hadiah sebaiknya menghargai kunjungan, bukan bergantung pada pilihan, ulasan, atau keterangan foto."
-      ],
-      [
-        "Bisakah saya membayar untuk posisi yang lebih tinggi?",
-        "Tidak. Penempatan berbayar tidak menentukan peringkat atau rekomendasi. Maître d’ diraih lewat pengalaman makan di restoranmu."
+        "Kamu memilih apakah ingin menawarkan sesuatu. Hadiah sebaiknya menghargai kunjungan dan tidak boleh bergantung pada pilihan, ulasan, atau keterangan foto."
       ],
       [
         "Bisakah Makan menjamin lebih banyak pelanggan?",
-        "Kami tidak bisa menjanjikan tambahan pelanggan atau reservasi. Makan masih berkembang dan aktivitas berbeda di setiap daerah. Tanyakan kepada Devon tentang daerahmu dan apakah Makan cocok untuk tempatmu."
-      ],
-      [
-        "Apa yang terjadi setelah saya menghubungi kalian?",
-        "Formulir aktif mengirimkan pertanyaan dari restoran kepada Devon, pendiri Makan. Gunakan catatan opsional untuk bertanya tentang cara memulai, aktivitas di daerahmu, kode QR tempatmu, atau lebih dari satu restoran."
+        "Kami tidak bisa menjanjikan tambahan pelanggan atau reservasi. Makan masih berkembang dan aktivitas berbeda di setiap daerah. Tanyakan kepada Devon apakah Makan cocok untuk tempatmu."
       ]
     ],
     "form_title": "Ceritakan tentang tempatmu.",
@@ -924,7 +924,72 @@
     "invalid": "Periksa kolom yang ditandai. Belum ada pertanyaan yang dikirim.",
     "terms": "Ketentuan",
     "and": "dan",
-    "privacy": "Kebijakan Privasi"
+    "privacy": "Kebijakan Privasi",
+    "eyebrow": "Untuk restoran",
+    "explore_tools": "Lihat fitur restoran",
+    "navigation_label": "Untuk pemilik restoran",
+    "tools_title": "Hidanganmu jadi sorotan.",
+    "tools_label": "Jelajahi Makan untuk restoranmu",
+    "tools_caption": "Ilustrasi layar aplikasi. Angka restoran adalah contoh. Tanyakan kepada kami tentang akses pemilik.",
+    "tools": [
+      {
+        "id": "discover",
+        "label": "Discover",
+        "eyebrow": "Bantu mereka menemukanmu",
+        "title": "Hadir saat mereka memilih.",
+        "body": "Discover menyatukan hidangan yang disimpan, tempat makan teman, dan pilihan di sekitar.",
+        "points": [
+          "Foto makanan nyata mengarahkan tamu ke restoranmu.",
+          "Hidangan di Cravings bisa mengingatkan mereka pada tempatmu.",
+          "Tamu bisa beralih antara daftar dan peta untuk mencari tempat makan."
+        ],
+        "action": "Cari restoranmu",
+        "href": "#find"
+      },
+      {
+        "id": "restaurant",
+        "label": "Restoranmu",
+        "eyebrow": "Bantu mereka memilih",
+        "title": "Beri alasan untuk datang.",
+        "body": "Halaman restoran menampilkan makanan beserta informasi yang dibutuhkan tamu untuk membuat rencana.",
+        "points": [
+          "Foto makanan dan pesanan andalan yang diterbitkan Maître d’.",
+          "Alamat, kontak, dan informasi jam buka yang tersedia.",
+          "Hasil Eat or Yeet beserta jumlah perbandingannya."
+        ],
+        "action": "Kenali Maître d’-mu",
+        "href": "#partner-maitred"
+      },
+      {
+        "id": "dashboard",
+        "label": "Dasbor",
+        "eyebrow": "Untuk pemilik",
+        "title": "Lihat apa yang membuat mereka kembali.",
+        "body": "Dasbor pemilik menyatukan unggahan makanan dan kunjungan berulang yang tercatat di Makan.",
+        "points": [
+          "Total bulanan dari makanan yang ditandai ke restoranmu.",
+          "Kunjungan pertama dan berulang, setelah cukup banyak tamu berkontribusi.",
+          "Akses langsung ke unggahan publik dari tempatmu."
+        ],
+        "action": "Tanyakan akses pemilik",
+        "href": "#enquire"
+      }
+    ],
+    "getting_started_title": "Mulai dari tempatmu.",
+    "getting_started": [
+      [
+        "Cari restoranmu.",
+        "Cari di bawah untuk melihat apakah tempatmu sudah ada di Makan."
+      ],
+      [
+        "Beri tahu bahwa kamu pemiliknya.",
+        "Kami akan membantu proses verifikasi dan menjelaskan fitur pemilik yang bisa kamu gunakan."
+      ],
+      [
+        "Taruh QR di meja.",
+        "Beri tamu akses langsung ke restoranmu di Makan agar mereka bisa menyimpan makanan yang baru dinikmati."
+      ]
+    ]
   },
   "MaitredPage": {
     "metaTitle": "Maître d’ — Tempat langgananmu. Gelar untuk kamu raih. | Makan",

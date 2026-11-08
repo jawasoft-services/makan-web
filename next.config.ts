@@ -47,6 +47,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Keep private review builds independent of the production App Hosting backend.
+  output: 'standalone',
   experimental: { globalNotFound: true },
   env: { NEXT_PUBLIC_MAKAN_WEBSITE_FIXTURES: process.env.MAKAN_WEBSITE_FIXTURES === "1" ? "1" : "0" },
   // Fixture caches and HTML must never become production output.
