@@ -32,7 +32,8 @@ export default function StandingsTable({
   const searchId = useId()
   const filtered = filterStandings(rows, query)
   const id = locale === 'id'
-  const monthYear = new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-GB', { month: 'short', year: 'numeric' })
+  // Safari uses Sep where Node uses Sept; keep hydration and month boundaries stable.
+  const monthYear = new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' })
   const percent = new Intl.NumberFormat(locale === 'id' ? 'id-ID' : 'en-GB', { style: 'percent', maximumFractionDigits: 0 })
   const th = ''
   return (
@@ -85,7 +86,7 @@ export default function StandingsTable({
               <td className="px-4 py-4 text-right text-base tabular-nums text-brand-ink sm:px-5">{row.eats}</td>
               <td className="px-4 py-4 text-right text-base tabular-nums text-brand-muted sm:px-5">{row.yeets}</td>
               <td className="px-4 py-4 text-right text-base tabular-nums text-brand-muted sm:px-5">
-                {row.since ? monthYear.format(new Date(row.since)) : '—'}
+                {row.since ? monthYear.format(new Date(row.since)).replace(/\bSept\b/, 'Sep') : '—'}
               </td>
             </tr>
           ))}

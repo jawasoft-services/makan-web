@@ -33,7 +33,7 @@ const meals = [
 const base: DirectoryPlace = {
   placeId: FIXTURE_PLACE_ID, slug: FIXTURE_SLUG, hash: 'f10001', name: 'Kendal Street Kitchen',
   where: { city: 'London', country: 'United Kingdom' }, address: 'Kendal Street, London',
-  lat: 51.514, lng: -0.166, cuisine: ['Mediterranean'], since: '2026-10-01T12:00:00.000Z', meals, indexable: true, claimed: false,
+  lat: 51.514, lng: -0.166, cuisine: ['Mediterranean'], since: '2026-09-30T23:30:00.000Z', meals, indexable: true, claimed: false,
 }
 const places: DirectoryPlace[] = [base,
   { ...base, placeId: 'fixture_cafe_000002', slug: 'fixture-cafe-f10002', hash: 'f10002', name: 'Fixture Café', address: '', lat: 51.516, lng: -0.164, meals: [meals[1]], indexable: false, claimed: true },
