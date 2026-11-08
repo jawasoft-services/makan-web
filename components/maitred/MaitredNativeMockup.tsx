@@ -88,7 +88,7 @@ export default function MaitredNativeMockup({ locale, state = 'order', priority 
                 <span className={styles.decisionAction}>{canCompare ? restaurantCopy.eatOrYeet : restaurantCopy.saveMeal}</span>
               </div>
               <div className={styles.restaurantBand} data-native-section="cravings">
-                <div className={styles.signalHeading}><p className={styles.bandEyebrow}><span className={styles.craveFlame} aria-hidden="true">{[1, 2, 3].map(frame => <Image key={frame} src={`/redesign/native/crave-flame-frame-${frame}.png`} alt="" width={18} height={18} />)}</span>IN YOUR CRAVINGS</p><span>2 meals</span></div>
+                <div className={styles.signalHeading}><p className={styles.bandEyebrow}><span className={styles.craveFlame} aria-hidden="true">{[1, 2, 3].map(frame => <Image key={frame} src={`/redesign/native/crave-flame-frame-${frame}.png`} alt="" width={18} height={18} loading="eager" />)}</span>IN YOUR CRAVINGS</p><span>2 meals</span></div>
                 <MealThumbs meals={ILLUSTRATION_MEALS.slice(0, 2)} />
               </div>
               <div className={styles.restaurantBand} data-native-section="eat-or-yeet">

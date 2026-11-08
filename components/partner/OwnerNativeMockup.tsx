@@ -8,7 +8,7 @@ function Icon({ name, size = 20 }: { name: keyof typeof glyphs; size?: number })
   return <span aria-hidden="true" className={styles.icon} style={{ fontSize: size }}>{glyphs[name]}</span>
 }
 function Flame({ size = 21 }: { size?: number }) {
-  return <span className={styles.flame} style={{ width: size, height: size }} aria-hidden="true">{[1, 2, 3].map(frame => <Image key={frame} src={`/redesign/native/crave-flame-frame-${frame}.png`} width={size} height={size} alt="" />)}</span>
+  return <span className={styles.flame} style={{ width: size, height: size }} aria-hidden="true">{[1, 2, 3].map(frame => <Image key={frame} src={`/redesign/native/crave-flame-frame-${frame}.png`} width={size} height={size} alt="" loading="eager" />)}</span>
 }
 
 // App-owned translations at baabae579; names, dishes and hardcoded native copy stay unchanged.
