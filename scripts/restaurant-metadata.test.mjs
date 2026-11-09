@@ -41,6 +41,8 @@ const base = {
 async function render(locale, place, row = null) {
   const messages = JSON.parse(readFileSync(`messages/${locale}.json`, 'utf8'))
   const route = loadModule(routeFile, {
+    'react': { cache: fn => fn },
+    '@/lib/reviews': { getReviewForPlace: () => undefined },
     '@/lib/site-metadata': metadata,
     '@/lib/place-directory': { getDirectoryPlace: async () => place },
     '@/lib/eat-standings': { getEatStandings: async () => ({ all: row ? [row] : [] }) },
@@ -56,10 +58,12 @@ async function render(locale, place, row = null) {
 for (const locale of ['en', 'id']) {
   test(`${locale}: public photos, location and canonical/social parity`, async () => {
     const result = await render(locale, base)
-    assert.equal(result.title, 'Mata Berawa, Berawa, Bali | Makan')
+    assert.equal(result.title, locale === 'en'
+      ? 'Mata Berawa, Berawa, Bali: meals & what to order | Makan'
+      : 'Mata Berawa, Berawa, Bali: makanan & pilihan pesanan | Makan')
     assert.equal(result.description, locale === 'en'
-      ? 'Mata Berawa, Berawa, Bali, Indonesia. See 2 public meals saved by diners, with food photos.'
-      : 'Mata Berawa, Berawa, Bali, Indonesia. Lihat 2 makanan publik yang disimpan pengunjung, lengkap dengan foto.')
+      ? 'See what diners ate at Mata Berawa, Berawa, Bali, Indonesia: 2 public meals, original food photos and their captions on Makan.'
+      : 'Lihat makanan yang dibagikan pengunjung di Mata Berawa, Berawa, Bali, Indonesia: 2 makanan publik, foto asli, dan caption mereka di Makan.')
     const path = `${locale === 'id' ? '/id' : ''}/places/${base.slug}`
     assert.equal(result.alternates.canonical, metadata.SITE_URL + path)
     assert.equal(result.alternates.languages.en, `${metadata.SITE_URL}/places/${base.slug}`)

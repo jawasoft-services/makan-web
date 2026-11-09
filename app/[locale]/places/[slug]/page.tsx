@@ -1,5 +1,6 @@
 import PlayfulArrow from '@/components/PlayfulArrow'
 import type { Metadata } from 'next'
+import { cache } from 'react'
 import { notFound, permanentRedirect } from 'next/navigation'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
@@ -11,13 +12,14 @@ import SiteSchema from '@/components/SiteSchema'
 import StoreLink from '@/components/home/StoreLink'
 import PlacesMapLoader from '@/components/map/PlacesMapLoader'
 import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
-import { CITY_FLOOR, EVIDENCE_FLOOR, getEatStandings, type StandingRow } from '@/lib/eat-standings'
+import { CITY_FLOOR, EVIDENCE_FLOOR, getEatStandings, type EatStandings, type StandingRow } from '@/lib/eat-standings'
 import { getDirectoryPlace, getPlaceIndex, type DirectoryPlace } from '@/lib/place-directory'
 import { getMaitredStateAt } from '@/lib/maitred'
 import { getPlacePhoto } from '@/lib/place-photo'
 import { localizePath } from '@/i18n/paths'
 import { thumbUrl } from '@/lib/thumb'
 import { safeJsonLd } from '@/lib/safe-json-ld'
+import { getReviewForPlace } from '@/lib/reviews'
 
 /** A public restaurant: original meal photos, Maître d’ notes, standings and directions.
  * The web publishes a separate, filtered projection; app-only progress is never included.
@@ -36,13 +38,13 @@ export async function generateStaticParams() {
   return all.filter((p) => p.indexable).map((p) => ({ slug: p.slug }))
 }
 
-async function load(slug: string): Promise<{ place: DirectoryPlace; row: StandingRow | null; indexable: boolean } | null> {
+const load = cache(async (slug: string): Promise<{ place: DirectoryPlace; row: StandingRow | null; standings: EatStandings; indexable: boolean } | null> => {
   const place = await getDirectoryPlace(slug)
   if (!place) return null
   const standings = await getEatStandings()
   const row = standings.all.find((r) => r.placeId === place.placeId) ?? null
-  return { place, row, indexable: place.indexable || Boolean(row && row.matchups > 0) }
-}
+  return { place, row, standings, indexable: place.indexable || Boolean(row && row.matchups > 0) }
+})
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params
@@ -53,15 +55,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const t = await getTranslations({ locale, namespace: 'Places' })
   const path = `${locale === 'id' ? '/id' : ''}/places/${place.slug}`
   const placeText = place.where ? `${place.name}, ${place.where.city}, ${place.where.country}` : place.name
+  const review = getReviewForPlace(place.slug)
   const meta = createPageMetadata({
     title: place.where
-      ? t('metaTitleLocated', { name: place.name, city: place.where.city })
-      : t('metaTitle', { name: place.name }),
+      ? t(publicMealCount ? 'metaTitleFoodLocated' : 'metaTitleLocated', { name: place.name, city: place.where.city })
+      : t(publicMealCount ? 'metaTitleFood' : 'metaTitle', { name: place.name }),
     description:
-      row && row.rank !== null
-        ? t('metaDescriptionRanked', { place: placeText, count: publicMealCount, eats: row.eats, rank: row.rank })
+      review
+        ? t('metaDescriptionReview', { place: placeText, count: publicMealCount, date: new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(review.visitDate)) })
+        : row && row.rank !== null
+          ? t('metaDescriptionRanked', { place: placeText, count: publicMealCount, eats: row.eats, rank: row.rank })
         : publicMealCount
-          ? t('metaDescriptionMeals', { place: placeText, count: publicMealCount })
+          ? t('metaDescriptionFood', { place: placeText, count: publicMealCount })
           : t('metaDescriptionEmpty', { place: placeText }),
     path,
     locale,
@@ -76,17 +81,17 @@ export default async function PlacePage({ params }: Props) {
   setRequestLocale(locale)
   const found = await load(slug)
   if (!found) notFound()
-  const { place, row } = found
+  const { place, row, standings } = found
   const publicMealCount = place.publicMealCount ?? place.meals.length
   // A renamed place keeps its hash; send old links to the current slug.
   if (place.slug !== slug) permanentRedirect(localizePath(locale, `/places/${place.slug}`))
   const t = await getTranslations('Places')
   const monthYear = new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-GB', { month: 'long', year: 'numeric' })
-  const dayMonthYear = new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+  const dayMonthYear = new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })
   const percent = new Intl.NumberFormat(locale === 'id' ? 'id-ID' : 'en-GB', { style: 'percent', maximumFractionDigits: 0 })
   const prefix = locale === 'id' ? '/id' : ''
   const pageUrl = `${SITE_URL}${prefix}/places/${place.slug}`
-  const standings = await getEatStandings()
+  const restaurantId = `${SITE_URL}/places/${place.slug}#restaurant`
   const city = place.where ? standings.cities.find((c) => c.city === place.where?.city) : undefined
   const ranked = Boolean(row && row.rank !== null)
   const hasGeo = place.lat !== null && place.lng !== null
@@ -96,12 +101,14 @@ export default async function PlacePage({ params }: Props) {
   // Lead with a real public meal tagged to this venue; keep the source photo as fallback.
   const [googlePhoto, maitred] = await Promise.all([getPlacePhoto(place.placeId), getMaitredStateAt(place.placeId)])
   const heroMeal = place.meals[0]
+  const review = getReviewForPlace(place.slug)
+  const hasUsual = maitred.status === 'held' && Boolean(maitred.venue.notes.always)
   const hero = heroMeal ? { src: heroMeal.src, alt: heroMeal.caption ? `${heroMeal.caption}, ${place.name}` : t('mealAlt', { name: place.name }) } : googlePhoto ? { src: googlePhoto.uri, alt: place.name } : null
 
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Restaurant',
-    '@id': pageUrl,
+    '@id': restaurantId,
     name: place.name,
     url: pageUrl,
     ...(place.address ? { address: { '@type': 'PostalAddress', streetAddress: place.address, ...(place.where ? { addressLocality: place.where.city, addressCountry: place.where.country } : {}) } } : {}),
@@ -115,8 +122,9 @@ export default async function PlacePage({ params }: Props) {
     subjectOf: {
       '@type': 'WebPage',
       '@id': pageUrl,
-      dateModified: standings.computedAt || new Date().toISOString(),
+      dateModified: standings.computedAt || undefined,
       inLanguage: locale === 'id' ? 'id' : 'en',
+      mainEntity: { '@id': restaurantId },
       breadcrumb: {
         '@type': 'BreadcrumbList',
         itemListElement: [
@@ -167,9 +175,33 @@ export default async function PlacePage({ params }: Props) {
           </figcaption> : null}
         </figure> : null}
 
+        {hasUsual || review ? <section className={styles.orderAdvice} aria-labelledby="what-to-order">
+          <h2 id="what-to-order">{t('whatToOrder', { name: place.name })}</h2>
+          {hasUsual ? <PlaceMaitred locale={locale} placeName={place.name} state={maitred} faqHref={localizePath(locale, '/maitre-d#how-it-is-earned')} /> : null}
+          {review ? <article className={styles.firsthand}>
+            <p className={styles.kicker}>{t('firsthandVisit', { author: review.author.name })} · <time dateTime={review.visitDate}>{dayMonthYear.format(new Date(review.visitDate))}</time></p>
+            <p lang="en" className={styles.orderSummary}>{review.orderSummary}</p>
+            <p className={styles.visitBill}>{t('visitBill', { total: review.bill.total, covers: review.bill.covers })}</p>
+            <Link href={`/blog/${review.slug}`} prefetch={false} className={styles.secondary}>{t('fullReview')} <PlayfulArrow /></Link>
+          </article> : null}
+        </section> : null}
+
+        <section id="meals" className={styles.meals}>
+          <div className={styles.sectionHeading}><h2>{t('mealsAt', { name: place.name })}</h2><span>{t('savedCount', { count: publicMealCount })}</span></div>
+          <ul className={styles.mealGrid}>
+            {place.meals.map((m) => <li key={m.id}>
+              <Link href={`/meal/${m.id}`} className={styles.mealCard}>
+                <Image src={m.thumb || thumbUrl(m.src, 480)} alt={m.caption ? `${m.caption}, ${place.name}` : t('mealAlt', { name: place.name })} width={480} height={480} sizes="(min-width: 1352px) 398px, (min-width: 701px) 31vw, calc(100vw - 40px)" loading="lazy" />
+                <span><span>{m.caption || m.mealType || t('mealFallback')}</span><span>{m.username ? `@${m.username} · ` : ''}<time dateTime={m.at}>{dayMonthYear.format(new Date(m.at))}</time></span></span>
+              </Link>
+            </li>)}
+          </ul>
+        </section>
+
+
         <div className={styles.placeDetails}>
           <div>
-            <PlaceMaitred locale={locale} placeName={place.name} state={maitred} faqHref={localizePath(locale, '/maitre-d#how-it-is-earned')} />
+            {!hasUsual ? <PlaceMaitred locale={locale} placeName={place.name} state={maitred} faqHref={localizePath(locale, '/maitre-d#how-it-is-earned')} /> : null}
             {row && (ranked || row.cityRank !== null || row.matchups > 0) ? <section className={styles.standing}>
               <p className={styles.kicker}>{t('standingBand')}</p>
               {ranked || row.cityRank !== null ? <p className={styles.rank}>
@@ -188,17 +220,6 @@ export default async function PlacePage({ params }: Props) {
           </aside>
         </div>
 
-        <section className={styles.meals}>
-          <div className={styles.sectionHeading}><h2>{t('recentMeals')}</h2><span>{t('savedCount', { count: publicMealCount })}</span></div>
-          <ul className={styles.mealGrid}>
-            {place.meals.map((m) => <li key={m.id}>
-              <Link href={`/meal/${m.id}`} className={styles.mealCard}>
-                <Image src={m.thumb || thumbUrl(m.src, 480)} alt={m.caption ? `${m.caption}, ${place.name}` : t('mealAlt', { name: place.name })} width={480} height={480} sizes="(min-width: 1352px) 398px, (min-width: 701px) 31vw, calc(100vw - 40px)" loading="lazy" />
-                <span><span>{m.caption || m.mealType || t('mealFallback')}</span><span>{m.username ? `@${m.username} · ` : ''}<time dateTime={m.at}>{dayMonthYear.format(new Date(m.at))}</time></span></span>
-              </Link>
-            </li>)}
-          </ul>
-        </section>
 
         <section className={styles.method}>
           <h2>{t('howTitle')}</h2>

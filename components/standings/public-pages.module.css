@@ -237,3 +237,14 @@
   .handoff h1 { font-size: 34px; }
   .maitred dl { grid-template-columns: minmax(0,1fr); }
 }
+
+.orderAdvice { margin-top: 44px; scroll-margin-top: 120px; }
+.orderAdvice h2 { font-size: clamp(28px, 3.2vw, 46px); line-height: 1.15; letter-spacing: -.035em; margin: 0 0 26px; overflow-wrap: anywhere; }
+.firsthand { max-width: 800px; }
+.orderAdvice .maitred + .firsthand { margin-top: 36px; }
+.firsthand .kicker { margin-bottom: 16px; }
+.orderSummary { font-size: clamp(22px, 2.5vw, 30px); line-height: 1.5; letter-spacing: -.015em; }
+.visitBill { font-size: 15px; line-height: 1.7; color: var(--color-brand-muted); margin-top: 16px; }
+.firsthand .secondary { margin-top: 30px; }
+.meals { scroll-margin-top: 120px; }
+@media (max-width: 700px) { .orderAdvice { margin-top: 32px; } }

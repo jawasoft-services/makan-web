@@ -698,7 +698,16 @@
     "maitredHow": "Cara menjadi Maître d’ di sini",
     "maitredNoNote": "Belum ada catatan menu.",
     "maitredUnresolved": "Pemegang gelar di sini belum ditentukan.",
-    "maitredDisabled": "Maître d’ sedang dijeda."
+    "maitredDisabled": "Maître d’ sedang dijeda.",
+    "metaTitleFoodLocated": "{name}, {city}: makanan & pilihan pesanan | Makan",
+    "metaTitleFood": "{name}: makanan & pilihan pesanan | Makan",
+    "metaDescriptionFood": "Lihat makanan yang dibagikan pengunjung di {place}: {count} makanan publik, foto asli, dan caption mereka di Makan.",
+    "metaDescriptionReview": "Pilihan pesanan di {place}: ulasan langsung dari kunjungan {date}, tagihan, dan {count} makanan publik di Makan.",
+    "whatToOrder": "Pilihan pesanan di {name}",
+    "mealsAt": "Yang dimakan pengunjung di {name}",
+    "firsthandVisit": "Dari kunjungan {author}",
+    "visitBill": "{total} untuk {covers} orang, dari kunjungan ini.",
+    "fullReview": "Baca ulasan lengkap (English)"
   },
   "Meal": {
     "savedAt": "Disimpan di",

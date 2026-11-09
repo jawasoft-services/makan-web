@@ -34,6 +34,8 @@ export interface MealEmbed {
 
 export interface Restaurant {
   name: string
+  /** Existing public venue URL; its hash keeps the review attached after a rename. */
+  makanSlug: string
   cuisine: string[]
   street: string
   locality: string
@@ -64,6 +66,7 @@ export type Block =
 
 export interface Review {
   slug: string
+  orderSummary: string
   title: string
   h1: string
   dek: string

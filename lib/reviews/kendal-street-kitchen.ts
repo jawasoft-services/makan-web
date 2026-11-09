@@ -1,7 +1,10 @@
 import type { Review } from "./types"
 
+const orderSummary = "Our standouts were the harissa prawns, the mushroom risotto, and the £8 Kendal's tiramisu."
+
 export const kendalStreetKitchen: Review = {
   slug: "kendal-street-kitchen",
+  orderSummary,
   title: "Kendal Street Kitchen Review: What to Order & the Real Bill",
   h1: "Kendal Street Kitchen review: the Connaught Village spot I'm making my regular",
   dek: "Dinner for two in Connaught Village: what we ate, the £82.13 bill in full, and whether it's worth it.",
@@ -17,6 +20,7 @@ export const kendalStreetKitchen: Review = {
   },
   restaurant: {
     name: "Kendal Street Kitchen",
+    makanSlug: "kendal-street-kitchen-f7d46b",
     cuisine: ["Mediterranean", "Italian"],
     street: "17-20 Kendal Street",
     locality: "London",
@@ -86,7 +90,7 @@ export const kendalStreetKitchen: Review = {
     },
     {
       q: "What should I order at Kendal Street Kitchen?",
-      a: "Our standouts were the harissa prawns, the mushroom risotto, and the £8 Kendal's tiramisu.",
+      a: orderSummary,
     },
     {
       q: "Who owns Kendal Street Kitchen?",

@@ -1,7 +1,10 @@
 import type { Review } from "./types"
 
+const orderSummary = "The Thai sea bass was our standout, followed by the crispy duck. The dim sum was fine but the least memorable part of our meal."
+
 export const uliMarylebone: Review = {
   slug: "uli-marylebone",
+  orderSummary,
   title: "ULI Marylebone Review: Birthday Dinner & the £142.01 Bill",
   h1: "ULI Marylebone review: a lovely birthday dinner, but would I go back?",
   dek: "My 22nd birthday dinner with my girlfriend: a beautiful room, good food, standout sea bass and the full £142.01 bill.",
@@ -17,6 +20,7 @@ export const uliMarylebone: Review = {
   },
   restaurant: {
     name: "ULI Marylebone",
+    makanSlug: "uli-marylebone-8d3501",
     cuisine: ["Chinese", "Thai", "Malaysian", "Singaporean"],
     street: "15 Seymour Place",
     locality: "London",
@@ -83,7 +87,7 @@ export const uliMarylebone: Review = {
     },
     {
       q: "What should I order at ULI Marylebone?",
-      a: "The Thai sea bass was our standout, followed by the crispy duck. The dim sum was fine but the least memorable part of our meal.",
+      a: orderSummary,
     },
     {
       q: "Were the portions enough for two?",

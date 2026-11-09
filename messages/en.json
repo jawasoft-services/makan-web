@@ -698,7 +698,16 @@
     "maitredHow": "How to become the Maître d’ here",
     "maitredNoNote": "No note on what to order yet.",
     "maitredUnresolved": "The title here is still undecided.",
-    "maitredDisabled": "Maître d’ is currently paused."
+    "maitredDisabled": "Maître d’ is currently paused.",
+    "metaTitleFoodLocated": "{name}, {city}: meals & what to order | Makan",
+    "metaTitleFood": "{name}: meals & what to order | Makan",
+    "metaDescriptionFood": "See what diners ate at {place}: {count} public meals, original food photos and their captions on Makan.",
+    "metaDescriptionReview": "What to order at {place}: a firsthand review from {date}, the bill and {count} public meals shared on Makan.",
+    "whatToOrder": "What to order at {name}",
+    "mealsAt": "What people ate at {name}",
+    "firsthandVisit": "From {author}’s visit",
+    "visitBill": "{total} for {covers} people, from this visit.",
+    "fullReview": "Read the full review"
   },
   "Meal": {
     "savedAt": "Saved at",

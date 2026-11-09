@@ -18,6 +18,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const review = getReview(slug)
   if (!review) return {}
   const url = `https://www.makanofficial.com/blog/${review.slug}`
+  const photo = review.meals.find(meal => meal.photo)
+  const images = photo?.photo ? [{ url: `https://www.makanofficial.com${photo.photo}`, alt: photo.alt }] : []
   return {
     title: review.title,
     description: review.metaDescription,
@@ -31,11 +33,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       publishedTime: review.datePublished,
       modifiedTime: review.dateModified,
       authors: [review.author.name],
+      images,
     },
     twitter: {
       card: "summary_large_image",
       title: review.title,
       description: review.metaDescription,
+      images,
     },
   }
 }

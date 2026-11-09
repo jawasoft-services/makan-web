@@ -118,7 +118,7 @@ export function ReviewArticle({ review }: { review: Review }) {
         <aside className={styles.toc}>
           <p>In this review</p>
           <nav aria-label="Review sections">{review.blocks.map((block, i) => block.kind === 'h2' ? <a key={i} href={`#section-${i}`}>{block.text}</a> : null)}</nav>
-          {review.slug === 'kendal-street-kitchen' ? <Link className={styles.textLink} href="/places/kendal-street-kitchen-f7d46b">Kendal Street Kitchen on Makan <PlayfulArrow /></Link> : null}
+          <Link className={styles.textLink} href={`/places/${review.restaurant.makanSlug}`}>{review.restaurant.name} on Makan <PlayfulArrow /></Link>
         </aside>
         <article className={`${styles.prose} ${styles.reviewProse}`}>
           {review.blocks.map((block, index) => <BlockView key={index} block={block} review={review} index={index} />)}
