@@ -59,6 +59,13 @@ const groups = [
     widths: [480, 900, 1400],
     quality: 82,
   },
+  {
+    sourceDir: path.join(publicRoot, 'blog', 'uli-marylebone'),
+    outputDir: path.join(outputRoot, 'blog', 'uli-marylebone'),
+    match: /\.(?:jpg|jpeg|png|webp)$/i,
+    widths: [480, 900, 1400],
+    quality: 82,
+  },
 ]
 
 let sourceCount = 0

@@ -1,5 +1,15 @@
 # Story photo credits
 
+## Blog photographs
+
+| file | dish | account | public | date | source |
+|---|---|---|---|---|---|
+| sea-bass.webp | Thai sea bass, ULI Marylebone | @ridorichard | yes | 2026-11-02 | meals/pHXX2GZ0cC7jm3HyxjZu; public, active and not deleted/draft/local when checked 2026-11-08; copied to public/blog/uli-marylebone/ |
+| crispy-duck.webp | Crispy duck, ULI Marylebone | @ridorichard | yes | 2026-11-02 | meals/VAJ9tgEZJjlh0Pkdyq0P; public, active and not deleted/draft/local when checked 2026-11-08; copied to public/blog/uli-marylebone/ |
+| dim-sum.webp | Kaleidoscope dim sum basket, ULI Marylebone | @ridorichard | yes | 2026-11-02 | meals/3CCSPznIg3RPbFCf3xoH; public, active and not deleted/draft/local when checked 2026-11-08; copied to public/blog/uli-marylebone/ |
+
+## Story and app photographs
+
 Every meal photo in `public/meals/story/` was public on Makan when copied; the app screenshots in `public/app-screens/story/` are the founder's own account and are published with his consent (`public` = may be shown on the site). Source ids are Firestore `meals` document ids (read-only query, ADC, project `munchies-expo`, 2026-09-02).
 
 | file | dish | account | public | date | source |
