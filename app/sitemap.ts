@@ -8,7 +8,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [standings, places] = await Promise.all([getEatStandings(), getPlaceIndex()])
   const matchupIds = new Set(standings.all.filter((r) => r.matchups > 0).map((r) => r.placeId))
   const reviews = getAllReviews()
-  const blogLastMod = reviews[0] ? new Date(reviews[0].dateModified) : new Date()
+  const blogLastMod = reviews.length ? new Date(Math.max(...reviews.map(review => new Date(review.dateModified).getTime()))) : undefined
 
   const localized = (
     path: string,
@@ -24,9 +24,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         "x-default": enUrl,
       },
     }
+    // Unknown modification dates stay absent instead of becoming the build time.
     return [
-      { url: enUrl, lastModified: new Date(), changeFrequency, priority, alternates },
-      { url: idUrl, lastModified: new Date(), changeFrequency, priority, alternates },
+      { url: enUrl, changeFrequency, priority, alternates },
+      { url: idUrl, changeFrequency, priority, alternates },
     ]
   }
 
@@ -42,6 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...localized("/story", "monthly", 0.9),
     ...localized("/maitre-d", "weekly", 0.8),
     ...localized("/partner", "monthly", 0.8),
+    ...localized("/places", "weekly", 0.8),
     ...localized("/standings", "weekly", 0.8),
     ...standings.cities.flatMap((c) => localized(`/standings/${c.slug}`, "weekly", 0.7)),
     // Only the pages worth a result: two or more public meals, or any matchup.
@@ -51,6 +53,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...localized("/manifesto", "monthly", 0.6),
     ...localized("/app", "monthly", 0.8),
     ...localized("/privacy-policy", "yearly", 0.3),
-    { url: `${base}/tos`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
+    { url: `${base}/tos`, changeFrequency: "yearly", priority: 0.3 },
   ]
 }

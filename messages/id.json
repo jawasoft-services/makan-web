@@ -837,7 +837,8 @@
       "rulesQualify": "Simpan makanan yang memenuhi syarat di sini pada setidaknya dua hari berbeda dalam 60 hari terakhir.",
       "rulesHolder": "Hari terhitung terbanyak menang. Saat seri, pemegang yang masih memenuhi syarat tetap memegang gelar.",
       "rulesUsual": "Maître d’ bisa membagikan pesanan andalannya untuk membantu pengunjung berikutnya."
-    }
+    },
+    "places": "Jelajahi restoran"
   },
   "PartnerRedesign": {
     "hero": "Biar langgananmu memandu tamu baru.",
@@ -1069,5 +1070,17 @@
     "proofEmpty": "Pesanan andalan muncul di sini setelah dipublikasikan oleh Maître d’.",
     "proofUnavailable": "Pesanan andalan belum bisa dimuat. Kamu tetap bisa menjelajahi Maître d’ di Makan.",
     "proofDisabled": "Maître d’ sedang dijeda."
+  },
+  "PlaceDirectory": {
+    "metaTitle": "Restoran di Makan — makanan asli dan pilihan pesanan",
+    "metaDescription": "Jelajahi restoran dari makanan yang dibagikan di Makan. Temukan tempat, lihat pesanan pengunjung, dan pilih hidangan lewat foto makanan mereka.",
+    "title": "Temukan makan berikutnya.",
+    "intro": "Jelajahi tempat di balik makanan yang dibagikan di Makan.",
+    "search": "Cari restoran",
+    "placeholder": "Nama restoran atau kota",
+    "results": "{count} restoran ditampilkan",
+    "empty": "Tidak ada restoran yang cocok.",
+    "clear": "Hapus pencarian",
+    "unavailable": "Halaman restoran belum tersedia saat ini. Silakan coba lagi sebentar."
   }
 }

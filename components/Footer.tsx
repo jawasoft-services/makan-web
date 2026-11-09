@@ -7,7 +7,7 @@ import LanguageSwitcher from './LanguageSwitcher'
 export default function Footer() {
   const locale = useLocale()
   const t = useTranslations('Redesign')
-  const primary = [['app', 'app'], ['story', 'story'], ['blog', 'blog'], ['partner', 'partner'], ['standings', 'standings']] as const
+  const primary = [['app', 'app'], ['places', 'places'], ['story', 'story'], ['blog', 'blog'], ['partner', 'partner'], ['standings', 'standings']] as const
   const help = [['support', 'help'], ['contact', 'contact'], ['privacy-policy', 'privacy'], ['tos', 'terms'], ['account-deletion', 'deleteaccount'], ['data-deletion', 'deletedata']] as const
   return <footer className="redesign-footer inverse-ground">
     <div className="footer-top">

@@ -837,7 +837,8 @@
       "rulesQualify": "Save eligible meals here on at least two different days in the last 60 days.",
       "rulesHolder": "Most counted days wins. A qualifying holder keeps the title on a tie.",
       "rulesUsual": "The Maître d’ can share their usual order to help the next diner."
-    }
+    },
+    "places": "Explore restaurants"
   },
   "PartnerRedesign": {
     "hero": "Let your regulars guide the next guest.",
@@ -1069,5 +1070,17 @@
     "proofEmpty": "Usual orders will appear here as Maîtres d’ publish them.",
     "proofUnavailable": "Usual orders aren’t available right now. You can still explore Maître d’ in Makan.",
     "proofDisabled": "Maître d’ is currently paused."
+  },
+  "PlaceDirectory": {
+    "metaTitle": "Restaurants on Makan — real meals and what to order",
+    "metaDescription": "Explore restaurants with meals shared on Makan. Find a place, see what diners ordered and use their real meal photos to choose what to try.",
+    "title": "Find your next meal.",
+    "intro": "Explore the places behind meals shared on Makan.",
+    "search": "Search restaurants",
+    "placeholder": "Restaurant name or city",
+    "results": "{count, plural, one {# restaurant shown} other {# restaurants shown}}",
+    "empty": "No restaurants match that search.",
+    "clear": "Clear search",
+    "unavailable": "Restaurant pages aren’t available right now. Please try again shortly."
   }
 }

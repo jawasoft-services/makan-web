@@ -1,7 +1,7 @@
 import { getAllReviews } from "@/lib/reviews"
 import { APP_STORE_URL } from "@/lib/links"
-import { DECISION_HOME } from "@/lib/decision-home"
 import { BOILERPLATE_SHORT } from "@/lib/press"
+import english from '@/messages/en.json'
 
 export const dynamic = "force-static"
 
@@ -14,9 +14,7 @@ export function GET() {
   const lines = [
     "# Makan",
     "",
-    DECISION_HOME
-      ? "> The app you open when you don't know what to order. Take a photo of what you eat; Makan works out what you like and what people keep ordering where you are. Free on iPhone and at makanofficial.com."
-      : "> A social food journal — remember every meal. Free on the iOS App Store and at makanofficial.com.",
+    `> ${english.Redesign.intro}`,
     "",
     "## Restaurant reviews",
     ...reviews.map((r) => `- [${r.restaurant.name} review](${base}/blog/${r.slug}): ${r.metaDescription}`),
@@ -26,9 +24,10 @@ export function GET() {
     "",
     "## Product",
     `- [Get Makan](${APP_STORE_URL}): Download Makan free on the App Store.`,
+    `- [Explore restaurants](${base}/places): Find the places behind meals shared on Makan.`,
     `- [Manifesto](${base}/manifesto): Why Makan exists.`,
     `- [Eat or Yeet standings](${base}/standings): Restaurants ranked by Eat rate: how often diners who ate there pick them.`,
-    `- [For restaurants](${base}/partner): Free for restaurants; your name on every saved meal, an Eat every time a diner picks your dish.`,
+    `- [For restaurants](${base}/partner): ${english.Redesign.restaurantbody}`,
     "",
     "## Support",
     `- [Support](${base}/support): Contact Makan support, delete your account, report a meal, or make a privacy request.`,
