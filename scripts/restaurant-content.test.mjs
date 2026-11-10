@@ -30,8 +30,8 @@ function lane(locale = 'en') {
       } }
       if (id === 'next-intl/server') return { setRequestLocale() {}, getTranslations: async namespace => createTranslator({ locale, messages, namespace: typeof namespace === 'string' ? namespace : namespace.namespace, onError(error) { throw error } }) }
       if (id === 'next/navigation') return { notFound() { throw Error('NOT_FOUND') }, permanentRedirect(url) { throw Error('REDIRECT:' + url) } }
-      if (id === 'next/link') return { default: ({ children, prefetch: _prefetch, ...props }) => createElement('a', props, children) }
-      if (id === 'next/image') return { default: ({ fill: _fill, priority: _priority, ...props }) => createElement('img', props) }
+      if (id === 'next/link') return { default: ({ children, ...props }) => { delete props.prefetch; return createElement('a', props, children) } }
+      if (id === 'next/image') return { default: ({ ...props }) => { delete props.fill; delete props.priority; return createElement('img', props) } }
       if (id === '@/components/PlaceMaitred') return { default: ({ state }) => createElement('section', { 'data-maitred': state.status }, state.status === 'held' ? state.venue.notes.always : state.status) }
       if (id.startsWith('@/components/')) return id.endsWith('.module.css') ? { default: new Proxy({}, { get: (_, key) => key }) } : { default: () => null }
       if (id === '@/lib/place-directory') return { getDirectoryPlace: async () => { state.reads++; return state.place }, getPlaceIndex: async () => [] }
@@ -132,11 +132,12 @@ test('article schema connects to the same venue, founder and organization entiti
   const run = lane(), registry = run.load('lib/reviews/index.ts'), schema = run.load('components/blog/ReviewSchema.tsx')
   for (const review of registry.getAllReviews()) {
     const graph = JSON.parse(schema.ReviewSchema({ review }).props.dangerouslySetInnerHTML.__html)['@graph']
-    const article = graph.find(n => n['@type'] === 'BlogPosting'), verdict = graph.find(n => n['@type'] === 'Review')
+    const article = graph.find(n => n['@type'] === 'BlogPosting')
     assert.equal(article.about['@id'], 'https://www.makanofficial.com/places/' + review.restaurant.makanSlug + '#restaurant')
-    assert.equal(verdict.itemReviewed['@id'], article.about['@id'])
-    assert.equal(verdict.reviewBody, review.orderSummary)
-    assert.equal(verdict.author['@id'], 'https://www.makanofficial.com/#founder')
+    const restaurant = graph.find(n => n['@type'] === 'Restaurant' && n['@id'] === article.about['@id'])
+    assert.deepEqual(restaurant.image, article.image)
+    assert(!graph.some(n => n['@type'] === 'Review'), 'Unscored editorial articles must not emit incomplete review snippets')
+    assert.equal(article.author['@id'], 'https://www.makanofficial.com/#founder')
     assert.equal(article.publisher['@id'], 'https://www.makanofficial.com/#organization')
     assert(!graph.some(n => n.reviewRating || n.aggregateRating))
   }
