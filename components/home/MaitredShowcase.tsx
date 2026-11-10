@@ -112,9 +112,11 @@ function PickCard({
         {src ? (
           <Image src={src} alt="" fill sizes="(min-width: 1024px) 330px, (min-width: 640px) 45vw, 96px" className="object-cover transition-transform duration-300 group-hover:scale-[1.02]" />
         ) : null}
-        {/* Google requires the photographer's credit beside a Places photo. */}
+        {/* Google requires the photographer's credit beside a Places photo. On phones the photo is a
+            96px square, so the credit sits in the text column instead (below); the overlay is for
+            the wider photo from `sm` up. */}
         {!venue.photo && google ? (
-          <span className="absolute left-1.5 right-1.5 top-1.5 rounded-md bg-brand-ink/80 px-2 py-1 text-[0.68rem] leading-tight text-white">{credit(google.author || "Google Maps")}</span>
+          <span className="absolute left-1.5 right-1.5 top-1.5 hidden rounded-md bg-brand-ink/80 px-2 py-1 text-[0.68rem] leading-tight text-white sm:block">{credit(google.author || "Google Maps")}</span>
         ) : null}
       </span> : null}
       <span className={`flex min-w-0 flex-1 flex-col sm:px-5 sm:pb-6 sm:pt-[18px] ${wide ? "sm:justify-center sm:px-10 sm:py-10" : ""}`}>
@@ -133,6 +135,9 @@ function PickCard({
           <Avatar venue={venue} className="h-7 w-7 sm:h-9 sm:w-9" />
           <span>{byline}</span>
         </span>
+        {!venue.photo && google ? (
+          <span className="mt-2 text-xs leading-[1.35] text-brand-muted sm:hidden">{credit(google.author || "Google Maps")}</span>
+        ) : null}
       </span>
     </div>
   )
