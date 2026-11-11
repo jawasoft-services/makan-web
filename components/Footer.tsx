@@ -8,7 +8,7 @@ export default function Footer() {
   const locale = useLocale()
   const t = useTranslations('Redesign')
   const primary = [['app', 'app'], ['places', 'places'], ['story', 'story'], ['blog', 'blog'], ['partner', 'partner'], ['standings', 'standings']] as const
-  const help = [['support', 'help'], ['contact', 'contact'], ['privacy-policy', 'privacy'], ['tos', 'terms'], ['account-deletion', 'deleteaccount'], ['data-deletion', 'deletedata']] as const
+  const help = [['support', 'help'], ['contact', 'contact'], ['press', 'press'], ['privacy-policy', 'privacy'], ['tos', 'terms'], ['account-deletion', 'deleteaccount'], ['data-deletion', 'deletedata']] as const
   return <footer className="redesign-footer inverse-ground">
     <div className="footer-top">
       <Link className="footer-brand" href={localizePath(locale, '/')} aria-label={locale === 'id' ? 'Beranda Makan' : 'Makan home'}><Image src="/redesign/logo.svg" alt="Makan" width={168} height={40} /></Link>

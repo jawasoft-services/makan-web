@@ -12,6 +12,7 @@ const INDONESIAN_ROUTES = new Set([
   "/twitter-image",
   "/partner",
   "/places",
+  "/press",
   "/privacy-policy",
   "/standings",
   "/standings/opengraph-image",
