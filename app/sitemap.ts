@@ -41,6 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     })),
     ...localized("/story", "monthly", 0.9),
+    ...localized("/press", "monthly", 0.6),
     ...localized("/maitre-d", "weekly", 0.8),
     ...localized("/partner", "monthly", 0.8),
     ...localized("/places", "weekly", 0.8),

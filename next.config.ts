@@ -150,7 +150,7 @@ const nextConfig: NextConfig = {
       { source: "/success", destination: "/", permanent: true },
       { source: "/privacy", destination: "/privacy-policy", permanent: true },
       { source: "/about", destination: "/story", permanent: true },
-      { source: "/press", destination: "/story", permanent: true },
+      // /press used to redirect to /story; it is now its own page (RM20514).
     ];
   },
 };

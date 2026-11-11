@@ -21,6 +21,7 @@ export function GET() {
     "",
     "## About",
     `- [The Makan story](${base}/story): ${BOILERPLATE_SHORT}`,
+    `- [Press](${base}/press): Facts, founder bios, quotes and downloads for writing about Makan.`,
     "",
     "## Product",
     `- [Get Makan](${APP_STORE_URL}): Download Makan free on the App Store.`,

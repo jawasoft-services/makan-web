@@ -1,4 +1,4 @@
-// Single source of truth for the /story page, its JSON-LD, metadata, and llms.txt.
+// Single source of truth for the /story and /press pages, their JSON-LD, metadata, and llms.txt.
 // Update facts/boilerplate here only — every surface imports from this file.
 import { APP_STORE_URL } from "@/lib/links"
 
@@ -7,9 +7,30 @@ export const PRESS_EMAIL = "hello@makanofficial.com"
 export const FOUNDER = {
   name: "Devon Makepeace",
   role: "Founder",
-  // Verifiable bio only (third culture kid; Indonesian heritage). Expand if Devon supplies more.
-  bio: "Third culture kid — born in Jakarta, raised across Singapore and Bali, now in Durham. Devon drives Makan's product and design.",
+  // Verifiable bio only. Sources: Devon's grant applications (Oct 2026); based in London (Devon, 11 Nov 2026).
+  bio: "Born in Jakarta and raised across Singapore and Bali, now based in London. He wrote most of Makan himself and is studying for an MSc in Bioscience Futures at Imperial College London.",
 } as const
+
+// Each person approved their own line on 11 Nov 2026 (relayed by Devon). Claim ledger: strategy/press-2026-11-11/VERIFICATION.md.
+export const COFOUNDERS = [
+  { name: "Ewan Makepeace", city: "Jakarta" },
+  { name: "Julian Buendia", city: "New York" },
+] as const
+
+// Facts a journalist can quote. Re-check version and platform at every release.
+export const PRESS_FACTS = {
+  iosMinimum: "15.1", // App Store minimumOsVersion
+  version: "1.0.13", // current App Store version
+  versionDate: "2026-11-02", // its release date (ISO)
+} as const
+
+// Downloads on /press. `bytes` is asserted against the real file by components/press/press.test.mjs.
+export const PRESS_ASSETS = [
+  { id: "icon", file: "/press/makan-app-icon-1024.png", preview: "/press/makan-app-icon-256.png", format: "PNG", dimensions: "1024 × 1024", bytes: 833690 },
+  { id: "wordmarkOrange", file: "/makan-logo-orange.svg", format: "SVG", bytes: 3873 },
+  { id: "wordmarkWhite", file: "/makan-logo-white.svg", format: "SVG", bytes: 3873 },
+  { id: "founderPhoto", file: "/press/devon-makepeace-founder.jpg", format: "JPG", dimensions: "738 × 738", bytes: 179569, credit: "Devon Makepeace" },
+] as const
 
 export const COMPANY = {
   legalName: "MAKAN APP LTD",
