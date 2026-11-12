@@ -19,6 +19,7 @@ const INDONESIAN_ROUTES = new Set([
   "/partner/opengraph-image",
   "/story",
   "/support",
+  "/verified",
 ])
 
 export function stripLocalePrefix(pathname: string) {
