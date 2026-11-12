@@ -1092,5 +1092,12 @@
     "empty": "Tidak ada restoran yang cocok.",
     "clear": "Hapus pencarian",
     "unavailable": "Halaman restoran belum tersedia saat ini. Silakan coba lagi sebentar."
+  },
+  "Verified": {
+    "metaTitle": "Email terverifikasi · Makan",
+    "title": "Email terverifikasi",
+    "body": "Buka Makan untuk lanjut. Kalau aplikasinya sudah terbuka, Makan lanjut sendiri.",
+    "open": "Buka Makan",
+    "otherDevice": "Membuka ini di komputer? Kembali ke Makan di ponselmu. Belum punya aplikasinya? Unduh di sini."
   }
 }

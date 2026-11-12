@@ -8,6 +8,8 @@ const CLAIM_COMPONENTS = [
   { "/": "/id/claim/*", comment: "Open an Indonesian venue claim link in Makan" },
   { "/": "/p/*", comment: "Open a restaurant or dish link in Makan" },
   { "/": "/id/p/*", comment: "Open an Indonesian restaurant or dish link in Makan" },
+  // RM20356 — the verification email's Continue link returns to the app's Verify screen.
+  { "/": "/verified", comment: "Return to Makan after verifying an email address" },
 ]
 
 export function GET() {

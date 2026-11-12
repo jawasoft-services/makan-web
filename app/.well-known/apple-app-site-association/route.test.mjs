@@ -3,7 +3,7 @@ import test from "node:test"
 
 import { GET } from "./route.ts"
 
-test("AASA claims complete fragment-bearing table invites, venue claim links and restaurant/dish links", async () => {
+test("AASA claims complete fragment-bearing table invites, venue claim links, restaurant/dish links and the email-verified return", async () => {
   const response = GET()
   const { applinks } = await response.json()
 
@@ -28,6 +28,9 @@ test("AASA claims complete fragment-bearing table invites, venue claim links and
     }, {
       "/": "/id/p/*",
       comment: "Open an Indonesian restaurant or dish link in Makan",
+    }, {
+      "/": "/verified",
+      comment: "Return to Makan after verifying an email address",
     }],
   }, {
     appIDs: ["T3Z49Z9YUB.com.makanofficial.makandev"],
@@ -36,6 +39,7 @@ test("AASA claims complete fragment-bearing table invites, venue claim links and
       { "/": "/id/claim/*", comment: "Open an Indonesian venue claim link in Makan" },
       { "/": "/p/*", comment: "Open a restaurant or dish link in Makan" },
       { "/": "/id/p/*", comment: "Open an Indonesian restaurant or dish link in Makan" },
+      { "/": "/verified", comment: "Return to Makan after verifying an email address" },
     ],
   }])
 })

@@ -1092,5 +1092,12 @@
     "empty": "No restaurants match that search.",
     "clear": "Clear search",
     "unavailable": "Restaurant pages aren’t available right now. Please try again shortly."
+  },
+  "Verified": {
+    "metaTitle": "Email verified · Makan",
+    "title": "Email verified",
+    "body": "Open Makan to continue. If the app is already open, it carries on by itself.",
+    "open": "Open Makan",
+    "otherDevice": "Opened this on a computer? Go back to Makan on your phone. Don't have the app yet? Get it here."
   }
 }
