@@ -2,7 +2,9 @@ import { WEBSITE_FIXTURES } from '@/lib/website-fixtures'
 import 'server-only'
 import { unstable_cache } from 'next/cache'
 import { GoogleAuth, JWT } from 'google-auth-library'
+import { Timestamp } from 'firebase-admin/firestore'
 import seed from '@/lib/data/place-cities.json'
+import { getDb } from '@/lib/firebase-admin'
 import { federatedCredentials } from '@/lib/gcp-federation'
 
 /**
@@ -16,7 +18,14 @@ import { federatedCredentials } from '@/lib/gcp-federation'
  *   2. Anything not in the seed: one Places call ("Location Only" field mask,
  *      addressComponents), authorised with the same service account the site
  *      already uses for Firestore (or ADC locally) and billed to the project
- *      via X-Goog-User-Project. Cached for 30 days per id. Fails to null.
+ *      via X-Goog-User-Project. Fails to null.
+ *
+ * Path 2 is stored in Firestore at webCache/placeCities/places/{placeId}, the
+ * same way lib/place-photo.ts stores photos: the Next data cache alone was
+ * re-asking Google for the same ~90 places several times a day (Places
+ * metrics, 8-13 Nov 2026). `fetchedAt` keeps Google's 30-day limit on holding
+ * place content; do not lengthen it. A refused or failed call is remembered
+ * for RETRY_AFTER_FAILURE_MS so a 429 is not repeated on every recompute.
  *
  * Labels are computed here, not stored, so a naming rule can change without
  * re-resolving anything.
@@ -100,39 +109,68 @@ export async function accessToken(): Promise<string | null> {
   return typeof token === 'string' ? token : (token?.token ?? null)
 }
 
-/** One live lookup, cached a month per place id. */
-const lookup = unstable_cache(
-  async (placeId: string): Promise<RawComponents | null> => {
-    try {
-      const token = await accessToken()
-      if (!token) return null
-      const res = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'X-Goog-User-Project': process.env.FIREBASE_PROJECT_ID ?? 'munchies-expo',
-          'X-Goog-FieldMask': 'addressComponents',
-        },
-      })
-      if (!res.ok) return null
-      const json = (await res.json()) as { addressComponents?: { longText?: string; shortText?: string; types?: string[] }[] }
-      const ac = json.addressComponents ?? []
-      const countryComponent = ac.find((x) => (x.types ?? []).includes('country'))
-      return {
-        loc: pick(ac, ['locality']),
-        city: pick(ac, ['locality', 'postal_town', 'administrative_area_level_3', 'administrative_area_level_2', 'administrative_area_level_1']),
-        a1: pick(ac, ['administrative_area_level_1']),
-        a2: pick(ac, ['administrative_area_level_2']),
-        a3: pick(ac, ['administrative_area_level_3']),
-        country: countryComponent?.longText ?? '',
-        cc: countryComponent?.shortText ?? '',
-      }
-    } catch {
-      return null
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000
+const RETRY_AFTER_FAILURE_MS = 6 * 60 * 60 * 1000
+
+/** One live Places call. Null on any refusal or error. */
+async function fetchFromGoogle(placeId: string): Promise<RawComponents | null> {
+  try {
+    const token = await accessToken()
+    if (!token) return null
+    const res = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'X-Goog-User-Project': process.env.FIREBASE_PROJECT_ID ?? 'munchies-expo',
+        'X-Goog-FieldMask': 'addressComponents',
+      },
+    })
+    if (!res.ok) return null
+    const json = (await res.json()) as { addressComponents?: { longText?: string; shortText?: string; types?: string[] }[] }
+    const ac = json.addressComponents ?? []
+    const countryComponent = ac.find((x) => (x.types ?? []).includes('country'))
+    return {
+      loc: pick(ac, ['locality']),
+      city: pick(ac, ['locality', 'postal_town', 'administrative_area_level_3', 'administrative_area_level_2', 'administrative_area_level_1']),
+      a1: pick(ac, ['administrative_area_level_1']),
+      a2: pick(ac, ['administrative_area_level_2']),
+      a3: pick(ac, ['administrative_area_level_3']),
+      country: countryComponent?.longText ?? '',
+      cc: countryComponent?.shortText ?? '',
     }
-  },
-  ['makan-place-city', 'v1'],
-  { revalidate: 30 * 24 * 60 * 60 },
-)
+  } catch {
+    return null
+  }
+}
+
+function cacheRef(placeId: string) {
+  return getDb()?.collection('webCache').doc('placeCities').collection('places').doc(placeId) ?? null
+}
+
+/** Firestore first; Google only when nothing fresh is stored and no failure is recent. */
+async function resolvePlaceCity(placeId: string): Promise<RawComponents | null> {
+  const ref = cacheRef(placeId)
+  let raw: RawComponents | null = null
+  let failedAt = 0
+  try {
+    const d = ref ? (await ref.get()).data() : undefined
+    const fetchedAt = d?.fetchedAt instanceof Timestamp ? d.fetchedAt.toMillis() : 0
+    if (d?.raw && Date.now() - fetchedAt < THIRTY_DAYS_MS) raw = d.raw as RawComponents
+    failedAt = d?.failedAt instanceof Timestamp ? d.failedAt.toMillis() : 0
+  } catch {
+    // Firestore unavailable: fall through to Google, as before this cache existed.
+  }
+  if (raw) return raw
+  if (Date.now() - failedAt < RETRY_AFTER_FAILURE_MS) return null
+
+  const fresh = await fetchFromGoogle(placeId)
+  const write = fresh ? { raw: fresh, fetchedAt: Timestamp.now(), failedAt: null } : { failedAt: Timestamp.now() }
+  ref?.set(write, { merge: true }).catch(() => console.error('place-city: failed to write the cache for', placeId))
+  return fresh
+}
+
+// A warm instance keeps the Firestore read out of the render path; the
+// Firestore document is what survives the deploy.
+const lookup = unstable_cache(resolvePlaceCity, ['makan-place-city', 'v2'], { revalidate: 24 * 60 * 60 })
 
 /** The raw seed row for a place, if known. */
 export function getPlaceSeed(placeId: string): RawComponents | null {
