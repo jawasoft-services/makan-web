@@ -4,6 +4,8 @@
 // RM20333 — restaurant and dish links (/p/<placeId>[/<dishId>]) open the installed app the same way;
 // the friend without the app gets the web page.
 const CLAIM_COMPONENTS = [
+  { "/": "/u/*", comment: "Open a public profile in Makan" },
+  { "/": "/id/u/*", comment: "Open an Indonesian public profile in Makan" },
   { "/": "/claim/*", comment: "Open a venue claim link in Makan" },
   { "/": "/id/claim/*", comment: "Open an Indonesian venue claim link in Makan" },
   { "/": "/p/*", comment: "Open a restaurant or dish link in Makan" },

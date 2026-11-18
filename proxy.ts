@@ -3,6 +3,7 @@ import { defineRouting } from "next-intl/routing"
 import { NextResponse, type NextRequest } from "next/server"
 import { isIndonesianRoute, stripLocalePrefix } from "@/i18n/availability"
 import { routing } from "@/i18n/routing"
+import { rateLimited } from '@/lib/rate-limit'
 
 const localizedMiddleware = createMiddleware(routing)
 const englishOnlyMiddleware = createMiddleware(
@@ -33,6 +34,9 @@ export function proxy(request: NextRequest) {
   }
 
   const { pathname } = request.nextUrl
+  if (stripLocalePrefix(pathname).startsWith('/u/') && rateLimited(request, 'public-profile', { burst: 60, perMinute: 30 })) {
+    return new NextResponse(null, { status: 429, headers: { 'Retry-After': '2', 'X-Robots-Tag': 'noindex, follow' } })
+  }
 
   // English is served unprefixed, so /en/... is only ever an old link or an
   // old index entry. next-intl would strip the prefix with a 307, which tells
@@ -58,9 +62,11 @@ export function proxy(request: NextRequest) {
     return response
   }
 
-  return isIndonesianRoute(pathname)
+  const response = isIndonesianRoute(pathname)
     ? localizedMiddleware(request)
     : englishOnlyMiddleware(request)
+  if (stripLocalePrefix(pathname).startsWith('/u/')) response.headers.set('X-Robots-Tag', 'noindex, follow')
+  return response
 }
 
 export const config = {
