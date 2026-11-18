@@ -27,7 +27,7 @@ export function stripLocalePrefix(pathname: string) {
 }
 
 // Whole families of pages, one per city and one per restaurant.
-const INDONESIAN_PREFIXES = ["/standings/", "/places/", "/claim/", "/p/", "/taste/"]
+const INDONESIAN_PREFIXES = ["/standings/", "/places/", "/claim/", "/p/", "/taste/", "/u/"]
 
 export function isIndonesianRoute(pathname: string) {
   const bare = stripLocalePrefix(pathname)

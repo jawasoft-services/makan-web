@@ -1099,5 +1099,11 @@
     "body": "Buka Makan untuk lanjut. Kalau aplikasinya sudah terbuka, Makan lanjut sendiri.",
     "open": "Buka Makan",
     "otherDevice": "Membuka ini di komputer? Kembali ke Makan di ponselmu. Belum punya aplikasinya? Unduh di sini."
+  },
+  "PublicProfile": {
+    "title": "{name} (@{handle}) di Makan",
+    "top3": "TOP 3",
+    "maitred": "Maître d’",
+    "recent": "Terbaru"
   }
 }

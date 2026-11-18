@@ -5,6 +5,7 @@ import type { PublicMeal } from './makan-stats'
 import type { ClaimVenue } from './claim-link'
 import type { LinkedPlace } from './place-link'
 import type { TasteInvitePreview } from './taste-invite'
+import type { PublicProfileData } from './public-profile'
 
 /** Explicit local build/test lane. Never infer safety from missing credentials: ADC may exist. */
 export const WEBSITE_FIXTURES = process.env.MAKAN_WEBSITE_FIXTURES === '1'
@@ -40,6 +41,16 @@ const places: DirectoryPlace[] = [base,
 ]
 export const fixtureDirectory = (): DirectoryPlace[] => unavailable ? [] : places
 export const fixturePlaceIndex = () => fixtureDirectory().map(p => ({ placeId: p.placeId, slug: p.slug, hash: p.hash, name: p.name, city: p.where?.city ?? null, indexable: p.indexable, meals: p.meals.length }))
+
+export const FIXTURE_PROFILE_KEY = 'k3f9q2x7'
+export function fixturePublicProfile(key: string): PublicProfileData | null {
+  if (![FIXTURE_PROFILE_KEY, '00000000'].includes(key)) return null
+  const empty = key === '00000000'
+  const profileMeal = (index: number) => ({ id: meals[index].id, caption: meals[index].caption, locationName: base.name, imageURL: meals[index].src, placeId: base.placeId, rank: index + 1 })
+  return { key, slug: `alex-${key}`, name: 'Alex', handle: 'alex', bio: 'Harissa prawns, then tiramisu.', avatar: '',
+    top3: empty ? [] : [profileMeal(0), profileMeal(2)], recent: empty ? [] : meals.map((_, index) => profileMeal(index)),
+    rolePlaceIds: empty ? [] : [base.placeId] }
+}
 export const fixturePublicMeals = (): PublicMeal[] => unavailable ? [] : meals.map(m => ({ src: m.src, alt: m.caption, caption: m.caption, locationName: base.name, mealType: m.mealType, username: m.username }))
 export const fixturePlaceStats = (): PlaceStats => ({ places: unavailable ? 0 : places.length, recentMeals: unavailable ? 0 : meals.length, mealCount: unavailable ? 0 : 5700, topPlaces: unavailable ? [] : [{ name: base.name, meals: meals.length }] })
 export const fixturePhoto = (placeId: string) => unavailable || !places.some(p => p.placeId === placeId) ? null : { uri: photo('dining'), author: '@ridorichard', authorUri: 'https://www.makanofficial.com/blog/kendal-street-kitchen' }

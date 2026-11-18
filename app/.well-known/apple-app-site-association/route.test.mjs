@@ -17,6 +17,12 @@ test("AASA claims complete fragment-bearing table invites, venue claim links, re
       "#": `s=${"?".repeat(43)}`,
       comment: "Open a complete table invite in Makan",
     }, {
+      "/": "/u/*",
+      comment: "Open a public profile in Makan",
+    }, {
+      "/": "/id/u/*",
+      comment: "Open an Indonesian public profile in Makan",
+    }, {
       "/": "/claim/*",
       comment: "Open a venue claim link in Makan",
     }, {
@@ -35,6 +41,8 @@ test("AASA claims complete fragment-bearing table invites, venue claim links, re
   }, {
     appIDs: ["T3Z49Z9YUB.com.makanofficial.makandev"],
     components: [
+      { "/": "/u/*", comment: "Open a public profile in Makan" },
+      { "/": "/id/u/*", comment: "Open an Indonesian public profile in Makan" },
       { "/": "/claim/*", comment: "Open a venue claim link in Makan" },
       { "/": "/id/claim/*", comment: "Open an Indonesian venue claim link in Makan" },
       { "/": "/p/*", comment: "Open a restaurant or dish link in Makan" },
