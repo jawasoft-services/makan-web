@@ -7,7 +7,10 @@ import "server-only"
  * code and the password travel only in the POST body to Google; they are never put in a URL, never
  * logged, never thrown and never returned. A failure comes back as a reason, not as Google's message:
  *
- *   expired      the code is too old, used, or not a code of this kind (Firebase gives one answer for both)
+ *   expired      EXPIRED_OOB_CODE: a code Google issued whose hour has passed (Google has to read a code's
+ *                issue time to say this; a made-up code is answered INVALID_OOB_CODE)
+ *   used         INVALID_OOB_CODE: a code that was used, superseded, malformed or made up (Google gives one
+ *                answer for all of these)
  *   disabled     the account was disabled or deleted
  *   weak         Firebase refused the new password
  *   unavailable  no usable answer (no connection, a timeout, a 5xx, a key refused by its restrictions, …)
@@ -16,7 +19,7 @@ import "server-only"
 const ENDPOINT = "https://identitytoolkit.googleapis.com/v1/accounts"
 const TIMEOUT_MS = 10_000
 
-export type ToolkitFailure = "expired" | "disabled" | "weak" | "unavailable"
+export type ToolkitFailure = "expired" | "used" | "disabled" | "weak" | "unavailable"
 export type ToolkitResult<T> = { ok: true; value: T } | { ok: false; reason: ToolkitFailure }
 
 /** What Firebase calls each kind of code (the `requestType` of a checked code). */
@@ -30,19 +33,23 @@ interface CheckedCode {
   newEmail: string | null
 }
 
-const EXPIRED = new Set(["EXPIRED_OOB_CODE", "INVALID_OOB_CODE"])
 const DISABLED = new Set(["USER_DISABLED", "USER_NOT_FOUND", "EMAIL_NOT_FOUND"])
 
 /** Google's error message is a code, sometimes followed by " : explanation". Only the code is read. */
+function errorCode(message: unknown): string {
+  return typeof message === "string" ? message.split(/[\s:]/, 1)[0] : ""
+}
+
 function failure(message: unknown): ToolkitFailure {
-  const code = typeof message === "string" ? message.split(/[\s:]/, 1)[0] : ""
-  if (EXPIRED.has(code)) return "expired"
+  const code = errorCode(message)
+  if (code === "EXPIRED_OOB_CODE") return "expired"
+  if (code === "INVALID_OOB_CODE") return "used"
   if (DISABLED.has(code)) return "disabled"
   if (code === "WEAK_PASSWORD") return "weak"
   return "unavailable"
 }
 
-type Answer = { status: "answered"; ok: boolean; body: Record<string, unknown> } | { status: "none" }
+type Answer = { status: "answered"; ok: boolean; code: number; json: boolean; body: Record<string, unknown> } | { status: "none" }
 
 async function post(method: string, apiKey: string, body: Record<string, unknown>): Promise<Answer> {
   try {
@@ -54,13 +61,17 @@ async function post(method: string, apiKey: string, body: Record<string, unknown
       signal: AbortSignal.timeout(TIMEOUT_MS),
     })
     let parsed: Record<string, unknown> = {}
+    let json = false
     try {
-      const json: unknown = await response.json()
-      if (json && typeof json === "object") parsed = json as Record<string, unknown>
+      const value: unknown = await response.json()
+      if (value && typeof value === "object") {
+        parsed = value as Record<string, unknown>
+        json = true
+      }
     } catch {
       // A body that is not JSON is read as no usable answer below.
     }
-    return { status: "answered", ok: response.ok, body: parsed }
+    return { status: "answered", ok: response.ok, code: response.status, json, body: parsed }
   } catch {
     // No connection, a timeout or an aborted request. The error is dropped on purpose: it can carry the
     // request, and nothing about this call may reach a log.
@@ -101,11 +112,26 @@ export async function applyCode(apiKey: string, oobCode: string): Promise<Toolki
   return { ok: true, value: null }
 }
 
+/*
+ * The answers to a send that depend on whether the address has an account (or on how often it was sent
+ * to). Each of them is shown as Email sent, like a success, so the form never tells anyone whether an
+ * address has an account.
+ */
+const ACCOUNT_ANSWERS = new Set(["EMAIL_NOT_FOUND", "USER_NOT_FOUND", "USER_DISABLED", "RESET_PASSWORD_EXCEED_LIMIT", "TOO_MANY_ATTEMPTS_TRY_LATER"])
+
 /**
- * Asks Firebase to send a new reset email (`accounts:sendOobCode`, PASSWORD_RESET). Only whether an answer
- * came back is returned: an unknown, disabled or limited address looks exactly like a sent one.
+ * Asks Firebase to send a new reset email (`accounts:sendOobCode`, PASSWORD_RESET).
+ *
+ *   answered     Google accepted the request (a 2xx), or refused it for a reason about the account
+ *                (ACCOUNT_ANSWERS): an unknown, disabled or limited address looks exactly like a sent one.
+ *   unavailable  nothing was sent, for a reason that has nothing to do with the account: no connection, a
+ *                timeout, a key refused by its restrictions (403), a quota or rate answer (429), a 5xx, a
+ *                body that is not JSON, or any other 400. The page says so (the si-fp-8 line) rather than
+ *                promising an email that will never come.
  */
 export async function sendPasswordReset(apiKey: string, email: string): Promise<"answered" | "unavailable"> {
   const answer = await post("sendOobCode", apiKey, { requestType: "PASSWORD_RESET", email })
-  return answer.status === "answered" ? "answered" : "unavailable"
+  if (answer.status === "none" || !answer.json) return "unavailable"
+  if (answer.ok) return "answered"
+  return answer.code === 400 && ACCOUNT_ANSWERS.has(errorCode(errorMessage(answer.body))) ? "answered" : "unavailable"
 }

@@ -316,14 +316,29 @@ for (const locale of ['en', 'id']) {
     for (const line of [s.forgotTitle, s.forgotBody, s.emailLabel, s.sendResetLink]) assert.ok(text(html).includes(line), line)
     assert.match(html, /type="email"/)
 
-    const answers = [ok({ email: 'dewi@example.com' }), fail('EMAIL_NOT_FOUND'), fail('USER_DISABLED'), fail('USER_NOT_FOUND'), fail('TOO_MANY_ATTEMPTS_TRY_LATER'),
-      fail('RESET_PASSWORD_EXCEED_LIMIT'), fail('INTERNAL_ERROR', 500), fail('API_KEY_HTTP_REFERRER_BLOCKED', 403), () => ({ status: 502, raw: '<html>bad gateway</html>' })]
-    for (const [index, answer] of answers.entries()) {
+    // Every answer that depends on the address (sent, no account, disabled, limited) is the same Email sent,
+    // so the form never tells anyone whether an address has an account.
+    const accountAnswers = [ok({ email: 'dewi@example.com' }), fail('EMAIL_NOT_FOUND'), fail('USER_DISABLED'), fail('USER_NOT_FOUND'), fail('TOO_MANY_ATTEMPTS_TRY_LATER'),
+      fail('RESET_PASSWORD_EXCEED_LIMIT'), fail('EMAIL_NOT_FOUND : There is no user record')]
+    for (const [index, answer] of accountAnswers.entries()) {
       run = withLink('resetPassword', { sendOobCode: answer }, { address: `198.51.100.${index}` })
       const view = await run.action({ intent: 'send', email: ' dewi@example.com ', locale }, { view: 'forgot' })
       assert.deepEqual(view, { view: 'sent' }, `answer ${index}`)
       assert.deepEqual(run.calls.map(call => call.body), [{ requestType: 'PASSWORD_RESET', email: 'dewi@example.com' }])
       quiet(run, `send ${index}`)
+    }
+    // Google refused or failed the send for a reason that has nothing to do with the account (a key refused
+    // by its restrictions, quota, an outage, a body that is not JSON, any other 400): nothing was sent, so the
+    // page shows the si-fp-8 line and keeps the address, never Email sent.
+    const refusals = [fail('API_KEY_HTTP_REFERRER_BLOCKED', 403), fail('PERMISSION_DENIED', 403), fail('QUOTA_EXCEEDED', 429), fail('TOO_MANY_ATTEMPTS_TRY_LATER', 429),
+      fail('INTERNAL_ERROR', 500), fail('UNAVAILABLE', 503), () => ({ status: 502, raw: '<html>bad gateway</html>' }), () => ({ status: 200, raw: 'not json' }),
+      fail('INVALID_EMAIL'), fail('MISSING_REQ_TYPE'), fail('API key not valid. Please pass a valid API key.')]
+    for (const [index, answer] of refusals.entries()) {
+      run = withLink('resetPassword', { sendOobCode: answer }, { address: `198.51.101.${index}` })
+      const view = await run.action({ intent: 'send', email: 'dewi@example.com', locale }, { view: 'forgot' })
+      assert.deepEqual(view, { view: 'forgot', error: 'network' }, `refusal ${index}`)
+      assert.equal(run.calls.length, 1)
+      quiet(run, `refusal ${index}`)
     }
     const sent = run.card({ view: 'sent' }, locale)
     assert.ok(text(sent).includes(s.emailSentTitle) && text(sent).includes(s.emailSentBody))

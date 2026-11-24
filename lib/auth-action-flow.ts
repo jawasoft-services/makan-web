@@ -15,7 +15,7 @@ export async function openingView(link: ActionLink): Promise<ActionView> {
   const { apiKey } = link.project
   const checked = await checkCode(apiKey, link.oobCode)
   if (!checked.ok) {
-    if (checked.reason === "expired") return expiredView(link)
+    if (checked.reason === "expired" || checked.reason === "used") return expiredView(link)
     if (checked.reason === "disabled" && link.mode === "resetPassword") return { view: "broken" }
     return { view: "firebase" }
   }
@@ -28,7 +28,7 @@ export async function openingView(link: ActionLink): Promise<ActionView> {
   if (link.mode !== "verifyEmail" && !shown) return { view: "firebase" }
 
   const applied = await applyCode(apiKey, link.oobCode)
-  if (!applied.ok) return applied.reason === "expired" ? expiredView(link) : { view: "firebase" }
+  if (!applied.ok) return applied.reason === "expired" || applied.reason === "used" ? expiredView(link) : { view: "firebase" }
   if (link.mode === "verifyEmail") return { view: "verified" }
   return link.mode === "verifyAndChangeEmail" ? { view: "emailChanged", email: shown! } : { view: "emailUndone", email: shown! }
 }
@@ -58,6 +58,7 @@ export async function savePassword(link: ActionLink, password: string, email: st
     case "unavailable":
       return choose("network")
     case "expired":
+    case "used":
       // Also the rare retry after a save whose answer was lost and which did go through: the page never asks
       // Firebase whether a password works (that would make it a password checker for any account), so the
       // person gets the expired card and its Send a new link.
@@ -65,7 +66,10 @@ export async function savePassword(link: ActionLink, password: string, email: st
   }
 }
 
-/** Send reset link (si-fp-10 / si-fp-12): always Email sent once Firebase answers, whatever it answers. */
+/**
+ * Send reset link (si-fp-10 / si-fp-12): Email sent for every answer that depends on the address (sent, no
+ * account, disabled, limited); the si-fp-8 line when Google refused or failed the send for any other reason.
+ */
 export async function sendNewLink(link: ActionLink, email: string, limited: boolean): Promise<ActionView> {
   if (!plausibleEmail(email)) return { view: "forgot", error: "email", keep: email }
   // Past the per-address limit nothing is sent, and the card is the same as for a sent email.
