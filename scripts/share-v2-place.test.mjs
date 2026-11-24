@@ -146,9 +146,12 @@ test('if the authors cannot be checked, no meal photo is shown; and the check is
   run.reads.length = 0
   await open(run); await open(run, 'id')
   assert.deepEqual(run.reads, [], 'a warm page reads nothing')
-  // An author is checked again after an hour; a meal's owner is not read again that day.
+  // An author is checked again in the next clock hour; a meal's owner is not read again that day. The first view of
+  // the new hour already hides a newly held account: the earlier hour's answer is never served, not even once.
   run.seed.set(`users/${DINERS[0]}`, user({ accountStatus: 'banned' }))
-  run.state.clock += 3_600_001
+  const stillThisHour = await open(run)
+  assert.ok(stillThisHour.html.includes(photoOf(1)), 'within the hour the cached answer stands')
+  run.state.clock = (Math.floor(run.state.clock / 3_600_000) + 1) * 3_600_000 + 1
   const later = await open(run)
   assert.ok(!later.html.includes(photoOf(1)) && later.html.includes(photoOf(2)))
   assert.ok(!run.reads.some(path => path.startsWith('meals/')))
@@ -156,13 +159,15 @@ test('if the authors cannot be checked, no meal photo is shown; and the check is
 })
 
 test('a request that did not come through the proxy is a 404 that reads nothing, even with the switch on', async () => {
-  const run = lane(); run.state.headers = {}
-  const mod = run.load(PLACE_ROUTE)
-  const props = { params: Promise.resolve({ locale: 'en', slug: SLUG }) }
-  assert.deepEqual(await mod.generateMetadata(props), { robots: { index: false, follow: false } })
-  await assert.rejects(mod.default(props), /NOT_FOUND/)
-  assert.equal(run.reads.length, 0)
-  // An address with a dot never passes proxy.ts. With the mark forged it can only redirect to the public address.
+  for (const headers of [{}, { 'x-makan-share-v2': '1' }, { 'x-makan-share-v2': '0' }, { 'x-makan-share-v2': 'true' }, { 'x-makan-share-v2': 'a'.repeat(64) }]) {
+    const run = lane(); run.state.headers = headers
+    const mod = run.load(PLACE_ROUTE)
+    const props = { params: Promise.resolve({ locale: 'en', slug: SLUG }) }
+    assert.deepEqual(await mod.generateMetadata(props), { robots: { index: false, follow: false } })
+    await assert.rejects(mod.default(props), /NOT_FOUND/)
+    assert.equal(run.reads.length, 0)
+  }
+  // An address with a dot never passes proxy.ts, so it never carries the mark; and a dotted slug can only redirect to the public address.
   assert.equal((await open(lane(), 'en', 'warung.bu.sri-abc123')).thrown, `REDIRECT_308:/places/${SLUG}`)
 })
 
@@ -187,4 +192,48 @@ test('choice: the map and the firsthand-review block are left out as built, and 
   const kept = choose('{ map: false, firsthandReview: false }', '{ map: true, firsthandReview: true }'); kept.state.review = review
   const out = await open(kept)
   assert.match(out.html, /data-map="Map showing Warung Bu Sri"/); assert.match(out.html, /ORDER SUMMARY/); assert.match(out.html, /href="\/blog\/a-review"/)
+})
+
+// U3 review, second pass — the preview image. With no stored card it is today's per-request card, which can draw the
+// newest meal's photo. It is used only if that meal's author may appear; otherwise the site's own card.
+test('the preview image never shows a meal photo by a hidden account: it falls back to the site\'s own card', async () => {
+  const todays = `https://www.makanofficial.com/places/${SLUG}/opengraph-image`
+  const visible = lane(); visible.useCache()
+  assert.equal((await open(visible)).metadata.openGraph.images[0].url, todays)
+  for (const [why, change] of [
+    ['held', run => run.seed.set(`users/${DINERS[0]}`, user({ accountStatus: 'held' }))],
+    ['under age', run => run.seed.set(`users/${DINERS[0]}/private/age`, { underMinimum: true })],
+    ['deleted', run => run.seed.set(`users/${DINERS[0]}`, user({ isDeleted: true }))],
+    ['being deleted', run => run.seed.set(fence(DINERS[0]), { createdAt: 1 })],
+    ['check failed', run => run.failures.add(`users/${DINERS[0]}`)],
+  ]) {
+    for (const locale of ['en', 'id']) {
+      const run = lane(); run.useCache(); change(run)
+      const out = await open(run, locale)
+      const site = `https://www.makanofficial.com${locale === 'id' ? '/id' : ''}/opengraph-image`
+      assert.equal(out.metadata.openGraph.images[0].url, site, `${why} ${locale}`)
+      assert.deepEqual(out.metadata.twitter.images, [site], why)
+      assert.doesNotMatch(JSON.stringify(out.metadata), /places\/[^"]*opengraph-image|photo\.jpg/, why)
+    }
+  }
+  // Only the newest meal matters to today's card: a hidden author further down the list leaves it in use.
+  const second = lane(); second.useCache(); second.seed.set(`users/${DINERS[1]}`, user({ accountStatus: 'held' }))
+  assert.equal((await open(second)).metadata.openGraph.images[0].url, todays)
+  // A stored card is used as it is (U2 renders it under the same rule), and a place with no meals keeps today's text card.
+  const stored = lane(); stored.useCache(); stored.seed.set(`users/${DINERS[0]}`, user({ accountStatus: 'held' })); stored.seed.set(`shareCardMeta/place_${PLACE}`, { url: card('place', PLACE) })
+  assert.equal((await open(stored)).metadata.openGraph.images[0].url, card('place', PLACE))
+  const bare = lane(); bare.useCache(); bare.state.place = place({ meals: [] })
+  assert.equal((await open(bare)).metadata.openGraph.images[0].url, todays)
+})
+
+test('the page and its preview share one author check per request, and a failed re-check shows no photo rather than an old answer', async () => {
+  const run = lane(); run.useCache()
+  await open(run)
+  assert.equal(run.reads.filter(path => path.startsWith('meals/')).length, 2, 'the metadata and the page did not each read the meals')
+  assert.equal(run.reads.filter(path => path === `users/${DINERS[0]}`).length, 1)
+  run.state.clock = (Math.floor(run.state.clock / 3_600_000) + 1) * 3_600_000 + 1
+  run.failures.add(`users/${DINERS[0]}`)
+  const out = await open(run)
+  assert.doesNotMatch(out.text, /photo\.jpg|place-meal-/)
+  assert.equal(out.metadata.openGraph.images[0].url, 'https://www.makanofficial.com/opengraph-image')
 })

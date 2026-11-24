@@ -2,7 +2,7 @@ import type { Firestore } from 'firebase-admin/firestore'
 import { isPublicMeal, PUBLIC_MEAL_FIELDS } from './public-meal'
 import { accountDeletionFencePath, chosenHandle, isVisiblePublicProfile, venueVisibilityOn } from './profile-visibility'
 import { shareCardMetaPath, shareCardUrlFrom } from './share-card'
-import { makanStorageObject } from './storage-bucket'
+import { isMakanPhoto } from './storage-bucket'
 import { slugify } from './slug'
 
 /**
@@ -43,10 +43,10 @@ export function profileKey(slug: string): string | null {
   return PROFILE_KEY.test(key) && /^[a-z0-9]+(?:-[a-z0-9]+)*-$/.test(slug.slice(0, -8)) ? key : null
 }
 
-/** A photo address the page may load: an object in Makan's own storage bucket over https, nothing else. */
+/** A photo address the page may load: Firebase Storage over https, in Makan's own bucket once that is configured. */
 export function storagePhoto(value: unknown): string {
   const src = clip(value, 2048)
-  return makanStorageObject(src) !== null ? src : ''
+  return isMakanPhoto(src) ? src : ''
 }
 
 /**

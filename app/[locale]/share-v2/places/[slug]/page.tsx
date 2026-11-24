@@ -56,12 +56,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const path = `${locale === 'id' ? '/id' : ''}/places/${place.slug}`
   const publicMealCount = place.publicMealCount ?? place.meals.length
   const placeText = place.where ? `${place.name}, ${place.where.city}, ${place.where.country}` : place.name
-  // The stored card when the app's backend has rendered one; otherwise today's per-request card.
+  // The stored card when the app's backend has rendered one; otherwise today's per-request card. That card can draw
+  // the newest meal's photo, so it is used only when that meal's author may appear on a public page (the check the
+  // page's own photos pass); if not, the preview is the site's own card, which shows nobody's content.
   const card = await getPlaceShareCard(place.placeId)
+  const newest = place.meals[0]
+  const todaysCardShowsNobodyHidden = card !== null || !newest || (await getVisiblePlaceMealIds(place.placeId, place.meals.map((m) => m.id))).has(newest.id)
   const meta = createPageMetadata({
     title: place.name,
     description: publicMealCount ? t('metaDescriptionFood', { place: placeText, count: publicMealCount }) : t('metaDescriptionEmpty', { place: placeText }),
-    path, locale, image: card ?? `${SITE_URL}${path}/opengraph-image`,
+    path, locale, image: card ?? (todaysCardShowsNobodyHidden ? `${SITE_URL}${path}/opengraph-image` : undefined),
   })
   return { ...meta, itunes: smartAppBanner(`${SITE_URL}${path}`), ...(indexable ? {} : { robots: { index: false, follow: true } }) }
 }

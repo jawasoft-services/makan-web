@@ -33,14 +33,23 @@ export function shareV2Target(pathname: string): ShareV2Target | null {
 
 /**
  * The internal addresses are never public. proxy.ts answers a direct request for one as it answers
- * any unknown page, and marks its own rewrite with this request header; a v2 page that does not see
- * the mark is a 404 too. So nothing reaches a v2 page without passing the proxy's rate limit and
- * `X-Robots-Tag`, and the address a visitor's browser reports is always the public one.
+ * any unknown page. The address is compared as the router will read it, not as it was typed:
+ * percent-decoded, lower-cased, with doubled slashes and dot segments removed. An address that
+ * cannot be decoded is treated as internal.
  */
-export const SHARE_V2_PROXY_HEADER = 'x-makan-share-v2'
-
 export function isShareV2InternalPath(pathname: string): boolean {
-  const parts = pathname.split('/')
-  const first = parts[1] === 'id' || parts[1] === 'en' ? parts[2] : parts[1]
-  return (first ?? '').toLowerCase() === 'share-v2'
+  let decoded: string
+  try {
+    decoded = decodeURIComponent(pathname)
+  } catch {
+    return true
+  }
+  const segments: string[] = []
+  for (const part of decoded.replace(/\\/g, '/').toLowerCase().split('/')) {
+    if (part === '' || part === '.') continue
+    if (part === '..') segments.pop()
+    else segments.push(part.trim())
+  }
+  const first = segments[0] === 'id' || segments[0] === 'en' ? segments[1] : segments[0]
+  return first === 'share-v2'
 }

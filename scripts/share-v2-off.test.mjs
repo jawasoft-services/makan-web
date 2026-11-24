@@ -84,7 +84,10 @@ const PATHS = [
   '/standings', '/id/standings/london', '/blog/x', '/id/blog/x', '/claim/x', '/verified',
 ]
 // The internal addresses of the v2 pages. Never public: main has no such pages, and neither does a visitor of this branch.
-const INTERNAL = ['/share-v2/places/warung-bu-sri-abc123', '/id/share-v2/meal/meal-0001', `/share-v2/u/dewi-l-${KEY}`, `/en/share-v2/u/dewi-l-${KEY}`, `/id/share-v2/u/dewi-l-${KEY}`, '/share-v2', '/share-v2/', '/SHARE-V2/u/x', '/Share-V2/meal/meal-0001', `/share-v2/u/dewi-l-${KEY}?x=1`]
+const INTERNAL = ['/share-v2/places/warung-bu-sri-abc123', '/id/share-v2/meal/meal-0001', `/share-v2/u/dewi-l-${KEY}`, `/en/share-v2/u/dewi-l-${KEY}`, `/id/share-v2/u/dewi-l-${KEY}`, '/share-v2', '/share-v2/', '/SHARE-V2/u/x', '/Share-V2/meal/meal-0001', `/share-v2/u/dewi-l-${KEY}?x=1`,
+  // Spelled so that it does not look like the internal address until the router reads it (U3 review, second pass).
+  `/share%2Dv2/u/dewi-l-${KEY}`, `/share%2dv2/u/dewi-l-${KEY}`, `/%73hare-v2/u/dewi-l-${KEY}`, `/%53HARE%2DV2/u/dewi-l-${KEY}`, `/id/share%2Dv2/meal/meal-0001`, `/%69d/share-v2/meal/meal-0001`, `/en/%73%68%61%72%65%2D%76%32/places/warung-bu-sri-abc123`,
+  `//share-v2/u/dewi-l-${KEY}`, `/id//share-v2/u/dewi-l-${KEY}`, `///en///share-v2//u/dewi-l-${KEY}`, `/sHaRe-V2/u/dewi-l-${KEY}`, `/ID/Share-V2/u/dewi-l-${KEY}`, `/x/%2e%2e/share-v2/u/dewi-l-${KEY}`, `/./share-v2/u/dewi-l-${KEY}`, `/id/./share%2Dv2/u/dewi-l-${KEY}`, `/share-v2%2Fu%2Fdewi-l-${KEY}`, '/share-v2/%E0%A4%A']
 
 test('switch off: the proxy sends every address exactly where main\'s proxy sent it', { skip: !baseAvailable && 'commit 365a96e is not in this clone' }, () => {
   const main = lane({ env: {}, source: path => (path === 'proxy.ts' ? atBase('proxy.ts') : null) }).load('proxy.ts').proxy
@@ -139,23 +142,45 @@ test('an internal share-v2 address is never reachable directly, with the switch 
   // There is no page at the address it is sent to.
   assert.throws(() => readFileSync('app/[locale]/share-v2-unknown/page.tsx'))
   const { isShareV2InternalPath } = lane().load('lib/share-v2-routes.ts')
-  for (const path of ['/share-v2-unknown', '/en/share-v2-unknown', '/places/share-v2', '/u/share-v2', '/', '/id']) assert.equal(isShareV2InternalPath(path), false, path)
+  for (const path of ['/share-v2-unknown', '/en/share-v2-unknown', '/places/share-v2', '/u/share-v2', '/meal/share%2Dv2', '/share%252Dv2/u/x', '/', '/id', '/places/warung-bu-sri-abc123', `/u/dewi-l-${KEY}`]) assert.equal(isShareV2InternalPath(path), false, path)
+  for (const path of INTERNAL) assert.equal(isShareV2InternalPath(path.split('?')[0]), true, path)
 })
 
-test('only the proxy\'s own rewrite carries the mark a v2 page requires', () => {
+test('only the proxy\'s own rewrite carries the mark, and the mark is not something a visitor can send', () => {
   const requestHeader = (response, name) => response.headers.get(`x-middleware-request-${name}`)
   const call = (proxy, path, headers = {}) => proxy(new NextRequest(`https://www.makanofficial.com${path}`, { headers: { host: 'www.makanofficial.com', 'x-forwarded-for': '192.0.2.10', ...headers } }))
-  const on = lane({ env: { SHARE_V2_PAGES: '1' } }).load('proxy.ts').proxy
+  const run = lane({ env: { SHARE_V2_PAGES: '1' } })
+  const on = run.load('proxy.ts').proxy
+  const { shareV2ProxyMark, isShareV2ProxyMark } = run.load('lib/share-v2-mark.ts')
+  const mark = shareV2ProxyMark()
+  assert.match(mark, /^[0-9a-f]{64}$/, 'a random value made when the server starts')
+  assert.equal(shareV2ProxyMark(), mark)
+  for (const guess of ['1', 'true', '', mark.slice(1), `${mark}0`, mark.toUpperCase(), null, undefined]) assert.equal(isShareV2ProxyMark(guess), false, String(guess))
+  assert.equal(isShareV2ProxyMark(mark), true)
   for (const path of ['/places/warung-bu-sri-abc123', '/id/meal/meal-0001', `/u/dewi-l-${KEY}`]) {
-    assert.equal(requestHeader(call(on, path), 'x-makan-share-v2'), '1', path)
-    assert.equal(requestHeader(call(on, path), 'x-next-intl-locale'), path.startsWith('/id/') ? 'id' : 'en', path)
+    const response = call(on, path)
+    assert.equal(requestHeader(response, 'x-makan-share-v2'), mark, path)
+    assert.equal(requestHeader(response, 'x-next-intl-locale'), path.startsWith('/id/') ? 'id' : 'en', path)
+    // It rides on the request the page sees, never on anything the visitor is sent.
+    assert.equal(response.headers.get('x-makan-share-v2'), null, path)
   }
-  // A visitor who sends the mark themselves gains nothing: a direct internal address is still the unknown page.
-  const forged = call(on, `/share-v2/u/dewi-l-${KEY}`, { 'x-makan-share-v2': '1' })
-  assert.equal(new URL(forged.headers.get('x-middleware-rewrite')).pathname, '/en/share-v2-unknown')
-  assert.equal(requestHeader(forged, 'x-makan-share-v2'), null)
+  // A request that arrives already carrying the header is answered as an unknown page, whatever it asks for and
+  // whatever the header holds: the public addresses, the internal ones, and every other page.
+  for (const env of [{}, { SHARE_V2_PAGES: '1' }]) {
+    const proxy = lane({ env }).load('proxy.ts').proxy
+    for (const value of ['1', mark, '']) {
+      for (const path of [`/u/dewi-l-${KEY}`, '/places/warung-bu-sri-abc123', `/share-v2/u/dewi-l-${KEY}`, `/share%2Dv2/u/dewi-l-${KEY}`, '/', '/id/standings/london']) {
+        const response = call(proxy, path, { 'x-makan-share-v2': value })
+        assert.equal(new URL(response.headers.get('x-middleware-rewrite')).pathname, '/en/share-v2-unknown', `${path} with ${JSON.stringify(value)}`)
+        assert.equal(requestHeader(response, 'x-makan-share-v2'), null)
+        assert.equal(response.headers.get('x-robots-tag'), 'noindex, nofollow')
+      }
+    }
+  }
   const off = lane({ env: {} }).load('proxy.ts').proxy
   assert.equal(requestHeader(call(off, '/places/warung-bu-sri-abc123'), 'x-makan-share-v2'), null)
+  // The mark is in no file and no log line: it is only ever made in lib/share-v2-mark.ts and read through it.
+  for (const file of ['proxy.ts', 'lib/share-page.ts', 'lib/share-v2-mark.ts']) assert.doesNotMatch(readFileSync(file, 'utf8'), /console\.[a-z]+\([^)]*(mark|Mark|headers)/, file)
 })
 
 test('switch on: one address cannot load profiles in a loop', () => {

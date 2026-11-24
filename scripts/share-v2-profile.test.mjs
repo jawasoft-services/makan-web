@@ -218,7 +218,7 @@ test('a photo of the owner from outside Makan\'s storage is not loaded: the page
 })
 
 test('a request that did not come through the proxy is a 404 that reads nothing, even with the switch on', async () => {
-  for (const headers of [{}, { 'x-makan-share-v2': '0' }, { 'x-makan-share-v2': 'true' }]) {
+  for (const headers of [{}, { 'x-makan-share-v2': '1' }, { 'x-makan-share-v2': '0' }, { 'x-makan-share-v2': 'true' }, { 'x-makan-share-v2': 'a'.repeat(64) }]) {
     const run = lane(); run.state.headers = headers
     const mod = run.load(PROFILE_ROUTE)
     const props = { params: Promise.resolve({ locale: 'en', slug: SLUG }) }
@@ -226,7 +226,8 @@ test('a request that did not come through the proxy is a 404 that reads nothing,
     await assert.rejects(mod.default(props), /NOT_FOUND/)
     assert.equal(run.reads.length, 0)
   }
-  // An address with a dot never passes proxy.ts (its matcher skips them). Even with the mark forged, it names no profile.
-  const forged = lane()
-  assertGone(await open(forged, 'en', `dewi.l-${KEY}`), 'dotted'); assert.equal(forged.reads.length, 0)
+  // An address with a dot never passes proxy.ts (its matcher skips them), so it can never carry the mark. And it names
+  // no profile: even on a request the proxy did rewrite, a dotted slug is the gone page and reads nothing.
+  const dotted = lane()
+  assertGone(await open(dotted, 'en', `dewi.l-${KEY}`), 'dotted'); assert.equal(dotted.reads.length, 0)
 })

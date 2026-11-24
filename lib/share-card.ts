@@ -16,7 +16,8 @@ import { makanStorageObject } from './storage-bucket'
  *                   never their uid: a uid must not reach a page's HTML or its og:image.
  *
  * This file is the one place that knows that shape. A document whose `url` is not exactly this
- * subject's card in Makan's bucket is ignored, and the page falls back to today's image.
+ * subject's card in a configured bucket (SHARE_STORAGE_BUCKETS, lib/storage-bucket.ts) is ignored,
+ * and the page falls back to today's image. With no bucket configured there is no card at all.
  */
 export type ShareCardKind = 'place' | 'meal' | 'profile'
 

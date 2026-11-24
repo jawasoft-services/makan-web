@@ -148,10 +148,24 @@ test('the author\'s photo is loaded only from Makan\'s storage: any other addres
 })
 
 test('a request that did not come through the proxy is a 404 that reads nothing, even with the switch on', async () => {
-  const run = lane(); run.state.headers = {}
-  const mod = run.load(MEAL_ROUTE)
-  const props = { params: Promise.resolve({ locale: 'en', id: MEAL }) }
-  assert.deepEqual(await mod.generateMetadata(props), { robots: { index: false, follow: false } })
-  await assert.rejects(mod.default(props), /NOT_FOUND/)
-  assert.equal(run.reads.length, 0)
+  for (const headers of [{}, { 'x-makan-share-v2': '1' }, { 'x-makan-share-v2': '0' }, { 'x-makan-share-v2': 'true' }, { 'x-makan-share-v2': 'a'.repeat(64) }]) {
+    const run = lane(); run.state.headers = headers
+    const mod = run.load(MEAL_ROUTE)
+    const props = { params: Promise.resolve({ locale: 'en', id: MEAL }) }
+    assert.deepEqual(await mod.generateMetadata(props), { robots: { index: false, follow: false } })
+    await assert.rejects(mod.default(props), /NOT_FOUND/)
+    assert.equal(run.reads.length, 0)
+  }
+})
+
+test('with no bucket configured a photo is accepted from the storage host, as today, and a stored card is never used', async () => {
+  const run = lane({ env: { SHARE_V2_PAGES: '1' } })
+  const elsewhere = storage.replace(BUCKET, 'some-project.firebasestorage.app')
+  run.seed.set(`meals/${MEAL}`, meal({ imageURL: elsewhere }))
+  run.seed.set(`shareCardMeta/meal_${MEAL}`, { hash: '0f3a', url: card('meal', MEAL), updatedAt: 1 })
+  const out = await open(run)
+  assert.match(out.html, /Meal by @dewi\.l/)
+  assert.deepEqual(out.metadata.openGraph.images, [{ url: elsewhere, width: 1080, height: 1920 }], 'today\'s image, not the card')
+  const foreign = lane({ env: { SHARE_V2_PAGES: '1' } }); foreign.seed.set(`meals/${MEAL}`, meal({ imageURL: 'https://example.com/a.jpg' }))
+  assert.match((await open(foreign)).html, /<h1>Unavailable<\/h1>/)
 })

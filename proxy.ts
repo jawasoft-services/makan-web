@@ -5,7 +5,8 @@ import { isIndonesianRoute, stripLocalePrefix } from "@/i18n/availability"
 import { routing } from "@/i18n/routing"
 import { rateLimited } from "@/lib/rate-limit"
 import { shareV2PagesOn } from "@/lib/share-v2"
-import { SHARE_V2_PROXY_HEADER, isShareV2InternalPath, shareV2Target, type ShareV2Target } from "@/lib/share-v2-routes"
+import { SHARE_V2_PROXY_HEADER, shareV2ProxyMark } from "@/lib/share-v2-mark"
+import { isShareV2InternalPath, shareV2Target, type ShareV2Target } from "@/lib/share-v2-routes"
 
 const localizedMiddleware = createMiddleware(routing)
 const englishOnlyMiddleware = createMiddleware(
@@ -31,8 +32,8 @@ function shareV2Response(request: NextRequest, target: ShareV2Target) {
   url.pathname = target.path
   const headers = new Headers(request.headers)
   headers.set("X-NEXT-INTL-LOCALE", target.locale)
-  // The mark a v2 page requires. Set here and nowhere else.
-  headers.set(SHARE_V2_PROXY_HEADER, "1")
+  // The mark a v2 page requires (lib/share-v2-mark.ts). Set here and nowhere else; never logged, never in a response.
+  headers.set(SHARE_V2_PROXY_HEADER, shareV2ProxyMark())
   const response = NextResponse.rewrite(url, { request: { headers } })
   if (profile) response.headers.set("X-Robots-Tag", "noindex, follow")
   return response
@@ -60,9 +61,10 @@ export function proxy(request: NextRequest) {
 
   // RM20616 A12 U3 — the internal share-v2 addresses are never public, with the switch on or off. A
   // direct request gets what any unknown page gets (the site's 404), so the rate limit, the
-  // `X-Robots-Tag` and the public address can never be skipped. The proxy's own rewrite below does
-  // not come back through here.
-  if (isShareV2InternalPath(pathname)) {
+  // `X-Robots-Tag` and the public address can never be skipped. So does any request that arrives
+  // already carrying the proxy's mark header: the proxy's own rewrite does not come back through
+  // here, so a mark on an incoming request was put there by the visitor.
+  if (request.headers.has(SHARE_V2_PROXY_HEADER) || isShareV2InternalPath(pathname)) {
     const url = request.nextUrl.clone()
     url.pathname = "/en/share-v2-unknown"
     url.search = ""

@@ -82,14 +82,15 @@ function fakeProvider(seed, reads, failures) {
 }
 
 /**
- * `env` is what the modules see as process.env (so each lane has its own switch); `fixtures` runs the site's
+ * `env` is what the modules see as process.env (so each lane has its own switch and its own bucket setting); `fixtures` runs the site's
  * local fixture lane (no database at all). `source` maps a file to replacement source, for the rule-removal check.
  */
-export function lane({ env = { SHARE_V2_PAGES: '1' }, fixtures = false, source = () => null } = {}) {
+export function lane({ env = { SHARE_V2_PAGES: '1', SHARE_STORAGE_BUCKETS: BUCKET }, fixtures = false, source = () => null } = {}) {
   const seed = seedAll(), reads = [], failures = new Set(), modules = new Map(), stored = new Map(), logs = []
   const state = { place: place(), row: { placeId: PLACE, rank: 7, cityRank: 3, matchups: 12, eats: 9, yeets: 3 }, computedAt: '2026-11-20T00:00:00.000Z', maitred: { status: 'held', venue }, directory: { status: 'ready', venues: [venue] }, googlePhoto: null, failCrowns: false, review: null,
-    // What the page sees of the request. proxy.ts sets this mark on its own rewrite; a direct request has none.
-    headers: { 'x-makan-share-v2': '1' }, clock: Date.UTC(YEAR, 10, 24) }
+    // What the page sees of the request. `null` is a request proxy.ts rewrote: it carries the proxy's own mark
+    // (lib/share-v2-mark.ts). Set it to an object to play a request that reached the page some other way.
+    headers: null, clock: Date.UTC(YEAR, 10, 24) }
   let requests = new Map()
   const db = fakeProvider(seed, reads, failures)
   const cacheStore = {
@@ -114,7 +115,7 @@ export function lane({ env = { SHARE_V2_PAGES: '1' }, fixtures = false, source =
       if (id === 'react') return { ...realReact, cache: fn => (...args) => { const key = JSON.stringify(args); if (!requests.has(fn)) requests.set(fn, new Map()); const memo = requests.get(fn); if (!memo.has(key)) memo.set(key, fn(...args)); return memo.get(key) } }
       if (id === 'react/jsx-runtime') return require(id)
       if (id === 'next/cache') return { unstable_cache }
-      if (id === 'next/headers') return { headers: async () => new Headers(state.headers) }
+      if (id === 'next/headers') return { headers: async () => new Headers(state.headers ?? { 'x-makan-share-v2': load('lib/share-v2-mark.ts').shareV2ProxyMark() }) }
       if (id === 'next/navigation') return { notFound: () => { throw new Error('NOT_FOUND') }, permanentRedirect: path => { throw new Error(`REDIRECT_308:${path}`) }, redirect: path => { throw new Error(`REDIRECT_307:${path}`) } }
       if (id === 'next/server') return require(id)
       if (id === 'next-intl/middleware') return { default: () => request => { const response = require('next/server').NextResponse.next(); response.headers.set('x-test-intl', new URL(request.url).pathname); return response } }
