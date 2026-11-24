@@ -12,6 +12,23 @@ const CLAIM_COMPONENTS = [
   { "/": "/verified", comment: "Return to Makan after verifying an email address" },
 ]
 
+// RM20616 A12 U3 — the links a Share v2 share sends (munchies-rn utils/shareLinks.ts): a restaurant page,
+// a public profile and a meal. MakanDev only: the App Store app gains nothing until its release carries
+// the screens. Taste links stay out, as RM20320's review left them: a build without the screen would open
+// a dead end, and a taste share sends the profile link.
+//
+// This file is NOT behind SHARE_V2_PAGES: it takes effect when it reaches main, and from then a phone
+// with MakanDev installed opens these links in MakanDev. The Share v2 pages do not depend on it; this
+// commit can be merged with them, later, or not at all.
+const DEV_SHARE_COMPONENTS = [
+  { "/": "/places/*", comment: "Open a shared restaurant page in Makan" },
+  { "/": "/id/places/*", comment: "Open an Indonesian shared restaurant page in Makan" },
+  { "/": "/u/*", comment: "Open a shared profile in Makan" },
+  { "/": "/id/u/*", comment: "Open an Indonesian shared profile in Makan" },
+  { "/": "/meal/*", comment: "Open a shared meal in Makan" },
+  { "/": "/id/meal/*", comment: "Open an Indonesian shared meal in Makan" },
+]
+
 export function GET() {
   return Response.json(
     {
@@ -28,7 +45,7 @@ export function GET() {
           }, ...CLAIM_COMPONENTS],
         }, {
           appIDs: ["T3Z49Z9YUB.com.makanofficial.makandev"],
-          components: CLAIM_COMPONENTS,
+          components: [...CLAIM_COMPONENTS, ...DEV_SHARE_COMPONENTS],
         }],
       },
     },
