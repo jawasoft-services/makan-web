@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { execFileSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { lane, KEY, MEAL_ROUTE, PLACE_ROUTE, PROFILE_ROUTE } from './share-v2-test-lane.mjs'
@@ -52,20 +53,24 @@ const UNTOUCHED = [
 const SLOT_EDITS = {
   'app/api/thumb/route.ts': [
     ["import { THUMB_WIDTHS, thumbSource } from '@/lib/thumb'\n", "import { THUMB_WIDTHS, thumbSource } from '@/lib/thumb'\nimport { withImageSlot } from '@/lib/image-slots'\n"],
-    ["const out = await sharp(input).rotate().resize({ width: w, withoutEnlargement: true }).webp({ quality: 72 }).toBuffer()", "const out = await withImageSlot(() => sharp(input).rotate().resize({ width: w, withoutEnlargement: true }).webp({ quality: 72 }).toBuffer())"],
+    ["    const upstream = await fetch(u, { cache: 'force-cache' })\n    if (!upstream.ok) return NextResponse.redirect(u, 302)\n    const input = Buffer.from(await upstream.arrayBuffer())\n    const sharp = (await import('sharp')).default\n    const out = await sharp(input).rotate().resize({ width: w, withoutEnlargement: true }).webp({ quality: 72 }).toBuffer()\n", "    const out = await withImageSlot(async () => {\n      const upstream = await fetch(u, { cache: 'force-cache' })\n      if (!upstream.ok) return null\n      const input = Buffer.from(await upstream.arrayBuffer())\n      const sharp = (await import('sharp')).default\n      return sharp(input).rotate().resize({ width: w, withoutEnlargement: true }).webp({ quality: 72 }).toBuffer()\n    }, { maxWaitMs: 10_000 })\n    if (!out) return NextResponse.redirect(u, 302)\n"],
   ],
   'app/[locale]/_social-image.tsx': [
-    ['import { join } from "node:path"\n', 'import { join } from "node:path"\nimport { renderImage } from "@/lib/image-slots"\n'],
-    ['  return new ImageResponse(\n', '  return renderImage(() => new ImageResponse(\n', 2],
-    ['\n  )\n}', '\n  ))\n}', 2],
+    ["import { join } from \"node:path\"\n", "import { join } from \"node:path\"\nimport { renderImage } from \"@/lib/image-slots\"\n"],
+    ["  return new ImageResponse(\n", "  return renderImage(() => new ImageResponse(\n", 2],
+    ["  )\n", "  ))\n", 2],
   ],
   'app/[locale]/places/[slug]/opengraph-image.tsx': [
-    ['import { getPlacePhoto } from "@/lib/place-photo"\n', 'import { getPlacePhoto } from "@/lib/place-photo"\nimport { renderImage, withImageSlot } from "@/lib/image-slots"\n'],
-    ['const jpeg = await sharp(input).rotate().resize(560, 630, { fit: "cover" }).jpeg({ quality: 82 }).toBuffer()', 'const jpeg = await withImageSlot(() => sharp(input).rotate().resize(560, 630, { fit: "cover" }).jpeg({ quality: 82 }).toBuffer())'],
-    ['  return new ImageResponse(\n', '  return renderImage(() => new ImageResponse(\n'],
-    ['\n  )\n}', '\n  ))\n}'],
+    ["import { getPlacePhoto } from \"@/lib/place-photo\"\n", "import { getPlacePhoto } from \"@/lib/place-photo\"\nimport { renderImage, withImageSlot } from \"@/lib/image-slots\"\n"],
+    ["    let input: Buffer\n    if (WEBSITE_FIXTURES) {\n      if (!/^\\/redesign\\/[a-z0-9-]+\\.(jpg|png|webp)$/.test(src)) return null\n      input = await readFile(join(process.cwd(), \"public\", src.slice(1)))\n    } else {\n      const res = await fetch(src, { next: { revalidate: 86400 } })\n      if (!res.ok) return null\n      input = Buffer.from(await res.arrayBuffer())\n    }\n    const sharp = (await import(\"sharp\")).default\n    const jpeg = await sharp(input).rotate().resize(560, 630, { fit: \"cover\" }).jpeg({ quality: 82 }).toBuffer()\n", "    const jpeg = await withImageSlot(async () => {\n      let input: Buffer\n      if (WEBSITE_FIXTURES) {\n        if (!/^\\/redesign\\/[a-z0-9-]+\\.(jpg|png|webp)$/.test(src)) return null\n        input = await readFile(join(process.cwd(), \"public\", src.slice(1)))\n      } else {\n        const res = await fetch(src, { next: { revalidate: 86400 } })\n        if (!res.ok) return null\n        input = Buffer.from(await res.arrayBuffer())\n      }\n      const sharp = (await import(\"sharp\")).default\n      return sharp(input).rotate().resize(560, 630, { fit: \"cover\" }).jpeg({ quality: 82 }).toBuffer()\n    })\n    if (!jpeg) return null\n"],
+    ["  return new ImageResponse(\n", "  return renderImage(() => new ImageResponse(\n"],
+    ["  )\n", "  ))\n"],
   ],
 }
+// The pinned routes now return what lib/image-slots.ts returns, so it is pinned too: any edit to it,
+// renderImage's status or headers included, must come back through this guard with a new hash.
+const IMAGE_SLOTS_SHA256 = '657fdfc8078c49a18eda74127cdad1b271f84043077cbe5016ee976491adad70'
+
 /** `base` with each edit applied exactly `times` times (default once); fails if an edit does not occur that often. */
 function withEdits(path, base, edits) {
   let out = base
@@ -82,6 +87,7 @@ test('switch off: every page, card and config a share link reaches today is byte
     const expected = SLOT_EDITS[path] ? withEdits(path, base, SLOT_EDITS[path]) : base
     assert.equal(readFileSync(path, 'utf8'), expected, `${path} differs from ${BASE.slice(0, 7)}${SLOT_EDITS[path] ? ' plus its image-slot edits' : ''}`)
   }
+  assert.equal(createHash('sha256').update(readFileSync('lib/image-slots.ts')).digest('hex'), IMAGE_SLOTS_SHA256, 'lib/image-slots.ts changed: the pinned share routes return what it returns')
 })
 
 test('switch off: the only edits to existing files are additive and inert', { skip: !baseAvailable && 'commit 365a96e is not in this clone' }, () => {

@@ -17,17 +17,20 @@ export const contentType = "image/png"
 async function cardPhoto(src: string | undefined): Promise<string | null> {
   if (!src) return null
   try {
-    let input: Buffer
-    if (WEBSITE_FIXTURES) {
-      if (!/^\/redesign\/[a-z0-9-]+\.(jpg|png|webp)$/.test(src)) return null
-      input = await readFile(join(process.cwd(), "public", src.slice(1)))
-    } else {
-      const res = await fetch(src, { next: { revalidate: 86400 } })
-      if (!res.ok) return null
-      input = Buffer.from(await res.arrayBuffer())
-    }
-    const sharp = (await import("sharp")).default
-    const jpeg = await withImageSlot(() => sharp(input).rotate().resize(560, 630, { fit: "cover" }).jpeg({ quality: 82 }).toBuffer())
+    const jpeg = await withImageSlot(async () => {
+      let input: Buffer
+      if (WEBSITE_FIXTURES) {
+        if (!/^\/redesign\/[a-z0-9-]+\.(jpg|png|webp)$/.test(src)) return null
+        input = await readFile(join(process.cwd(), "public", src.slice(1)))
+      } else {
+        const res = await fetch(src, { next: { revalidate: 86400 } })
+        if (!res.ok) return null
+        input = Buffer.from(await res.arrayBuffer())
+      }
+      const sharp = (await import("sharp")).default
+      return sharp(input).rotate().resize(560, 630, { fit: "cover" }).jpeg({ quality: 82 }).toBuffer()
+    })
+    if (!jpeg) return null
     return `data:image/jpeg;base64,${jpeg.toString("base64")}`
   } catch {
     return null

@@ -31,11 +31,14 @@ export async function GET(request: Request) {
   if (WEBSITE_FIXTURES) return NextResponse.json({ error: "Remote thumbnails are disabled in website fixtures." }, { status: 503 })
   if (rateLimited(request, 'thumb', LIMIT)) return NextResponse.redirect(u, 302)
   try {
-    const upstream = await fetch(u, { cache: 'force-cache' })
-    if (!upstream.ok) return NextResponse.redirect(u, 302)
-    const input = Buffer.from(await upstream.arrayBuffer())
-    const sharp = (await import('sharp')).default
-    const out = await withImageSlot(() => sharp(input).rotate().resize({ width: w, withoutEnlargement: true }).webp({ quality: 72 }).toBuffer())
+    const out = await withImageSlot(async () => {
+      const upstream = await fetch(u, { cache: 'force-cache' })
+      if (!upstream.ok) return null
+      const input = Buffer.from(await upstream.arrayBuffer())
+      const sharp = (await import('sharp')).default
+      return sharp(input).rotate().resize({ width: w, withoutEnlargement: true }).webp({ quality: 72 }).toBuffer()
+    }, { maxWaitMs: 10_000 })
+    if (!out) return NextResponse.redirect(u, 302)
     return new NextResponse(new Uint8Array(out), {
       headers: {
         'Content-Type': 'image/webp',

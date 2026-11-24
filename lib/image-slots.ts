@@ -4,17 +4,35 @@
  * and every image job in flight holds roughly 15 MiB (measured 24 Nov 2026: 12 share images at once
  * peaked at +167 MiB and stayed there, one at a time at +67 MiB and returned). Bursts from link
  * crawlers and cold thumbnails had been pushing instances past the limit several times a day.
- * Pages and other requests are not affected; only image work queues.
+ * Pages and other requests are not affected; only image work queues. A job's photo download happens
+ * inside its slot, so queued requests hold no photos (RM20616 controller review, 24 Nov 2026).
  */
 export const IMAGE_SLOTS = 4
 
 let active = 0
 const waiting: (() => void)[] = []
 
-/** Runs `work` once a slot is free. A finished job hands its slot straight to the next in line. */
-export async function withImageSlot<T>(work: () => Promise<T>): Promise<T> {
+/** Thrown when a job waited longer than its `maxWaitMs` for a slot; it never ran. */
+export class ImageSlotTimeout extends Error {
+  constructor() { super('No image slot became free in time.') }
+}
+
+/**
+ * Runs `work` once a slot is free. A finished job hands its slot straight to the next in line.
+ * With `maxWaitMs`, a job still waiting after that long leaves the queue and throws ImageSlotTimeout.
+ */
+export async function withImageSlot<T>(work: () => Promise<T>, { maxWaitMs }: { maxWaitMs?: number } = {}): Promise<T> {
   if (active < IMAGE_SLOTS) active++
-  else await new Promise<void>((resolve) => waiting.push(resolve))
+  else await new Promise<void>((resolve, reject) => {
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const take = () => { clearTimeout(timer); resolve() }
+    waiting.push(take)
+    if (maxWaitMs === undefined) return
+    timer = setTimeout(() => {
+      waiting.splice(waiting.indexOf(take), 1)
+      reject(new ImageSlotTimeout())
+    }, maxWaitMs)
+  })
   try {
     return await work()
   } finally {
