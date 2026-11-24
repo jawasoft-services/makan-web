@@ -45,7 +45,7 @@ export async function loadAuthors(db: Firestore, uids: readonly string[]): Promi
 const WALL_SCAN = 1200
 const DISH_FIELDS = ['uid', 'placeId', 'name', 'retracting', 'dishIsDrink']
 
-export type DishWall = { previews: WallMeal[]; wall: WallMeal[] }
+export type DishWall = { previews: WallMeal[]; wall: WallMeal[]; fallback: number }
 
 /**
  * The homepage dish wall: recent public meals tagged at a venue, dish-tagged first, with every
@@ -58,7 +58,7 @@ async function readDishWall(): Promise<DishWall | null> {
     const db = getDb()
     if (!db) return null
     const snap = await db.collection('meals').orderBy('createdAt', 'desc').limit(WALL_SCAN)
-      .select(...PUBLIC_MEAL_FIELDS, 'imageURL', 'caption', 'locationName', 'mealType', 'placeProviderId', 'userID', 'uid')
+      .select(...PUBLIC_MEAL_FIELDS, 'imageURL', 'caption', 'locationName', 'mealType', 'placeProviderId', 'isRestaurantTagged', 'userID', 'uid')
       .get()
     const meals = snap.docs.map((doc) => ({ id: doc.id, d: doc.data() })).filter(({ id, d }) =>
       !id.includes('/') && isPublicMeal(d) && storagePhoto(d.imageURL) && str(d.placeProviderId) && str(d.locationName)
@@ -79,6 +79,7 @@ async function readDishWall(): Promise<DishWall | null> {
       candidates.push({
         id, uid, photo: storagePhoto(d.imageURL), dish: bound ? str(m.name).slice(0, 120) : '', caption: str(d.caption),
         locationName: str(d.locationName).slice(0, 100), mealType: str(d.mealType), handle: author.handle,
+        restaurant: d.isRestaurantTagged === true,
       })
     })
     const wall = selectDishWall(candidates)
