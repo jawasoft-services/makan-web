@@ -67,7 +67,8 @@ export default async function PublicProfilePage({ params }: Props) {
   )
   return (
     <div className={styles.shell}>
-      <main id="main-content" className={`${styles.column} ${styles.pad}`}>
+      <main id="main-content" className={styles.column}>
+        <div className={styles.pad}>
         <header className={styles.identity}>
           <div className={`${styles.avatar} ${styles.avatarLarge}`}>
             {profile.avatar ? <Image src={profile.avatar} alt="" width={84} height={84} priority /> : initials}
@@ -94,6 +95,7 @@ export default async function PublicProfilePage({ params }: Props) {
           <h2 id="profile-recent" className={styles.label}>{t('recent')}</h2>
           <ul className={`${styles.grid} ${styles.three}`}>{profile.recent.map((meal) => <li key={meal.id}>{tile(meal)}</li>)}</ul>
         </section> : null}
+        </div>
       </main>
       <div className={styles.bar}>
         <GetMakanButton link={sharePageUrl(locale, `/u/${profile.slug}`)} appPage={appPage} label={t('getApp')} className={styles.cta} />

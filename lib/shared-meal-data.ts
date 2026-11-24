@@ -45,7 +45,7 @@ export async function loadSharedMeal(db: Firestore, id: string, currentYear: num
   if (!uid || uid.includes('/') || !photo) return null
   const [userSnap, ageSnap, dishSnap, cardSnap] = await db.getAll(
     db.doc(`users/${uid}`), db.doc(`users/${uid}/private/age`), db.doc(`dishMemberships/${id}`), db.doc(shareCardMetaPath('meal', id)!),
-    { fieldMask: [...USER_FIELDS, ...AGE_FIELDS, ...DISH_FIELDS, 'url'] },
+    { fieldMask: [...new Set([...USER_FIELDS, ...AGE_FIELDS, ...DISH_FIELDS, 'url'])] },
   )
   const stored = userSnap.data()
   const user = stored ? Object.fromEntries(USER_FIELDS.filter((field) => stored[field] !== undefined).map((field) => [field, stored[field]])) : undefined

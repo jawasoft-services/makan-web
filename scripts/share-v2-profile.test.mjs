@@ -166,7 +166,13 @@ test('with the switch off there is no profile page: a 404 and not one read', asy
   }
 })
 
-test('profile links are in no sitemap or directory, and avatars come only from Makan\'s own storage', () => {
+test('profile links are in no sitemap or directory, and avatars come only from Makan\'s own storage', async () => {
+  // The loader itself refuses a key that is not a key, so no caller can make it read another path.
+  for (const key of ['users/x', '../users', 'K3F9Q2X7', 'short', '', `${KEY}/x`]) {
+    const run = lane()
+    assert.equal(await run.load(DATA).loadPublicProfileData(run.db, key, 2026), null, key)
+    assert.equal(run.reads.length, 0, key)
+  }
   assert.doesNotMatch(readFileSync('app/sitemap.ts', 'utf8'), /getPublicProfile|publicProfileKeys|\/u\//)
   const api = lane().load(DATA)
   assert.equal(api.profileKey(SLUG), KEY)
