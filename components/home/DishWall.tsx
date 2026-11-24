@@ -72,7 +72,7 @@ export default function DishWall({ label, tiles, previews, intro, total }: {
       <div className="dish-wall-screen">
         <canvas ref={canvas} className="dish-wall-canvas" aria-hidden="true" />
         <div className="dish-wall-still" aria-hidden="true">
-          {/* eslint-disable-next-line @next/next/no-img-element -- tiles are already resized by /api/thumb; next/image would add a billed transformation */}
+          {/* eslint-disable-next-line @next/next/no-img-element -- tiles are already resized and CDN-cached by /api/thumb; next/image would resize them a second time on the server */}
           {tiles.slice(0, 32).map((src, i) => <img key={src} src={src} alt="" width={240} height={240} loading={i < 16 ? 'eager' : 'lazy'} decoding="async" />)}
         </div>
         <div className="dish-wall-shade" aria-hidden="true" />
