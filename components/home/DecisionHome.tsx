@@ -67,7 +67,7 @@ export default async function DecisionHome({ locale }: { locale: string }) {
   })
   const previews = (live?.previews ?? bundledPreviews).map(card)
   const tiles = live ? live.wall.map((m) => thumbUrl(m.src, 240)) : bundledTiles
-  const screen = (i: number) => <StaticPicture basePath={`/static-images/v1/redesign/${SCREENS[i]}`} widths={[400, 600, 800, 1066]} width={1066} height={2198} sizes="(min-width: 821px) 340px, 78vw" loading="lazy" alt={alts[i]} />
+  const screen = (i: number) => <StaticPicture key={SCREENS[i]} basePath={`/static-images/v1/redesign/${SCREENS[i]}`} widths={[400, 600, 800, 1066]} width={1066} height={2198} sizes="(min-width: 821px) 340px, 78vw" loading="lazy" alt={alts[i]} />
 
   return <main id="main-content" className={`redesign-page dish-home ${fraunces.variable}`}>
     <SiteSchema locale={locale} /><HomepageAnalytics /><HashScroll />

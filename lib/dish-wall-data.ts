@@ -38,8 +38,11 @@ export async function loadAuthors(db: Firestore, uids: readonly string[]): Promi
   return out
 }
 
-// Recent public meals scanned per rebuild; ~4 in 10 carry a venue, and the wall needs 42.
-const WALL_SCAN = 400
+// Recent public meals scanned per rebuild. Measured on production, 24 Nov 2026: the newest 400 held
+// 54 venue-tagged public meals from 16 authors (11 spiral cards after the per-account cap, too thin);
+// the newest 1,200 (back to 27 Aug) gave 223 from 25 authors: 5 previews and 29 spiral cards.
+// About 1,500 reads per daily rebuild with the dish and author checks.
+const WALL_SCAN = 1200
 const DISH_FIELDS = ['uid', 'placeId', 'name', 'retracting', 'dishIsDrink']
 
 export type DishWall = { previews: WallMeal[]; wall: WallMeal[] }
@@ -90,7 +93,17 @@ async function readDishWall(): Promise<DishWall | null> {
 // throws inside the cache, so the next visit retries instead of keeping the bundled set all day.
 const getCachedDishWall = unstable_cache(readDishWall, ['makan-dish-wall', 'v1'], { revalidate: 86400 })
 
+// ponytail: per-instance backoff, not shared state. A failed or thin read is not cached, so without this
+// every visit would rescan; with it each server instance retries at most every ten minutes.
+const RETRY_MS = 10 * 60 * 1000
+let failedAt = 0
+
 export async function getDishWall(): Promise<DishWall | null> {
-  try { return await getCachedDishWall() }
-  catch { console.error('makan-stats: failed to read the dish wall; using the bundled set.'); return null }
+  if (failedAt && Date.now() - failedAt < RETRY_MS) return null
+  try { const wall = await getCachedDishWall(); failedAt = 0; return wall }
+  catch (error) {
+    failedAt = Date.now()
+    console.error('dish-wall: read failed; using the bundled set.', error instanceof Error ? error.message : error)
+    return null
+  }
 }
