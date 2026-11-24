@@ -2,9 +2,11 @@
    Flat: no shadows. One orange button per page, white on Makan Orange. */
 @font-face { font-family: "Makan Fraunces"; src: url("/fonts/Fraunces-SemiBold.ttf") format("truetype"); font-weight: 600; font-style: normal; font-display: swap; }
 
-.shell { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; background: var(--color-brand-cream); color: var(--color-brand-ink); }
+.shell { background: var(--color-brand-cream); color: var(--color-brand-ink); }
+/* The page and its one button fill the first screen, so the button sits at the bottom of it (as boarded); the footer follows. */
+.screen { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; }
 .shell :is(a, button):focus-visible { outline: 3px solid #945114; outline-offset: 4px; }
-.column { flex: 1; width: min(690px, 100%); margin: 0 auto; padding: 96px 0 24px; overflow-wrap: anywhere; }
+.column { flex: 1; width: min(690px, 100%); margin: 0 auto; padding: 112px 0 24px; overflow-wrap: anywhere; }
 .pad { padding: 0 24px; }
 
 .hero { position: relative; margin: 0; aspect-ratio: 4 / 3; overflow: hidden; background: #f1e4d3; }

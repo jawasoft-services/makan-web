@@ -61,6 +61,7 @@ export default async function SharedMealPage({ params }: Props) {
   const Venue = meal.dish || byline ? 'p' : 'h1'
   return (
     <div className={styles.shell}>
+      <div className={styles.screen}>
       <main id="main-content" className={styles.column}>
         <figure className={`${styles.hero} ${styles.heroSquare}`}>
           <Image src={meal.photo} alt={meal.dish || byline} fill sizes="(min-width: 690px) 690px, 100vw" priority />
@@ -80,6 +81,7 @@ export default async function SharedMealPage({ params }: Props) {
       </main>
       <div className={styles.bar}>
         <OpenInMakanButton link={sharePageUrl(locale, `/meal/${meal.id}`)} appPath={`meal/${meal.id}`} appPage={appPage} label={t('openInMakan')} className={styles.cta} />
+      </div>
       </div>
       <Footer />
     </div>

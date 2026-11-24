@@ -11,6 +11,7 @@ import { localizePath } from '@/i18n/paths'
 import { getPublicProfile, profileKey, type ProfileMeal } from '@/lib/public-profile'
 import { sharePageUrl, smartAppBanner } from '@/lib/share-page'
 import { shareV2PagesOn } from '@/lib/share-v2'
+import { createPageMetadata } from '@/lib/site-metadata'
 
 /**
  * RM20616 A12 U3 — a person's public page, /u/<handle>-<key> (boards X1 and C6; resumed from
@@ -36,16 +37,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params
   const profile = await load(slug)
   if (!profile) return { robots }
-  const t = await getTranslations({ locale, namespace: 'SharePages' })
+  const [t, site] = await Promise.all([getTranslations({ locale, namespace: 'SharePages' }), getTranslations({ locale, namespace: 'Metadata.site' })])
   const title = t('profileTitle', { name: profile.name, handle: profile.handle })
   const url = sharePageUrl(locale, `/u/${profile.slug}`)
   // The stored card when the app's backend has rendered one; otherwise the site's own card. Never drawn per request.
-  const images = profile.cardUrl ? [{ url: profile.cardUrl, width: 1200, height: 630 }] : undefined
-  return {
-    title, robots, alternates: { canonical: url }, itunes: smartAppBanner(url),
-    openGraph: { type: 'profile', title, url, ...(images ? { images } : {}) },
-    twitter: { card: 'summary_large_image', title, ...(images ? { images: [images[0].url] } : {}) },
-  }
+  const meta = createPageMetadata({ title, description: site('description'), path: `${locale === 'id' ? '/id' : ''}/u/${profile.slug}`, locale, image: profile.cardUrl ?? undefined })
+  return { ...meta, robots, alternates: { canonical: url }, itunes: smartAppBanner(url), openGraph: { ...meta.openGraph, type: 'profile' } }
 }
 
 export default async function PublicProfilePage({ params }: Props) {
@@ -67,6 +64,7 @@ export default async function PublicProfilePage({ params }: Props) {
   )
   return (
     <div className={styles.shell}>
+      <div className={styles.screen}>
       <main id="main-content" className={styles.column}>
         <div className={styles.pad}>
         <header className={styles.identity}>
@@ -100,6 +98,7 @@ export default async function PublicProfilePage({ params }: Props) {
       <div className={styles.bar}>
         <GetMakanButton link={sharePageUrl(locale, `/u/${profile.slug}`)} appPage={appPage} label={t('getApp')} className={styles.cta} />
         <a href={`makanapp://u/${profile.slug}`} className={styles.plain}>{t('haveApp')}</a>
+      </div>
       </div>
       <Footer />
     </div>

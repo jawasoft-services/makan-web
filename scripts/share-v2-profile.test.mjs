@@ -144,15 +144,19 @@ test('the page carries the board\'s words only, in English and Bahasa, and a sta
   assert.doesNotMatch((await open(empty)).html, /profile-top3|profile-maitred|profile-recent/)
 })
 
-test('og:image is the stored card when there is one, and never a card drawn per request', async () => {
+test('og:image is the stored card when there is one, else the site\'s own card: never a card drawn per request', async () => {
   const none = await open(lane())
-  assert.equal(none.metadata.openGraph.images, undefined); assert.equal(none.metadata.twitter.images, undefined)
+  assert.equal(none.metadata.openGraph.images[0].url, 'https://www.makanofficial.com/opengraph-image')
+  assert.deepEqual(none.metadata.twitter.images, ['https://www.makanofficial.com/opengraph-image'])
+  assert.equal((await open(lane(), 'id')).metadata.openGraph.images[0].url, 'https://www.makanofficial.com/id/opengraph-image')
   const run = lane(); run.seed.set(`shareCardMeta/profile_${USER}`, { hash: '0f3a', url: card('profile'), updatedAt: 1 })
   const stored = await open(run)
-  assert.deepEqual(stored.metadata.openGraph.images, [{ url: card('profile'), width: 1200, height: 630 }])
+  assert.equal(stored.metadata.openGraph.images[0].url, card('profile'))
   assert.deepEqual(stored.metadata.twitter.images, [card('profile')])
+  assert.equal(stored.metadata.openGraph.type, 'profile')
   const bad = lane(); bad.seed.set(`shareCardMeta/profile_${USER}`, { url: 'https://example.com/shareCards/a.jpg' })
-  assert.equal((await open(bad)).metadata.openGraph.images, undefined)
+  assert.equal((await open(bad)).metadata.openGraph.images[0].url, 'https://www.makanofficial.com/opengraph-image')
+  assert.doesNotMatch(JSON.stringify(none.metadata) + JSON.stringify(stored.metadata), /\/u\/[^"]*opengraph-image/)
 })
 
 test('with the switch off there is no profile page: a 404 and not one read', async () => {

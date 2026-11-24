@@ -100,6 +100,7 @@ export default async function SharedPlacePage({ params }: Props) {
     <div className={styles.shell}>
       <SiteSchema locale={locale} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(schema) }} />
+      <div className={styles.screen}>
       <main id="main-content" className={styles.column}>
         {hero ? <figure className={styles.hero}>
           <Image src={hero} alt={heroMeal ? mealAlt : place.name} fill sizes="(min-width: 690px) 690px, 100vw" priority />
@@ -143,6 +144,7 @@ export default async function SharedPlacePage({ params }: Props) {
       </main>
       <div className={styles.bar}>
         <OpenInMakanButton link={pageUrl} appPath={`places/${place.slug}`} appPage={localizePath(locale, '/app')} label={t('openInMakan')} className={styles.cta} />
+      </div>
       </div>
       <Footer />
     </div>

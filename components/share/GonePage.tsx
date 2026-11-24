@@ -11,6 +11,7 @@ import styles from "./share-pages.module.css"
 export default function GonePage({ title, body, getLabel, appPage }: { title: string; body?: string; getLabel: string; appPage: string }) {
   return (
     <div className={styles.shell}>
+      <div className={styles.screen}>
       <main id="main-content" className={styles.gone}>
         <Image src="/redesign/unavailable-gone.png" alt="" width={160} height={160} className={styles.goneArt} priority />
         <h1>{title}</h1>
@@ -18,6 +19,7 @@ export default function GonePage({ title, body, getLabel, appPage }: { title: st
       </main>
       <div className={styles.bar}>
         <GetMakanButton appPage={appPage} label={getLabel} className={styles.cta} />
+      </div>
       </div>
       <Footer />
     </div>
