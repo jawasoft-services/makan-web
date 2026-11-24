@@ -2,6 +2,7 @@ import { WEBSITE_FIXTURES } from '@/lib/website-fixtures'
 import { NextResponse } from 'next/server'
 import { rateLimited } from '@/lib/rate-limit'
 import { THUMB_WIDTHS, thumbSource } from '@/lib/thumb'
+import { withImageSlot } from '@/lib/image-slots'
 
 export const runtime = 'nodejs'
 
@@ -34,7 +35,7 @@ export async function GET(request: Request) {
     if (!upstream.ok) return NextResponse.redirect(u, 302)
     const input = Buffer.from(await upstream.arrayBuffer())
     const sharp = (await import('sharp')).default
-    const out = await sharp(input).rotate().resize({ width: w, withoutEnlargement: true }).webp({ quality: 72 }).toBuffer()
+    const out = await withImageSlot(() => sharp(input).rotate().resize({ width: w, withoutEnlargement: true }).webp({ quality: 72 }).toBuffer())
     return new NextResponse(new Uint8Array(out), {
       headers: {
         'Content-Type': 'image/webp',

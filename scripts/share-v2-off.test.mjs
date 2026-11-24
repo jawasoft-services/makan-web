@@ -47,8 +47,41 @@ const UNTOUCHED = [
   'next.config.ts', 'apphosting.yaml', 'firebase.json', '.firebaserc',
 ]
 
+// Devon, 24 Nov 2026: image work runs in a few slots per instance (lib/image-slots.ts) so bursts no
+// longer exhaust memory. These pinned files may differ from 365a96e by exactly these edits, nothing else.
+const SLOT_EDITS = {
+  'app/api/thumb/route.ts': [
+    ["import { THUMB_WIDTHS, thumbSource } from '@/lib/thumb'\n", "import { THUMB_WIDTHS, thumbSource } from '@/lib/thumb'\nimport { withImageSlot } from '@/lib/image-slots'\n"],
+    ["const out = await sharp(input).rotate().resize({ width: w, withoutEnlargement: true }).webp({ quality: 72 }).toBuffer()", "const out = await withImageSlot(() => sharp(input).rotate().resize({ width: w, withoutEnlargement: true }).webp({ quality: 72 }).toBuffer())"],
+  ],
+  'app/[locale]/_social-image.tsx': [
+    ['import { join } from "node:path"\n', 'import { join } from "node:path"\nimport { renderImage } from "@/lib/image-slots"\n'],
+    ['  return new ImageResponse(\n', '  return renderImage(() => new ImageResponse(\n', 2],
+    ['\n  )\n}', '\n  ))\n}', 2],
+  ],
+  'app/[locale]/places/[slug]/opengraph-image.tsx': [
+    ['import { getPlacePhoto } from "@/lib/place-photo"\n', 'import { getPlacePhoto } from "@/lib/place-photo"\nimport { renderImage, withImageSlot } from "@/lib/image-slots"\n'],
+    ['const jpeg = await sharp(input).rotate().resize(560, 630, { fit: "cover" }).jpeg({ quality: 82 }).toBuffer()', 'const jpeg = await withImageSlot(() => sharp(input).rotate().resize(560, 630, { fit: "cover" }).jpeg({ quality: 82 }).toBuffer())'],
+    ['  return new ImageResponse(\n', '  return renderImage(() => new ImageResponse(\n'],
+    ['\n  )\n}', '\n  ))\n}'],
+  ],
+}
+/** `base` with each edit applied exactly `times` times (default once); fails if an edit does not occur that often. */
+function withEdits(path, base, edits) {
+  let out = base
+  for (const [before, after, times = 1] of edits) {
+    assert.equal(out.split(before).length - 1, times, `${path}: expected ${times} of ${JSON.stringify(before.slice(0, 50))} at ${BASE.slice(0, 7)}`)
+    out = out.split(before).join(after)
+  }
+  return out
+}
+
 test('switch off: every page, card and config a share link reaches today is byte-identical to main at 365a96e', { skip: !baseAvailable && 'commit 365a96e is not in this clone' }, () => {
-  for (const path of UNTOUCHED) assert.equal(readFileSync(path, 'utf8'), atBase(path), `${path} differs from ${BASE.slice(0, 7)}`)
+  for (const path of UNTOUCHED) {
+    const base = atBase(path)
+    const expected = SLOT_EDITS[path] ? withEdits(path, base, SLOT_EDITS[path]) : base
+    assert.equal(readFileSync(path, 'utf8'), expected, `${path} differs from ${BASE.slice(0, 7)}${SLOT_EDITS[path] ? ' plus its image-slot edits' : ''}`)
+  }
 })
 
 test('switch off: the only edits to existing files are additive and inert', { skip: !baseAvailable && 'commit 365a96e is not in this clone' }, () => {
