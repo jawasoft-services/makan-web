@@ -8,6 +8,7 @@ import { createDecisionSocialImage } from "../../_social-image"
 import { getEatStandings } from "@/lib/eat-standings"
 import { getDirectoryPlace } from "@/lib/place-directory"
 import { getPlacePhoto } from "@/lib/place-photo"
+import { renderImage, withImageSlot } from "@/lib/image-slots"
 
 export const alt = "On Makan"
 export const size = { width: 1200, height: 630 }
@@ -16,17 +17,20 @@ export const contentType = "image/png"
 async function cardPhoto(src: string | undefined): Promise<string | null> {
   if (!src) return null
   try {
-    let input: Buffer
-    if (WEBSITE_FIXTURES) {
-      if (!/^\/redesign\/[a-z0-9-]+\.(jpg|png|webp)$/.test(src)) return null
-      input = await readFile(join(process.cwd(), "public", src.slice(1)))
-    } else {
-      const res = await fetch(src, { next: { revalidate: 86400 } })
-      if (!res.ok) return null
-      input = Buffer.from(await res.arrayBuffer())
-    }
-    const sharp = (await import("sharp")).default
-    const jpeg = await sharp(input).rotate().resize(560, 630, { fit: "cover" }).jpeg({ quality: 82 }).toBuffer()
+    const jpeg = await withImageSlot(async () => {
+      let input: Buffer
+      if (WEBSITE_FIXTURES) {
+        if (!/^\/redesign\/[a-z0-9-]+\.(jpg|png|webp)$/.test(src)) return null
+        input = await readFile(join(process.cwd(), "public", src.slice(1)))
+      } else {
+        const res = await fetch(src, { next: { revalidate: 86400 } })
+        if (!res.ok) return null
+        input = Buffer.from(await res.arrayBuffer())
+      }
+      const sharp = (await import("sharp")).default
+      return sharp(input).rotate().resize(560, 630, { fit: "cover" }).jpeg({ quality: 82 }).toBuffer()
+    })
+    if (!jpeg) return null
     return `data:image/jpeg;base64,${jpeg.toString("base64")}`
   } catch {
     return null
@@ -71,7 +75,7 @@ export default async function Image({ params }: { params: Promise<{ locale: stri
   const fontsDir = join(process.cwd(), "public", "fonts")
   const [bold, regular] = await Promise.all([readFile(join(fontsDir, "PlusJakartaSans-Bold.ttf")), readFile(join(fontsDir, "PlusJakartaSans-Regular.ttf"))])
   const nameSize = place.name.length > 28 ? 44 : place.name.length > 18 ? 56 : 68
-  return new ImageResponse(
+  return renderImage(() => new ImageResponse(
     (
       <div style={{ width: "100%", height: "100%", display: "flex", backgroundColor: "#FFF8EF", fontFamily: "Plus Jakarta Sans" }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -99,5 +103,5 @@ export default async function Image({ params }: { params: Promise<{ locale: stri
         { name: "Plus Jakarta Sans", data: regular.buffer.slice(regular.byteOffset, regular.byteOffset + regular.byteLength) as ArrayBuffer, weight: 400, style: "normal" },
       ],
     },
-  )
+  ))
 }
