@@ -8,5 +8,7 @@ export function redactAnalyticsUrl(rawUrl: string): string {
   url.pathname = url.pathname.replace(/^((?:\/id)?\/(?:invite|claim)\/).+/, "$1redacted")
   // RM20616 A12 U3 — a public profile's address is a person's handle and permanent key.
   url.pathname = url.pathname.replace(/^((?:\/id)?\/u\/).+/, "$1redacted")
+  // A meal id is public, but it resolves to a person's handle (U3 review, Low 8).
+  url.pathname = url.pathname.replace(/^((?:\/id)?\/meal\/).+/, "$1redacted")
   return url.toString()
 }
