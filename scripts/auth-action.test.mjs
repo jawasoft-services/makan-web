@@ -937,3 +937,73 @@ test('review L1: a redirect from Identity Toolkit is no usable answer; the key a
     assert.ok(run.calls.every(call => call.method !== 'followed'))
   }
 })
+
+// ---------- review L2 and L3 of the 404 fix (REVIEW_RESET_404_FIX.md) ----------
+
+test('review L2: the new password is in no answer and no page drawn after a post, except a JavaScript-off weak or no-connection Save', async () => {
+  const SHORT = 'Qz7kW' // shorter than the minimum: refused before Google is asked
+  const save = password => ({ intent: 'save', password, email: 'dewi@example.com' })
+  // Every outcome of every intent. Each post carries the new password, even where its card has no password
+  // field, so a field echoed by mistake is caught too. `kept` marks the one approved case.
+  const CASES = [
+    ['Save: changed', link => link(RESET_OK), save(PASSWORD), undefined, 'changed', false],
+    ['Save: this link doesn\'t work', link => link({ resetPassword: fail('USER_DISABLED') }), save(PASSWORD), undefined, 'broken', false],
+    ['Save: too short', link => link(RESET_OK), save(SHORT), undefined, 'choose', true],
+    ['Save: Google says weak', link => link({ resetPassword: fail('WEAK_PASSWORD : Password should be at least 6 characters') }), save(PASSWORD), undefined, 'choose', true],
+    ['Save: no connection', link => link({ resetPassword: offline }), save(PASSWORD), undefined, 'choose', true],
+    ['Save: expired', link => link({ resetPassword: fail('EXPIRED_OOB_CODE') }), save(PASSWORD), undefined, 'expired', false],
+    ['Save: used', link => link({ resetPassword: fail('INVALID_OOB_CODE') }), save(PASSWORD), undefined, 'expired', false],
+    ['Save: another link\'s card', link => link(RESET_OK), { ...save(PASSWORD), seal: '0.another-card' }, undefined, 'choose', false],
+    ['Save: done link', (_, done) => done(), save(PASSWORD), undefined, 'expired', false],
+    ['Send a new link', link => link({}), { intent: 'forgot', password: PASSWORD }, { view: 'expired' }, 'forgot', false],
+    ['Send a new link: done link', (_, done) => done(), { intent: 'forgot', password: PASSWORD }, { view: 'expired' }, 'forgot', false],
+    ['Send reset link: sent', link => link({ sendOobCode: ok({}) }), { intent: 'send', email: 'dewi@example.com', password: PASSWORD }, { view: 'forgot' }, 'sent', false],
+    ['Send reset link: refused', link => link({ sendOobCode: fail('INTERNAL_ERROR', 500) }), { intent: 'send', email: 'dewi@example.com', password: PASSWORD }, { view: 'forgot' }, 'forgot', false],
+    ['Send reset link: not an address', link => link({}), { intent: 'send', email: 'not-an-address', password: PASSWORD }, { view: 'forgot' }, 'forgot', false],
+    ['Send reset link: done link', (_, done) => done(), { intent: 'send', email: 'dewi@example.com', password: PASSWORD }, { view: 'forgot' }, 'sent', false],
+    ['an unknown intent', link => link(RESET_OK), { intent: 'other', password: PASSWORD }, undefined, 'choose', false],
+  ]
+  for (const locale of ['en', 'id']) {
+    for (const scripted of [true, false]) {
+      for (const [label, make, fields, previous, outcome, kept] of CASES) {
+        const name = `${locale} ${scripted ? 'JavaScript on' : 'JavaScript off'} ${label}`
+        const run = make(google => withLink('resetPassword', google, { scripted }), () => pageLane({ cookie: 'done', scripted }))
+        const typed = fields.password
+        const view = await run.action({ ...fields, locale }, previous)
+        assert.equal(view.view, outcome, name)
+        // With JavaScript off the page is always drawn again in the post's answer.
+        if (!scripted) assert.ok(run.after.last, `${name}: the page drawn again`)
+        const drawn = run.after.last?.html ?? ''
+        // What the client draws from the answer with JavaScript on.
+        const card = run.card(view, locale)
+        if (kept && !scripted) {
+          assert.equal(view.keep, typed, `${name}: handed back so it need not be typed again`)
+          assert.ok(drawn.includes(`value="${typed}"`), `${name}: in the field drawn again`)
+        } else {
+          assert.equal(JSON.stringify(view).includes(typed), false, `${name}: not in the action's answer`)
+          assert.equal(drawn.includes(typed), false, `${name}: not in the page drawn again`)
+          assert.equal(card.includes(typed), false, `${name}: not in the card drawn from the answer`)
+        }
+      }
+    }
+  }
+})
+
+test('review L3: a post\'s page drawn again is not a page opening; the opening limit still applies to openings', async () => {
+  const run = withLink('resetPassword', RESET_OK, { scripted: false, address: '198.51.104.7' })
+  // 31 JavaScript-off posts from one client, past the 30 openings allowed in 10 minutes: every one is drawn.
+  const posts = [
+    { intent: 'forgot' },
+    { intent: 'save', password: '123', email: 'dewi@example.com' },
+    { intent: 'send', email: 'not-an-address' },
+  ]
+  for (let i = 0; i < 31; i++) {
+    const fields = posts[i % posts.length]
+    await assert.doesNotReject(run.action({ ...fields, locale: 'en' }, fields.intent === 'save' ? undefined : { view: 'forgot' }), `post ${i + 1}`)
+    assert.equal(run.after.last.thrown, null, `post ${i + 1}: drawn, not sent on to Firebase's page`)
+  }
+  assert.equal(run.calls.length, 0, 'the posts and their pages asked Google nothing')
+  // The same client's openings are still counted: 30 drawn, the 31st sent on to Firebase's own page.
+  for (let i = 0; i < 30; i++) assert.equal((await run.render('en')).thrown, null, `opening ${i + 1}`)
+  assert.equal((await run.render('en')).thrown, `REDIRECT:https://makan-devel.firebaseapp.com/__/auth/action?${query('resetPassword')}`, 'opening 31')
+})
