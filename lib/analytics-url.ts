@@ -6,5 +6,7 @@ export function redactAnalyticsUrl(rawUrl: string): string {
   url.hash = ""
   url.pathname = url.pathname.replace(/^((?:\/id)?\/taste\/)[^/]+\/[^/]+/, "$1redacted/redacted")
   url.pathname = url.pathname.replace(/^((?:\/id)?\/(?:invite|claim)\/).+/, "$1redacted")
+  // RM20616 A12 U3 — a public profile's address is a person's handle and permanent key.
+  url.pathname = url.pathname.replace(/^((?:\/id)?\/u\/).+/, "$1redacted")
   return url.toString()
 }
