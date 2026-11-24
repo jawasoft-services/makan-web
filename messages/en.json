@@ -1099,5 +1099,23 @@
     "body": "Open Makan to continue. If the app is already open, it carries on by itself.",
     "open": "Open Makan",
     "otherDevice": "Opened this on a computer? Go back to Makan on your phone. Don't have the app yet? Get it here."
+  },
+  "SharePages": {
+    "unavailable": "Unavailable",
+    "mealGone": "This meal is no longer available.",
+    "getApp": "Get Makan the app",
+    "haveApp": "I already have Makan",
+    "openInMakan": "Open in Makan",
+    "whatToOrder": "What to order here",
+    "maitredLine": "{name}, Maître d’",
+    "aRegular": "A regular",
+    "whatPeopleAte": "What people ate",
+    "rankCityMonth": "#{rank} in {city} · {month}",
+    "address": "Address",
+    "mealBy": "Meal by @{username}",
+    "profileTitle": "{name} (@{handle}) on Makan",
+    "top3": "TOP 3",
+    "maitred": "Maître d’",
+    "recent": "Recent"
   }
 }

@@ -74,8 +74,10 @@ export default async function RootLayout({
   // The Decision namespace is deploy-gated (spec §2): its copy must not reach
   // the client payload of live pages. Server components read it via
   // getTranslations, which does not need the client provider.
+  // RM20616 A12 U3 — the Share v2 pages read SharePages on the server only, so their copy stays out of
+  // every page's client payload too (with the switch off, live pages carry exactly what they carried).
   const clientMessages = Object.fromEntries(
-    Object.entries(messages).filter(([namespace]) => namespace !== "Decision"),
+    Object.entries(messages).filter(([namespace]) => namespace !== "Decision" && namespace !== "SharePages"),
   )
 
   return (

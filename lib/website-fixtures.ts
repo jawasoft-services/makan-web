@@ -5,6 +5,8 @@ import type { PublicMeal } from './makan-stats'
 import type { ClaimVenue } from './claim-link'
 import type { LinkedPlace } from './place-link'
 import type { TasteInvitePreview } from './taste-invite'
+import type { PublicProfileData } from './public-profile'
+import type { SharedMeal } from './shared-meal'
 
 /** Explicit local build/test lane. Never infer safety from missing credentials: ADC may exist. */
 export const WEBSITE_FIXTURES = process.env.MAKAN_WEBSITE_FIXTURES === '1'
@@ -40,6 +42,25 @@ const places: DirectoryPlace[] = [base,
 ]
 export const fixtureDirectory = (): DirectoryPlace[] => unavailable ? [] : places
 export const fixturePlaceIndex = () => fixtureDirectory().map(p => ({ placeId: p.placeId, slug: p.slug, hash: p.hash, name: p.name, city: p.where?.city ?? null, indexable: p.indexable, meals: p.meals.length }))
+
+// RM20616 A12 U3 — the Share v2 pages. `k3f9q2x7` is a full profile, `00000000` one with nothing to
+// show yet; every other key is a profile that is gone (held, deleted, unknown: the page cannot tell).
+export const FIXTURE_PROFILE_KEY = 'k3f9q2x7'
+export function fixturePublicProfile(key: string): PublicProfileData | null {
+  if (unavailable || ![FIXTURE_PROFILE_KEY, '00000000'].includes(key)) return null
+  const empty = key === '00000000'
+  const profileMeal = (index: number) => ({ id: meals[index].id, locationName: base.name, imageURL: meals[index].src, placeId: base.placeId, rank: index + 1 })
+  return { key, slug: `alex-${key}`, name: 'Alex', handle: 'alex', avatar: '',
+    top3: empty ? [] : [profileMeal(0), profileMeal(2)], recent: empty ? [] : meals.map((_, index) => profileMeal(index)),
+    rolePlaceIds: empty ? [] : [base.placeId], cardUrl: null }
+}
+/** The Share v2 meal page: the public fixture meal, and null for the private sentinel and unknown ids. */
+export function fixtureSharedMeal(id: string): SharedMeal | null {
+  if (unavailable) return null
+  const meal = meals.find(m => m.id === id)
+  return meal ? { id, photo: meal.src, dish: id === 'fixture-public-meal' ? 'Harissa prawns' : '', handle: meal.username, avatar: '',
+    placeId: base.placeId, locationName: base.name, fallbackImage: meal.src, cardUrl: null } : null
+}
 export const fixturePublicMeals = (): PublicMeal[] => unavailable ? [] : meals.map(m => ({ src: m.src, alt: m.caption, caption: m.caption, locationName: base.name, mealType: m.mealType, username: m.username }))
 export const fixturePlaceStats = (): PlaceStats => ({ places: unavailable ? 0 : places.length, recentMeals: unavailable ? 0 : meals.length, mealCount: unavailable ? 0 : 5700, topPlaces: unavailable ? [] : [{ name: base.name, meals: meals.length }] })
 export const fixturePhoto = (placeId: string) => unavailable || !places.some(p => p.placeId === placeId) ? null : { uri: photo('dining'), author: '@ridorichard', authorUri: 'https://www.makanofficial.com/blog/kendal-street-kitchen' }

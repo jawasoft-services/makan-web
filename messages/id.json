@@ -1099,5 +1099,23 @@
     "body": "Buka Makan untuk lanjut. Kalau aplikasinya sudah terbuka, Makan lanjut sendiri.",
     "open": "Buka Makan",
     "otherDevice": "Membuka ini di komputer? Kembali ke Makan di ponselmu. Belum punya aplikasinya? Unduh di sini."
+  },
+  "SharePages": {
+    "unavailable": "Tidak tersedia",
+    "mealGone": "Makanan ini sudah tidak tersedia.",
+    "getApp": "Dapatkan aplikasi Makan",
+    "haveApp": "Aku sudah punya Makan",
+    "openInMakan": "Buka di Makan",
+    "whatToOrder": "Pesan apa di sini?",
+    "maitredLine": "{name}, Maître d’",
+    "aRegular": "Pelanggan tetap",
+    "whatPeopleAte": "Yang dimakan orang",
+    "rankCityMonth": "#{rank} di {city} · {month}",
+    "address": "Alamat",
+    "mealBy": "Makanan oleh @{username}",
+    "profileTitle": "{name} (@{handle}) di Makan",
+    "top3": "3 TERATAS",
+    "maitred": "Maître d’",
+    "recent": "Terbaru"
   }
 }
