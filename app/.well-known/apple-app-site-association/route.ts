@@ -12,19 +12,6 @@ const CLAIM_COMPONENTS = [
   { "/": "/verified", comment: "Return to Makan after verifying an email address" },
 ]
 
-// RM20616 A12 U3 — the links a Share v2 share sends (munchies-rn utils/shareLinks.ts): a restaurant page,
-// a public profile, a meal and a taste match. MakanDev only: the App Store app gains nothing until its
-// release carries the screens. This file is not behind SHARE_V2_PAGES; it takes effect when it reaches main.
-const DEV_SHARE_COMPONENTS = [
-  { "/": "/places/*", comment: "Open a shared restaurant page in Makan" },
-  { "/": "/id/places/*", comment: "Open an Indonesian shared restaurant page in Makan" },
-  { "/": "/u/*", comment: "Open a shared profile in Makan" },
-  { "/": "/id/u/*", comment: "Open an Indonesian shared profile in Makan" },
-  { "/": "/meal/*", comment: "Open a shared meal in Makan" },
-  { "/": "/id/meal/*", comment: "Open an Indonesian shared meal in Makan" },
-  { "/": "/taste/*", comment: "Open a taste match link in Makan" },
-]
-
 export function GET() {
   return Response.json(
     {
@@ -41,7 +28,7 @@ export function GET() {
           }, ...CLAIM_COMPONENTS],
         }, {
           appIDs: ["T3Z49Z9YUB.com.makanofficial.makandev"],
-          components: [...CLAIM_COMPONENTS, ...DEV_SHARE_COMPONENTS],
+          components: CLAIM_COMPONENTS,
         }],
       },
     },
