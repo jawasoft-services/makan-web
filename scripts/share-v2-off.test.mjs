@@ -39,7 +39,7 @@ const UNTOUCHED = [
   'components/PlaceMaitred.tsx', 'components/Navbar.tsx', 'components/Footer.tsx', 'components/home/StoreLink.tsx', 'components/standings/public-pages.module.css',
   'lib/public-meal.ts', 'lib/taste-invite.ts', 'lib/place-link.ts', 'lib/place-directory.ts', 'lib/place-photo.ts', 'lib/maitred.ts', 'lib/eat-standings.ts', 'lib/firebase-admin.ts', 'lib/site-metadata.ts', 'lib/carry-link.ts', 'lib/links.ts', 'lib/rate-limit.ts',
   'i18n/availability.ts', 'i18n/paths.ts', 'i18n/request.ts', 'i18n/routing.ts',
-  'next.config.ts', 'apphosting.yaml', 'firebase.json', '.firebaserc', 'package.json', 'package-lock.json',
+  'next.config.ts', 'apphosting.yaml', 'firebase.json', '.firebaserc', 'package-lock.json',
 ]
 
 test('switch off: every page, card and config a share link reaches today is byte-identical to main at 365a96e', { skip: !baseAvailable && 'commit 365a96e is not in this clone' }, () => {
@@ -63,6 +63,10 @@ test('switch off: the only edits to existing files are additive and inert', { sk
   const client = Object.fromEntries(Object.entries(messages).filter(keep))
   const before = Object.fromEntries(Object.entries(JSON.parse(atBase('messages/en.json'))).filter(([namespace]) => namespace !== 'Decision'))
   assert.equal(JSON.stringify(client), JSON.stringify(before), 'the client message payload is byte-identical to main')
+  // package.json: the one change puts the two link-file goldens into `npm test` (U3 review, Low 7). No dependency moves.
+  const pkg = JSON.parse(readFileSync('package.json', 'utf8')), basePkg = JSON.parse(atBase('package.json'))
+  assert.equal(pkg.scripts.test, `${basePkg.scripts.test} app/.well-known/*/route.test.mjs`)
+  assert.deepEqual({ ...pkg, scripts: { ...pkg.scripts, test: basePkg.scripts.test } }, basePkg)
   // Fixtures: every line main had is still there, in order; the unit only adds lines.
   const added = addedLines(atBase('lib/website-fixtures.ts'), readFileSync('lib/website-fixtures.ts', 'utf8'))
   assert.ok(added, 'lib/website-fixtures.ts changes or removes a line main had')
@@ -77,8 +81,10 @@ const PATHS = [
   '/', '/id', '/en', '/en/places/warung-bu-sri-abc123', '/places', '/id/places', '/places/warung-bu-sri-abc123', '/id/places/warung-bu-sri-abc123', '/places/warung-bu-sri-abc123?src=crown',
   '/places/warung-bu-sri-abc123/opengraph-image', '/id/places/warung-bu-sri-abc123/opengraph-image', '/places/Not-Canonical', '/meal/meal-0001', '/id/meal/meal-0001', '/meal/meal-0001?src=share',
   '/meal/meal-0001/extra', '/meal', `/u/dewi-l-${KEY}`, `/id/u/dewi-l-${KEY}`, `/u/dewi-l-${KEY}?src=share`, '/u', '/u/a/b', '/p/ChIJknownplace01', '/id/p/ChIJknownplace01', '/taste/abcdefghijkl/x', '/invite/abcdefghijkl',
-  '/share-v2/places/warung-bu-sri-abc123', '/id/share-v2/meal/meal-0001', `/share-v2/u/dewi-l-${KEY}`, '/standings', '/id/standings/london', '/blog/x', '/id/blog/x', '/claim/x', '/verified',
+  '/standings', '/id/standings/london', '/blog/x', '/id/blog/x', '/claim/x', '/verified',
 ]
+// The internal addresses of the v2 pages. Never public: main has no such pages, and neither does a visitor of this branch.
+const INTERNAL = ['/share-v2/places/warung-bu-sri-abc123', '/id/share-v2/meal/meal-0001', `/share-v2/u/dewi-l-${KEY}`, `/en/share-v2/u/dewi-l-${KEY}`, `/id/share-v2/u/dewi-l-${KEY}`, '/share-v2', '/share-v2/', '/SHARE-V2/u/x', '/Share-V2/meal/meal-0001', `/share-v2/u/dewi-l-${KEY}?x=1`]
 
 test('switch off: the proxy sends every address exactly where main\'s proxy sent it', { skip: !baseAvailable && 'commit 365a96e is not in this clone' }, () => {
   const main = lane({ env: {}, source: path => (path === 'proxy.ts' ? atBase('proxy.ts') : null) }).load('proxy.ts').proxy
@@ -116,6 +122,42 @@ test('switch on: the three share addresses are served by the v2 pages, in both l
   assert.equal(answer(on, '/meal/meal-0001', { host: 'makanofficial.com' }).status, 308)
 })
 
+test('an internal share-v2 address is never reachable directly, with the switch on or off: it gets what an unknown page gets', () => {
+  for (const env of [{}, { SHARE_V2_PAGES: '0' }, { SHARE_V2_PAGES: '1' }]) {
+    const proxy = lane({ env }).load('proxy.ts').proxy
+    for (const path of INTERNAL) {
+      const response = answer(proxy, path)
+      // (Next redirects a trailing slash away before the proxy runs; the request object here keeps it.)
+      assert.equal(new URL(response.rewrite).pathname.replace(/\/$/, ''), '/en/share-v2-unknown', `${path} with ${JSON.stringify(env)}`)
+      assert.equal(new URL(response.rewrite).search, '', path)
+      assert.equal(response.robots, 'noindex, nofollow', path)
+      assert.equal(response.location, null, path)
+    }
+    // It is answered before anything else, so it can never be rate limited into or out of a profile.
+    for (let i = 0; i < 80; i++) assert.equal(new URL(answer(proxy, `/share-v2/u/dewi-l-${KEY}`).rewrite).pathname, '/en/share-v2-unknown')
+  }
+  // There is no page at the address it is sent to.
+  assert.throws(() => readFileSync('app/[locale]/share-v2-unknown/page.tsx'))
+  const { isShareV2InternalPath } = lane().load('lib/share-v2-routes.ts')
+  for (const path of ['/share-v2-unknown', '/en/share-v2-unknown', '/places/share-v2', '/u/share-v2', '/', '/id']) assert.equal(isShareV2InternalPath(path), false, path)
+})
+
+test('only the proxy\'s own rewrite carries the mark a v2 page requires', () => {
+  const requestHeader = (response, name) => response.headers.get(`x-middleware-request-${name}`)
+  const call = (proxy, path, headers = {}) => proxy(new NextRequest(`https://www.makanofficial.com${path}`, { headers: { host: 'www.makanofficial.com', 'x-forwarded-for': '192.0.2.10', ...headers } }))
+  const on = lane({ env: { SHARE_V2_PAGES: '1' } }).load('proxy.ts').proxy
+  for (const path of ['/places/warung-bu-sri-abc123', '/id/meal/meal-0001', `/u/dewi-l-${KEY}`]) {
+    assert.equal(requestHeader(call(on, path), 'x-makan-share-v2'), '1', path)
+    assert.equal(requestHeader(call(on, path), 'x-next-intl-locale'), path.startsWith('/id/') ? 'id' : 'en', path)
+  }
+  // A visitor who sends the mark themselves gains nothing: a direct internal address is still the unknown page.
+  const forged = call(on, `/share-v2/u/dewi-l-${KEY}`, { 'x-makan-share-v2': '1' })
+  assert.equal(new URL(forged.headers.get('x-middleware-rewrite')).pathname, '/en/share-v2-unknown')
+  assert.equal(requestHeader(forged, 'x-makan-share-v2'), null)
+  const off = lane({ env: {} }).load('proxy.ts').proxy
+  assert.equal(requestHeader(call(off, '/places/warung-bu-sri-abc123'), 'x-makan-share-v2'), null)
+})
+
 test('switch on: one address cannot load profiles in a loop', () => {
   const proxy = lane({ env: { SHARE_V2_PAGES: '1' } }).load('proxy.ts').proxy
   let response
@@ -128,6 +170,7 @@ test('switch on: one address cannot load profiles in a loop', () => {
 test('the route table takes only an exact share address', () => {
   const { shareV2Target } = lane().load('lib/share-v2-routes.ts')
   assert.deepEqual(shareV2Target('/id/u/dewi-k3f9q2x7'), { kind: 'profile', locale: 'id', path: '/id/share-v2/u/dewi-k3f9q2x7' })
+  for (const path of INTERNAL) assert.equal(shareV2Target(path.split('?')[0]), null, path)
   for (const path of ['/', '/places', '/places/', '/places/x-abc123/', '/places/x-abc123/opengraph-image', '/places/UPPER-abc123', '/places/no-hash', '/en/places/x-abc123', '/id/id/meal/abcdefgh', '/meal/a%2Fb', '/meal/a.b', '/u/', '/u/..', '/constructor/x', '/toString/x', '/share-v2/u/x', 'places/x-abc123', '//places/x-abc123']) {
     assert.equal(shareV2Target(path), null, path)
   }

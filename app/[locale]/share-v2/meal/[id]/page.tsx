@@ -9,8 +9,7 @@ import { OpenInMakanButton } from '@/components/share/ShareActions'
 import styles from '@/components/share/share-pages.module.css'
 import { localizePath } from '@/i18n/paths'
 import { getDirectoryPlaceById } from '@/lib/place-directory'
-import { sharePageUrl, smartAppBanner } from '@/lib/share-page'
-import { shareV2PagesOn } from '@/lib/share-v2'
+import { SHARE_V2_NOT_SERVED, sharePageUrl, shareV2PageServed, smartAppBanner } from '@/lib/share-page'
 import { getSharedMeal } from '@/lib/shared-meal'
 
 /**
@@ -19,7 +18,7 @@ import { getSharedMeal } from '@/lib/shared-meal'
  * SHARE_V2_PAGES is on; the page it stands in for (app/[locale]/meal/[id]/page.tsx) is not edited.
  *
  * Visibility is checked on every request, as today. A meal that is gone (deleted, no longer
- * public, moderated, or by an account that is closed, held or under age) gets the gone page,
+ * public, moderated, or by an account that is closed, held, under age or being deleted) gets the gone page,
  * which shows nothing of it; its metadata is empty too.
  */
 export const dynamic = 'force-dynamic'
@@ -27,7 +26,7 @@ export const dynamic = 'force-dynamic'
 type Props = { params: Promise<{ locale: string; id: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  if (!shareV2PagesOn()) return {}
+  if (!(await shareV2PageServed())) return SHARE_V2_NOT_SERVED
   const { locale, id } = await params
   const meal = await getSharedMeal(id)
   if (!meal) return { robots: { index: false, follow: false } }
@@ -46,7 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function SharedMealPage({ params }: Props) {
-  if (!shareV2PagesOn()) notFound()
+  if (!(await shareV2PageServed())) notFound()
   const { locale, id } = await params
   setRequestLocale(locale)
   const [meal, t] = await Promise.all([getSharedMeal(id), getTranslations({ locale, namespace: 'SharePages' })])

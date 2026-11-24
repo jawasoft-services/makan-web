@@ -49,7 +49,7 @@ export const FIXTURE_PROFILE_KEY = 'k3f9q2x7'
 export function fixturePublicProfile(key: string): PublicProfileData | null {
   if (unavailable || ![FIXTURE_PROFILE_KEY, '00000000'].includes(key)) return null
   const empty = key === '00000000'
-  const profileMeal = (index: number) => ({ id: meals[index].id, caption: meals[index].caption, imageURL: meals[index].src, placeId: base.placeId, rank: index + 1 })
+  const profileMeal = (index: number) => ({ id: meals[index].id, locationName: base.name, imageURL: meals[index].src, placeId: base.placeId, rank: index + 1 })
   return { key, slug: `alex-${key}`, name: 'Alex', handle: 'alex', avatar: '',
     top3: empty ? [] : [profileMeal(0), profileMeal(2)], recent: empty ? [] : meals.map((_, index) => profileMeal(index)),
     rolePlaceIds: empty ? [] : [base.placeId], cardUrl: null }

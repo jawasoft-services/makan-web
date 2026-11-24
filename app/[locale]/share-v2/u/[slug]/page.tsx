@@ -9,8 +9,8 @@ import { GetMakanButton } from '@/components/share/ShareActions'
 import styles from '@/components/share/share-pages.module.css'
 import { localizePath } from '@/i18n/paths'
 import { getPublicProfile, profileKey, type ProfileMeal } from '@/lib/public-profile'
-import { sharePageUrl, smartAppBanner } from '@/lib/share-page'
-import { shareV2PagesOn } from '@/lib/share-v2'
+import { SHARE_V2_NOT_SERVED, sharePageUrl, shareV2PageServed, smartAppBanner } from '@/lib/share-page'
+import { GONE_PROFILE_LINE } from '@/lib/share-page-choices'
 import { createPageMetadata } from '@/lib/site-metadata'
 
 /**
@@ -19,8 +19,9 @@ import { createPageMetadata } from '@/lib/site-metadata'
  *
  * The owner shared this link, so the page names them. It shows their name, @handle and photo,
  * their top 3 and recent public meals, and the venues where they are the Maître d' (only while
- * they let venues see their profile). No counts, no bio, no dates. Never indexed. An account
- * that is closed, held, under age or unknown gets the gone page: no name, no photo, no reason.
+ * they let venues see their profile). No counts, no bio, no captions, no dates. Never indexed. An
+ * account that is closed, held, under age, being deleted or unknown gets the gone page: no name,
+ * no photo, no reason.
  */
 export const dynamic = 'force-dynamic'
 
@@ -33,7 +34,7 @@ const load = async (slug: string) => {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  if (!shareV2PagesOn()) return {}
+  if (!(await shareV2PageServed())) return SHARE_V2_NOT_SERVED
   const { locale, slug } = await params
   const profile = await load(slug)
   if (!profile) return { robots }
@@ -46,20 +47,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PublicProfilePage({ params }: Props) {
-  if (!shareV2PagesOn()) notFound()
+  if (!(await shareV2PageServed())) notFound()
   const { locale, slug } = await params
   setRequestLocale(locale)
-  const [profile, t] = await Promise.all([load(slug), getTranslations({ locale, namespace: 'SharePages' })])
+  const [profile, t, places] = await Promise.all([load(slug), getTranslations({ locale, namespace: 'SharePages' }), getTranslations({ locale, namespace: 'Places' })])
   const appPage = localizePath(locale, '/app')
-  // The board's gone line speaks of a meal, so a gone profile shows the title alone.
-  if (!profile) return <GonePage title={t('unavailable')} getLabel={t('getApp')} appPage={appPage} />
+  // The board's gone line speaks of a meal, so a gone profile shows the title alone unless Devon chooses a line
+  // (lib/share-page-choices.ts).
+  if (!profile) return <GonePage title={t('unavailable')} body={GONE_PROFILE_LINE ? t(GONE_PROFILE_LINE) : undefined} getLabel={t('getApp')} appPage={appPage} />
   const prefix = locale === 'id' ? '/id' : ''
   // A renamed handle keeps its key; send old links to the current address.
   if (slug !== profile.slug) permanentRedirect(`${prefix}/u/${profile.slug}`)
   const initials = profile.name.split(/\s+/).filter(Boolean).slice(0, 2).map((word) => word[0]?.toUpperCase()).join('')
+  // A photo is described by where the meal was saved, in the site's existing words. Never by its caption: a caption
+  // is the diner's answer to "What was this?", not a description for strangers.
   const tile = (meal: ProfileMeal) => (
     <Link href={`${prefix}/meal/${meal.id}`} prefetch={false} className={styles.tile}>
-      <Image src={meal.imageURL} alt={meal.caption} width={222} height={222} sizes="(min-width: 690px) 209px, 30vw" loading="lazy" />
+      <Image src={meal.imageURL} alt={meal.locationName ? places('mealAlt', { name: meal.locationName }) : places('mealFallback')} width={222} height={222} sizes="(min-width: 690px) 209px, 30vw" loading="lazy" />
     </Link>
   )
   return (

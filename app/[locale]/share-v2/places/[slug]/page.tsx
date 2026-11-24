@@ -14,8 +14,11 @@ import { getMaitredStateAt } from '@/lib/maitred'
 import { getDirectoryPlace } from '@/lib/place-directory'
 import { getPlacePhoto } from '@/lib/place-photo'
 import { safeJsonLd } from '@/lib/safe-json-ld'
-import { getPlaceShareCard, sharePageUrl, smartAppBanner } from '@/lib/share-page'
-import { shareV2PagesOn } from '@/lib/share-v2'
+import PlacesMapLoader from '@/components/map/PlacesMapLoader'
+import legacy from '@/components/standings/public-pages.module.css'
+import { getReviewForPlace } from '@/lib/reviews'
+import { SHARE_V2_NOT_SERVED, getPlaceShareCard, getVisiblePlaceMealIds, sharePageUrl, shareV2PageServed, smartAppBanner } from '@/lib/share-page'
+import { PLACE_MAITRED_LINE, PLACE_PAGE_KEEPS } from '@/lib/share-page-choices'
 import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
 import { thumbUrl } from '@/lib/thumb'
 
@@ -27,6 +30,9 @@ import { thumbUrl } from '@/lib/thumb'
  * Nobody is named here (Devon, 24 Nov 2026): the Maître d' reads "A regular" for every visitor,
  * with no photo and no initial, and the meal photos carry no handle. Each photo links to its
  * meal's own page, where the diner is credited. The Eat or Yeet rank only: no Google rating.
+ *
+ * A meal photo is used (as the hero, in the grid, in the JSON-LD) only if its author's account may
+ * appear on a public page: the same check the meal page makes, asked through `getVisiblePlaceMealIds`.
  */
 export const dynamic = 'force-dynamic'
 
@@ -41,7 +47,7 @@ const load = cache(async (slug: string) => {
 })
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  if (!shareV2PagesOn()) return {}
+  if (!(await shareV2PageServed())) return SHARE_V2_NOT_SERVED
   const { locale, slug } = await params
   const found = await load(slug)
   if (!found) return {}
@@ -61,7 +67,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function SharedPlacePage({ params }: Props) {
-  if (!shareV2PagesOn()) notFound()
+  if (!(await shareV2PageServed())) notFound()
   const { locale, slug } = await params
   setRequestLocale(locale)
   const found = await load(slug)
@@ -69,13 +75,14 @@ export default async function SharedPlacePage({ params }: Props) {
   const { place, row, standings } = found
   // A renamed place keeps its hash; send old links to the current address.
   if (place.slug !== slug) permanentRedirect(localizePath(locale, `/places/${place.slug}`))
-  const [t, places, googlePhoto, maitred] = await Promise.all([
+  const [t, places, googlePhoto, maitred, visible] = await Promise.all([
     getTranslations({ locale, namespace: 'SharePages' }), getTranslations({ locale, namespace: 'Places' }),
-    getPlacePhoto(place.placeId), getMaitredStateAt(place.placeId),
+    getPlacePhoto(place.placeId), getMaitredStateAt(place.placeId), getVisiblePlaceMealIds(place.placeId, place.meals.map((m) => m.id)),
   ])
+  const meals = place.meals.filter((m) => visible.has(m.id))
   const prefix = locale === 'id' ? '/id' : ''
   const pageUrl = sharePageUrl(locale, `/places/${place.slug}`)
-  const heroMeal = place.meals[0]
+  const heroMeal = meals[0]
   const hero = heroMeal ? heroMeal.src : googlePhoto?.uri
   const mealAlt = places('mealAlt', { name: place.name })
   const pick = maitred.status === 'held' ? maitred.venue.notes.always.trim() : ''
@@ -83,6 +90,10 @@ export default async function SharedPlacePage({ params }: Props) {
   const computed = new Date(standings.computedAt)
   const month = Number.isNaN(computed.getTime()) ? '' : new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-GB', { month: 'long', timeZone: 'UTC' }).format(computed)
   const meta = [place.cuisine.join(', '), place.where?.city ?? ''].filter(Boolean)
+  // Devon's choice (lib/share-page-choices.ts). The holder's name is not an option.
+  const maitredLine = PLACE_MAITRED_LINE === 'a-regular-maitred' ? t('maitredLine', { name: t('aRegular') }) : PLACE_MAITRED_LINE === 'a-regular' ? t('aRegular') : ''
+  const review = PLACE_PAGE_KEEPS.firsthandReview ? getReviewForPlace(place.slug) : null
+  const dayMonthYear = new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })
   const hasGeo = place.lat !== null && place.lng !== null
   const directionsUrl = hasGeo
     ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(place.name)}&destination_place_id=${encodeURIComponent(place.placeId)}`
@@ -92,7 +103,7 @@ export default async function SharedPlacePage({ params }: Props) {
     ...(place.address ? { address: { '@type': 'PostalAddress', streetAddress: place.address, ...(place.where ? { addressLocality: place.where.city, addressCountry: place.where.country } : {}) } } : {}),
     ...(hasGeo ? { geo: { '@type': 'GeoCoordinates', latitude: place.lat, longitude: place.lng } } : {}),
     ...(place.cuisine.length ? { servesCuisine: place.cuisine } : {}),
-    ...(googlePhoto || place.meals.length ? { image: [...(googlePhoto ? [googlePhoto.uri] : []), ...place.meals.slice(0, 6).map((m) => m.src)] } : {}),
+    ...(googlePhoto || meals.length ? { image: [...(googlePhoto ? [googlePhoto.uri] : []), ...meals.slice(0, 6).map((m) => m.src)] } : {}),
     ...(directionsUrl ? { hasMap: directionsUrl } : {}),
   }
 
@@ -118,13 +129,13 @@ export default async function SharedPlacePage({ params }: Props) {
               {t('whatToOrder')}
             </h2>
             <p className={styles.dish}>{pick}</p>
-            <p className={styles.by}>{t('maitredLine', { name: t('aRegular') })}</p>
+            {maitredLine ? <p className={styles.by}>{maitredLine}</p> : null}
           </section> : null}
 
-          {place.meals.length ? <section aria-labelledby="what-people-ate">
+          {meals.length ? <section aria-labelledby="what-people-ate">
             <h2 id="what-people-ate" className={styles.heading}>{t('whatPeopleAte')}</h2>
             <ul className={`${styles.grid} ${styles.two}`}>
-              {place.meals.map((m) => <li key={m.id}>
+              {meals.map((m) => <li key={m.id}>
                 <Link href={`${prefix}/meal/${m.id}`} prefetch={false} className={styles.tile}>
                   <Image src={m.thumb || thumbUrl(m.src, 480)} alt={mealAlt} width={480} height={480} sizes="(min-width: 690px) 315px, 46vw" loading="lazy" />
                 </Link>
@@ -140,6 +151,14 @@ export default async function SharedPlacePage({ params }: Props) {
             {directionsUrl ? <dd><a href={directionsUrl} rel="noopener" target="_blank" className={styles.textLink}>{places('directions')}</a></dd> : null}
           </dl> : null}
           {place.claimed ? null : <p><Link href={localizePath(locale, `/claim/${place.slug}`)} prefetch={false} className={styles.textLink}>{places('claimRow')}</Link></p>}
+          {/* Devon's choice (lib/share-page-choices.ts): today's map and firsthand-review block, which the board does not draw. */}
+          {review ? <article className={legacy.firsthand}>
+            <p className={legacy.kicker}>{places('firsthandVisit', { author: review.author.name })} · <time dateTime={review.visitDate}>{dayMonthYear.format(new Date(review.visitDate))}</time></p>
+            <p lang="en" className={legacy.orderSummary}>{review.orderSummary}</p>
+            <p className={legacy.visitBill}>{places('visitBill', { total: review.bill.total, covers: review.bill.covers })}</p>
+            <Link href={`/blog/${review.slug}`} prefetch={false} className={styles.textLink}>{places('fullReview')}</Link>
+          </article> : null}
+          {PLACE_PAGE_KEEPS.map && hasGeo ? <PlacesMapLoader className={legacy.placeMap} label={places('mapLabel', { name: place.name })} zoom={16} markers={[{ slug: place.slug, name: place.name, lat: place.lat as number, lng: place.lng as number, href: pageUrl }]} /> : null}
         </div>
       </main>
       <div className={styles.bar}>

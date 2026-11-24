@@ -1,31 +1,37 @@
+import { makanStorageObject } from './storage-bucket'
+
 /**
  * RM20616 A12 U3 — the stored share card of a place, a meal or a profile: the 1200 x 630 image
  * the app's backend renders once when its subject changes (A12 U2) and the website points
  * `og:image` at, so no card is drawn per request.
  *
- * This file is the one place that knows the document's shape. U2's plan (PLAN.md section 3):
- * `shareCardMeta/<kind>_<id>` = { hash, url, updatedAt }, where `url` is the Firebase Storage
- * download address of `shareCards/<kind>/<id>/<hash>.jpg`. If U2 lands a different shape, change
- * `shareCardMetaPath` and `shareCardUrlFrom` and nothing else.
+ * ASSUMED SHAPE (U2 had no code when this was written; the controller has told U2 the same):
+ *
+ *   document  shareCardMeta/<kind>_<id>            { hash, url, updatedAt }
+ *   object    shareCards/<kind>/<id>/<hash>.jpg    in Makan's own bucket; `url` is its download address
+ *
+ *   kind `place`    id = the place id
+ *   kind `meal`     id = the meal id
+ *   kind `profile`  id = the person's PUBLIC PROFILE KEY (the 8 characters at the end of /u/<handle>-<key>),
+ *                   never their uid: a uid must not reach a page's HTML or its og:image.
+ *
+ * This file is the one place that knows that shape. A document whose `url` is not exactly this
+ * subject's card in Makan's bucket is ignored, and the page falls back to today's image.
  */
 export type ShareCardKind = 'place' | 'meal' | 'profile'
 
-/** The id of the subject: the place id, the meal id, or the profile owner's uid. */
+const cardId = (id: unknown): id is string => typeof id === 'string' && /^[A-Za-z0-9_-]{1,200}$/.test(id)
+
 export function shareCardMetaPath(kind: ShareCardKind, id: unknown): string | null {
-  return typeof id === 'string' && id.length > 0 && id.length <= 1500 && !id.includes('/') ? `shareCardMeta/${kind}_${id}` : null
+  return cardId(id) ? `shareCardMeta/${kind}_${id}` : null
 }
 
-/** The card's address from its document, or null for anything that is not a stored share card. */
-export function shareCardUrlFrom(doc: unknown): string | null {
+/** The card's address from its document, or null unless it is this subject's own card in Makan's bucket. */
+export function shareCardUrlFrom(doc: unknown, kind: ShareCardKind, id: unknown): string | null {
+  if (!cardId(id)) return null
   const value = doc !== null && typeof doc === 'object' ? (doc as Record<string, unknown>).url : undefined
-  if (typeof value !== 'string' || value.length === 0 || value.length > 2048) return null
-  try {
-    const url = new URL(value)
-    const isStorage = url.protocol === 'https:' && url.hostname === 'firebasestorage.googleapis.com' && !url.username && !url.password
-    return isStorage && /^\/v0\/b\/[^/]+\/o\/shareCards\//.test(decodeURIComponent(url.pathname)) ? value : null
-  } catch {
-    return null
-  }
+  const object = makanStorageObject(value)
+  return object !== null && object.startsWith(`shareCards/${kind}/${id}/`) ? (value as string).trim() : null
 }
 
 type CardStore = { doc(path: string): { get(): Promise<{ data(): unknown }> } }
@@ -35,7 +41,7 @@ export async function readShareCardUrl(db: CardStore | null, kind: ShareCardKind
   const path = shareCardMetaPath(kind, id)
   if (!db || !path) return null
   try {
-    return shareCardUrlFrom((await db.doc(path).get()).data())
+    return shareCardUrlFrom((await db.doc(path).get()).data(), kind, id)
   } catch {
     return null
   }

@@ -1,14 +1,14 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
-import { lane, KEY, USER, PLACE, PROFILE_ROUTE, user, meal, card, storage } from './share-v2-test-lane.mjs'
+import { lane, KEY, USER, PLACE, PROFILE_ROUTE, BUCKET, user, meal, card, fence, storage } from './share-v2-test-lane.mjs'
 
 // RM20616 A12 U3 — the public profile page, /u/<handle>-<key>. RM20603's tests, resumed and extended.
 const DATA = 'lib/public-profile-data.ts'
 const SLUG = `dewi-l-${KEY}`
 const open = (run, locale = 'en', slug = SLUG) => run.page(PROFILE_ROUTE, { locale, slug })
 const PERSONAL = /Dewi|dewi|photo\.jpg|Captioned|Warung|BIO TEXT|PRIVATE/
-const profilePaths = path => [`publicProfileKeys/${KEY}`, `users/${USER}`, `users/${USER}/private/age`, `users/${USER}/publicTasteGraph/top3`, `users/${USER}/maitredSettings/venueVisibility`, `maitredRoles/${USER}`, `shareCardMeta/profile_${USER}`].includes(path) || path.startsWith('meals/')
+const profilePaths = path => [`publicProfileKeys/${KEY}`, `users/${USER}`, `users/${USER}/private/age`, `users/${USER}/publicTasteGraph/top3`, `users/${USER}/maitredSettings/venueVisibility`, `maitredRoles/${USER}`, fence(USER), `shareCardMeta/profile_${KEY}`].includes(path) || path.startsWith('meals/')
 
 function assertGone(out, why) {
   assert.equal(out.thrown, null, why)
@@ -26,11 +26,17 @@ test('the page shows the owner by name, with their public meals, and nothing els
   assert.equal(profile.slug, SLUG)
   assert.deepEqual(Object.keys(profile).sort(), ['avatar', 'cardUrl', 'handle', 'key', 'name', 'recent', 'rolePlaceIds', 'slug', 'top3'])
   assert.doesNotMatch(JSON.stringify(profile), /FRIENDS ONLY|PRIVATE EMAIL|PRIVATE PHONE|BIO TEXT|profile-host/)
-  assert.equal(run.reads.length, 22)
+  assert.equal(run.reads.length, 23)
   assert.ok(run.reads.every(profilePaths), run.reads.filter(path => !profilePaths(path)).join())
   const out = await open(lane())
   assert.match(out.html, /<h1>Dewi Lestari<\/h1>/); assert.match(out.html, /@dewi\.l/)
   assert.doesNotMatch(out.text, /BIO TEXT|PRIVATE EMAIL|PRIVATE PHONE|profile-host|followers|following|2026-/)
+  // A photo is described by where the meal was saved, never by the diner's caption.
+  assert.doesNotMatch(out.text, /Captioned by the diner/)
+  assert.doesNotMatch(JSON.stringify(profile), /Captioned by the diner|caption/)
+  assert.match(out.html, /<img src="[^"]+" alt="A meal saved at Warung Bu Sri on Makan"/)
+  const unplaced = lane(); for (const id of ['m1', 'm2', 'm3']) unplaced.seed.set(`meals/${id}`, meal({ locationName: undefined, timestamp: -1 }))
+  assert.match((await open(unplaced)).html, /href="\/meal\/m1" class="tile"><img src="[^"]+" alt="A meal"/)
 })
 
 test('"Discoverable in Search" off means search only: the owner\'s page still opens when they send the link', async () => {
@@ -40,7 +46,7 @@ test('"Discoverable in Search" off means search only: the owner\'s page still op
   assert.equal(out.metadata.title, 'Dewi Lestari (@dewi.l) on Makan')
 })
 
-test('an account that is deleted, held, disabled, spam or unfinished gets the gone page: no name, no photo, 3 reads', async () => {
+test('an account that is deleted, held, disabled, spam or unfinished gets the gone page: no name, no photo, 4 reads', async () => {
   const hidden = [{ isDeleted: true }, { deletedAt: 1 }, { isSpam: true }, { spamSuspected: true }, { accountStatus: 'closing' }, { username: 'user_abcdefgh_abc123' }, { username: '' },
     { name: '', display_name: '', profileSetupCompletedAt: undefined }, { name: {}, display_name: ' ', profileSetupCompletedAt: undefined }]
   for (const field of ['accountStatus', 'status', 'visibility_status', 'moderationStatus']) {
@@ -49,7 +55,7 @@ test('an account that is deleted, held, disabled, spam or unfinished gets the go
   for (const extra of hidden) {
     const run = lane(); run.seed.set(`users/${USER}`, user(extra))
     assertGone(await open(run), JSON.stringify(extra))
-    assert.equal(run.reads.length, 3, JSON.stringify(extra))
+    assert.equal(run.reads.length, 4, JSON.stringify(extra))
   }
 })
 
@@ -57,7 +63,7 @@ test('an account under the minimum age gets the gone page', async () => {
   for (const age of [{ underMinimum: true }, { birthYear: 2014 }, { birthYear: 2026 }]) {
     const run = lane(); run.seed.set(`users/${USER}/private/age`, age)
     assertGone(await open(run), JSON.stringify(age))
-    assert.equal(run.reads.length, 3)
+    assert.equal(run.reads.length, 4)
   }
   const old = lane(); old.seed.delete(`users/${USER}/private/age`)
   assert.match((await open(old)).html, /<h1>Dewi Lestari<\/h1>/, 'an account from before the age question stays open')
@@ -67,7 +73,7 @@ test('an unknown key, a key with no account, and a link that is not a profile li
   const unknown = lane(); unknown.seed.delete(`publicProfileKeys/${KEY}`)
   assertGone(await open(unknown), 'unknown key'); assert.equal(unknown.reads.length, 1)
   const orphan = lane(); orphan.seed.delete(`users/${USER}`)
-  assertGone(await open(orphan), 'no account'); assert.equal(orphan.reads.length, 3)
+  assertGone(await open(orphan), 'no account'); assert.equal(orphan.reads.length, 4)
   for (const slug of ['short', 'dewi-1234567!', 'a'.repeat(81), '../x-k3f9q2x7', KEY, `-${KEY}`, `Dewi-${KEY}`]) {
     const run = lane()
     assertGone(await open(run, 'en', slug), slug); assert.equal(run.reads.length, 0, slug)
@@ -75,7 +81,7 @@ test('an unknown key, a key with no account, and a link that is not a profile li
 })
 
 test('a read that fails gets the gone page, and the log line names nobody', async () => {
-  for (const path of [`publicProfileKeys/${KEY}`, `users/${USER}`, `users/${USER}/private/age`, `users/${USER}/maitredSettings/venueVisibility`, 'meals/m1']) {
+  for (const path of [`publicProfileKeys/${KEY}`, `users/${USER}`, `users/${USER}/private/age`, fence(USER), `users/${USER}/maitredSettings/venueVisibility`, 'meals/m1']) {
     const run = lane(); run.failures.add(path)
     assertGone(await open(run), path)
     assert.deepEqual(run.logs, ['Public profile unavailable.'])
@@ -109,23 +115,23 @@ test('the Maître d\' venues show only while the owner lets venues see their pro
     else run.seed.set(`users/${USER}/maitredSettings/venueVisibility`, setting)
     const out = await open(run)
     assert.match(out.html, /<h1>Dewi Lestari<\/h1>/)
-    assert.doesNotMatch(out.text, /profile-maitred|Warung Bu Sri|warung-bu-sri/, JSON.stringify(setting))
+    assert.doesNotMatch(out.text, /profile-maitred|crownRow|warung-bu-sri/, JSON.stringify(setting))
   }
   const failed = lane(); failed.state.failCrowns = true
   const partial = await open(failed)
   assert.match(partial.html, /<h1>Dewi Lestari<\/h1>/); assert.doesNotMatch(partial.html, /profile-maitred/)
 })
 
-test('profile cache: 22 reads cold, none warm, concurrent requests share one load, and a closed account drops out after 5 minutes', async () => {
+test('profile cache: 23 reads cold, none warm, concurrent requests share one load, and a closed account drops out after 5 minutes', async () => {
   const run = lane(); run.useCache(); const api = run.load('lib/public-profile.ts')
   await Promise.all([api.getPublicProfile(KEY), api.getPublicProfile(KEY), api.getPublicProfile(KEY)])
-  assert.equal(run.reads.length, 22)
+  assert.equal(run.reads.length, 23)
   run.nextRequest(); run.reads.length = 0
   assert.ok(await api.getPublicProfile(KEY)); assert.equal(run.reads.length, 0)
   run.seed.set(`users/${USER}`, user({ accountStatus: 'held' }))
   run.state.clock += 300_001; run.nextRequest()
   assert.equal(await api.getPublicProfile(KEY), null)
-  assert.equal(run.reads.length, 3)
+  assert.equal(run.reads.length, 4)
 })
 
 test('the page carries the board\'s words only, in English and Bahasa, and a stale handle redirects', async () => {
@@ -149,13 +155,19 @@ test('og:image is the stored card when there is one, else the site\'s own card: 
   assert.equal(none.metadata.openGraph.images[0].url, 'https://www.makanofficial.com/opengraph-image')
   assert.deepEqual(none.metadata.twitter.images, ['https://www.makanofficial.com/opengraph-image'])
   assert.equal((await open(lane(), 'id')).metadata.openGraph.images[0].url, 'https://www.makanofficial.com/id/opengraph-image')
-  const run = lane(); run.seed.set(`shareCardMeta/profile_${USER}`, { hash: '0f3a', url: card('profile'), updatedAt: 1 })
+  const run = lane(); run.seed.set(`shareCardMeta/profile_${KEY}`, { hash: '0f3a', url: card('profile', KEY), updatedAt: 1 })
   const stored = await open(run)
-  assert.equal(stored.metadata.openGraph.images[0].url, card('profile'))
-  assert.deepEqual(stored.metadata.twitter.images, [card('profile')])
+  assert.equal(stored.metadata.openGraph.images[0].url, card('profile', KEY))
+  assert.deepEqual(stored.metadata.twitter.images, [card('profile', KEY)])
+  assert.ok(run.reads.includes(`shareCardMeta/profile_${KEY}`) && !run.reads.some(path => path.startsWith('shareCardMeta/') && path.includes(USER)), 'the card is found by the public key, never the uid')
   assert.equal(stored.metadata.openGraph.type, 'profile')
-  const bad = lane(); bad.seed.set(`shareCardMeta/profile_${USER}`, { url: 'https://example.com/shareCards/a.jpg' })
-  assert.equal((await open(bad)).metadata.openGraph.images[0].url, 'https://www.makanofficial.com/opengraph-image')
+  // A card kept under the uid, another person's card, and a card in another project's bucket are not this page's card.
+  for (const url of [card('profile', USER), card('profile', 'zzzzzzzz'), card('profile', KEY, 'another-project.firebasestorage.app'), card('place', KEY), 'https://example.com/shareCards/profile/k3f9q2x7/a.jpg']) {
+    const bad = lane(); bad.seed.set(`shareCardMeta/profile_${KEY}`, { url })
+    const out = await open(bad)
+    assert.equal(out.metadata.openGraph.images[0].url, 'https://www.makanofficial.com/opengraph-image', url)
+    assert.doesNotMatch(out.text, /profile-host|another-project|zzzzzzzz/, url)
+  }
   assert.doesNotMatch(JSON.stringify(none.metadata) + JSON.stringify(stored.metadata), /\/u\/[^"]*opengraph-image/)
 })
 
@@ -164,7 +176,7 @@ test('with the switch off there is no profile page: a 404 and not one read', asy
     const run = lane({ env })
     const mod = run.load(PROFILE_ROUTE)
     const props = { params: Promise.resolve({ locale: 'en', slug: SLUG }) }
-    assert.deepEqual(await mod.generateMetadata(props), {})
+    assert.deepEqual(await mod.generateMetadata(props), { robots: { index: false, follow: false } })
     await assert.rejects(mod.default(props), /NOT_FOUND/)
     assert.equal(run.reads.length, 0)
   }
@@ -181,7 +193,7 @@ test('profile links are in no sitemap or directory, and avatars come only from M
   const api = lane().load(DATA)
   assert.equal(api.profileKey(SLUG), KEY)
   assert.equal(api.storagePhoto(storage), storage)
-  for (const value of ['https://example.com/photo.jpg', 'http://firebasestorage.googleapis.com/a', 'https://firebasestorage.googleapis.com.evil.test/a', 'https://user@firebasestorage.googleapis.com/a', '/redesign/prawns.jpg']) assert.equal(api.storagePhoto(value), '')
+  for (const value of ['https://example.com/photo.jpg', storage.replace('https://', 'http://'), storage.replace('.com/', '.com.evil.test/'), storage.replace('https://', 'https://user@'), storage.replace(BUCKET, 'another-project.firebasestorage.app'), '/redesign/prawns.jpg']) assert.equal(api.storagePhoto(value), '', value)
 })
 
 test('a chosen user_ handle is a handle, and an empty photoURL falls back to avatar_url', async () => {
@@ -189,4 +201,32 @@ test('a chosen user_ handle is a handle, and an empty photoURL falls back to ava
   const profile = await run.load(DATA).loadPublicProfileData(run.db, KEY, 2026)
   assert.equal(profile.handle, 'user_joe'); assert.equal(profile.avatar, `${storage}?avatar`)
   assert.equal(PLACE.length > 0, true)
+})
+
+test('an account that is being deleted gets the gone page: the deletion fence, read with the account', async () => {
+  const run = lane(); run.seed.set(fence(USER), { createdAt: 1 })
+  assertGone(await open(run), 'fenced')
+  assert.equal(run.reads.length, 4)
+  assert.ok(run.reads.includes(fence(USER)))
+})
+
+test('a photo of the owner from outside Makan\'s storage is not loaded: the page shows their initials', async () => {
+  const run = lane(); run.seed.set(`users/${USER}`, user({ photoURL: 'https://example.com/avatar-sentinel.jpg', avatar_url: storage.replace(BUCKET, 'another-project.firebasestorage.app') + '?avatar-sentinel' }))
+  const out = await open(run)
+  assert.match(out.html, /<div class="avatar avatarLarge">DL<\/div>/)
+  assert.doesNotMatch(out.text, /avatar-sentinel|example\.com|another-project/)
+})
+
+test('a request that did not come through the proxy is a 404 that reads nothing, even with the switch on', async () => {
+  for (const headers of [{}, { 'x-makan-share-v2': '0' }, { 'x-makan-share-v2': 'true' }]) {
+    const run = lane(); run.state.headers = headers
+    const mod = run.load(PROFILE_ROUTE)
+    const props = { params: Promise.resolve({ locale: 'en', slug: SLUG }) }
+    assert.deepEqual(await mod.generateMetadata(props), { robots: { index: false, follow: false } })
+    await assert.rejects(mod.default(props), /NOT_FOUND/)
+    assert.equal(run.reads.length, 0)
+  }
+  // An address with a dot never passes proxy.ts (its matcher skips them). Even with the mark forged, it names no profile.
+  const forged = lane()
+  assertGone(await open(forged, 'en', `dewi.l-${KEY}`), 'dotted'); assert.equal(forged.reads.length, 0)
 })

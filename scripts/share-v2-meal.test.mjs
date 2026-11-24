@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { lane, USER, MEAL, PLACE, MEAL_ROUTE, user, meal, card, storage } from './share-v2-test-lane.mjs'
+import { lane, USER, MEAL, PLACE, MEAL_ROUTE, BUCKET, user, meal, card, fence, storage } from './share-v2-test-lane.mjs'
 
 // RM20616 A12 U3 — the shared meal page, /meal/<id> (board G3), and its gone state (board web-gone).
 const open = (run, locale = 'en', id = MEAL) => run.page(MEAL_ROUTE, { locale, id })
@@ -24,7 +24,7 @@ test('a public meal shows its photo, its author by handle, its dish and its plac
   assert.doesNotMatch(out.text, /Captioned by the diner|Dewi Lestari|PRIVATE EMAIL|BIO TEXT|profile-host/)
   assert.equal(out.metadata.title, 'Meal by @dewi.l')
   assert.deepEqual(out.metadata.itunes, { appId: '6756131450', appArgument: `https://www.makanofficial.com/meal/${MEAL}` })
-  assert.deepEqual(run.reads, [`meals/${MEAL}`, `users/${USER}`, `users/${USER}/private/age`, `dishMemberships/${MEAL}`, `shareCardMeta/meal_${MEAL}`])
+  assert.deepEqual(run.reads, [`meals/${MEAL}`, `users/${USER}`, `users/${USER}/private/age`, fence(USER), `dishMemberships/${MEAL}`, `shareCardMeta/meal_${MEAL}`])
   const id = await open(lane(), 'id')
   assert.match(id.html, /Makanan oleh @dewi\.l/); assert.match(id.html, /Buka di Makan/)
   assert.match(id.html, /href="\/id\/places\/warung-bu-sri-abc123"/)
@@ -48,7 +48,9 @@ test('an unknown meal is gone, and an id that cannot be a meal id reads nothing'
   }
 })
 
-test('a meal whose author is closed, held, spam, under age or unknown is gone', async () => {
+test('a meal whose author is closed, held, spam, under age, being deleted or unknown is gone', async () => {
+  const fenced = lane(); fenced.seed.set(fence(USER), { createdAt: 1 })
+  assertGone(await open(fenced), 'deletion fence')
   const states = [{ isDeleted: true }, { deletedAt: 1 }, { isSpam: true }, { spamSuspected: true }, { accountStatus: 'held' }, { status: 'banned' }, { visibility_status: 'hidden' }, { moderationStatus: 'suspended' }, { accountStatus: 'closing' }]
   for (const extra of states) {
     const run = lane(); run.seed.set(`users/${USER}`, user(extra))
@@ -67,7 +69,7 @@ test('a meal whose author is closed, held, spam, under age or unknown is gone', 
 })
 
 test('a read that fails is gone, and the log line names nothing', async () => {
-  for (const path of [`meals/${MEAL}`, `users/${USER}`, `users/${USER}/private/age`]) {
+  for (const path of [`meals/${MEAL}`, `users/${USER}`, `users/${USER}/private/age`, fence(USER)]) {
     const run = lane(); run.failures.add(path)
     assertGone(await open(run), path)
     assert.deepEqual(run.logs, ['Shared meal unavailable.'])
@@ -98,16 +100,19 @@ test('og:image is the stored card when there is one, and today\'s image when the
   const none = lane(); none.seed.set(`meals/${MEAL}`, meal({ shareCardUrl: `${storage}?story-card` }))
   assert.deepEqual((await open(none)).metadata.openGraph.images, [{ url: `${storage}?story-card`, width: 1080, height: 1920 }])
   assert.deepEqual((await open(lane())).metadata.openGraph.images, [{ url: storage, width: 1080, height: 1920 }])
-  const run = lane(); run.seed.set(`shareCardMeta/meal_${MEAL}`, { hash: '0f3a', url: card('meal'), updatedAt: 1 })
+  const run = lane(); run.seed.set(`shareCardMeta/meal_${MEAL}`, { hash: '0f3a', url: card('meal', MEAL), updatedAt: 1 })
   const stored = await open(run)
-  assert.deepEqual(stored.metadata.openGraph.images, [{ url: card('meal'), width: 1200, height: 630 }])
-  assert.deepEqual(stored.metadata.twitter.images, [card('meal')])
-  const bad = lane(); bad.seed.set(`shareCardMeta/meal_${MEAL}`, { url: `${storage}?not-a-card` })
-  assert.deepEqual((await open(bad)).metadata.openGraph.images, [{ url: storage, width: 1080, height: 1920 }])
+  assert.deepEqual(stored.metadata.openGraph.images, [{ url: card('meal', MEAL), width: 1200, height: 630 }])
+  assert.deepEqual(stored.metadata.twitter.images, [card('meal', MEAL)])
+  // Not a card, another meal's card, and a card in another project's bucket all fall back to today's image.
+  for (const url of [`${storage}?not-a-card`, card('meal', 'another-meal-1'), card('meal', MEAL, 'another-project.firebasestorage.app'), card('place', MEAL)]) {
+    const bad = lane(); bad.seed.set(`shareCardMeta/meal_${MEAL}`, { url })
+    assert.deepEqual((await open(bad)).metadata.openGraph.images, [{ url: storage, width: 1080, height: 1920 }], url)
+  }
 })
 
 test('a meal with a photo outside Makan\'s storage is gone rather than loaded from elsewhere', async () => {
-  for (const imageURL of ['https://example.com/a.jpg', '', undefined, 'http://firebasestorage.googleapis.com/x']) {
+  for (const imageURL of ['https://example.com/a.jpg', '', undefined, storage.replace('https://', 'http://'), storage.replace(BUCKET, 'another-project.firebasestorage.app')]) {
     const run = lane(); run.seed.set(`meals/${MEAL}`, meal({ imageURL }))
     assertGone(await open(run), String(imageURL))
   }
@@ -125,8 +130,28 @@ test('with the switch off the v2 meal page does not exist: a 404 and not one rea
     const run = lane({ env })
     const mod = run.load(MEAL_ROUTE)
     const props = { params: Promise.resolve({ locale: 'en', id: MEAL }) }
-    assert.deepEqual(await mod.generateMetadata(props), {})
+    assert.deepEqual(await mod.generateMetadata(props), { robots: { index: false, follow: false } })
     await assert.rejects(mod.default(props), /NOT_FOUND/)
     assert.equal(run.reads.length, 0)
   }
+})
+
+test('the author\'s photo is loaded only from Makan\'s storage: any other address leaves their initial', async () => {
+  for (const photoURL of ['https://example.com/avatar-sentinel.jpg', storage.replace(BUCKET, 'another-project.firebasestorage.app') + '?avatar-sentinel', 'http://firebasestorage.googleapis.com/avatar-sentinel']) {
+    const run = lane(); run.seed.set(`users/${USER}`, user({ photoURL, avatar_url: photoURL }))
+    const out = await open(run)
+    assert.match(out.html, /<span class="avatar avatarSmall" aria-hidden="true">D<\/span>Meal by @dewi\.l/, photoURL)
+    assert.doesNotMatch(out.text, /avatar-sentinel|example\.com|another-project/, photoURL)
+  }
+  const own = lane(); own.seed.set(`users/${USER}`, user({ photoURL: `${storage}?own-avatar` }))
+  assert.match((await open(own)).html, /photo\.jpg\?own-avatar/)
+})
+
+test('a request that did not come through the proxy is a 404 that reads nothing, even with the switch on', async () => {
+  const run = lane(); run.state.headers = {}
+  const mod = run.load(MEAL_ROUTE)
+  const props = { params: Promise.resolve({ locale: 'en', id: MEAL }) }
+  assert.deepEqual(await mod.generateMetadata(props), { robots: { index: false, follow: false } })
+  await assert.rejects(mod.default(props), /NOT_FOUND/)
+  assert.equal(run.reads.length, 0)
 })

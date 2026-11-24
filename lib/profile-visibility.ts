@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto'
+
 /**
  * RM20616 A12 U3 — who may appear on a public website page. Pure: it reads documents it is
  * handed and nothing else. One gate for the `/u/` page, the meal page's byline and the
@@ -8,6 +10,22 @@
  * field. The same decision lives in the app at utils/sharePolicy.ts (`mayShareOwnProfileLink`).
  */
 type Doc = unknown
+
+/**
+ * What is read about an account before anything of it goes on a public page: its `users`
+ * document, its age record, and whether its deletion fence exists (`fenced`, the snapshot's
+ * `exists`). Every page builds this the same way and asks the same two questions below.
+ */
+export type AccountRecords = { user: Doc; age: Doc; fenced: unknown }
+
+/**
+ * The document the server writes while it deletes an account (`onUserDeleted`). The server's own
+ * "active" rule, `isAccountActive` in munchies-rn functions/maitred/accountStatus.js, reads it;
+ * so does this gate. Same path: sha256 of the uid.
+ */
+export function accountDeletionFencePath(uid: string): string {
+  return `accountDeletionFences/${createHash('sha256').update(uid).digest('hex')}`
+}
 
 export const MINIMUM_AGE = 13
 
@@ -51,19 +69,33 @@ export function chosenHandle(user: Doc): string {
   return handle && !PLACEHOLDER_HANDLE.test(handle) ? handle : ''
 }
 
-/** Whether anything by this account (a meal, with or without a byline) may be on a public page. */
-export function mayAppearOnPublicPage(user: Doc, age: Doc, currentYear: number): boolean {
-  return accountStanding(user) === 'active' && !isUnderMinimumAge(age, currentYear)
+/**
+ * A profile is finished when the app stamped it. The stamp is an ISO string today; a Firestore
+ * Timestamp or a millisecond number counts too, so a change of type cannot close everyone's page.
+ */
+function profileFinished(value: unknown): boolean {
+  if (typeof value === 'string') return value.trim() !== ''
+  if (typeof value === 'number') return Number.isFinite(value) && value > 0
+  const stamp = record(value)
+  return Boolean(stamp && (typeof stamp.toMillis === 'function' || typeof stamp.seconds === 'number' || typeof stamp._seconds === 'number'))
+}
+
+/**
+ * Whether anything by this account (a meal, with or without a byline) may be on a public page:
+ * in good standing, not under the minimum age, and not being deleted. Only an explicit "no fence"
+ * passes; a fence that was not read counts as one.
+ */
+export function mayAppearOnPublicPage(account: AccountRecords, currentYear: number): boolean {
+  return account.fenced === false && accountStanding(account.user) === 'active' && !isUnderMinimumAge(account.age, currentYear)
 }
 
 /** Whether this account has a public `/u/` page, and may be named on a page as a meal's author. */
-export function isVisiblePublicProfile(user: Doc, age: Doc, currentYear: number): boolean {
-  if (!mayAppearOnPublicPage(user, age, currentYear)) return false
-  const doc = record(user)
+export function isVisiblePublicProfile(account: AccountRecords, currentYear: number): boolean {
+  if (!mayAppearOnPublicPage(account, currentYear)) return false
+  const doc = record(account.user)
   if (!doc || !chosenHandle(doc)) return false
-  const finished = text(doc.profileSetupCompletedAt) !== ''
   const named = [doc.name, doc.display_name].some((value) => text(value) !== '')
-  return finished || named
+  return profileFinished(doc.profileSetupCompletedAt) || named
 }
 
 /**

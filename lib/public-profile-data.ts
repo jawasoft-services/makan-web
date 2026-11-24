@@ -1,7 +1,8 @@
 import type { Firestore } from 'firebase-admin/firestore'
 import { isPublicMeal, PUBLIC_MEAL_FIELDS } from './public-meal'
-import { chosenHandle, isVisiblePublicProfile, venueVisibilityOn } from './profile-visibility'
+import { accountDeletionFencePath, chosenHandle, isVisiblePublicProfile, venueVisibilityOn } from './profile-visibility'
 import { shareCardMetaPath, shareCardUrlFrom } from './share-card'
+import { makanStorageObject } from './storage-bucket'
 import { slugify } from './slug'
 
 /**
@@ -19,12 +20,13 @@ const MAX_TOP = 3
 const MAX_RECENT = 12
 export const USER_FIELDS = ['name', 'display_name', 'username', 'photoURL', 'avatar_url', 'profileSetupCompletedAt', 'deletedAt', 'isDeleted', 'isSpam', 'spamSuspected', 'accountStatus', 'status', 'visibility_status', 'moderationStatus']
 export const AGE_FIELDS = ['birthYear', 'underMinimum']
-const MEAL_FIELDS = ['userID', 'caption', 'imageURL', 'placeProviderId', ...PUBLIC_MEAL_FIELDS]
+const MEAL_FIELDS = ['userID', 'locationName', 'imageURL', 'placeProviderId', ...PUBLIC_MEAL_FIELDS]
 
 const clip = (value: unknown, max: number) => (typeof value === 'string' ? value.trim().slice(0, max) : '')
 const documentId = (value: unknown): value is string => typeof value === 'string' && value.length > 0 && value.length <= 1500 && !value.includes('/')
 
-export type ProfileMeal = { id: string; caption: string; imageURL: string; placeId: string; rank?: number }
+/** `locationName` is the venue's name, for the photo's alt text. The caption never leaves the loader. */
+export type ProfileMeal = { id: string; locationName: string; imageURL: string; placeId: string; rank?: number }
 export type PublicProfileData = {
   key: string; slug: string; name: string; handle: string; avatar: string
   top3: ProfileMeal[]; recent: ProfileMeal[]
@@ -41,34 +43,29 @@ export function profileKey(slug: string): string | null {
   return PROFILE_KEY.test(key) && /^[a-z0-9]+(?:-[a-z0-9]+)*-$/.test(slug.slice(0, -8)) ? key : null
 }
 
-/** A photo address the page may load: this project's Firebase Storage over https, nothing else. */
-export function storagePhoto(value: unknown, allowLocal = false): string {
+/** A photo address the page may load: an object in Makan's own storage bucket over https, nothing else. */
+export function storagePhoto(value: unknown): string {
   const src = clip(value, 2048)
-  if (allowLocal && /^\/redesign\/[a-z0-9-]+\.(jpg|png|webp)$/.test(src)) return src
-  try {
-    const url = new URL(src)
-    return url.protocol === 'https:' && url.hostname === 'firebasestorage.googleapis.com' && !url.username && !url.password ? src : ''
-  } catch {
-    return ''
-  }
+  return makanStorageObject(src) !== null ? src : ''
 }
 
 /**
- * Reads: the key (1); the account and its age record (2); then the top 3 list, the title record, the
+ * Reads: the key (1); the account, its age record and its deletion fence (3); then the top 3 list, the title record, the
  * venue-visibility setting, the share card and up to 12 recent public meals (4 + 12); then up to 3
- * top meals. An unknown key costs 1 read and an account with no public page 3.
+ * top meals. An unknown key costs 1 read and an account with no public page 4.
  */
 export async function loadPublicProfileData(db: Firestore, key: string, currentYear: number): Promise<PublicProfileData | null> {
   if (!PROFILE_KEY.test(key)) return null
   const uid = (await db.doc(`publicProfileKeys/${key}`).get()).data()?.uid
   if (!documentId(uid)) return null
-  const [userSnap, ageSnap] = await db.getAll(db.doc(`users/${uid}`), db.doc(`users/${uid}/private/age`), { fieldMask: [...USER_FIELDS, ...AGE_FIELDS] })
+  const [userSnap, ageSnap, fenceSnap] = await db.getAll(db.doc(`users/${uid}`), db.doc(`users/${uid}/private/age`), db.doc(accountDeletionFencePath(uid)), { fieldMask: [...USER_FIELDS, ...AGE_FIELDS] })
   // Only the fields the gate and the page need leave this function.
   const stored = userSnap.data()
   const user = stored ? Object.fromEntries(USER_FIELDS.filter((field) => stored[field] !== undefined).map((field) => [field, stored[field]])) : undefined
-  if (!isVisiblePublicProfile(user, ageSnap.data(), currentYear)) return null
+  if (!isVisiblePublicProfile({ user, age: ageSnap.data(), fenced: fenceSnap.exists }, currentYear)) return null
   const handle = chosenHandle(user).slice(0, 24)
-  const cardPath = shareCardMetaPath('profile', uid)
+  // The card is found by the public key, never the uid: its address goes into og:image.
+  const cardPath = shareCardMetaPath('profile', key)
   const [projection, roles, visibility, card, recent] = await Promise.all([
     db.doc(`users/${uid}/publicTasteGraph/top3`).get(),
     db.doc(`maitredRoles/${uid}`).get(),
@@ -86,7 +83,7 @@ export async function loadPublicProfileData(db: Firestore, key: string, currentY
   const mealOf = (id: string, meal: Record<string, unknown> | undefined): ProfileMeal[] => {
     if (!meal || !isPublicMeal(meal) || meal.userID !== uid) return []
     const imageURL = storagePhoto(meal.imageURL)
-    return imageURL ? [{ id, caption: clip(meal.caption, 160), imageURL, placeId: documentId(meal.placeProviderId) ? meal.placeProviderId : '' }] : []
+    return imageURL ? [{ id, locationName: clip(meal.locationName, 100), imageURL, placeId: documentId(meal.placeProviderId) ? meal.placeProviderId : '' }] : []
   }
   const ids = roles.data()?.canonicalPlaceIds
   return {
@@ -95,6 +92,6 @@ export async function loadPublicProfileData(db: Firestore, key: string, currentY
     top3: snapshots.flatMap((snap, index) => mealOf(candidates[index].id, snap.data()).map((meal) => ({ ...meal, rank: candidates[index].rank }))),
     recent: recent.docs.flatMap((snap) => mealOf(snap.id, snap.data())),
     rolePlaceIds: venueVisibilityOn(visibility.data()) && Array.isArray(ids) ? [...new Set(ids.filter(documentId))] : [],
-    cardUrl: card ? shareCardUrlFrom(card.data()) : null,
+    cardUrl: card ? shareCardUrlFrom(card.data(), 'profile', key) : null,
   }
 }

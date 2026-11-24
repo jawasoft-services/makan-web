@@ -30,3 +30,17 @@ export function shareV2Target(pathname: string): ShareV2Target | null {
   if (kind === 'place' && (key.length > 80 || !PLACE_SLUG.test(key))) return null
   return { kind, locale, path: `/${locale}/share-v2/${segment}/${key}` }
 }
+
+/**
+ * The internal addresses are never public. proxy.ts answers a direct request for one as it answers
+ * any unknown page, and marks its own rewrite with this request header; a v2 page that does not see
+ * the mark is a 404 too. So nothing reaches a v2 page without passing the proxy's rate limit and
+ * `X-Robots-Tag`, and the address a visitor's browser reports is always the public one.
+ */
+export const SHARE_V2_PROXY_HEADER = 'x-makan-share-v2'
+
+export function isShareV2InternalPath(pathname: string): boolean {
+  const parts = pathname.split('/')
+  const first = parts[1] === 'id' || parts[1] === 'en' ? parts[2] : parts[1]
+  return (first ?? '').toLowerCase() === 'share-v2'
+}

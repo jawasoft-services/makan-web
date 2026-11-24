@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { lane, PLACE, PLACE_ROUTE, place, venue, card, storage } from './share-v2-test-lane.mjs'
+import { readFileSync } from 'node:fs'
+import { lane, PLACE, PLACE_ROUTE, DINERS, place, venue, user, meal, card, fence, storage } from './share-v2-test-lane.mjs'
 
 // RM20616 A12 U3 — the restaurant page a shared place link opens (boards X2, A7, E3, F3).
 const SLUG = venue.slug
@@ -66,14 +67,18 @@ test('og:image is the stored card when there is one, and today\'s per-request ca
   assert.equal(today.metadata.openGraph.images[0].url, `https://www.makanofficial.com/places/${SLUG}/opengraph-image`)
   assert.equal(today.metadata.title, 'Warung Bu Sri')
   assert.deepEqual(today.metadata.itunes, { appId: '6756131450', appArgument: `https://www.makanofficial.com/places/${SLUG}` })
-  assert.deepEqual(none.reads, [`shareCardMeta/place_${PLACE}`])
-  const run = lane(); run.useCache(); run.seed.set(`shareCardMeta/place_${PLACE}`, { hash: '0f3a', url: card('place'), updatedAt: 1 })
+  assert.equal(none.reads.filter(path => path === `shareCardMeta/place_${PLACE}`).length, 1)
+  const run = lane(); run.useCache(); run.seed.set(`shareCardMeta/place_${PLACE}`, { hash: '0f3a', url: card('place', PLACE), updatedAt: 1 })
   const stored = await open(run, 'id')
-  assert.equal(stored.metadata.openGraph.images[0].url, card('place'))
-  assert.deepEqual(stored.metadata.twitter.images, [card('place')])
+  assert.equal(stored.metadata.openGraph.images[0].url, card('place', PLACE))
+  assert.deepEqual(stored.metadata.twitter.images, [card('place', PLACE)])
   run.reads.length = 0
   await open(run, 'id'); await open(run)
   assert.deepEqual(run.reads, [], 'the card is read once per place every five minutes, not per view')
+  for (const url of [card('place', 'ChIJanotherplace1'), card('place', PLACE, 'another-project.firebasestorage.app'), card('meal', PLACE)]) {
+    const bad = lane(); bad.useCache(); bad.seed.set(`shareCardMeta/place_${PLACE}`, { url })
+    assert.equal((await open(bad)).metadata.openGraph.images[0].url, `https://www.makanofficial.com/places/${SLUG}/opengraph-image`, url)
+  }
 })
 
 test('a Google photo keeps its credit, an unknown place is a 404, and a renamed place redirects', async () => {
@@ -89,8 +94,97 @@ test('with the switch off the v2 place page does not exist: a 404 and not one re
     const run = lane({ env })
     const mod = run.load(PLACE_ROUTE)
     const props = { params: Promise.resolve({ locale: 'en', slug: SLUG }) }
-    assert.deepEqual(await mod.generateMetadata(props), {})
+    assert.deepEqual(await mod.generateMetadata(props), { robots: { index: false, follow: false } })
     await assert.rejects(mod.default(props), /NOT_FOUND/)
     assert.equal(run.reads.length, 0)
   }
+})
+
+// U3 review M2 — the place aggregate never looks at a meal's author. The page does, with the meal page's own check.
+const photoOf = n => `photo.jpg?m${n}`
+test('a meal photo by an account that is held, disabled, under age, deleted or being deleted is nowhere on the place page', async () => {
+  const hide = [
+    ['held', run => run.seed.set(`users/${DINERS[0]}`, user({ accountStatus: 'held' }))],
+    ['suspended', run => run.seed.set(`users/${DINERS[0]}`, user({ accountStatus: 'suspended' }))],
+    ['disabled', run => run.seed.set(`users/${DINERS[0]}`, user({ status: 'disabled' }))],
+    ['spam', run => run.seed.set(`users/${DINERS[0]}`, user({ spamSuspected: true }))],
+    ['deleted', run => run.seed.set(`users/${DINERS[0]}`, user({ isDeleted: true }))],
+    ['no account', run => run.seed.delete(`users/${DINERS[0]}`)],
+    ['under age', run => run.seed.set(`users/${DINERS[0]}/private/age`, { underMinimum: true })],
+    ['birth year under 13', run => run.seed.set(`users/${DINERS[0]}/private/age`, { birthYear: 2015 })],
+    ['being deleted', run => run.seed.set(fence(DINERS[0]), { createdAt: 1 })],
+    ['meal no longer public', run => run.seed.set('meals/place-meal-1', meal({ userID: DINERS[0], isPublic: false }))],
+    ['meal deleted', run => run.seed.delete('meals/place-meal-1')],
+  ]
+  for (const [why, change] of hide) {
+    const run = lane(); run.useCache(); change(run)
+    const out = await open(run)
+    // Not the hero, not a tile, not a JSON-LD image, not a link.
+    assert.ok(!out.text.includes(photoOf(1)) && !out.text.includes('photo.jpg%3Fm1'), why)
+    assert.doesNotMatch(out.html, /place-meal-1/, why)
+    assert.match(out.html, new RegExp(`<figure class="hero"><img src="[^"]*photo\\.jpg\\?m2"`), `${why}: the next diner's photo leads`)
+    assert.match(out.html, /href="\/meal\/place-meal-2"/, why)
+  }
+  const both = lane(); both.useCache()
+  const out = await open(both)
+  assert.ok(out.html.includes(photoOf(1)) && out.html.includes(photoOf(2)))
+})
+
+test('if the authors cannot be checked, no meal photo is shown; and the check is cached, not made per view', async () => {
+  for (const path of ['meals/place-meal-1', `users/${DINERS[1]}`, fence(DINERS[0])]) {
+    const run = lane(); run.useCache(); run.failures.add(path)
+    const out = await open(run)
+    assert.equal(out.thrown, null, path)
+    assert.doesNotMatch(out.text, /photo\.jpg|place-meal-|What people ate/, path)
+    assert.match(out.html, /<h1 class="name">Warung Bu Sri<\/h1>/)
+    assert.deepEqual(run.logs, ['Place meal standing unavailable.'])
+  }
+  const run = lane(); run.useCache()
+  await open(run)
+  const standing = run.reads.filter(path => !path.startsWith('shareCardMeta/'))
+  assert.deepEqual(standing.sort(), ['meals/place-meal-1', 'meals/place-meal-2', ...DINERS.flatMap(uid => [`users/${uid}`, `users/${uid}/private/age`, fence(uid)])].sort(), '1 read per meal, 3 per author')
+  run.reads.length = 0
+  await open(run); await open(run, 'id')
+  assert.deepEqual(run.reads, [], 'a warm page reads nothing')
+  // An author is checked again after an hour; a meal's owner is not read again that day.
+  run.seed.set(`users/${DINERS[0]}`, user({ accountStatus: 'banned' }))
+  run.state.clock += 3_600_001
+  const later = await open(run)
+  assert.ok(!later.html.includes(photoOf(1)) && later.html.includes(photoOf(2)))
+  assert.ok(!run.reads.some(path => path.startsWith('meals/')))
+  assert.deepEqual(run.reads.filter(path => path.startsWith('users/') || path.startsWith('accountDeletionFences/')).length, 6)
+})
+
+test('a request that did not come through the proxy is a 404 that reads nothing, even with the switch on', async () => {
+  const run = lane(); run.state.headers = {}
+  const mod = run.load(PLACE_ROUTE)
+  const props = { params: Promise.resolve({ locale: 'en', slug: SLUG }) }
+  assert.deepEqual(await mod.generateMetadata(props), { robots: { index: false, follow: false } })
+  await assert.rejects(mod.default(props), /NOT_FOUND/)
+  assert.equal(run.reads.length, 0)
+  // An address with a dot never passes proxy.ts. With the mark forged it can only redirect to the public address.
+  assert.equal((await open(lane(), 'en', 'warung.bu.sri-abc123')).thrown, `REDIRECT_308:/places/${SLUG}`)
+})
+
+// Devon's three choices live in lib/share-page-choices.ts. As built, and what each other value does.
+const choices = readFileSync('lib/share-page-choices.ts', 'utf8')
+const choose = (find, replacement) => { assert.ok(choices.includes(find), find); return lane({ source: path => (path === 'lib/share-page-choices.ts' ? choices.replace(find, replacement) : null) }) }
+
+test('choice: the line under the dish. Whichever value is set, the holder is never named', async () => {
+  assert.match(choices, /PLACE_MAITRED_LINE: [^=]+= 'a-regular-maitred'/)
+  const alone = await open(choose("= 'a-regular-maitred'", "= 'a-regular'"))
+  assert.match(alone.html, /<p class="dish">Nasi campur ayam betutu<\/p><p class="by">A regular<\/p>/)
+  const none = await open(choose("= 'a-regular-maitred'", "= 'none'"))
+  assert.match(none.html, /<p class="dish">Nasi campur ayam betutu<\/p><\/section>/)
+  for (const out of [alone, none]) assert.doesNotMatch(out.text, /HOLDER/)
+})
+
+test('choice: the map and the firsthand-review block are left out as built, and come back with one value each', async () => {
+  assert.match(choices, /PLACE_PAGE_KEEPS = \{ map: false, firsthandReview: false \}/)
+  const review = { slug: 'a-review', author: { name: 'Rido' }, visitDate: '2026-10-01', orderSummary: 'ORDER SUMMARY', bill: { total: '£84', covers: 2 } }
+  const built = lane(); built.state.review = review
+  assert.doesNotMatch((await open(built)).html, /data-map|ORDER SUMMARY/)
+  const kept = choose('{ map: false, firsthandReview: false }', '{ map: true, firsthandReview: true }'); kept.state.review = review
+  const out = await open(kept)
+  assert.match(out.html, /data-map="Map showing Warung Bu Sri"/); assert.match(out.html, /ORDER SUMMARY/); assert.match(out.html, /href="\/blog\/a-review"/)
 })

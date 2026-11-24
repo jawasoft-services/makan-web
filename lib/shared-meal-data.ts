@@ -1,6 +1,6 @@
 import type { Firestore } from 'firebase-admin/firestore'
 import { isPublicMeal } from './public-meal'
-import { chosenHandle, isVisiblePublicProfile, mayAppearOnPublicPage } from './profile-visibility'
+import { accountDeletionFencePath, chosenHandle, isVisiblePublicProfile, mayAppearOnPublicPage } from './profile-visibility'
 import { AGE_FIELDS, USER_FIELDS, storagePhoto } from './public-profile-data'
 import { shareCardMetaPath, shareCardUrlFrom } from './share-card'
 
@@ -9,7 +9,8 @@ import { shareCardMetaPath, shareCardUrlFrom } from './share-card'
  * then says the meal is unavailable and shows nothing of it, whatever the reason.
  *
  * A meal shows only if it is public today (never an old friends-only meal, a draft, a deleted or
- * a moderated one) and its author's account is in good standing and not under the minimum age.
+ * a moderated one) and its author's account is in good standing, not under the minimum age and not
+ * being deleted.
  * The author is named, by @handle and photo, only with a chosen handle. The caption is not shown:
  * it is the diner's answer to "What was this?", not a review to pass on.
  */
@@ -35,7 +36,7 @@ export type SharedMeal = {
 
 export const isSharedMealId = (id: unknown): id is string => typeof id === 'string' && MEAL_ID.test(id)
 
-/** Reads: the meal (1), then its author, the author's age record, the dish and the share card (4). */
+/** Reads: the meal (1), then its author, the author's age record and deletion fence, the dish and the share card (5). */
 export async function loadSharedMeal(db: Firestore, id: string, currentYear: number): Promise<SharedMeal | null> {
   if (!isSharedMealId(id)) return null
   const meal = (await db.doc(`meals/${id}`).get()).data()
@@ -43,15 +44,15 @@ export async function loadSharedMeal(db: Firestore, id: string, currentYear: num
   const uid = clip(meal.userID, 1500) || clip(meal.uid, 1500)
   const photo = storagePhoto(meal.imageURL)
   if (!uid || uid.includes('/') || !photo) return null
-  const [userSnap, ageSnap, dishSnap, cardSnap] = await db.getAll(
-    db.doc(`users/${uid}`), db.doc(`users/${uid}/private/age`), db.doc(`dishMemberships/${id}`), db.doc(shareCardMetaPath('meal', id)!),
+  const [userSnap, ageSnap, fenceSnap, dishSnap, cardSnap] = await db.getAll(
+    db.doc(`users/${uid}`), db.doc(`users/${uid}/private/age`), db.doc(accountDeletionFencePath(uid)), db.doc(`dishMemberships/${id}`), db.doc(shareCardMetaPath('meal', id)!),
     { fieldMask: [...new Set([...USER_FIELDS, ...AGE_FIELDS, ...DISH_FIELDS, 'url'])] },
   )
   const stored = userSnap.data()
   const user = stored ? Object.fromEntries(USER_FIELDS.filter((field) => stored[field] !== undefined).map((field) => [field, stored[field]])) : undefined
-  const age = ageSnap.data()
-  if (!mayAppearOnPublicPage(user, age, currentYear)) return null
-  const named = isVisiblePublicProfile(user, age, currentYear)
+  const account = { user, age: ageSnap.data(), fenced: fenceSnap.exists }
+  if (!mayAppearOnPublicPage(account, currentYear)) return null
+  const named = isVisiblePublicProfile(account, currentYear)
   const placeId = clip(meal.placeProviderId, 1500)
   // The dish line comes only from a membership bound to this meal's owner and venue (as the app's Feed).
   const dish = dishSnap.data()
@@ -62,6 +63,6 @@ export async function loadSharedMeal(db: Firestore, id: string, currentYear: num
     avatar: named ? storagePhoto(user?.photoURL) || storagePhoto(user?.avatar_url) : '',
     placeId: placeId.includes('/') ? '' : placeId, locationName: clip(meal.locationName, 100),
     fallbackImage: storagePhoto(meal.shareCardUrl) || photo,
-    cardUrl: shareCardUrlFrom(cardSnap.data()),
+    cardUrl: shareCardUrlFrom(cardSnap.data(), 'meal', id),
   }
 }

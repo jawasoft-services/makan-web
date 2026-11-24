@@ -5,7 +5,7 @@ import { isIndonesianRoute, stripLocalePrefix } from "@/i18n/availability"
 import { routing } from "@/i18n/routing"
 import { rateLimited } from "@/lib/rate-limit"
 import { shareV2PagesOn } from "@/lib/share-v2"
-import { shareV2Target, type ShareV2Target } from "@/lib/share-v2-routes"
+import { SHARE_V2_PROXY_HEADER, isShareV2InternalPath, shareV2Target, type ShareV2Target } from "@/lib/share-v2-routes"
 
 const localizedMiddleware = createMiddleware(routing)
 const englishOnlyMiddleware = createMiddleware(
@@ -31,6 +31,8 @@ function shareV2Response(request: NextRequest, target: ShareV2Target) {
   url.pathname = target.path
   const headers = new Headers(request.headers)
   headers.set("X-NEXT-INTL-LOCALE", target.locale)
+  // The mark a v2 page requires. Set here and nowhere else.
+  headers.set(SHARE_V2_PROXY_HEADER, "1")
   const response = NextResponse.rewrite(url, { request: { headers } })
   if (profile) response.headers.set("X-Robots-Tag", "noindex, follow")
   return response
@@ -55,6 +57,19 @@ export function proxy(request: NextRequest) {
   }
 
   const { pathname } = request.nextUrl
+
+  // RM20616 A12 U3 — the internal share-v2 addresses are never public, with the switch on or off. A
+  // direct request gets what any unknown page gets (the site's 404), so the rate limit, the
+  // `X-Robots-Tag` and the public address can never be skipped. The proxy's own rewrite below does
+  // not come back through here.
+  if (isShareV2InternalPath(pathname)) {
+    const url = request.nextUrl.clone()
+    url.pathname = "/en/share-v2-unknown"
+    url.search = ""
+    const response = NextResponse.rewrite(url)
+    response.headers.set("X-Robots-Tag", "noindex, nofollow")
+    return response
+  }
 
   // English is served unprefixed, so /en/... is only ever an old link or an
   // old index entry. next-intl would strip the prefix with a 307, which tells

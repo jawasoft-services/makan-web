@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { createRequire } from 'node:module'
 import { AsyncLocalStorage } from 'node:async_hooks'
+import { createHash } from 'node:crypto'
 import ts from 'typescript'
 
 // RM20616 A12 U3 — runs the real Share v2 modules and pages against a fake Firestore that records every read.
@@ -19,8 +20,13 @@ export const USER = 'profile-host'
 export const MEAL = 'meal-0001'
 export const PLACE = 'ChIJknownplace01'
 export const YEAR = 2026
-export const storage = 'https://firebasestorage.googleapis.com/v0/b/fixture/o/photo.jpg'
-export const card = (kind) => `https://firebasestorage.googleapis.com/v0/b/fixture/o/shareCards%2F${kind}%2Fx%2F0f3a.jpg?alt=media&token=t`
+export const BUCKET = 'munchies-expo.firebasestorage.app'
+export const storage = `https://firebasestorage.googleapis.com/v0/b/${BUCKET}/o/photo.jpg`
+/** The stored card of one subject, as U2 is to write it: shareCards/<kind>/<id>/<hash>.jpg in Makan's bucket. */
+export const card = (kind, id, bucket = BUCKET) => `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/shareCards%2F${kind}%2F${id}%2F0f3a.jpg?alt=media&token=t`
+/** The deletion fence of an account: the document the server writes while it deletes it. */
+export const fence = (uid) => `accountDeletionFences/${createHash('sha256').update(uid).digest('hex')}`
+export const DINERS = ['diner-1', 'diner-2']
 const record = (path, value) => ({ id: path.split('/').at(-1), exists: value !== undefined, data: () => value })
 export const meal = (extra = {}) => ({ userID: USER, isPublic: true, moderationStatus: 'active', caption: 'Captioned by the diner', locationName: 'Warung Bu Sri', imageURL: storage, placeProviderId: PLACE, timestamp: 100, ...extra })
 export const user = (extra = {}) => ({ name: 'Dewi Lestari', username: 'dewi.l', accountStatus: 'active', bio: 'BIO TEXT', email: 'PRIVATE EMAIL', phone: 'PRIVATE PHONE', photoURL: storage, ...extra })
@@ -39,6 +45,12 @@ export function seedAll(seed = new Map()) {
   for (let i = 0; i < 12; i++) seed.set(`meals/recent${i}`, meal({ timestamp: i + 100 }))
   seed.set(`meals/${MEAL}`, meal())
   seed.set(`dishMemberships/${MEAL}`, { uid: USER, placeId: PLACE, name: 'Nasi campur ayam betutu' })
+  // The two meals the place aggregate lists, each by its own diner.
+  DINERS.forEach((uid, index) => {
+    seed.set(`meals/place-meal-${index + 1}`, meal({ userID: uid, imageURL: `${storage}?m${index + 1}` }))
+    seed.set(`users/${uid}`, user({ name: `Diner ${index + 1}`, username: `diner_handle_${index + 1}` }))
+    seed.set(`users/${uid}/private/age`, { birthYear: 1990 })
+  })
   return seed
 }
 
@@ -75,7 +87,9 @@ function fakeProvider(seed, reads, failures) {
  */
 export function lane({ env = { SHARE_V2_PAGES: '1' }, fixtures = false, source = () => null } = {}) {
   const seed = seedAll(), reads = [], failures = new Set(), modules = new Map(), stored = new Map(), logs = []
-  const state = { place: place(), row: { placeId: PLACE, rank: 7, cityRank: 3, matchups: 12, eats: 9, yeets: 3 }, computedAt: '2026-11-20T00:00:00.000Z', maitred: { status: 'held', venue }, directory: { status: 'ready', venues: [venue] }, googlePhoto: null, failCrowns: false, clock: Date.UTC(YEAR, 10, 24) }
+  const state = { place: place(), row: { placeId: PLACE, rank: 7, cityRank: 3, matchups: 12, eats: 9, yeets: 3 }, computedAt: '2026-11-20T00:00:00.000Z', maitred: { status: 'held', venue }, directory: { status: 'ready', venues: [venue] }, googlePhoto: null, failCrowns: false, review: null,
+    // What the page sees of the request. proxy.ts sets this mark on its own rewrite; a direct request has none.
+    headers: { 'x-makan-share-v2': '1' }, clock: Date.UTC(YEAR, 10, 24) }
   let requests = new Map()
   const db = fakeProvider(seed, reads, failures)
   const cacheStore = {
@@ -100,6 +114,7 @@ export function lane({ env = { SHARE_V2_PAGES: '1' }, fixtures = false, source =
       if (id === 'react') return { ...realReact, cache: fn => (...args) => { const key = JSON.stringify(args); if (!requests.has(fn)) requests.set(fn, new Map()); const memo = requests.get(fn); if (!memo.has(key)) memo.set(key, fn(...args)); return memo.get(key) } }
       if (id === 'react/jsx-runtime') return require(id)
       if (id === 'next/cache') return { unstable_cache }
+      if (id === 'next/headers') return { headers: async () => new Headers(state.headers) }
       if (id === 'next/navigation') return { notFound: () => { throw new Error('NOT_FOUND') }, permanentRedirect: path => { throw new Error(`REDIRECT_308:${path}`) }, redirect: path => { throw new Error(`REDIRECT_307:${path}`) } }
       if (id === 'next/server') return require(id)
       if (id === 'next-intl/middleware') return { default: () => request => { const response = require('next/server').NextResponse.next(); response.headers.set('x-test-intl', new URL(request.url).pathname); return response } }
@@ -112,6 +127,8 @@ export function lane({ env = { SHARE_V2_PAGES: '1' }, fixtures = false, source =
       if (id === 'next/image') return component('img', ({ src, alt, className }) => ({ src, alt, className }))
       if (id === 'next/link') return component('a', ({ href, className }) => ({ href, className }))
       if (id === '@/components/Footer' || id === '@/components/SiteSchema') return { default: () => null }
+      if (id === '@/components/map/PlacesMapLoader') return { default: ({ label }) => realReact.createElement('div', { 'data-map': label }) }
+      if (id === '@/lib/reviews') return { getReviewForPlace: () => state.review }
       if (id === '@/lib/firebase-admin') return { getDb: () => (fixtures ? forbidden('database in the fixture lane') : db) }
       if (id === '@/lib/place-directory') return {
         getDirectoryPlace: async slug => (fixtures ? load('lib/website-fixtures.ts').fixtureDirectory().find(p => p.slug === slug) : state.place && /-abc123$/.test(slug) ? state.place : null) ?? null,
