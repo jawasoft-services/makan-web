@@ -45,6 +45,10 @@ const cardId = (id: unknown): id is string => typeof id === 'string' && /^[A-Za-
 const isLocale = (locale: unknown): locale is ShareCardLocale => locale === 'en' || locale === 'id'
 /** The file name U2 gives a card: the start of its content hash, the locale it was drawn for, a digest of its token. */
 const CARD_FILE = /^[0-9a-f]{32}-(en|id)-[0-9a-f]{12}\.jpg$/
+/** The query U2 writes on a card's address, and nothing else: its download token is a random UUID. */
+const CARD_QUERY = /^\?alt=media&token=([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/
+/** Printable ASCII with no space: a stored address with whitespace or a control character is not U2's. */
+const PLAIN = /^[\x21-\x7e]+$/
 
 export function shareCardMetaPath(kind: ShareCardKind, id: unknown): string | null {
   return cardId(id) ? `shareCardMeta/${kind}_${id}` : null
@@ -78,7 +82,21 @@ export function shareCardUrlFrom(doc: unknown, kind: ShareCardKind, id: unknown,
   if (!drawnFor) return null
   // A file drawn for the other language serves this one only when the record names that same file for both.
   if (drawnFor !== locale && urlFor(record, drawnFor) !== value) return null
-  return (value as string).trim()
+  return cardAddress(value as string, object)
+}
+
+/**
+ * The address U2 writes for this object (store.js `cardUrl`), rebuilt from the checked parts, or null when the
+ * stored address carries anything else: whitespace or a control character, a fragment, or any query but
+ * `alt=media&token=<uuid>`. The stored string itself is never passed through.
+ */
+function cardAddress(value: string, object: string): string | null {
+  if (!PLAIN.test(value) || value.includes('#')) return null
+  const url = new URL(value)
+  const token = CARD_QUERY.exec(url.search)?.[1]
+  const bucket = /^\/v0\/b\/([^/]+)\/o\//.exec(decodeURIComponent(url.pathname))?.[1]
+  if (!token || !bucket) return null
+  return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(object)}?alt=media&token=${token}`
 }
 
 /** The card's address for each language, from one record. */

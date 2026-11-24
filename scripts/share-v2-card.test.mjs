@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { lane, KEY, MEAL, PLACE, BUCKET, PLACE_ROUTE, MEAL_ROUTE, PROFILE_ROUTE, cardRecord, cardPath, card, storage } from './share-v2-test-lane.mjs'
+import { lane, KEY, MEAL, PLACE, BUCKET, PLACE_ROUTE, MEAL_ROUTE, PROFILE_ROUTE, TOKEN, OTHER_TOKEN, cardRecord, cardPath, card, storage } from './share-v2-test-lane.mjs'
 
 // RM20616 A12 — the three Share v2 pages against the card record U2 writes (shareCardMeta/<kind>_<id>, with
 // cards.<locale>.url), in both languages. Each page uses its own language's card only while the record is current
@@ -14,7 +14,7 @@ const PAGES = {
 }
 const LOCALES = ['en', 'id']
 const other = locale => (locale === 'en' ? 'id' : 'en')
-const at = (bucket, object) => `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(object)}?alt=media&token=t`
+const at = (bucket, object) => `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(object)}?alt=media&token=${TOKEN}`
 const UID = 'Xk2uQ7pR0aBcDeFgHiJkLmNoPq12'
 const fileOf = (kind, id, locale) => cardPath(kind, id, locale).split('/').at(-1)
 const withCard = (kind, id, locale, url) => { const record = cardRecord(kind, id); record.cards[locale] = { path: 'x', url }; return record }
@@ -34,7 +34,7 @@ const STATES = {
   'another kind\'s folder': (kind, id, locale) => [withCard(kind, id, locale, card(kind === 'meal' ? 'place' : 'meal', id, BUCKET, locale)), false],
   'a uid-looking folder in the path': (kind, id, locale) => [withCard(kind, id, locale, at(BUCKET, `shareCards/${kind}/${id}/${UID}/${fileOf(kind, id, locale)}`)), false],
   'a uid in place of the subject': (kind, id, locale) => [withCard(kind, id, locale, at(BUCKET, `shareCards/${kind}/${UID}/${fileOf(kind, id, locale)}`)), false],
-  'the other language\'s file under this language': (kind, id, locale) => [withCard(kind, id, locale, card(kind, id, BUCKET, other(locale)).replace('token=t', 'token=u')), false],
+  'the other language\'s file under this language': (kind, id, locale) => [withCard(kind, id, locale, card(kind, id, BUCKET, other(locale), OTHER_TOKEN)), false],
 }
 
 async function render(kind, locale, record) {
@@ -92,5 +92,41 @@ test('with SHARE_V2_PAGES unset (or anything but "1") no page reads a card recor
         assert.deepEqual(run.masks, [])
       }
     }
+  }
+})
+
+test('a place card the backend drops or purges stops being served at the end of the five-minute window, even where Next serves an expired entry while it refreshes', async () => {
+  const WINDOW = 300_000
+  const page = PAGES.place
+  const path = `shareCardMeta/place_${PLACE}`
+  for (const serveStale of [true, false]) {
+    for (const [label, removal] of [['drop', { drop: true }], ['purge', { purge: true, want: null }], ['a new ask', { want: { hash: 'f'.repeat(64) } }]]) {
+      for (const locale of LOCALES) {
+        const why = `${label} ${locale} serveStale=${serveStale}`
+        const run = lane(); run.useCache(); run.state.serveStale = serveStale
+        const start = run.state.clock
+        run.seed.set(path, cardRecord('place', PLACE))
+        const view = async () => (await run.page(page.route, { locale, ...page.params })).metadata.openGraph.images[0].url
+        assert.equal(await view(), card('place', PLACE, BUCKET, locale), why)
+        // The backend removes the card. Until the window ends this instance still has the address it read (the worst case).
+        run.seed.set(path, cardRecord('place', PLACE, removal))
+        run.state.clock = start + WINDOW - 1
+        assert.equal(await view(), card('place', PLACE, BUCKET, locale), why)
+        assert.equal(run.reads.filter(p => p === path).length, 1, why)
+        // From the next window on, it reads the record again and the page uses its own image.
+        run.state.clock = start + WINDOW
+        assert.equal(await view(), page.fallback(locale), why)
+        assert.equal(run.reads.filter(p => p === path).length, 2, why)
+      }
+    }
+  }
+  // However long the place went unviewed, the first view after it never gets the old address.
+  for (const idle of [WINDOW + 1, 60 * 60_000, 24 * 60 * 60_000]) {
+    const run = lane(); run.useCache(); run.state.serveStale = true
+    run.seed.set(path, cardRecord('place', PLACE))
+    assert.equal((await run.page(page.route, { locale: 'en', ...page.params })).metadata.openGraph.images[0].url, card('place', PLACE))
+    run.seed.set(path, cardRecord('place', PLACE, { drop: true }))
+    run.state.clock += idle
+    assert.equal((await run.page(page.route, { locale: 'en', ...page.params })).metadata.openGraph.images[0].url, page.fallback('en'), `idle ${idle} ms`)
   }
 })

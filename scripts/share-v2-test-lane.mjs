@@ -28,7 +28,10 @@ export const storage = `https://firebasestorage.googleapis.com/v0/b/${BUCKET}/o/
  */
 export const HASH = '0f3a'.padEnd(32, '0')
 export const cardPath = (kind, id, locale = 'en') => `shareCards/${kind}/${id}/${HASH}-${locale}-${locale === 'en' ? 'aaaaaaaaaaaa' : 'bbbbbbbbbbbb'}.jpg`
-export const card = (kind, id, bucket = BUCKET, locale = 'en') => `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(cardPath(kind, id, locale))}?alt=media&token=t`
+/** A download token as U2 makes one (crypto.randomUUID). */
+export const TOKEN = '123e4567-e89b-42d3-a456-426614174000'
+export const OTHER_TOKEN = '00000000-1111-4222-8333-444444444444'
+export const card = (kind, id, bucket = BUCKET, locale = 'en', token = TOKEN) => `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(cardPath(kind, id, locale))}?alt=media&token=${token}`
 /** A current card record with one drawing per language (U2's shape), plus the private fields the website must never read. */
 export const cardRecord = (kind, id, extra = {}) => ({
   kind, subjectId: id, ownerUid: kind === 'place' ? null : USER, photoOwnerUid: 'PRIVATE-PHOTO-OWNER-UID', drawnPhotoOwnerUid: 'PRIVATE-DRAWN-OWNER-UID', drawnPhotoMealId: 'meal-of-photo',
@@ -119,12 +122,21 @@ export function lane({ env = { SHARE_V2_PAGES: '1', SHARE_STORAGE_BUCKETS: BUCKE
   const state = { place: place(), row: { placeId: PLACE, rank: 7, cityRank: 3, matchups: 12, eats: 9, yeets: 3 }, computedAt: '2026-11-20T00:00:00.000Z', maitred: { status: 'held', venue }, directory: { status: 'ready', venues: [venue] }, googlePhoto: null, failCrowns: false, review: null,
     // What the page sees of the request. `null` is a request proxy.ts rewrote: it carries the proxy's own mark
     // (lib/share-v2-mark.ts). Set it to an object to play a request that reached the page some other way.
-    headers: null, clock: Date.UTC(YEAR, 10, 24) }
+    headers: null, clock: Date.UTC(YEAR, 10, 24), serveStale: false }
   let requests = new Map()
   const db = fakeProvider(seed, reads, failures, masks)
   const cacheStore = {
     generateSimpleCacheKey: async key => key,
-    get: async key => { const cached = stored.get(key); return cached ? { value: cached.value, isStale: state.clock - cached.at >= cached.value.revalidate * 1000 } : null },
+    // With `state.serveStale`, the store behaves as Next's does inside a page render: an expired entry is served once
+    // as it is while it is refreshed (here: dropped, so the next call reads again). Off, an expired entry is read again
+    // at once, as unstable_cache does outside a render.
+    get: async key => {
+      const cached = stored.get(key)
+      if (!cached) return null
+      const expired = cached.value.revalidate !== false && state.clock - cached.at >= cached.value.revalidate * 1000
+      if (expired && state.serveStale) { stored.delete(key); return { value: cached.value, isStale: false } }
+      return { value: cached.value, isStale: expired }
+    },
     set: async (key, value) => { stored.set(key, { value, at: state.clock }) },
   }
   class ClockDate extends Date {

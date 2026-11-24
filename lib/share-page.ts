@@ -22,14 +22,22 @@ export function smartAppBanner(url: string): { appId: string; appArgument: strin
   return appId ? { appId, appArgument: url } : undefined
 }
 
+const PLACE_CARD_WINDOW_MS = 300_000
+
 /**
  * A restaurant's stored share card for the page's language (English `en`, Bahasa `id`), or null. One
  * document read at most every five minutes per place, shared by both languages, as the site caches its
  * other per-place reads. (The meal and profile pages read their card inside the load they already make.)
+ *
+ * The five-minute clock window is part of the cache key, as on the profile page, so an answer from an earlier
+ * window is never served, not even once while Next refreshes it. A card the backend drops or purges therefore
+ * stops being served at the end of the window in which it was last read: under five minutes later, on each
+ * server instance.
  */
 export async function getPlaceShareCard(placeId: string, locale: string): Promise<string | null> {
   if (WEBSITE_FIXTURES) return null
-  const urls = await unstable_cache(() => readShareCardUrls(getDb(), 'place', placeId), ['makan-share-card', 'v2', 'place', placeId], { revalidate: 300 })()
+  const window = String(Math.floor(Date.now() / PLACE_CARD_WINDOW_MS))
+  const urls = await unstable_cache(() => readShareCardUrls(getDb(), 'place', placeId), ['makan-share-card', 'v3', 'place', placeId, window], { revalidate: PLACE_CARD_WINDOW_MS / 1000 })()
   return shareCardFor(urls ?? NO_SHARE_CARD, locale)
 }
 
