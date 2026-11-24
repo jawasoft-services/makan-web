@@ -81,6 +81,22 @@ test('switch off: the only edits to existing files are additive and inert', { sk
   assert.deepEqual(lockRest, baseLockRest, 'package-lock.json header')
   const { '': root, ...installed } = lockPackages, { '': baseRoot, ...baseInstalled } = basePackages
   keepsEvery(installed, baseInstalled, 'package-lock.json packages')
+  // RM20616 controller (24 Nov 2026): an added package must stand apart from what main installed. It may not nest
+  // inside an existing package, may not be one an existing package names as a peer or optional dependency (it
+  // would change that package's resolution), and may not run an install script unless listed here.
+  const INSTALL_SCRIPT_ALLOWED = []
+  const baseKeys = Object.keys(baseInstalled)
+  const packageName = key => key.slice(key.lastIndexOf('node_modules/') + 'node_modules/'.length)
+  for (const key of Object.keys(installed).filter(key => !(key in baseInstalled))) {
+    assert.ok(!baseKeys.some(old => key.startsWith(`${old}/node_modules/`)), `package-lock.json: added ${key} nests inside an existing package`)
+    const name = packageName(key)
+    for (const [old, entry] of Object.entries(baseInstalled)) {
+      for (const field of ['peerDependencies', 'peerDependenciesMeta', 'optionalDependencies']) {
+        assert.ok(!(entry[field] && name in entry[field]), `package-lock.json: added ${name} is in ${old} ${field}`)
+      }
+    }
+    assert.ok(!installed[key].hasInstallScript || INSTALL_SCRIPT_ALLOWED.includes(name), `package-lock.json: added ${name} runs an install script`)
+  }
   for (const field of ['dependencies', 'devDependencies']) keepsEvery(root[field], baseRoot[field], `package-lock.json root ${field}`)
   assert.deepEqual(omit(root, 'dependencies', 'devDependencies'), omit(baseRoot, 'dependencies', 'devDependencies'), 'package-lock.json root package')
   // Fixtures: every line main had is still there, in order; the unit only adds lines.
