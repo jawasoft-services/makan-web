@@ -20,6 +20,7 @@ const baseAvailable = atBase('package.json') !== null
 function keepsEvery(now = {}, base = {}, label) {
   for (const [key, value] of Object.entries(base)) assert.deepEqual(now[key], value, `${label}: ${key} was changed or removed`)
 }
+const omit = (object, ...keys) => Object.fromEntries(Object.entries(object).filter(([key]) => !keys.includes(key)))
 /** The lines `now` adds to `base`, or null when `now` also changes or removes one of `base`'s lines. */
 function addedLines(base, now) {
   const added = []
@@ -73,8 +74,7 @@ test('switch off: the only edits to existing files are additive and inert', { sk
   const pkg = JSON.parse(readFileSync('package.json', 'utf8')), basePkg = JSON.parse(atBase('package.json'))
   assert.equal(pkg.scripts.test, `${basePkg.scripts.test} app/.well-known/*/route.test.mjs`)
   for (const field of ['dependencies', 'devDependencies']) keepsEvery(pkg[field], basePkg[field], `package.json ${field}`)
-  const withoutDeps = ({ dependencies, devDependencies, ...rest }) => rest
-  assert.deepEqual(withoutDeps({ ...pkg, scripts: { ...pkg.scripts, test: basePkg.scripts.test } }), withoutDeps(basePkg))
+  assert.deepEqual(omit({ ...pkg, scripts: { ...pkg.scripts, test: basePkg.scripts.test } }, 'dependencies', 'devDependencies'), omit(basePkg, 'dependencies', 'devDependencies'))
   // package-lock.json: every package main installed is installed unchanged (version, source, integrity); new ones may join.
   const lock = JSON.parse(readFileSync('package-lock.json', 'utf8')), baseLock = JSON.parse(atBase('package-lock.json'))
   const { packages: lockPackages, ...lockRest } = lock, { packages: basePackages, ...baseLockRest } = baseLock
@@ -82,8 +82,7 @@ test('switch off: the only edits to existing files are additive and inert', { sk
   const { '': root, ...installed } = lockPackages, { '': baseRoot, ...baseInstalled } = basePackages
   keepsEvery(installed, baseInstalled, 'package-lock.json packages')
   for (const field of ['dependencies', 'devDependencies']) keepsEvery(root[field], baseRoot[field], `package-lock.json root ${field}`)
-  const rootRest = ({ dependencies, devDependencies, ...rest }) => rest
-  assert.deepEqual(rootRest(root), rootRest(baseRoot), 'package-lock.json root package')
+  assert.deepEqual(omit(root, 'dependencies', 'devDependencies'), omit(baseRoot, 'dependencies', 'devDependencies'), 'package-lock.json root package')
   // Fixtures: every line main had is still there, in order; the unit only adds lines.
   const added = addedLines(atBase('lib/website-fixtures.ts'), readFileSync('lib/website-fixtures.ts', 'utf8'))
   assert.ok(added, 'lib/website-fixtures.ts changes or removes a line main had')
