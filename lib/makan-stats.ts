@@ -7,6 +7,8 @@ import { MAX_AGE_MS, readLastRun, readStats } from '@/lib/aggregates/store'
 import { FALLBACK_PLACE_STATS, type PlaceStats } from '@/lib/aggregates/types'
 import { isPublicMeal, PUBLIC_MEAL_FIELDS } from '@/lib/public-meal'
 import { isCleanCaption } from '@/lib/captions'
+import { DELIVERY_VENUE } from '@/lib/dish-wall'
+import { loadAuthors } from '@/lib/dish-wall-data'
 
 /** Live count first; persisted real count on failure, never a fabricated total. */
 export async function getMealCount(): Promise<number | null> {
@@ -92,9 +94,6 @@ const AUTO_HANDLE = /^user_/i
 const AUTO_HANDLE_MENTION = /@user_/i
 // A caption that swears is fine in the app and wrong on the front page.
 const ROUGH_CAPTION = /\b(fuck\w*|shit\w*|asf|af|wtf|bitch|cunt|dick)\b/i
-// The pitch is places you sit down in. A delivery-branch tag proves the
-// opposite of "know what to order at the table".
-const DELIVERY_VENUE = /\b(delivery|gofood|grabfood|shopeefood|deliveroo|uber ?eats)\b/i
 // A one-word caption ("Lamb") is a label, not a memory. Two words minimum.
 const MIN_CAPTION_WORDS = 2
 // Twelve cards from three accounts reads as one family's diary. Two per handle.
@@ -178,23 +177,14 @@ export async function getRecentPublicMeals(
 
     const raws = interleaveByShare(venue, plain, venue.length + plain.length, VENUE_SHARE)
 
-    // Join @usernames for meals that don't carry the legacy field.
-    const uids = [...new Set(raws.filter((r) => r.uid).map((r) => r.uid))]
-    const nameByUid = new Map<string, string>()
-    if (uids.length) {
-      const refs = uids.map((u) => db.collection('users').doc(u))
-      const users = await db.getAll(...refs, { fieldMask: ['username'] })
-      for (const u of users) {
-        if (!u.exists) continue
-        const data = u.data()
-        const handle = str(data?.username)
-        if (handle) nameByUid.set(u.id, handle)
-      }
-    }
+    // The same standing check as every other public page: an author who is suspended, under the
+    // minimum age or being deleted never appears, whatever the meal's own flag says.
+    const authors = await loadAuthors(db, raws.map((r) => r.uid))
 
     const eligible = raws
+      .filter((r) => authors.get(r.uid)?.mayAppear)
       .map((r) => {
-        const username = nameByUid.get(r.uid) || r.legacyName || ''
+        const username = authors.get(r.uid)?.username || r.legacyName || ''
         return {
           src: r.src,
           caption: r.caption,
@@ -278,3 +268,4 @@ function mealAlt(caption: string, locationName: string): string {
   const l = locationName ? ` at ${locationName}` : ''
   return `${c}${l} — shared on Makan`
 }
+

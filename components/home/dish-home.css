@@ -1,0 +1,130 @@
+/* The Dish wall homepage (Devon, 24 Nov 2026). Scoped to .dish-home; the shared sections it keeps
+   (restaurants, Maître d' showcase, standings, FAQ) still take their rules from app/redesign.css and
+   sit on the app's light canvas. Flat: no shadows. White on Makan Orange is the founder-approved pair. */
+.dish-home {
+  --dh-ink: #11181c;
+  --dh-line: rgba(255, 255, 255, .14);
+  --dh-muted: rgba(255, 255, 255, .7);
+  --dh-orange: #ff9932;
+  --dh-light: #f1f6f4;
+  --dh-meta: #5b6b74;
+  --dh-gutter: clamp(16px, 4vw, 56px);
+  --dh-serif: var(--font-fraunces), Georgia, serif;
+  background: var(--dh-ink);
+  color: #fff;
+  overflow-x: clip;
+}
+.dish-home h1, .dish-home .dish-chapters h2, .dish-home .dish-finale h2 { font-family: var(--dh-serif); font-weight: 600; letter-spacing: -.02em; margin: 0 }
+
+.dish-pill { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 22px; border-radius: 999px; font-weight: 700; font-size: 16px; line-height: 1; text-decoration: none; transition: transform 160ms ease-out, background-color 160ms ease-out }
+.dish-pill:active { transform: scale(.97) }
+.dish-pill.orange { background: var(--dh-orange); color: #fff }
+.dish-pill.ghost { background: rgba(255, 255, 255, .1); color: #fff }
+.dish-pill.ghost:hover { background: rgba(255, 255, 255, .18) }
+.dish-pill svg { width: 20px; height: 20px }
+.dish-home :focus-visible { outline: 2px solid var(--dh-orange); outline-offset: 3px }
+
+/* WALL — still is the default (no JS, reduced motion, no WebGL); [data-mode=motion] is the scroll scene. */
+.dish-wall { position: relative }
+.dish-wall-stage { position: relative }
+.dish-wall-screen { position: relative; height: 100vh; height: 100svh; overflow: hidden }
+.dish-wall-canvas, .dish-wall-still, .dish-wall-shade { position: absolute; inset: 0; width: 100%; height: 100% }
+.dish-wall-canvas { display: block; opacity: 0 }
+.dish-wall-still { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; padding: 84px 10px 10px; opacity: .5; align-content: start }
+.dish-wall-still img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 12px }
+.dish-wall-stage[data-scene="on"] .dish-wall-canvas { opacity: 1 }
+.dish-wall-stage[data-scene="on"] .dish-wall-still { display: none }
+.dish-wall-shade {
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, var(--dh-ink) 0, rgba(17, 24, 28, 0) 120px),
+    linear-gradient(90deg, var(--dh-ink) 0%, rgba(17, 24, 28, .92) 30%, rgba(17, 24, 28, .2) 62%, rgba(17, 24, 28, 0) 80%),
+    linear-gradient(0deg, var(--dh-ink) 0%, rgba(17, 24, 28, 0) 35%);
+  opacity: var(--shade, 1);
+}
+.dish-wall-intro { position: absolute; left: var(--dh-gutter); right: var(--dh-gutter); bottom: 14vh; max-width: 880px; opacity: var(--intro, 1); transform: translateY(calc((1 - var(--intro, 1)) * -40px)) }
+.dish-wall-intro h1 { font-size: clamp(46px, 7.6vw, 116px); line-height: .95; color: #fff }
+.dish-wall-intro p { margin: 20px 0 0; max-width: 30ch; font-size: clamp(17px, 1.6vw, 20px); color: var(--dh-muted) }
+.dish-actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 12px }
+
+/* Previews: the app's meal preview — photo, then MEAL · VENUE, dish, @handle. */
+.dish-wall-previews { display: flex; justify-content: center; align-items: flex-start; gap: 16px; padding: 48px var(--dh-gutter) 24px; flex-wrap: wrap }
+.dish-preview { flex: 0 0 clamp(200px, 17vw, 264px); margin: 0; background: #fff; color: var(--dh-ink); border-radius: 20px; overflow: hidden }
+.dish-preview img { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover }
+.dish-preview figcaption { padding: 14px 16px 18px; display: grid; gap: 6px }
+.dish-preview-meta { font-size: 13px; line-height: 1.2; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--dh-meta) }
+.dish-preview-dish { font-size: 20px; line-height: 1.2; font-weight: 700 }
+.dish-preview-handle { font-size: 13px; color: var(--dh-meta) }
+.dish-wall-total { padding: 0 var(--dh-gutter) 40px; text-align: right; font-size: 15px; color: var(--dh-muted) }
+.dish-wall-total p { margin: 0 }
+.dish-wall-total strong { color: #fff; font-variant-numeric: tabular-nums }
+
+/* Motion is the server layout whenever motion is allowed, so nothing moves when the scene starts.
+   Still layout: reduced motion (this media query), no WebGL ([data-mode=still], set by script) and no
+   JavaScript (the <noscript> style in DishWall.tsx). */
+@media (prefers-reduced-motion: no-preference) {
+  .dish-wall:not([data-mode="still"]) { height: 340vh }
+  .dish-wall:not([data-mode="still"]) .dish-wall-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden }
+  .dish-wall:not([data-mode="still"]) .dish-wall-screen { position: absolute; inset: 0; height: auto }
+  .dish-wall:not([data-mode="still"]) .dish-wall-previews { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); padding-top: 0; padding-bottom: 0; flex-wrap: nowrap; pointer-events: none }
+  .dish-wall:not([data-mode="still"]) .dish-wall-previews.is-live { pointer-events: auto }
+  .dish-wall:not([data-mode="still"]) .dish-preview {
+    --in: clamp(0, calc(var(--answer, 0) * 1.6 - var(--i) * .15), 1);
+    opacity: var(--in);
+    transform: translateY(calc((1 - var(--in)) * 48px)) scale(calc(.92 + var(--in) * .08));
+  }
+  .dish-wall:not([data-mode="still"]) .dish-preview:nth-child(even) { margin-top: 40px }
+  .dish-wall:not([data-mode="still"]) .dish-wall-total { position: absolute; right: var(--dh-gutter); bottom: 5vh; padding: 0; opacity: var(--answer, 0) }
+}
+
+/* CHAPTERS — text scrolls, the phone stays pinned and swaps screens (wide screens). */
+.dish-chapters { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); padding: 0 var(--dh-gutter); border-top: 1px solid var(--dh-line) }
+.dish-chapter { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 12vh 0; max-width: 560px }
+.dish-chapter-num { margin: 0; font: 400 clamp(96px, 13vw, 200px)/.85 var(--dh-serif); color: var(--dh-orange); letter-spacing: -.04em; font-variant-numeric: tabular-nums }
+.dish-chapter-label { margin: 24px 0 0; font-size: 13px; line-height: 1; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--dh-muted) }
+.dish-chapters h2 { margin-top: 14px; font-size: clamp(36px, 4.6vw, 64px); line-height: 1.02; color: #fff }
+.dish-chapter-body { margin: 18px 0 24px; font-size: 19px; color: var(--dh-muted); max-width: 32ch }
+.dish-chapter-inline { display: none }
+.chapter-stage { position: sticky; top: 0; height: 100vh; display: grid; place-items: center }
+.chapter-stack { position: relative; width: min(340px, 26vw); aspect-ratio: 1066 / 2198 }
+.chapter-screen { position: absolute; inset: 0; opacity: 0; transform: translateY(24px) scale(.98); transition: opacity 420ms ease-out, transform 600ms cubic-bezier(.2, .8, .2, 1); display: grid; align-items: center }
+.chapter-screen.is-on { opacity: 1; transform: none }
+.chapter-screen img { width: 100%; height: auto }
+.chapter-screen:last-child { width: min(460px, 34vw); left: 50%; translate: -50% 0; color: var(--dh-ink) }
+
+/* LIGHT BAND — the kept sections on the app's light canvas, not the old cream. */
+.dish-light { --cream: var(--dh-light); --ink: var(--dh-ink); background: var(--dh-light); color: var(--dh-ink); display: flow-root }
+.dish-light .bg-brand-cream { background: var(--dh-light) }
+
+/* FINALE — orange block, white type. */
+.dish-finale { background: var(--dh-orange); color: #fff; padding: clamp(80px, 14vh, 160px) var(--dh-gutter) }
+.dish-finale h2 { font-size: clamp(44px, 8vw, 120px); line-height: .98; max-width: 12ch; color: #fff }
+.dish-finale-row { margin-top: 56px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 32px }
+.dish-finale-store { display: grid; gap: 14px; justify-items: start }
+.dish-finale-store .stores { justify-content: flex-start }
+.dish-finale-store p { margin: 0; font-size: 17px; font-weight: 700 }
+.dish-finale-qr { display: flex; align-items: center; gap: 16px; font-weight: 700; color: #fff; text-decoration: none }
+.dish-finale-qr img { background: #fff; padding: 8px; border-radius: 12px }
+
+@media (max-width: 820px) {
+  .dish-wall-still { grid-template-columns: repeat(4, 1fr) }
+  .dish-wall-intro { bottom: 6vh }
+  .dish-wall-shade { background: linear-gradient(180deg, var(--dh-ink) 0, var(--dh-ink) 76px, rgba(17, 24, 28, 0) 160px), linear-gradient(0deg, var(--dh-ink) 0%, var(--dh-ink) 44%, rgba(17, 24, 28, .6) 56%, rgba(17, 24, 28, 0) 72%) }
+  .dish-wall:not([data-mode="still"]) { height: 280vh }
+  /* Phones: the preview row swipes sideways and snaps card by card. */
+  .dish-wall-previews { justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none }
+  .dish-wall-previews::-webkit-scrollbar { display: none }
+  .dish-preview { flex-basis: 72vw; scroll-snap-align: center }
+  .dish-wall:not([data-mode="still"]) .dish-preview:nth-child(even) { margin-top: 0 }
+  .dish-chapters { grid-template-columns: 1fr }
+  .chapter-stage { display: none }
+  .dish-chapter { min-height: 0; padding: 72px 0 }
+  .dish-chapter-inline { display: block; margin-top: 12px; width: min(320px, 82vw); color: var(--dh-ink) }
+  .dish-finale-qr { display: none }
+}
+@media (min-width: 821px) and (max-width: 1180px) {
+  .dish-wall:not([data-mode="still"]) .dish-preview:nth-child(5) { display: none }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chapter-screen, .dish-pill { transition: none }
+}
