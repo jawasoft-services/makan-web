@@ -161,7 +161,11 @@ test('the clean address is served by the internal page in its language; the inte
 
 // ---------- the page, its form actions and the REST client ----------
 
-/** A fake Identity Toolkit: `answers[method]` is a function of the body returning { status, body } or throwing. */
+/**
+ * A fake Identity Toolkit: `answers[method]` is a function of the body returning { status, body } or throwing.
+ * An answer with `redirectTo` is a redirect to another host: fetch follows it (and gets that host's answer)
+ * unless the call said `redirect: "error"`, which makes fetch throw, as Node's fetch does.
+ */
 function fakeGoogle(answers) {
   const calls = []
   const fetch = async (url, init) => {
@@ -170,7 +174,14 @@ function fakeGoogle(answers) {
     calls.push({ url, method, body, init })
     const answer = answers[method]
     if (!answer) throw new Error(`unexpected call ${method}`)
-    const { status = 200, body: out = {}, raw } = answer(body)
+    const given = answer(body)
+    if (given.redirectTo) {
+      if (init.redirect === 'error') throw new TypeError('fetch failed: unexpected redirect')
+      calls.push({ url: given.redirectTo.url, method: 'followed', body, init })
+      const after = given.redirectTo.answer
+      return { ok: true, status: 200, json: async () => after }
+    }
+    const { status = 200, body: out = {}, raw } = given
     return { ok: status >= 200 && status < 300, status, json: async () => (raw !== undefined ? JSON.parse(raw) : out) }
   }
   return { fetch, calls }
@@ -183,8 +194,16 @@ function pageLane({ google = {}, cookie, scripted = true, env = ENV, address = '
   const modules = new Map(), logs = [], { fetch, calls } = fakeGoogle(google)
   const jar = new Map(cookie === undefined ? [] : [['makan_auth_action', cookie]])
   const cookieSets = []
+  // What useActionState returns while the page is drawn again after an action: the action's own result (Next
+  // passes it as the form state with JavaScript off; with JavaScript on the client keeps it). Unset otherwise.
+  const formState = { value: undefined }
+  const react = { ...realReact, useActionState: (fn, initial) => (formState.value === undefined ? realReact.useActionState(fn, initial) : [formState.value, fn, false]) }
   // The request's headers; a test may change them between calls (another client, another kind of fetch).
-  const request = { headers: { 'x-forwarded-for': address, ...requestHeaders, ...(scripted ? { 'next-action': 'abc' } : {}) } }
+  const request = { headers: { 'x-forwarded-for': address, ...requestHeaders } }
+  // While a form post is handled (the action, then the page drawn again in its answer): what the post adds to
+  // the request. A scripted post carries Next's action header; a plain form post (JavaScript off) is multipart.
+  const POST_HEADERS = scripted ? { 'next-action': 'abc', 'content-type': 'text/plain;charset=UTF-8' } : { 'content-type': 'multipart/form-data; boundary=----x' }
+  let posting = false
   const loggers = Object.fromEntries(['log', 'info', 'warn', 'error', 'debug'].map(level => [level, (...args) => logs.push(args.map(String).join(' '))]))
   function load(relative) {
     if (modules.has(relative)) return modules.get(relative)
@@ -192,10 +211,11 @@ function pageLane({ google = {}, cookie, scripted = true, env = ENV, address = '
     const code = ts.transpileModule(readFileSync(resolve(relative), 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText
     const importModule = id => {
       if (id === 'server-only') return {}
-      if (id === 'react' || id === 'react/jsx-runtime') return id === 'react' ? realReact : require(id)
+      if (id === 'react' || id === 'react/jsx-runtime') return id === 'react' ? react : require(id)
       if (id === 'next/headers') return {
-        cookies: async () => ({ get: name => (jar.has(name) ? { name, value: jar.get(name) } : undefined), set: (name, value, options) => cookieSets.push({ name, value, ...options }) }),
-        headers: async () => new Headers(request.headers),
+        // As in Next: a cookie an action sets is what the page drawn again after it reads (responseCookiesToRequestCookies).
+        cookies: async () => ({ get: name => (jar.has(name) ? { name, value: jar.get(name) } : undefined), set: (name, value, options) => { cookieSets.push({ name, value, ...options }); jar.set(name, value) } }),
+        headers: async () => new Headers({ ...request.headers, ...(posting ? POST_HEADERS : {}) }),
       }
       if (id.startsWith('node:')) return require(id)
       if (id === 'next/navigation') return { notFound: () => { throw new Error('NOT_FOUND') }, redirect: url => { throw new Error(`REDIRECT:${url}`) } }
@@ -218,11 +238,12 @@ function pageLane({ google = {}, cookie, scripted = true, env = ENV, address = '
   }
   const flow = load('lib/auth-action.ts')
   const linkCookie = q => flow.encodeStoredLink({ query: q })
-  async function render(locale = 'en') {
+  async function render(locale = 'en', state) {
+    formState.value = state
     try {
       const element = await load('app/auth-action/[locale]/page.tsx').default({ params: Promise.resolve({ locale }) })
-      return { html: renderToStaticMarkup(element), thrown: null }
-    } catch (error) { return { html: '', thrown: error.message } }
+      return { html: renderToStaticMarkup(element), thrown: null, element }
+    } catch (error) { return { html: '', thrown: error.message, element: null } } finally { formState.value = undefined }
   }
   /** Renders the reset card for a state the form action returned. */
   function card(view, locale = 'en') {
@@ -238,12 +259,25 @@ function pageLane({ google = {}, cookie, scripted = true, env = ENV, address = '
   const SEAL_FOR = { save: 'save', forgot: 'send', send: 'send' }
   const action = async (fields, previous = { view: 'choose', email: 'dewi@example.com' }) => {
     const form = new FormData(); for (const [key, value] of Object.entries(fields)) if (value !== null) form.set(key, value)
-    if (!('seal' in fields) && SEAL_FOR[fields.intent] && jar.has('makan_auth_action')) {
+    if (!('seal' in fields) && SEAL_FOR[fields.intent] && flow.readStoredLink(flow.decodeStoredLink(jar.get('makan_auth_action')), env)) {
       const drawn = seal(SEAL_FOR[fields.intent]); if (drawn) form.set('seal', drawn)
     }
-    return load('app/auth-action/[locale]/actions.ts').resetFlowAction(previous, form)
+    const setsBefore = cookieSets.length
+    posting = true
+    try {
+      const result = await load('app/auth-action/[locale]/actions.ts').resetFlowAction(previous, form)
+      // As in Next: a plain form post (JavaScript off) always answers with the page drawn again; a scripted post
+      // gets the page drawn again in the same response when the action set a cookie. Same request, the action's
+      // result as the form state. A not-found or redirect there replaces the card, so it is thrown here too.
+      if (!scripted || cookieSets.length > setsBefore) {
+        after.last = await render(fields.locale === 'id' ? 'id' : 'en', result)
+        if (after.last.thrown) throw new Error(after.last.thrown)
+      } else after.last = null
+      return result
+    } finally { posting = false }
   }
-  return { load, render, card, action, seal, calls, logs, jar, cookieSets, request, linkCookie }
+  const after = { last: null }
+  return { load, render, card, action, seal, calls, logs, jar, cookieSets, request, linkCookie, after, flow, env }
 }
 const withLink = (mode, google, extra = {}) => {
   const probe = pageLane()
@@ -513,6 +547,9 @@ test('every action-page string exists in both languages, comes from the approved
 const OTHER_CODE = 'OTHER-CODE-zyxwvutsrqponmlkjihgfedcba9876543210-SECRET'
 const sendTo = (run, email, address) => {
   if (address) run.request.headers['x-forwarded-for'] = address
+  // Each send comes from a browser holding a live link: one that has sent already holds the done marker,
+  // and its posts send nothing (tested below).
+  run.jar.set('makan_auth_action', run.linkCookie(query('resetPassword')))
   return run.action({ intent: 'send', email, locale: 'en' }, { view: 'forgot' })
 }
 
@@ -648,8 +685,9 @@ test('L1: Save password acts only on the link its card was drawn for', async () 
   await assert.rejects(lost.action({ intent: 'save', password: PASSWORD, seal: 'x', locale: 'en' }), /REDIRECT:https:\/\/makan-devel\.firebaseapp\.com\/__\/auth\/action\?/)
 })
 
-test('L2: the link\'s cookie is cleared once the link is done with, and kept while it is still needed', async () => {
-  const cleared = run => run.cookieSets.filter(set => set.name === 'makan_auth_action' && set.value === '' && set.maxAge === 0 && set.httpOnly && set.secure)
+test('L2: the link\'s code leaves the cookie once the link is done with, and stays while it is still needed', async () => {
+  // The value becomes the done marker, which holds nothing about the link, for ten minutes, with the same attributes.
+  const cleared = run => run.cookieSets.filter(set => set.name === 'makan_auth_action' && set.value === 'done' && set.maxAge === 600 && set.httpOnly && set.secure && set.sameSite === 'lax')
   for (const locale of ['en', 'id']) {
     const path = locale === 'id' ? '/id/auth/action' : '/auth/action'
     for (const [label, google, fields] of [
@@ -660,6 +698,8 @@ test('L2: the link\'s cookie is cleared once the link is done with, and kept whi
       const run = withLink('resetPassword', google)
       await run.action({ ...fields, locale })
       assert.deepEqual(cleared(run).map(set => set.path), [path], `${locale} ${label}`)
+      assert.equal(run.jar.get('makan_auth_action'), 'done', `${locale} ${label}`)
+      assert.doesNotMatch(JSON.stringify(run.cookieSets), /SECRET|OOB|AIza|oobCode|apiKey|dewi/, `${locale} ${label}: nothing about the link`)
     }
     for (const [label, google, fields] of [
       ['no connection', { resetPassword: offline }, { intent: 'save', password: PASSWORD }],
@@ -747,4 +787,153 @@ test('server key: it is sent to Google in a header and reaches no redirect, cook
   const prod = pageLane({ google: RESET_OK, cookie: run.linkCookie(query('resetPassword').replace(DEV_KEY, PROD_KEY)) })
   await prod.render()
   assert.deepEqual(prod.calls.map(call => call.init.headers['X-Goog-Api-Key']), [PROD_SERVER_KEY])
+})
+
+// ---------- the page drawn again after a form post (the 404 after a successful reset, 24 Nov 2026) ----------
+
+/**
+ * Every prop of every element the page returns, as Next would serialise the props it hands a client component
+ * into the page's flight data. renderToStaticMarkup never serialises them, so a leak there is invisible to the
+ * rendered markup alone (review M10).
+ */
+function assertNothingSecretInProps(element, label) {
+  const seen = new WeakSet()
+  const all = JSON.stringify(element, (key, value) => {
+    if (realReact.isValidElement(value)) return { type: typeof value.type === 'string' ? value.type : value.type?.name ?? String(value.type), props: value.props }
+    if (typeof value === 'function' || typeof value === 'symbol') return undefined
+    if (value && typeof value === 'object') { if (seen.has(value)) return '[seen]'; seen.add(value) }
+    return value
+  })
+  assert.ok(all && all.length > 20, `${label}: there are props to check`)
+  assert.doesNotMatch(all, /SRV-FAKE|server-key|AIza|OOB-CODE|OTHER-CODE|oobCode|apiKey|test-only-signing-secret|makan-devel|munchies-expo/, `${label}: no key, code, secret or project in the props`)
+}
+
+const TERMINAL = [
+  ['Password changed', 'changed', RESET_OK, { intent: 'save', password: PASSWORD, email: 'dewi@example.com' }, s => s.passwordChanged],
+  ['This link doesn\'t work', 'broken', { resetPassword: fail('USER_DISABLED') }, { intent: 'save', password: PASSWORD }, s => s.doesNotWork],
+  ['Email sent', 'sent', { sendOobCode: ok({}) }, { intent: 'send', email: 'dewi@example.com' }, s => s.emailSentTitle],
+]
+
+test('after Save password, Send reset link and This link doesn\'t work, the page drawn again shows that card, never the not-found page', async () => {
+  for (const locale of ['en', 'id']) {
+    const s = words(locale)
+    for (const scripted of [true, false]) {
+      for (const [label, outcome, google, fields, line] of TERMINAL) {
+        const name = `${locale} ${scripted ? 'JavaScript on' : 'JavaScript off'} ${label}`
+        const run = withLink('resetPassword', google, { scripted, address: `198.51.102.${TERMINAL.findIndex(each => each[0] === label) * 4 + (scripted ? 0 : 1) + (locale === 'id' ? 2 : 0)}` })
+        const liveSeal = run.seal('save')
+        let view
+        await assert.doesNotReject(async () => { view = await run.action({ ...fields, locale }, fields.intent === 'send' ? { view: 'forgot' } : undefined) }, name)
+        assert.equal(view.view, outcome, name)
+        const drawn = run.after.last
+        assert.ok(drawn, `${name}: the page is drawn again in the action's response`)
+        assert.equal(drawn.thrown, null, `${name}: no NOT_FOUND, no redirect`)
+        assert.ok(text(drawn.html).includes(line(s)), `${name}: the ${outcome} card`)
+        // The page draws the same client component in the same place, so with JavaScript on the client keeps
+        // the card the action returned; and drawing it asked Google nothing (operating cost).
+        assert.equal(drawn.element.type, run.load('app/auth-action/[locale]/ResetFlow.tsx').default, name)
+        assert.equal(run.calls.length, 1, `${name}: one call, the action's own`)
+        assertNothingSecretInProps(drawn.element, name)
+        // The code has left the browser: the cookie holds the done marker only.
+        assert.equal(run.jar.get('makan_auth_action'), 'done', name)
+
+        // A later plain reload: the expired card with no seal, and nothing asked of Google.
+        const reload = await run.render(locale)
+        assert.equal(reload.thrown, null, `${name}: reload`)
+        assert.ok(text(reload.html).includes(s.expired) && text(reload.html).includes(s.sendNewLink), `${name}: reload`)
+        assert.doesNotMatch(reload.html, /name="seal"/, `${name}: reload, no seal`)
+        // Its posts behave as a used link's card does, and never call Google.
+        const before = run.calls.length
+        assert.deepEqual(await run.action({ intent: 'forgot', locale }, { view: 'expired' }), { view: 'forgot' }, name)
+        assert.deepEqual(await run.action({ intent: 'send', email: 'victim@example.com', locale }, { view: 'forgot' }), { view: 'sent' }, name)
+        assert.equal((await run.action({ intent: 'send', email: 'not-an-address', locale }, { view: 'forgot' })).error, 'email', name)
+        assert.deepEqual(await run.action({ intent: 'save', password: PASSWORD, seal: liveSeal, locale }), { view: 'expired' }, name)
+        assert.equal(run.calls.length, before, `${name}: a done link asks Google nothing`)
+        quiet(run, name)
+        // Once the marker lapses (ten minutes), the clean address is the not-found page again.
+        run.jar.delete('makan_auth_action')
+        assert.equal((await run.render(locale)).thrown, 'NOT_FOUND', `${name}: after the marker lapses`)
+      }
+    }
+  }
+})
+
+test('with JavaScript off, every other answer is drawn from the action\'s result, asking Google nothing more', async () => {
+  for (const locale of ['en', 'id']) {
+    const s = words(locale)
+    for (const [label, google, fields, previous, check] of [
+      ['no connection', { resetPassword: offline }, { intent: 'save', password: PASSWORD, email: 'dewi@example.com' }, undefined, html => text(html).includes(s.networkError) && html.includes(`value="${PASSWORD}"`)],
+      ['weak', RESET_OK, { intent: 'save', password: '123' }, undefined, html => /class="rule wrong"/.test(html)],
+      ['expired while open', { resetPassword: fail('EXPIRED_OOB_CODE') }, { intent: 'save', password: PASSWORD }, undefined, html => text(html).includes(s.sendNewLink) && /name="seal"/.test(html)],
+      ['the form', {}, { intent: 'forgot' }, { view: 'expired' }, html => text(html).includes(s.forgotTitle)],
+      ['send refused', { sendOobCode: fail('INTERNAL_ERROR', 500) }, { intent: 'send', email: 'dewi@example.com' }, { view: 'forgot' }, html => text(html).includes(s.networkError)],
+    ]) {
+      const name = `${locale} ${label}`
+      const run = withLink('resetPassword', google, { scripted: false, address: `198.51.103.${label.length + (locale === 'id' ? 100 : 0)}` })
+      const view = await run.action({ ...fields, locale }, previous)
+      const callsByAction = run.calls.length
+      assert.equal(run.after.last.thrown, null, name)
+      assert.ok(check(run.after.last.html), `${name}: the action's card`)
+      assert.equal(run.calls.length, callsByAction, `${name}: the page drawn again asked Google nothing`)
+      assert.equal(view.view === 'changed', false)
+      assert.deepEqual(run.cookieSets, [], `${name}: the link is kept`)
+      assertNothingSecretInProps(run.after.last.element, name)
+    }
+  }
+  // Two open links, JavaScript off: a Save posted with another link's cookie draws the card for the cookie's
+  // link (one check, no password set), and the page drawn again shows that card.
+  const google = { resetPassword: body => ({ body: { email: body.oobCode === CODE ? 'dewi@example.com' : 'mallory@example.com', requestType: 'PASSWORD_RESET' } }) }
+  const run = withLink('resetPassword', google, { scripted: false })
+  const seal = /name="seal" value="([^"]+)"/.exec((await run.render('en')).html)[1]
+  run.jar.set('makan_auth_action', run.linkCookie(query('resetPassword').replace(CODE, OTHER_CODE)))
+  run.calls.length = 0
+  await run.action({ intent: 'save', password: PASSWORD, email: 'dewi@example.com', seal, locale: 'en' })
+  assert.deepEqual(run.calls.map(call => call.body), [{ oobCode: OTHER_CODE }])
+  assert.ok(text(run.after.last.html).includes(EN.forEmail.replace('{email}', 'mallory@example.com')))
+  assert.doesNotMatch(run.after.last.html, new RegExp(PASSWORD))
+  // A verification link is never treated as a post's answer: it is checked and applied only on opening.
+  const verify = withLink('verifyEmail', { resetPassword: ok({ email: 'a@b.co', requestType: 'VERIFY_EMAIL' }), update: ok({}) })
+  verify.request.headers['content-type'] = 'multipart/form-data; boundary=x'
+  assert.ok(text((await verify.render('en')).html).includes(EN.emailVerified))
+})
+
+test('review L2: nothing the page hands its components carries a key, a code or the signing secret', async () => {
+  const cases = [
+    ['choose', withLink('resetPassword', RESET_OK)],
+    ['expired with a seal', withLink('resetPassword', { resetPassword: fail('EXPIRED_OOB_CODE') })],
+    ['broken', withLink('resetPassword', { resetPassword: fail('USER_DISABLED') })],
+    ['verified', withLink('verifyEmail', { resetPassword: ok({ email: 'dewi@example.com', requestType: 'VERIFY_EMAIL' }), update: ok({}) })],
+    ['email changed', withLink('verifyAndChangeEmail', { resetPassword: ok({ email: 'dewi@example.com', newEmail: 'd2@example.com', requestType: 'VERIFY_AND_CHANGE_EMAIL' }), update: ok({}) })],
+    ['done', pageLane({ cookie: 'done' })],
+  ]
+  for (const [label, run] of cases) {
+    for (const locale of ['en', 'id']) {
+      const { element, thrown } = await run.render(locale)
+      assert.equal(thrown, null, label)
+      assertNothingSecretInProps(element, `${label} ${locale}`)
+    }
+  }
+  // The link a page or action handles holds no server key at all: it is looked up by project name at call time.
+  const run = withLink('resetPassword', RESET_OK)
+  const link = run.flow.readStoredLink(run.flow.decodeStoredLink(run.jar.get('makan_auth_action')), ENV)
+  assert.doesNotMatch(JSON.stringify(link), /SRV-FAKE/)
+  assert.deepEqual(Object.keys(link.project).sort(), ['apiKey', 'authDomain', 'name'])
+  // A server key removed after the link was read: no call, and the link goes on to Firebase's own page.
+  const removed = withLink('resetPassword', RESET_OK, { env: { ...ENV } })
+  const toolkit = removed.load('lib/identity-toolkit.ts')
+  delete removed.env.AUTH_ACTION_SERVER_KEY_DEV
+  assert.deepEqual(await toolkit.checkCode('dev', CODE), { ok: false, reason: 'unavailable' })
+  assert.equal(removed.calls.length, 0)
+})
+
+test('review L1: a redirect from Identity Toolkit is no usable answer; the key and the body are never sent on', async () => {
+  const elsewhere = { url: 'https://evil.example/collect', answer: { email: 'dewi@example.com', requestType: 'PASSWORD_RESET' } }
+  for (const status of [302, 307, 308]) {
+    const run = withLink('resetPassword', { resetPassword: () => ({ redirectTo: elsewhere, status }), sendOobCode: () => ({ redirectTo: elsewhere, status }) })
+    assert.equal((await run.render('en')).thrown, `REDIRECT:https://makan-devel.firebaseapp.com/__/auth/action?${query('resetPassword')}`, String(status))
+    assert.ok(run.calls.every(call => call.method !== 'followed'), `${status}: not followed`)
+    assert.ok(run.calls.every(call => call.init.redirect === 'error'))
+    assert.deepEqual(bare(await run.action({ intent: 'send', email: 'dewi@example.com', locale: 'en' }, { view: 'forgot' })), { view: 'forgot', error: 'network' })
+    assert.ok(run.calls.every(call => call.method !== 'followed'))
+  }
 })

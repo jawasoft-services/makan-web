@@ -23,7 +23,9 @@ interface Props {
 export default function ResetFlow({ initial, strings: s, locale, supportHref, appPage }: Props) {
   const [state, formAction, pending] = useActionState(resetFlowAction, initial)
   const [shown, setShown] = useState(false)
-  const [typed, setTyped] = useState(() => keepOf(initial))
+  // From the state, not the page's first card: without JavaScript the page is drawn again after each post and
+  // the state is that post's answer, which carries what was typed (`keep`).
+  const [typed, setTyped] = useState(() => keepOf(state))
   // Typing clears a red line (board note n-si-fp-8) until the next answer arrives.
   const [answered, setAnswered] = useState(state)
   const [cleared, setCleared] = useState(false)

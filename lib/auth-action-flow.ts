@@ -23,6 +23,17 @@ export function isDocumentNavigation(headers: Headers): boolean {
 }
 
 /**
+ * True when the page is being drawn for the answer to one of its own form posts: Next draws the page in that
+ * answer (always for a plain form post, which is how a page without JavaScript posts; for a scripted post,
+ * when the action set a cookie). The card shown is then the action's result, so the page asks Google nothing.
+ * A scripted post carries Next's `Next-Action` header; a plain post is `multipart/form-data` (React's form
+ * actions always post that way), which no browser opening a page sends.
+ */
+export function isActionPost(headers: Headers): boolean {
+  return headers.has("next-action") || /^multipart\/form-data/i.test(headers.get("content-type") ?? "")
+}
+
+/**
  * The card the link opens on. Verification and email-change codes are applied here, as Firebase's own page
  * does, but only for a browser opening the page (`navigation`, see isDocumentNavigation). Any other fetch of
  * such a link (a mail scanner, a preview bot) goes on to Firebase's own page untouched, before any call to
@@ -31,8 +42,8 @@ export function isDocumentNavigation(headers: Headers): boolean {
  */
 export async function openingView(link: ActionLink, { navigation }: { navigation: boolean }): Promise<ActionView> {
   if (link.mode !== "resetPassword" && !navigation) return { view: "firebase" }
-  const { serverKey } = link.project
-  const checked = await checkCode(serverKey, link.oobCode)
+  const project = link.project.name
+  const checked = await checkCode(project, link.oobCode)
   if (!checked.ok) {
     if (checked.reason === "expired" || checked.reason === "used") return expiredView(link, checked.reason)
     if (checked.reason === "disabled" && link.mode === "resetPassword") return { view: "broken" }
@@ -46,7 +57,7 @@ export async function openingView(link: ActionLink, { navigation }: { navigation
   const shown = link.mode === "verifyAndChangeEmail" ? checked.value.newEmail : checked.value.email
   if (link.mode !== "verifyEmail" && !shown) return { view: "firebase" }
 
-  const applied = await applyCode(serverKey, link.oobCode)
+  const applied = await applyCode(project, link.oobCode)
   if (!applied.ok) return applied.reason === "expired" || applied.reason === "used" ? expiredView(link, applied.reason) : { view: "firebase" }
   if (link.mode === "verifyEmail") return { view: "verified" }
   return link.mode === "verifyAndChangeEmail" ? { view: "emailChanged", email: shown! } : { view: "emailUndone", email: shown! }
@@ -72,7 +83,7 @@ export async function savePassword(link: ActionLink, password: string, email: st
   if (link.mode !== "resetPassword") return { view: "firebase" }
   if (password.length < MIN_PASSWORD_LENGTH) return choose("weak")
 
-  const saved = await resetPassword(link.project.serverKey, link.oobCode, password)
+  const saved = await resetPassword(link.project.name, link.oobCode, password)
   if (saved.ok) return { view: "changed" }
   switch (saved.reason) {
     case "weak":
@@ -99,6 +110,6 @@ export async function sendNewLink(link: ActionLink, email: string, allowed: () =
   // Without a genuine expired link, or past the per-address or per-client limit (lib/auth-action-limit.ts),
   // nothing is sent, and the card is the same as for a sent email.
   if (!allowed()) return { view: "sent" }
-  const answer = await sendPasswordReset(link.project.serverKey, email)
+  const answer = await sendPasswordReset(link.project.name, email)
   return answer === "answered" ? { view: "sent" } : { view: "forgot", error: "network", keep: email }
 }

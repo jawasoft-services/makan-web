@@ -1,13 +1,17 @@
 import "server-only"
 
+import { SERVER_KEY_ENV, type ActionProject } from "@/lib/auth-action"
+
 /*
  * RM20616 A10 unit 10 (R1) — the three Identity Toolkit REST calls the action page makes, from the server.
  *
  * Each call uses the project's server key (AUTH_ACTION_SERVER_KEY_DEV / _PROD, see lib/auth-action.ts),
  * not the key in the link: that one is a browser key and Google refuses a server's calls made with it.
- * The server key travels only in the X-Goog-Api-Key request header to Google, never in a URL; the code and
- * the password travel only in the POST body. None of the three is ever logged, thrown or returned. A
- * failure comes back as a reason, not as Google's message:
+ * Callers name the project; the key is read from the environment here, at the moment of the call, so it is
+ * never on an object the page or its actions hold. It travels only in the X-Goog-Api-Key request header to
+ * Google, never in a URL; the code and the password travel only in the POST body. A redirect is refused
+ * (`redirect: "error"`): fetch would carry the header, and on a 307 or 308 the body, to the other host. None
+ * of the three is ever logged, thrown or returned. A failure comes back as a reason, not as Google's message:
  *
  *   expired      EXPIRED_OOB_CODE: a code Google issued whose hour has passed (Google has to read a code's
  *                issue time to say this; a made-up code is answered INVALID_OOB_CODE)
@@ -53,13 +57,19 @@ function failure(message: unknown): ToolkitFailure {
 
 type Answer = { status: "answered"; ok: boolean; code: number; json: boolean; body: Record<string, unknown> } | { status: "none" }
 
-async function post(method: string, serverKey: string, body: Record<string, unknown>): Promise<Answer> {
+type Project = ActionProject["name"]
+
+async function post(method: string, project: Project, body: Record<string, unknown>): Promise<Answer> {
+  const serverKey = process.env[SERVER_KEY_ENV[project]]?.trim()
+  // Removed since the link was read: no call, and the link goes on to Firebase's own page.
+  if (!serverKey) return { status: "none" }
   try {
     const response = await fetch(`${ENDPOINT}:${method}`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-Goog-Api-Key": serverKey },
       body: JSON.stringify(body),
       cache: "no-store",
+      redirect: "error",
       signal: AbortSignal.timeout(TIMEOUT_MS),
     })
     let parsed: Record<string, unknown> = {}
@@ -75,7 +85,7 @@ async function post(method: string, serverKey: string, body: Record<string, unkn
     }
     return { status: "answered", ok: response.ok, code: response.status, json, body: parsed }
   } catch {
-    // No connection, a timeout or an aborted request. The error is dropped on purpose: it can carry the
+    // No connection, a timeout, an aborted request or a redirect. The error is dropped on purpose: it can carry the
     // request, and nothing about this call may reach a log.
     return { status: "none" }
   }
@@ -89,8 +99,8 @@ function errorMessage(body: Record<string, unknown>): unknown {
 const text = (value: unknown) => (typeof value === "string" && value ? value : null)
 
 /** Checks a code without using it up (`accounts:resetPassword` with the code alone). */
-export async function checkCode(serverKey: string, oobCode: string): Promise<ToolkitResult<CheckedCode>> {
-  const answer = await post("resetPassword", serverKey, { oobCode })
+export async function checkCode(project: Project, oobCode: string): Promise<ToolkitResult<CheckedCode>> {
+  const answer = await post("resetPassword", project, { oobCode })
   if (answer.status === "none") return { ok: false, reason: "unavailable" }
   if (!answer.ok) return { ok: false, reason: failure(errorMessage(answer.body)) }
   const requestType = text(answer.body.requestType)
@@ -99,16 +109,16 @@ export async function checkCode(serverKey: string, oobCode: string): Promise<Too
 }
 
 /** Sets the new password with the reset code (`accounts:resetPassword` with `newPassword`). */
-export async function resetPassword(serverKey: string, oobCode: string, newPassword: string): Promise<ToolkitResult<null>> {
-  const answer = await post("resetPassword", serverKey, { oobCode, newPassword })
+export async function resetPassword(project: Project, oobCode: string, newPassword: string): Promise<ToolkitResult<null>> {
+  const answer = await post("resetPassword", project, { oobCode, newPassword })
   if (answer.status === "none") return { ok: false, reason: "unavailable" }
   if (!answer.ok) return { ok: false, reason: failure(errorMessage(answer.body)) }
   return { ok: true, value: null }
 }
 
 /** Applies a verification, email-change or undo code (`accounts:update` with the code). */
-export async function applyCode(serverKey: string, oobCode: string): Promise<ToolkitResult<null>> {
-  const answer = await post("update", serverKey, { oobCode })
+export async function applyCode(project: Project, oobCode: string): Promise<ToolkitResult<null>> {
+  const answer = await post("update", project, { oobCode })
   if (answer.status === "none") return { ok: false, reason: "unavailable" }
   if (!answer.ok) return { ok: false, reason: failure(errorMessage(answer.body)) }
   return { ok: true, value: null }
@@ -131,8 +141,8 @@ const ACCOUNT_ANSWERS = new Set(["EMAIL_NOT_FOUND", "USER_NOT_FOUND", "USER_DISA
  *                body that is not JSON, or any other 400. The page says so (the si-fp-8 line) rather than
  *                promising an email that will never come.
  */
-export async function sendPasswordReset(serverKey: string, email: string): Promise<"answered" | "unavailable"> {
-  const answer = await post("sendOobCode", serverKey, { requestType: "PASSWORD_RESET", email })
+export async function sendPasswordReset(project: Project, email: string): Promise<"answered" | "unavailable"> {
+  const answer = await post("sendOobCode", project, { requestType: "PASSWORD_RESET", email })
   if (answer.status === "none" || !answer.json) return "unavailable"
   if (answer.ok) return "answered"
   return answer.code === 400 && ACCOUNT_ANSWERS.has(errorCode(errorMessage(answer.body))) ? "answered" : "unavailable"

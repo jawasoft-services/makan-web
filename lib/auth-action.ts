@@ -38,13 +38,28 @@ export const INTERNAL_SEGMENT = "auth-action"
 export const ACTION_COOKIE = "makan_auth_action"
 
 /**
- * The cookie's attributes. A session cookie (no Max-Age), so it does not outlive the browser; the form posts
- * also clear it once the link is done with (Password changed, This link doesn't work, Email sent). Secure
- * everywhere but `next dev`: it does not depend on the proxy's X-Forwarded-Proto, and current browsers
- * accept a Secure cookie on http://localhost.
+ * The cookie's attributes. A session cookie (no Max-Age), so it does not outlive the browser; once the link is
+ * done with (Password changed, This link doesn't work, Email sent) the form posts replace its value with
+ * DONE_MARKER. Secure everywhere but `next dev`: it does not depend on the proxy's X-Forwarded-Proto, and
+ * current browsers accept a Secure cookie on http://localhost.
  */
 export function actionCookieOptions(path: string, env: Env = process.env) {
   return { httpOnly: true, sameSite: "lax" as const, secure: env.NODE_ENV !== "development", path }
+}
+
+/*
+ * What the cookie holds once its link is done with: a fixed word, nothing about the link (no code, no key, no
+ * address), for DONE_LIFE_SECONDS. Next draws the page again in the answer to a form post that sets a cookie
+ * (and always for a post made with JavaScript off). Clearing the cookie made that drawing find no link and
+ * answer with the not-found page instead of the card the post returned. With the marker the page draws the
+ * reset card's frame without asking Google, so the post's own card is what shows; a later reload shows the
+ * expired card with no seal, and after ten minutes the not-found page.
+ */
+export const DONE_MARKER = "done"
+export const DONE_LIFE_SECONDS = 600
+
+export function isDoneMarker(value: string | null | undefined): boolean {
+  return value === DONE_MARKER
 }
 
 const MAX_QUERY_LENGTH = 4096
@@ -55,11 +70,6 @@ export interface ActionProject {
   /** The key Firebase puts in the link. It only says which project a link is for; no call is made with it. */
   apiKey: string
   authDomain: string
-  /**
-   * The key the server's own calls to Google are made with (lib/identity-toolkit.ts), or null when it is
-   * not set. Server-only: it is never put in a response, a cookie, a seal, a redirect or a log line.
-   */
-  serverKey: string | null
 }
 
 type Env = Record<string, string | undefined>
@@ -88,9 +98,23 @@ export function actionSecret(env: Env = process.env): string | null {
  * AUTH_ACTION_SECRET (see actionSecret) must be set too, or no project is served.
  */
 const PROJECTS = [
-  { name: "dev", key: "AUTH_ACTION_KEY_DEV", serverKey: "AUTH_ACTION_SERVER_KEY_DEV", domain: "AUTH_ACTION_DOMAIN_DEV", id: "makan-devel" },
-  { name: "prod", key: "AUTH_ACTION_KEY_PROD", serverKey: "AUTH_ACTION_SERVER_KEY_PROD", domain: "AUTH_ACTION_DOMAIN_PROD", id: "munchies-expo" },
+  { name: "dev", key: "AUTH_ACTION_KEY_DEV", domain: "AUTH_ACTION_DOMAIN_DEV", id: "makan-devel" },
+  { name: "prod", key: "AUTH_ACTION_KEY_PROD", domain: "AUTH_ACTION_DOMAIN_PROD", id: "munchies-expo" },
 ] as const
+
+/**
+ * The names of the server keys' environment variables. Only the names live here: the value is read by
+ * lib/identity-toolkit.ts at the moment of each call, so no object the page or its actions hold ever carries it.
+ */
+export const SERVER_KEY_ENV: Readonly<Record<ActionProject["name"], string>> = {
+  dev: "AUTH_ACTION_SERVER_KEY_DEV",
+  prod: "AUTH_ACTION_SERVER_KEY_PROD",
+}
+
+/** True when the project's server key is set (not blank). Says nothing else about it. */
+export function hasServerKey(name: ActionProject["name"], env: Env = process.env): boolean {
+  return Boolean(env[SERVER_KEY_ENV[name]]?.trim())
+}
 
 const HOST = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/i
 
@@ -107,7 +131,7 @@ export function actionProjects(env: Env = process.env): ActionProject[] {
     const apiKey = env[project.key]?.trim()
     const authDomain = env[project.domain]?.trim() || `${project.id}.firebaseapp.com`
     if (!apiKey || !HOST.test(authDomain) || !ownAuthHost(authDomain, project.id)) continue
-    projects.push({ name: project.name, apiKey, authDomain, serverKey: env[project.serverKey]?.trim() || null })
+    projects.push({ name: project.name, apiKey, authDomain })
   }
   return projects
 }
@@ -184,8 +208,8 @@ export function decodeStoredLink(value: string | null | undefined): StoredLink |
 export interface ActionLink {
   mode: BuiltMode
   oobCode: string
-  /** A project the page can ask Google about: its server key is set. */
-  project: ActionProject & { serverKey: string }
+  /** A project the page can ask Google about: its server key is set (hasServerKey). The key is not held here. */
+  project: ActionProject
   /** The query as it arrived, for the hand-on to Firebase's own page. */
   query: string
 }
@@ -197,8 +221,8 @@ export function readStoredLink(link: StoredLink | null, env: Env = process.env):
   const mode = params.get("mode") ?? ""
   const oobCode = params.get("oobCode") ?? ""
   const project = projectForKey(params.get("apiKey"), env)
-  if (!project || !project.serverKey || !BUILT_MODES.has(mode) || !oobCode || oobCode.length > 1024) return null
-  return { mode: mode as BuiltMode, oobCode, project: { ...project, serverKey: project.serverKey }, query: link.query }
+  if (!project || !hasServerKey(project.name, env) || !BUILT_MODES.has(mode) || !oobCode || oobCode.length > 1024) return null
+  return { mode: mode as BuiltMode, oobCode, project, query: link.query }
 }
 
 /** The response headers of every answer to a request that carries the link (redirects and not-found). */

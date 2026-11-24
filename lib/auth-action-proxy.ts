@@ -10,6 +10,7 @@ import {
   carriesLink,
   cleanPath,
   encodeStoredLink,
+  hasServerKey,
   isInternalActionPath,
   linkLocale,
   passThroughUrl,
@@ -60,7 +61,7 @@ export function authActionResponse(request: NextRequest): NextResponse | null {
     const params = new URLSearchParams(query)
     const project = projectForKey(params.get("apiKey"))
     if (!project) return notFound(request)
-    if (!project.serverKey || !BUILT_MODES.has(params.get("mode") ?? "")) {
+    if (!hasServerKey(project.name) || !BUILT_MODES.has(params.get("mode") ?? "")) {
       return withActionHeaders(NextResponse.redirect(passThroughUrl(project.authDomain, query), 302))
     }
     if (!params.get("oobCode")) return notFound(request)
