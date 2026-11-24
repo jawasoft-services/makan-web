@@ -59,7 +59,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // The stored card when the app's backend has rendered one; otherwise today's per-request card. That card can draw
   // the newest meal's photo, so it is used only when that meal's author may appear on a public page (the check the
   // page's own photos pass); if not, the preview is the site's own card, which shows nobody's content.
-  const card = await getPlaceShareCard(place.placeId)
+  const card = await getPlaceShareCard(place.placeId, locale)
   const newest = place.meals[0]
   const todaysCardShowsNobodyHidden = card !== null || !newest || (await getVisiblePlaceMealIds(place.placeId, place.meals.map((m) => m.id))).has(newest.id)
   const meta = createPageMetadata({

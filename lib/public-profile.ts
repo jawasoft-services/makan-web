@@ -24,7 +24,7 @@ const getCachedProfile = unstable_cache(async (key: string, window: number) => {
   const db = getDb()
   if (!db) throw new Error('Profile database unavailable.')
   return loadPublicProfileData(db, key, new Date().getUTCFullYear())
-}, ['makan-public-profile', 'v2'], { revalidate: 300 })
+}, ['makan-public-profile', 'v3'], { revalidate: 300 })
 const pendingProfiles = new Map<string, Promise<PublicProfileData | null>>()
 
 /** The profile, or null when there is none to show: unknown, closed, held, under age, or unreadable. */

@@ -2,7 +2,7 @@ import type { Firestore } from 'firebase-admin/firestore'
 import { isPublicMeal } from './public-meal'
 import { accountDeletionFencePath, chosenHandle, isVisiblePublicProfile, mayAppearOnPublicPage } from './profile-visibility'
 import { AGE_FIELDS, USER_FIELDS, storagePhoto } from './public-profile-data'
-import { shareCardMetaPath, shareCardUrlFrom } from './share-card'
+import { readShareCardUrls, type ShareCardUrls } from './share-card'
 
 /**
  * RM20616 A12 U3 — what the shared meal page (`/meal/<id>`) may show. Null means gone: the page
@@ -31,12 +31,17 @@ export type SharedMeal = {
   locationName: string
   /** The image today's meal page uses for its preview, when there is no stored card. */
   fallbackImage: string
-  cardUrl: string | null
+  /** The stored card for each language (A12 U2), or null. */
+  cardUrls: ShareCardUrls
 }
 
 export const isSharedMealId = (id: unknown): id is string => typeof id === 'string' && MEAL_ID.test(id)
 
-/** Reads: the meal (1), then its author, the author's age record and deletion fence, the dish and the share card (5). */
+/**
+ * Reads: the meal (1), then its author, the author's age record and deletion fence, the dish and the share card (5).
+ * The share card is read on its own, at the same time, through its own field mask (lib/share-card.ts), so none of
+ * the account fields is asked of the card record and none of its private fields is read.
+ */
 export async function loadSharedMeal(db: Firestore, id: string, currentYear: number): Promise<SharedMeal | null> {
   if (!isSharedMealId(id)) return null
   const meal = (await db.doc(`meals/${id}`).get()).data()
@@ -44,10 +49,13 @@ export async function loadSharedMeal(db: Firestore, id: string, currentYear: num
   const uid = clip(meal.userID, 1500) || clip(meal.uid, 1500)
   const photo = storagePhoto(meal.imageURL)
   if (!uid || uid.includes('/') || !photo) return null
-  const [userSnap, ageSnap, fenceSnap, dishSnap, cardSnap] = await db.getAll(
-    db.doc(`users/${uid}`), db.doc(`users/${uid}/private/age`), db.doc(accountDeletionFencePath(uid)), db.doc(`dishMemberships/${id}`), db.doc(shareCardMetaPath('meal', id)!),
-    { fieldMask: [...new Set([...USER_FIELDS, ...AGE_FIELDS, ...DISH_FIELDS, 'url'])] },
-  )
+  const [[userSnap, ageSnap, fenceSnap, dishSnap], cardUrls] = await Promise.all([
+    db.getAll(
+      db.doc(`users/${uid}`), db.doc(`users/${uid}/private/age`), db.doc(accountDeletionFencePath(uid)), db.doc(`dishMemberships/${id}`),
+      { fieldMask: [...new Set([...USER_FIELDS, ...AGE_FIELDS, ...DISH_FIELDS])] },
+    ),
+    readShareCardUrls(db, 'meal', id),
+  ])
   const stored = userSnap.data()
   const user = stored ? Object.fromEntries(USER_FIELDS.filter((field) => stored[field] !== undefined).map((field) => [field, stored[field]])) : undefined
   const account = { user, age: ageSnap.data(), fenced: fenceSnap.exists }
@@ -63,6 +71,6 @@ export async function loadSharedMeal(db: Firestore, id: string, currentYear: num
     avatar: named ? storagePhoto(user?.photoURL) || storagePhoto(user?.avatar_url) : '',
     placeId: placeId.includes('/') ? '' : placeId, locationName: clip(meal.locationName, 100),
     fallbackImage: storagePhoto(meal.shareCardUrl) || photo,
-    cardUrl: shareCardUrlFrom(cardSnap.data(), 'meal', id),
+    cardUrls,
   }
 }

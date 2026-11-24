@@ -5,7 +5,7 @@ import { headers } from 'next/headers'
 import { getDb } from '@/lib/firebase-admin'
 import { APP_STORE_URL } from '@/lib/links'
 import { loadAuthorMayAppear, loadMealOwners } from '@/lib/place-meals-data'
-import { readShareCardUrl } from '@/lib/share-card'
+import { NO_SHARE_CARD, readShareCardUrls, shareCardFor } from '@/lib/share-card'
 import { shareV2PagesOn } from '@/lib/share-v2'
 import { SHARE_V2_PROXY_HEADER, isShareV2ProxyMark } from '@/lib/share-v2-mark'
 import { SITE_URL } from '@/lib/site-metadata'
@@ -23,13 +23,14 @@ export function smartAppBanner(url: string): { appId: string; appArgument: strin
 }
 
 /**
- * A restaurant's stored share card, or null. One document read at most every five minutes per
- * place, as the site caches its other per-place reads. (The meal and profile pages read their
- * card inside the load they already make.)
+ * A restaurant's stored share card for the page's language (English `en`, Bahasa `id`), or null. One
+ * document read at most every five minutes per place, shared by both languages, as the site caches its
+ * other per-place reads. (The meal and profile pages read their card inside the load they already make.)
  */
-export function getPlaceShareCard(placeId: string): Promise<string | null> {
-  if (WEBSITE_FIXTURES) return Promise.resolve(null)
-  return unstable_cache(() => readShareCardUrl(getDb(), 'place', placeId), ['makan-share-card', 'v1', 'place', placeId], { revalidate: 300 })()
+export async function getPlaceShareCard(placeId: string, locale: string): Promise<string | null> {
+  if (WEBSITE_FIXTURES) return null
+  const urls = await unstable_cache(() => readShareCardUrls(getDb(), 'place', placeId), ['makan-share-card', 'v2', 'place', placeId], { revalidate: 300 })()
+  return shareCardFor(urls ?? NO_SHARE_CARD, locale)
 }
 
 /**

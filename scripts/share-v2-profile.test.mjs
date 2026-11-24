@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
-import { lane, KEY, USER, PLACE, PROFILE_ROUTE, BUCKET, user, meal, card, fence, storage } from './share-v2-test-lane.mjs'
+import { lane, KEY, USER, PLACE, PROFILE_ROUTE, BUCKET, user, meal, card, cardRecord, fence, storage } from './share-v2-test-lane.mjs'
 
 // RM20616 A12 U3 — the public profile page, /u/<handle>-<key>. RM20603's tests, resumed and extended.
 const DATA = 'lib/public-profile-data.ts'
@@ -24,7 +24,7 @@ test('the page shows the owner by name, with their public meals, and nothing els
   assert.deepEqual(profile.top3.map(entry => entry.rank), [1, 3])
   assert.equal(profile.recent.length, 12)
   assert.equal(profile.slug, SLUG)
-  assert.deepEqual(Object.keys(profile).sort(), ['avatar', 'cardUrl', 'handle', 'key', 'name', 'recent', 'rolePlaceIds', 'slug', 'top3'])
+  assert.deepEqual(Object.keys(profile).sort(), ['avatar', 'cardUrls', 'handle', 'key', 'name', 'recent', 'rolePlaceIds', 'slug', 'top3'])
   assert.doesNotMatch(JSON.stringify(profile), /FRIENDS ONLY|PRIVATE EMAIL|PRIVATE PHONE|BIO TEXT|profile-host/)
   assert.equal(run.reads.length, 23)
   assert.ok(run.reads.every(profilePaths), run.reads.filter(path => !profilePaths(path)).join())
@@ -155,15 +155,21 @@ test('og:image is the stored card when there is one, else the site\'s own card: 
   assert.equal(none.metadata.openGraph.images[0].url, 'https://www.makanofficial.com/opengraph-image')
   assert.deepEqual(none.metadata.twitter.images, ['https://www.makanofficial.com/opengraph-image'])
   assert.equal((await open(lane(), 'id')).metadata.openGraph.images[0].url, 'https://www.makanofficial.com/id/opengraph-image')
-  const run = lane(); run.seed.set(`shareCardMeta/profile_${KEY}`, { hash: '0f3a', url: card('profile', KEY), updatedAt: 1 })
+  const run = lane(); run.seed.set(`shareCardMeta/profile_${KEY}`, cardRecord('profile', KEY))
   const stored = await open(run)
   assert.equal(stored.metadata.openGraph.images[0].url, card('profile', KEY))
   assert.deepEqual(stored.metadata.twitter.images, [card('profile', KEY)])
+  // The Bahasa page shows the Bahasa card; when U2 draws one card for both languages, both pages show it.
+  const bahasa = lane(); bahasa.seed.set(`shareCardMeta/profile_${KEY}`, cardRecord('profile', KEY))
+  assert.equal((await open(bahasa, 'id')).metadata.openGraph.images[0].url, card('profile', KEY, BUCKET, 'id'))
+  const one = cardRecord('profile', KEY); one.cards.id = { ...one.cards.en }
+  const shared = lane(); shared.seed.set(`shareCardMeta/profile_${KEY}`, one)
+  assert.equal((await open(shared, 'id')).metadata.openGraph.images[0].url, card('profile', KEY))
   assert.ok(run.reads.includes(`shareCardMeta/profile_${KEY}`) && !run.reads.some(path => path.startsWith('shareCardMeta/') && path.includes(USER)), 'the card is found by the public key, never the uid')
   assert.equal(stored.metadata.openGraph.type, 'profile')
   // A card kept under the uid, another person's card, and a card in another project's bucket are not this page's card.
   for (const url of [card('profile', USER), card('profile', 'zzzzzzzz'), card('profile', KEY, 'another-project.firebasestorage.app'), card('place', KEY), 'https://example.com/shareCards/profile/k3f9q2x7/a.jpg']) {
-    const bad = lane(); bad.seed.set(`shareCardMeta/profile_${KEY}`, { url })
+    const bad = lane(); bad.seed.set(`shareCardMeta/profile_${KEY}`, cardRecord('profile', KEY, { cards: { en: { path: 'x', url }, id: { path: 'x', url } } }))
     const out = await open(bad)
     assert.equal(out.metadata.openGraph.images[0].url, 'https://www.makanofficial.com/opengraph-image', url)
     assert.doesNotMatch(out.text, /profile-host|another-project|zzzzzzzz/, url)

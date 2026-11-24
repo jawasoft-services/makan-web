@@ -1,7 +1,7 @@
 import type { Firestore } from 'firebase-admin/firestore'
 import { isPublicMeal, PUBLIC_MEAL_FIELDS } from './public-meal'
 import { accountDeletionFencePath, chosenHandle, isVisiblePublicProfile, venueVisibilityOn } from './profile-visibility'
-import { shareCardMetaPath, shareCardUrlFrom } from './share-card'
+import { readShareCardUrls, type ShareCardUrls } from './share-card'
 import { isMakanPhoto } from './storage-bucket'
 import { slugify } from './slug'
 
@@ -32,8 +32,8 @@ export type PublicProfileData = {
   top3: ProfileMeal[]; recent: ProfileMeal[]
   /** Venues where the owner holds the title; empty unless they let venues see their profile. */
   rolePlaceIds: string[]
-  /** The stored share card (A12 U2), or null. */
-  cardUrl: string | null
+  /** The stored share card for each language (A12 U2), or null. */
+  cardUrls: ShareCardUrls
 }
 
 /** The permanent key at the end of a profile slug (`dewi-0k3m9x2a`), or null. Same rule as the app's link parser. */
@@ -65,12 +65,11 @@ export async function loadPublicProfileData(db: Firestore, key: string, currentY
   if (!isVisiblePublicProfile({ user, age: ageSnap.data(), fenced: fenceSnap.exists }, currentYear)) return null
   const handle = chosenHandle(user).slice(0, 24)
   // The card is found by the public key, never the uid: its address goes into og:image.
-  const cardPath = shareCardMetaPath('profile', key)
-  const [projection, roles, visibility, card, recent] = await Promise.all([
+  const [projection, roles, visibility, cardUrls, recent] = await Promise.all([
     db.doc(`users/${uid}/publicTasteGraph/top3`).get(),
     db.doc(`maitredRoles/${uid}`).get(),
     db.doc(`users/${uid}/maitredSettings/venueVisibility`).get(),
-    cardPath ? db.doc(cardPath).get() : null,
+    readShareCardUrls(db, 'profile', key),
     db.collection('meals').where('userID', '==', uid).where('isPublic', '==', true)
       .where('moderationStatus', '==', 'active').orderBy('timestamp', 'desc').limit(MAX_RECENT).select(...MEAL_FIELDS).get(),
   ])
@@ -92,6 +91,6 @@ export async function loadPublicProfileData(db: Firestore, key: string, currentY
     top3: snapshots.flatMap((snap, index) => mealOf(candidates[index].id, snap.data()).map((meal) => ({ ...meal, rank: candidates[index].rank }))),
     recent: recent.docs.flatMap((snap) => mealOf(snap.id, snap.data())),
     rolePlaceIds: venueVisibilityOn(visibility.data()) && Array.isArray(ids) ? [...new Set(ids.filter(documentId))] : [],
-    cardUrl: card ? shareCardUrlFrom(card.data(), 'profile', key) : null,
+    cardUrls,
   }
 }

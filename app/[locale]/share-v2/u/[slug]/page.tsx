@@ -9,6 +9,7 @@ import { GetMakanButton } from '@/components/share/ShareActions'
 import styles from '@/components/share/share-pages.module.css'
 import { localizePath } from '@/i18n/paths'
 import { getPublicProfile, profileKey, type ProfileMeal } from '@/lib/public-profile'
+import { shareCardFor } from '@/lib/share-card'
 import { SHARE_V2_NOT_SERVED, sharePageUrl, shareV2PageServed, smartAppBanner } from '@/lib/share-page'
 import { GONE_PROFILE_LINE } from '@/lib/share-page-choices'
 import { createPageMetadata } from '@/lib/site-metadata'
@@ -41,8 +42,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const [t, site] = await Promise.all([getTranslations({ locale, namespace: 'SharePages' }), getTranslations({ locale, namespace: 'Metadata.site' })])
   const title = t('profileTitle', { name: profile.name, handle: profile.handle })
   const url = sharePageUrl(locale, `/u/${profile.slug}`)
-  // The stored card when the app's backend has rendered one; otherwise the site's own card. Never drawn per request.
-  const meta = createPageMetadata({ title, description: site('description'), path: `${locale === 'id' ? '/id' : ''}/u/${profile.slug}`, locale, image: profile.cardUrl ?? undefined })
+  // The stored card for this page's language when the app's backend has rendered one; otherwise the site's own card.
+  // Never drawn per request, and never the other language's card.
+  const meta = createPageMetadata({ title, description: site('description'), path: `${locale === 'id' ? '/id' : ''}/u/${profile.slug}`, locale, image: shareCardFor(profile.cardUrls, locale) ?? undefined })
   return { ...meta, robots, alternates: { canonical: url }, itunes: smartAppBanner(url), openGraph: { ...meta.openGraph, type: 'profile' } }
 }
 
