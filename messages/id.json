@@ -1116,6 +1116,35 @@
     "profileTitle": "{name} (@{handle}) di Makan",
     "top3": "3 TERATAS",
     "maitred": "Maître d’",
-    "recent": "Terbaru"
+    "recent": "Terbaru",
+    "authAction": {
+      "doesNotWork": "Tautan ini tidak berfungsi",
+      "contactSupport": "Hubungi dukungan",
+      "chooseTitle": "Pilih kata sandi baru",
+      "forEmail": "Untuk {email}",
+      "newPasswordLabel": "KATA SANDI BARU",
+      "showPassword": "Tampilkan kata sandi",
+      "passwordRule": "Kata sandi minimal 6 karakter.",
+      "savePassword": "Simpan kata sandi",
+      "networkError": "Terjadi masalah jaringan. Periksa koneksimu lalu coba lagi.",
+      "expired": "Tautan ini sudah kedaluwarsa.",
+      "sendNewLink": "Kirim tautan baru",
+      "forgotTitle": "Lupa kata sandimu?",
+      "forgotBody": "Masukkan emailmu dan kami akan mengirim tautan untuk mengatur ulang kata sandimu.",
+      "emailLabel": "EMAIL",
+      "invalidEmail": "Masukkan alamat email yang valid.",
+      "sendResetLink": "Kirim tautan atur ulang",
+      "emailSentTitle": "Email terkirim",
+      "emailSentBody": "Jika emailmu terdaftar, kamu akan segera menerima tautan atur ulang.",
+      "passwordChanged": "Kata sandi diganti",
+      "signInWithNewPassword": "Buka Makan dan masuk dengan kata sandi barumu.",
+      "openMakan": "Buka Makan",
+      "emailVerified": "Email terverifikasi",
+      "emailChanged": "Email diganti",
+      "signInWithEmail": "Buka Makan dan masuk dengan {email}.",
+      "emailChangeUndone": "Perubahan email dibatalkan",
+      "emailIsAgain": "Emailmu kembali {email}.",
+      "changeEmailAgain": "Ubah emailmu lagi di Makan."
+    }
   }
 }
