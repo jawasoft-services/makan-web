@@ -119,10 +119,18 @@ export default function ResetFlow({ initial, strings: s, locale, supportHref, ap
         <Frame>
           <Clip name="saved" />
           <h1 className={styles.title}>{s.expired}</h1>
-          <form action={formAction} className={styles.formless}>
-            {hidden("forgot")}
-            {submit(s.sendNewLink)}
-          </form>
+          {/* Send a new link is offered only with the seal the server draws when Google said the link had
+              timed out. A used link (or one that was never real, or one already done with here) has no seal,
+              and Send could send nothing for it: it gets Open Makan instead, where Forgot password sends a
+              new link (Devon, 24 Nov 2026). */}
+          {seal ? (
+            <form action={formAction} className={styles.formless}>
+              {hidden("forgot")}
+              {submit(s.sendNewLink)}
+            </form>
+          ) : (
+            <OpenMakan label={s.openMakan} appPath="signin" appPage={appPage} />
+          )}
         </Frame>
       )
     case "forgot":

@@ -317,13 +317,20 @@ for (const locale of ['en', 'id']) {
     quiet(run, 'si-fp-5')
   })
 
-  test(`${locale}: reset link expired or used: This link has expired. with Send a new link (si-fp-expired)`, async () => {
-    for (const message of ['EXPIRED_OOB_CODE', 'INVALID_OOB_CODE']) {
-      const run = withLink('resetPassword', { resetPassword: fail(message) })
-      const shown = text((await run.render(locale)).html)
-      assert.ok(shown.includes(s.expired) && shown.includes(s.sendNewLink), message)
-      quiet(run, message)
-    }
+  test(`${locale}: reset link timed out: This link has expired. with Send a new link; used: with Open Makan (si-fp-expired)`, async () => {
+    // Timed out (Google's EXPIRED_OOB_CODE): Send a new link, which can really send.
+    let run = withLink('resetPassword', { resetPassword: fail('EXPIRED_OOB_CODE') })
+    let shown = text((await run.render(locale)).html)
+    assert.ok(shown.includes(s.expired) && shown.includes(s.sendNewLink) && !shown.includes(s.openMakan), 'EXPIRED_OOB_CODE')
+    quiet(run, 'EXPIRED_OOB_CODE')
+    // Used, or never real (INVALID_OOB_CODE for both): Open Makan and no Send, which could send nothing
+    // (Devon, 24 Nov 2026).
+    run = withLink('resetPassword', { resetPassword: fail('INVALID_OOB_CODE') })
+    const { html } = await run.render(locale)
+    shown = text(html)
+    assert.ok(shown.includes(s.expired) && shown.includes(s.openMakan) && !shown.includes(s.sendNewLink), 'INVALID_OOB_CODE')
+    assert.doesNotMatch(html, /<form|name="intent"|name="seal"/, 'a used link\'s card has no form')
+    quiet(run, 'INVALID_OOB_CODE')
   })
 
   test(`${locale}: reset link for a disabled or deleted account: This link doesn't work with Contact support (si-fp-7)`, async () => {
@@ -555,18 +562,18 @@ const sendTo = (run, email, address) => {
 
 test('M1: Send reset link sends only with the seal the page drew for a link Google said had expired', async () => {
   // EXPIRED_OOB_CODE: the expired card carries a send seal. INVALID_OOB_CODE (used, or made up: Google gives
-  // one answer for both) shows the same card with no seal.
+  // one answer for both) shows the card with Open Makan, no Send and no seal.
   let run = withLink('resetPassword', { resetPassword: fail('EXPIRED_OOB_CODE') })
   assert.match((await run.render('en')).html, /<input type="hidden" name="seal" value="[a-z0-9]+\.[A-Za-z0-9_-]{43}"/)
   run = withLink('resetPassword', { resetPassword: fail('INVALID_OOB_CODE') })
   const { html } = await run.render('en')
-  assert.ok(text(html).includes(EN.expired) && text(html).includes(EN.sendNewLink))
-  assert.doesNotMatch(html, /name="seal"/)
+  assert.ok(text(html).includes(EN.expired) && text(html).includes(EN.openMakan) && !text(html).includes(EN.sendNewLink))
+  assert.doesNotMatch(html, /name="seal"|<form/)
   // A save that finds the code expired draws the seal too; one that finds it used does not.
   assert.ok((await withLink('resetPassword', { resetPassword: fail('EXPIRED_OOB_CODE') }).action({ intent: 'save', password: PASSWORD, locale: 'en' })).seal)
   assert.equal((await withLink('resetPassword', { resetPassword: fail('INVALID_OOB_CODE') }).action({ intent: 'save', password: PASSWORD, locale: 'en' })).seal, undefined)
 
-  // Without a valid send seal: the same Email sent, and nothing asked of Google.
+  // Without a valid send seal: the expired card (Open Makan), never Email sent, and nothing asked of Google.
   const probe = withLink('resetPassword', {})
   const otherLink = pageLane({ cookie: probe.linkCookie(query('resetPassword').replace(CODE, OTHER_CODE)) })
   const otherSecret = pageLane({ cookie: probe.linkCookie(query('resetPassword')), env: { ...ENV, AUTH_ACTION_SECRET: 'another-signing-secret-0123456789abcdef' } })
@@ -576,10 +583,12 @@ test('M1: Send reset link sends only with the seal the page drew for a link Goog
     ['past its hour', probe.seal('send', Date.now() - 61 * 60 * 1000)], ['with extra parts', `${probe.seal('send')}.x`],
   ]) {
     run = withLink('resetPassword', { sendOobCode: ok({}) })
-    assert.deepEqual(await run.action({ intent: 'send', email: 'victim@example.com', seal, locale: 'en' }, { view: 'forgot' }), { view: 'sent' }, label)
+    assert.deepEqual(await run.action({ intent: 'send', email: 'victim@example.com', seal, locale: 'en' }, { view: 'forgot' }), { view: 'expired' }, label)
+    assert.deepEqual(await run.action({ intent: 'send', email: 'not-an-address', seal, locale: 'en' }, { view: 'forgot' }), { view: 'expired' }, label)
+    // Send a new link does not open the form either.
+    assert.deepEqual(await run.action({ intent: 'forgot', seal, locale: 'en' }, { view: 'expired' }), { view: 'expired' }, label)
     assert.equal(run.calls.length, 0, label)
-    // Send a new link still opens the form, but without a seal to carry.
-    assert.deepEqual(await run.action({ intent: 'forgot', seal, locale: 'en' }, { view: 'expired' }), { view: 'forgot' }, label)
+    assert.deepEqual(run.cookieSets, [], `${label}: the link's cookie is left as it was`)
   }
   // With it: sent.
   run = withLink('resetPassword', { sendOobCode: ok({}) })
@@ -837,16 +846,16 @@ test('after Save password, Send reset link and This link doesn\'t work, the page
         // The code has left the browser: the cookie holds the done marker only.
         assert.equal(run.jar.get('makan_auth_action'), 'done', name)
 
-        // A later plain reload: the expired card with no seal, and nothing asked of Google.
+        // A later plain reload: the expired card with Open Makan, no form and no seal, and nothing asked of Google.
         const reload = await run.render(locale)
         assert.equal(reload.thrown, null, `${name}: reload`)
-        assert.ok(text(reload.html).includes(s.expired) && text(reload.html).includes(s.sendNewLink), `${name}: reload`)
-        assert.doesNotMatch(reload.html, /name="seal"/, `${name}: reload, no seal`)
-        // Its posts behave as a used link's card does, and never call Google.
+        assert.ok(text(reload.html).includes(s.expired) && text(reload.html).includes(s.openMakan) && !text(reload.html).includes(s.sendNewLink), `${name}: reload`)
+        assert.doesNotMatch(reload.html, /name="seal"|<form/, `${name}: reload, no seal and no form`)
+        // Any post made with the done marker answers that same card, and never calls Google.
         const before = run.calls.length
-        assert.deepEqual(await run.action({ intent: 'forgot', locale }, { view: 'expired' }), { view: 'forgot' }, name)
-        assert.deepEqual(await run.action({ intent: 'send', email: 'victim@example.com', locale }, { view: 'forgot' }), { view: 'sent' }, name)
-        assert.equal((await run.action({ intent: 'send', email: 'not-an-address', locale }, { view: 'forgot' })).error, 'email', name)
+        assert.deepEqual(await run.action({ intent: 'forgot', locale }, { view: 'expired' }), { view: 'expired' }, name)
+        assert.deepEqual(await run.action({ intent: 'send', email: 'victim@example.com', locale }, { view: 'forgot' }), { view: 'expired' }, name)
+        assert.deepEqual(await run.action({ intent: 'send', email: 'not-an-address', locale }, { view: 'forgot' }), { view: 'expired' }, name)
         assert.deepEqual(await run.action({ intent: 'save', password: PASSWORD, seal: liveSeal, locale }), { view: 'expired' }, name)
         assert.equal(run.calls.length, before, `${name}: a done link asks Google nothing`)
         quiet(run, name)
@@ -956,11 +965,13 @@ test('review L2: the new password is in no answer and no page drawn after a post
     ['Save: another link\'s card', link => link(RESET_OK), { ...save(PASSWORD), seal: '0.another-card' }, undefined, 'choose', false],
     ['Save: done link', (_, done) => done(), save(PASSWORD), undefined, 'expired', false],
     ['Send a new link', link => link({}), { intent: 'forgot', password: PASSWORD }, { view: 'expired' }, 'forgot', false],
-    ['Send a new link: done link', (_, done) => done(), { intent: 'forgot', password: PASSWORD }, { view: 'expired' }, 'forgot', false],
+    ['Send a new link: done link', (_, done) => done(), { intent: 'forgot', password: PASSWORD }, { view: 'expired' }, 'expired', false],
+    ['Send a new link: no seal', link => link({}), { intent: 'forgot', password: PASSWORD, seal: '' }, { view: 'expired' }, 'expired', false],
+    ['Send reset link: no seal', link => link({ sendOobCode: ok({}) }), { intent: 'send', email: 'dewi@example.com', password: PASSWORD, seal: '' }, { view: 'forgot' }, 'expired', false],
     ['Send reset link: sent', link => link({ sendOobCode: ok({}) }), { intent: 'send', email: 'dewi@example.com', password: PASSWORD }, { view: 'forgot' }, 'sent', false],
     ['Send reset link: refused', link => link({ sendOobCode: fail('INTERNAL_ERROR', 500) }), { intent: 'send', email: 'dewi@example.com', password: PASSWORD }, { view: 'forgot' }, 'forgot', false],
     ['Send reset link: not an address', link => link({}), { intent: 'send', email: 'not-an-address', password: PASSWORD }, { view: 'forgot' }, 'forgot', false],
-    ['Send reset link: done link', (_, done) => done(), { intent: 'send', email: 'dewi@example.com', password: PASSWORD }, { view: 'forgot' }, 'sent', false],
+    ['Send reset link: done link', (_, done) => done(), { intent: 'send', email: 'dewi@example.com', password: PASSWORD }, { view: 'forgot' }, 'expired', false],
     ['an unknown intent', link => link(RESET_OK), { intent: 'other', password: PASSWORD }, undefined, 'choose', false],
   ]
   for (const locale of ['en', 'id']) {

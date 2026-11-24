@@ -11,7 +11,6 @@ import {
   decodeStoredLink,
   isDoneMarker,
   passThroughUrl,
-  plausibleEmail,
   readStoredLink,
   type ActionLink,
   type ActionView,
@@ -51,21 +50,12 @@ async function forgetLink(form: FormData) {
 }
 
 /**
- * A post from the expired card drawn for a link that was done with. It behaves as the card of a used link does
- * (Google's INVALID_OOB_CODE): Send a new link opens the form, and Send reset link answers Email sent without
- * sending, since nothing proves the link was ever real. Nothing is asked of Google.
+ * A post made while the cookie holds the done marker. The card of a done link is This link has expired with
+ * Open Makan and no form, as for a used link, so nothing can be asked for here: every intent answers that
+ * card. Nothing is asked of Google.
  */
-function doneLinkAnswer(form: FormData): ActionView {
-  switch (text(form.get("intent"))) {
-    case "forgot":
-      return { view: "forgot" }
-    case "send": {
-      const email = text(form.get("email")).trim()
-      return plausibleEmail(email) ? { view: "sent" } : { view: "forgot", error: "email", keep: email }
-    }
-    default:
-      return { view: "expired" }
-  }
+function doneLinkAnswer(): ActionView {
+  return { view: "expired" }
 }
 
 /** The card for the cookie's own link, drawn again (its seal did not match the card that was posted). */
@@ -80,7 +70,7 @@ export async function resetFlowAction(previous: ActionView, form: FormData): Pro
   const requestHeaders = await headers()
   // A post made by the page's script carries Next's action header; a plain form post (JavaScript off) does not.
   const scripted = requestHeaders.has("next-action")
-  if (isDoneMarker(stored)) return forThisPage(doneLinkAnswer(form), scripted)
+  if (isDoneMarker(stored)) return doneLinkAnswer()
   const link = readStoredLink(decodeStoredLink(stored))
   // The cookie is gone (the browser was closed, or the done marker's ten minutes passed) or was never for a reset.
   if (!link || link.mode !== "resetPassword") return { view: "expired" }
@@ -97,14 +87,18 @@ export async function resetFlowAction(previous: ActionView, form: FormData): Pro
       if (view.view === "changed" || view.view === "broken") await forgetLink(form)
       return forThisPage(view, scripted)
     }
+    // Send a new link and Send reset link exist only for a link Google said had timed out, which the send
+    // seal proves. Without it (a used link, one that was never real, a hand-made post) the answer is the
+    // expired card, which offers Open Makan and no form (Devon, 24 Nov 2026): nothing is sent and nothing
+    // pretends to be.
     case "forgot":
-      return sealMatches("send", link, seal) ? { view: "forgot", seal } : { view: "forgot" }
+      return sealMatches("send", link, seal) ? { view: "forgot", seal } : { view: "expired" }
     case "send": {
-      const pending = sealMatches("send", link, seal)
+      if (!sealMatches("send", link, seal)) return { view: "expired" }
       const email = text(form.get("email")).trim()
-      const view = await sendNewLink(link, email, () => pending && sendAllowed(email, trustedClientAddress(requestHeaders)))
+      const view = await sendNewLink(link, email, () => sendAllowed(email, trustedClientAddress(requestHeaders)))
       if (view.view === "sent") await forgetLink(form)
-      return forThisPage(pending && view.view === "forgot" ? { ...view, seal } : view, scripted)
+      return forThisPage(view.view === "forgot" ? { ...view, seal } : view, scripted)
     }
     default:
       return previous

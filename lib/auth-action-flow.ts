@@ -107,8 +107,9 @@ export async function savePassword(link: ActionLink, password: string, email: st
  */
 export async function sendNewLink(link: ActionLink, email: string, allowed: () => boolean): Promise<ActionView> {
   if (!plausibleEmail(email)) return { view: "forgot", error: "email", keep: email }
-  // Without a genuine expired link, or past the per-address or per-client limit (lib/auth-action-limit.ts),
-  // nothing is sent, and the card is the same as for a sent email.
+  // Past the per-address or per-client limit (lib/auth-action-limit.ts) nothing is sent, and the card is the
+  // same as for a sent email. (A post without the send seal never reaches here: the action answers the
+  // expired card.)
   if (!allowed()) return { view: "sent" }
   const answer = await sendPasswordReset(link.project.name, email)
   return answer === "answered" ? { view: "sent" } : { view: "forgot", error: "network", keep: email }
