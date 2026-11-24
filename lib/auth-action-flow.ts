@@ -31,8 +31,8 @@ export function isDocumentNavigation(headers: Headers): boolean {
  */
 export async function openingView(link: ActionLink, { navigation }: { navigation: boolean }): Promise<ActionView> {
   if (link.mode !== "resetPassword" && !navigation) return { view: "firebase" }
-  const { apiKey } = link.project
-  const checked = await checkCode(apiKey, link.oobCode)
+  const { serverKey } = link.project
+  const checked = await checkCode(serverKey, link.oobCode)
   if (!checked.ok) {
     if (checked.reason === "expired" || checked.reason === "used") return expiredView(link, checked.reason)
     if (checked.reason === "disabled" && link.mode === "resetPassword") return { view: "broken" }
@@ -46,7 +46,7 @@ export async function openingView(link: ActionLink, { navigation }: { navigation
   const shown = link.mode === "verifyAndChangeEmail" ? checked.value.newEmail : checked.value.email
   if (link.mode !== "verifyEmail" && !shown) return { view: "firebase" }
 
-  const applied = await applyCode(apiKey, link.oobCode)
+  const applied = await applyCode(serverKey, link.oobCode)
   if (!applied.ok) return applied.reason === "expired" || applied.reason === "used" ? expiredView(link, applied.reason) : { view: "firebase" }
   if (link.mode === "verifyEmail") return { view: "verified" }
   return link.mode === "verifyAndChangeEmail" ? { view: "emailChanged", email: shown! } : { view: "emailUndone", email: shown! }
@@ -72,7 +72,7 @@ export async function savePassword(link: ActionLink, password: string, email: st
   if (link.mode !== "resetPassword") return { view: "firebase" }
   if (password.length < MIN_PASSWORD_LENGTH) return choose("weak")
 
-  const saved = await resetPassword(link.project.apiKey, link.oobCode, password)
+  const saved = await resetPassword(link.project.serverKey, link.oobCode, password)
   if (saved.ok) return { view: "changed" }
   switch (saved.reason) {
     case "weak":
@@ -99,6 +99,6 @@ export async function sendNewLink(link: ActionLink, email: string, allowed: () =
   // Without a genuine expired link, or past the per-address or per-client limit (lib/auth-action-limit.ts),
   // nothing is sent, and the card is the same as for a sent email.
   if (!allowed()) return { view: "sent" }
-  const answer = await sendPasswordReset(link.project.apiKey, email)
+  const answer = await sendPasswordReset(link.project.serverKey, email)
   return answer === "answered" ? { view: "sent" } : { view: "forgot", error: "network", keep: email }
 }

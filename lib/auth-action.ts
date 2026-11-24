@@ -52,8 +52,14 @@ const MAX_QUERY_LENGTH = 4096
 export interface ActionProject {
   /** Which of the two projects the key belongs to. Never shown and never logged. */
   name: "dev" | "prod"
+  /** The key Firebase puts in the link. It only says which project a link is for; no call is made with it. */
   apiKey: string
   authDomain: string
+  /**
+   * The key the server's own calls to Google are made with (lib/identity-toolkit.ts), or null when it is
+   * not set. Server-only: it is never put in a response, a cookie, a seal, a redirect or a log line.
+   */
+  serverKey: string | null
 }
 
 type Env = Record<string, string | undefined>
@@ -68,6 +74,13 @@ export function actionSecret(env: Env = process.env): string | null {
  * The allowlist. The key values are deploy configuration, never in the repository:
  *   AUTH_ACTION_KEY_DEV   the makan-devel web API key
  *   AUTH_ACTION_KEY_PROD  the munchies-expo (production) web API key
+ * Those are the keys Firebase puts in its email links. They are browser keys, restricted by web referrer,
+ * so Google refuses a server's calls made with them (403 API_KEY_HTTP_REFERRER_BLOCKED, seen on makan-devel
+ * 24 Nov 2026). The page's own calls use a second key per project, a secret of the hosting environment:
+ *   AUTH_ACTION_SERVER_KEY_DEV   a makan-devel API key restricted to the Identity Toolkit API only
+ *   AUTH_ACTION_SERVER_KEY_PROD  the same for munchies-expo
+ * A project with no server key is still known, but every one of its links goes on to Firebase's own page
+ * (as a mode with no Makan page does), before any call to Google.
  * Each project's authDomain defaults to its firebaseapp.com host and can be set with
  * AUTH_ACTION_DOMAIN_DEV / AUTH_ACTION_DOMAIN_PROD, but only to that project's own Firebase hosts
  * (<project>.firebaseapp.com, <project>.web.app) or a host under makanofficial.com: the link and its live
@@ -75,8 +88,8 @@ export function actionSecret(env: Env = process.env): string | null {
  * AUTH_ACTION_SECRET (see actionSecret) must be set too, or no project is served.
  */
 const PROJECTS = [
-  { name: "dev", key: "AUTH_ACTION_KEY_DEV", domain: "AUTH_ACTION_DOMAIN_DEV", id: "makan-devel" },
-  { name: "prod", key: "AUTH_ACTION_KEY_PROD", domain: "AUTH_ACTION_DOMAIN_PROD", id: "munchies-expo" },
+  { name: "dev", key: "AUTH_ACTION_KEY_DEV", serverKey: "AUTH_ACTION_SERVER_KEY_DEV", domain: "AUTH_ACTION_DOMAIN_DEV", id: "makan-devel" },
+  { name: "prod", key: "AUTH_ACTION_KEY_PROD", serverKey: "AUTH_ACTION_SERVER_KEY_PROD", domain: "AUTH_ACTION_DOMAIN_PROD", id: "munchies-expo" },
 ] as const
 
 const HOST = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/i
@@ -94,7 +107,7 @@ export function actionProjects(env: Env = process.env): ActionProject[] {
     const apiKey = env[project.key]?.trim()
     const authDomain = env[project.domain]?.trim() || `${project.id}.firebaseapp.com`
     if (!apiKey || !HOST.test(authDomain) || !ownAuthHost(authDomain, project.id)) continue
-    projects.push({ name: project.name, apiKey, authDomain })
+    projects.push({ name: project.name, apiKey, authDomain, serverKey: env[project.serverKey]?.trim() || null })
   }
   return projects
 }
@@ -171,20 +184,21 @@ export function decodeStoredLink(value: string | null | undefined): StoredLink |
 export interface ActionLink {
   mode: BuiltMode
   oobCode: string
-  project: ActionProject
+  /** A project the page can ask Google about: its server key is set. */
+  project: ActionProject & { serverKey: string }
   /** The query as it arrived, for the hand-on to Firebase's own page. */
   query: string
 }
 
-/** The stored link, if it is complete, for a built mode, and carries a known key. */
+/** The stored link, if it is complete, for a built mode, and carries the key of a project with a server key. */
 export function readStoredLink(link: StoredLink | null, env: Env = process.env): ActionLink | null {
   if (!link) return null
   const params = new URLSearchParams(link.query)
   const mode = params.get("mode") ?? ""
   const oobCode = params.get("oobCode") ?? ""
   const project = projectForKey(params.get("apiKey"), env)
-  if (!project || !BUILT_MODES.has(mode) || !oobCode || oobCode.length > 1024) return null
-  return { mode: mode as BuiltMode, oobCode, project, query: link.query }
+  if (!project || !project.serverKey || !BUILT_MODES.has(mode) || !oobCode || oobCode.length > 1024) return null
+  return { mode: mode as BuiltMode, oobCode, project: { ...project, serverKey: project.serverKey }, query: link.query }
 }
 
 /** The response headers of every answer to a request that carries the link (redirects and not-found). */

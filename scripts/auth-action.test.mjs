@@ -17,7 +17,11 @@ const { NextRequest } = require('next/server')
 const DEV_KEY = 'AIzaFAKE-dev-key-0000000000000000000000'
 const PROD_KEY = 'AIzaFAKE-prod-key-000000000000000000000'
 const SECRET = 'test-only-signing-secret-0123456789abcdef'
-const ENV = { AUTH_ACTION_KEY_DEV: DEV_KEY, AUTH_ACTION_KEY_PROD: PROD_KEY, AUTH_ACTION_SECRET: SECRET }
+// The keys the server's own calls to Google use. "SECRET" is in each so every "never on the page / in a URL" check catches them.
+const DEV_SERVER_KEY = 'SRV-FAKE-dev-server-key-SECRET-00000000'
+const PROD_SERVER_KEY = 'SRV-FAKE-prod-server-key-SECRET-0000000'
+const LINK_KEYS_ONLY = { AUTH_ACTION_KEY_DEV: DEV_KEY, AUTH_ACTION_KEY_PROD: PROD_KEY, AUTH_ACTION_SECRET: SECRET }
+const ENV = { ...LINK_KEYS_ONLY, AUTH_ACTION_SERVER_KEY_DEV: DEV_SERVER_KEY, AUTH_ACTION_SERVER_KEY_PROD: PROD_SERVER_KEY }
 /** What a browser sends when a person opens the page (Fetch Metadata). */
 const NAVIGATION = { 'sec-fetch-mode': 'navigate', 'sec-fetch-dest': 'document', 'sec-fetch-site': 'none' }
 const CODE = 'OOB-CODE-abcdefghijklmnopqrstuvwxyz0123456789-SECRET'
@@ -161,7 +165,7 @@ test('the clean address is served by the internal page in its language; the inte
 function fakeGoogle(answers) {
   const calls = []
   const fetch = async (url, init) => {
-    const method = /accounts:(\w+)\?/.exec(url)?.[1]
+    const method = /accounts:(\w+)$/.exec(url)?.[1]
     const body = JSON.parse(init.body)
     calls.push({ url, method, body, init })
     const answer = answers[method]
@@ -254,7 +258,9 @@ const quiet = (run, label) => {
     assert.doesNotMatch(call.url, /SECRET|oobCode=|newPassword=|password=/, `${label}: the code and the password are never in a URL`)
     assert.equal(call.init.method, 'POST')
     assert.equal(call.url.startsWith('https://identitytoolkit.googleapis.com/v1/accounts:'), true)
-    assert.ok(call.url.endsWith(`?key=${DEV_KEY}`), 'the link\'s own key')
+    assert.doesNotMatch(call.url, /[?#]|key=|AIza|SRV-/, `${label}: no key and no query in a URL`)
+    assert.equal(call.init.headers['X-Goog-Api-Key'], DEV_SERVER_KEY, `${label}: the project's server key, in a header`)
+    assert.doesNotMatch(JSON.stringify(call.init.headers) + call.init.body, /AIza/, `${label}: the link's own key is sent nowhere`)
   }
 }
 
@@ -685,4 +691,60 @@ test('L7: an address is put in its line exactly as it is', async () => {
     const run = withLink('resetPassword', { resetPassword: ok({ email, requestType: 'PASSWORD_RESET' }) })
     assert.ok(text((await run.render('en')).html).includes(EN.forEmail.replace('{email}', () => email)), email)
   }
+})
+
+test('server key: a project with none sends every link on to Firebase\'s own page, sets no cookie and asks Google nothing', async () => {
+  for (const [env, label] of [[LINK_KEYS_ONLY, 'neither key'], [{ ...LINK_KEYS_ONLY, AUTH_ACTION_SERVER_KEY_PROD: PROD_SERVER_KEY }, 'only the other project\'s'], [{ ...LINK_KEYS_ONLY, AUTH_ACTION_SERVER_KEY_DEV: '   ' }, 'blank']]) {
+    for (const mode of ['resetPassword', 'verifyEmail', 'verifyAndChangeEmail', 'recoverEmail', 'signIn']) {
+      for (const prefix of ['', '/id']) {
+        const answer = ask(`${prefix}/auth/action?${query(mode)}`, { env })
+        assert.equal(answer.status, 302, `${label} ${mode}`)
+        assert.equal(answer.location, `https://makan-devel.firebaseapp.com/__/auth/action?${query(mode)}`, `${label} ${mode}: the query byte for byte`)
+        assert.equal(answer.cookie, null, `${label} ${mode}: no cookie`)
+        assertActionHeaders(answer, `${label} ${mode}`)
+      }
+    }
+    // An unknown key is still the not-found page, server key or not.
+    assert.equal(new URL(ask(`/auth/action?mode=resetPassword&oobCode=${CODE}&apiKey=AIzaUNKNOWN`, { env }).rewrite).pathname, NOT_FOUND, label)
+    // A cookie left from before the key was removed: the page and its posts treat the link as unknown.
+    const probe = pageLane()
+    const run = pageLane({ env, cookie: probe.linkCookie(query('resetPassword')), google: {} })
+    assert.equal((await run.render()).thrown, 'NOT_FOUND', label)
+    assert.deepEqual(await run.action({ intent: 'save', password: PASSWORD, seal: '0.x' }), { view: 'expired' }, label)
+    assert.deepEqual(await run.action({ intent: 'send', email: 'dewi@example.com', seal: '0.x' }), { view: 'expired' }, label)
+    assert.deepEqual(run.calls, [], `${label}: Google is asked nothing`)
+    assert.deepEqual(run.logs, [], label)
+  }
+})
+
+test('server key: it is sent to Google in a header and reaches no redirect, cookie, seal, page or log', async () => {
+  const leaked = /SRV-FAKE|server-key/
+  for (const path of [`/auth/action?${query('resetPassword')}`, `/id/auth/action?${query('verifyEmail')}`, `/auth/action?${query('signIn')}`, `/auth/action?mode=resetPassword&oobCode=${CODE}&apiKey=AIzaUNKNOWN`, '/auth/action', '/auth-action/en']) {
+    const answer = ask(path)
+    const all = [...answer.headers.entries()].map(([name, value]) => `${name}: ${value}`).join('\n')
+    assert.doesNotMatch(all, leaked, path)
+    if (answer.cookie) {
+      const stored = Buffer.from(/makan_auth_action=([^;]+)/.exec(answer.cookie)[1], 'base64url').toString('utf8')
+      assert.doesNotMatch(stored, leaked, `${path}: the cookie holds the link's query and nothing else`)
+    }
+  }
+  const run = withLink('resetPassword', { ...RESET_OK, sendOobCode: ok({ email: 'dewi@example.com' }) })
+  const { html } = await run.render()
+  assert.doesNotMatch(html, leaked)
+  assert.doesNotMatch(run.seal('save') + run.seal('send'), leaked)
+  // The seal is tied to the link's own key and not to the server key: rotating the server key leaves open cards valid.
+  const rotated = pageLane({ cookie: run.jar.get('makan_auth_action'), env: { ...ENV, AUTH_ACTION_SERVER_KEY_DEV: 'SRV-FAKE-rotated-SECRET-0000000000000000' } })
+  assert.equal(rotated.seal('save'), run.seal('save'))
+  const view = await run.action({ intent: 'save', password: PASSWORD, email: 'dewi@example.com' })
+  assert.equal(view.view, 'changed')
+  assert.doesNotMatch(JSON.stringify(view) + JSON.stringify(run.cookieSets), leaked)
+  // Google refusing the server key (restricted, deleted, wrong project) is "no usable answer": Firebase's own page.
+  const refused = withLink('resetPassword', { resetPassword: fail('Requests from referer <empty> are blocked.', 403) })
+  assert.match((await refused.render()).thrown ?? '', /^REDIRECT:https:\/\/makan-devel\.firebaseapp\.com\/__\/auth\/action\?/)
+  assert.doesNotMatch((await refused.render()).thrown, leaked)
+  for (const each of [run, refused]) { assert.ok(each.calls.length > 0); quiet(each, 'server key') }
+  // A production link is asked about with production's server key, never dev's.
+  const prod = pageLane({ google: RESET_OK, cookie: run.linkCookie(query('resetPassword').replace(DEV_KEY, PROD_KEY)) })
+  await prod.render()
+  assert.deepEqual(prod.calls.map(call => call.init.headers['X-Goog-Api-Key']), [PROD_SERVER_KEY])
 })

@@ -3,9 +3,11 @@ import "server-only"
 /*
  * RM20616 A10 unit 10 (R1) — the three Identity Toolkit REST calls the action page makes, from the server.
  *
- * Each call uses the link's own apiKey (already checked against the allowlist) and needs no secret. The
- * code and the password travel only in the POST body to Google; they are never put in a URL, never
- * logged, never thrown and never returned. A failure comes back as a reason, not as Google's message:
+ * Each call uses the project's server key (AUTH_ACTION_SERVER_KEY_DEV / _PROD, see lib/auth-action.ts),
+ * not the key in the link: that one is a browser key and Google refuses a server's calls made with it.
+ * The server key travels only in the X-Goog-Api-Key request header to Google, never in a URL; the code and
+ * the password travel only in the POST body. None of the three is ever logged, thrown or returned. A
+ * failure comes back as a reason, not as Google's message:
  *
  *   expired      EXPIRED_OOB_CODE: a code Google issued whose hour has passed (Google has to read a code's
  *                issue time to say this; a made-up code is answered INVALID_OOB_CODE)
@@ -51,11 +53,11 @@ function failure(message: unknown): ToolkitFailure {
 
 type Answer = { status: "answered"; ok: boolean; code: number; json: boolean; body: Record<string, unknown> } | { status: "none" }
 
-async function post(method: string, apiKey: string, body: Record<string, unknown>): Promise<Answer> {
+async function post(method: string, serverKey: string, body: Record<string, unknown>): Promise<Answer> {
   try {
-    const response = await fetch(`${ENDPOINT}:${method}?key=${encodeURIComponent(apiKey)}`, {
+    const response = await fetch(`${ENDPOINT}:${method}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "X-Goog-Api-Key": serverKey },
       body: JSON.stringify(body),
       cache: "no-store",
       signal: AbortSignal.timeout(TIMEOUT_MS),
@@ -87,8 +89,8 @@ function errorMessage(body: Record<string, unknown>): unknown {
 const text = (value: unknown) => (typeof value === "string" && value ? value : null)
 
 /** Checks a code without using it up (`accounts:resetPassword` with the code alone). */
-export async function checkCode(apiKey: string, oobCode: string): Promise<ToolkitResult<CheckedCode>> {
-  const answer = await post("resetPassword", apiKey, { oobCode })
+export async function checkCode(serverKey: string, oobCode: string): Promise<ToolkitResult<CheckedCode>> {
+  const answer = await post("resetPassword", serverKey, { oobCode })
   if (answer.status === "none") return { ok: false, reason: "unavailable" }
   if (!answer.ok) return { ok: false, reason: failure(errorMessage(answer.body)) }
   const requestType = text(answer.body.requestType)
@@ -97,16 +99,16 @@ export async function checkCode(apiKey: string, oobCode: string): Promise<Toolki
 }
 
 /** Sets the new password with the reset code (`accounts:resetPassword` with `newPassword`). */
-export async function resetPassword(apiKey: string, oobCode: string, newPassword: string): Promise<ToolkitResult<null>> {
-  const answer = await post("resetPassword", apiKey, { oobCode, newPassword })
+export async function resetPassword(serverKey: string, oobCode: string, newPassword: string): Promise<ToolkitResult<null>> {
+  const answer = await post("resetPassword", serverKey, { oobCode, newPassword })
   if (answer.status === "none") return { ok: false, reason: "unavailable" }
   if (!answer.ok) return { ok: false, reason: failure(errorMessage(answer.body)) }
   return { ok: true, value: null }
 }
 
 /** Applies a verification, email-change or undo code (`accounts:update` with the code). */
-export async function applyCode(apiKey: string, oobCode: string): Promise<ToolkitResult<null>> {
-  const answer = await post("update", apiKey, { oobCode })
+export async function applyCode(serverKey: string, oobCode: string): Promise<ToolkitResult<null>> {
+  const answer = await post("update", serverKey, { oobCode })
   if (answer.status === "none") return { ok: false, reason: "unavailable" }
   if (!answer.ok) return { ok: false, reason: failure(errorMessage(answer.body)) }
   return { ok: true, value: null }
@@ -129,8 +131,8 @@ const ACCOUNT_ANSWERS = new Set(["EMAIL_NOT_FOUND", "USER_NOT_FOUND", "USER_DISA
  *                body that is not JSON, or any other 400. The page says so (the si-fp-8 line) rather than
  *                promising an email that will never come.
  */
-export async function sendPasswordReset(apiKey: string, email: string): Promise<"answered" | "unavailable"> {
-  const answer = await post("sendOobCode", apiKey, { requestType: "PASSWORD_RESET", email })
+export async function sendPasswordReset(serverKey: string, email: string): Promise<"answered" | "unavailable"> {
+  const answer = await post("sendOobCode", serverKey, { requestType: "PASSWORD_RESET", email })
   if (answer.status === "none" || !answer.json) return "unavailable"
   if (answer.ok) return "answered"
   return answer.code === 400 && ACCOUNT_ANSWERS.has(errorCode(errorMessage(answer.body))) ? "answered" : "unavailable"

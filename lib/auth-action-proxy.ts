@@ -21,8 +21,9 @@ import {
  * RM20616 A10 unit 10 (R1) — the proxy's part of /auth/action (see lib/auth-action.ts).
  *
  * 1. A link with an unknown or missing apiKey, or a built mode with no code: the site's not-found page.
- * 2. A link whose mode has no Makan page: 302 to Firebase's own handler on that project's authDomain,
- *    with the query byte for byte.
+ * 2. A link whose mode has no Makan page, or any link of a project whose server key is not set (the page
+ *    could not ask Google about it): 302 to Firebase's own handler on that project's authDomain, with the
+ *    query byte for byte.
  * 3. A link for a built mode: the query goes into an HttpOnly session cookie scoped to the page's own path
  *    (a second link opened in the same language replaces the first; the form posts check which one a card
  *    was drawn for), and the browser is sent (303) to that path with no query, so the code is in the
@@ -59,7 +60,7 @@ export function authActionResponse(request: NextRequest): NextResponse | null {
     const params = new URLSearchParams(query)
     const project = projectForKey(params.get("apiKey"))
     if (!project) return notFound(request)
-    if (!BUILT_MODES.has(params.get("mode") ?? "")) {
+    if (!project.serverKey || !BUILT_MODES.has(params.get("mode") ?? "")) {
       return withActionHeaders(NextResponse.redirect(passThroughUrl(project.authDomain, query), 302))
     }
     if (!params.get("oobCode")) return notFound(request)
