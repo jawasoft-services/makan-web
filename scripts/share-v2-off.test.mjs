@@ -16,6 +16,11 @@ const atBase = path => {
   try { return execFileSync('git', ['show', `${BASE}:${path}`], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], maxBuffer: 64 * 1024 * 1024 }) } catch { return null }
 }
 const baseAvailable = atBase('package.json') !== null
+/** Fails unless every entry `base` has is in `now`, unchanged. `now` may add entries. */
+function keepsEvery(now = {}, base = {}, label) {
+  for (const [key, value] of Object.entries(base)) assert.deepEqual(now[key], value, `${label}: ${key} was changed or removed`)
+}
+const omit = (object, ...keys) => Object.fromEntries(Object.entries(object).filter(([key]) => !keys.includes(key)))
 /** The lines `now` adds to `base`, or null when `now` also changes or removes one of `base`'s lines. */
 function addedLines(base, now) {
   const added = []
@@ -39,7 +44,7 @@ const UNTOUCHED = [
   'components/PlaceMaitred.tsx', 'components/Navbar.tsx', 'components/Footer.tsx', 'components/home/StoreLink.tsx', 'components/standings/public-pages.module.css',
   'lib/public-meal.ts', 'lib/taste-invite.ts', 'lib/place-link.ts', 'lib/place-directory.ts', 'lib/place-photo.ts', 'lib/maitred.ts', 'lib/eat-standings.ts', 'lib/firebase-admin.ts', 'lib/site-metadata.ts', 'lib/carry-link.ts', 'lib/links.ts', 'lib/rate-limit.ts',
   'i18n/availability.ts', 'i18n/paths.ts', 'i18n/request.ts', 'i18n/routing.ts',
-  'next.config.ts', 'apphosting.yaml', 'firebase.json', '.firebaserc', 'package-lock.json',
+  'next.config.ts', 'apphosting.yaml', 'firebase.json', '.firebaserc',
 ]
 
 test('switch off: every page, card and config a share link reaches today is byte-identical to main at 365a96e', { skip: !baseAvailable && 'commit 365a96e is not in this clone' }, () => {
@@ -63,10 +68,37 @@ test('switch off: the only edits to existing files are additive and inert', { sk
   const client = Object.fromEntries(Object.entries(messages).filter(keep))
   const before = Object.fromEntries(Object.entries(JSON.parse(atBase('messages/en.json'))).filter(([namespace]) => namespace !== 'Decision'))
   assert.equal(JSON.stringify(client), JSON.stringify(before), 'the client message payload is byte-identical to main')
-  // package.json: the one change puts the two link-file goldens into `npm test` (U3 review, Low 7). No dependency moves.
+  // package.json: the one change puts the two link-file goldens into `npm test` (U3 review, Low 7). No dependency the
+  // share pages ran on moves: every one main had keeps its exact range. Devon, 24 Nov 2026 (PR #68): later work may add
+  // a dependency; changing or removing an existing one still fails here.
   const pkg = JSON.parse(readFileSync('package.json', 'utf8')), basePkg = JSON.parse(atBase('package.json'))
   assert.equal(pkg.scripts.test, `${basePkg.scripts.test} app/.well-known/*/route.test.mjs`)
-  assert.deepEqual({ ...pkg, scripts: { ...pkg.scripts, test: basePkg.scripts.test } }, basePkg)
+  for (const field of ['dependencies', 'devDependencies']) keepsEvery(pkg[field], basePkg[field], `package.json ${field}`)
+  assert.deepEqual(omit({ ...pkg, scripts: { ...pkg.scripts, test: basePkg.scripts.test } }, 'dependencies', 'devDependencies'), omit(basePkg, 'dependencies', 'devDependencies'))
+  // package-lock.json: every package main installed is installed unchanged (version, source, integrity); new ones may join.
+  const lock = JSON.parse(readFileSync('package-lock.json', 'utf8')), baseLock = JSON.parse(atBase('package-lock.json'))
+  const { packages: lockPackages, ...lockRest } = lock, { packages: basePackages, ...baseLockRest } = baseLock
+  assert.deepEqual(lockRest, baseLockRest, 'package-lock.json header')
+  const { '': root, ...installed } = lockPackages, { '': baseRoot, ...baseInstalled } = basePackages
+  keepsEvery(installed, baseInstalled, 'package-lock.json packages')
+  // RM20616 controller (24 Nov 2026): an added package must stand apart from what main installed. It may not nest
+  // inside an existing package, may not be one an existing package names as a peer or optional dependency (it
+  // would change that package's resolution), and may not run an install script unless listed here.
+  const INSTALL_SCRIPT_ALLOWED = []
+  const baseKeys = Object.keys(baseInstalled)
+  const packageName = key => key.slice(key.lastIndexOf('node_modules/') + 'node_modules/'.length)
+  for (const key of Object.keys(installed).filter(key => !(key in baseInstalled))) {
+    assert.ok(!baseKeys.some(old => key.startsWith(`${old}/node_modules/`)), `package-lock.json: added ${key} nests inside an existing package`)
+    const name = packageName(key)
+    for (const [old, entry] of Object.entries(baseInstalled)) {
+      for (const field of ['peerDependencies', 'peerDependenciesMeta', 'optionalDependencies']) {
+        assert.ok(!(entry[field] && name in entry[field]), `package-lock.json: added ${name} is in ${old} ${field}`)
+      }
+    }
+    assert.ok(!installed[key].hasInstallScript || INSTALL_SCRIPT_ALLOWED.includes(name), `package-lock.json: added ${name} runs an install script`)
+  }
+  for (const field of ['dependencies', 'devDependencies']) keepsEvery(root[field], baseRoot[field], `package-lock.json root ${field}`)
+  assert.deepEqual(omit(root, 'dependencies', 'devDependencies'), omit(baseRoot, 'dependencies', 'devDependencies'), 'package-lock.json root package')
   // Fixtures: every line main had is still there, in order; the unit only adds lines.
   const added = addedLines(atBase('lib/website-fixtures.ts'), readFileSync('lib/website-fixtures.ts', 'utf8'))
   assert.ok(added, 'lib/website-fixtures.ts changes or removes a line main had')
