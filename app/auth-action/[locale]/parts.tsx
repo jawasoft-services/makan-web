@@ -16,8 +16,11 @@ export const STRING_KEYS = [
 export type StringKey = (typeof STRING_KEYS)[number]
 export type Strings = Record<StringKey, string>
 
-/** Fills `{email}` in a line. The address is text, never markup. */
-export const withEmail = (line: string, email: string) => line.replace("{email}", email)
+/**
+ * Fills `{email}` in a line. The address is text, never markup, and is put in as it is: a function
+ * replacement, so `$&`, `$\`` or `$'` in an address are not expanded into other text.
+ */
+export const withEmail = (line: string, email: string) => line.replace("{email}", () => email)
 
 export function Frame({ children }: { children: React.ReactNode }) {
   return (

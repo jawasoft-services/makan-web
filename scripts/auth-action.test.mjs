@@ -16,7 +16,10 @@ const { NextRequest } = require('next/server')
 
 const DEV_KEY = 'AIzaFAKE-dev-key-0000000000000000000000'
 const PROD_KEY = 'AIzaFAKE-prod-key-000000000000000000000'
-const ENV = { AUTH_ACTION_KEY_DEV: DEV_KEY, AUTH_ACTION_KEY_PROD: PROD_KEY }
+const SECRET = 'test-only-signing-secret-0123456789abcdef'
+const ENV = { AUTH_ACTION_KEY_DEV: DEV_KEY, AUTH_ACTION_KEY_PROD: PROD_KEY, AUTH_ACTION_SECRET: SECRET }
+/** What a browser sends when a person opens the page (Fetch Metadata). */
+const NAVIGATION = { 'sec-fetch-mode': 'navigate', 'sec-fetch-dest': 'document', 'sec-fetch-site': 'none' }
 const CODE = 'OOB-CODE-abcdefghijklmnopqrstuvwxyz0123456789-SECRET'
 const PASSWORD = 'n3w-Passw0rd-SECRET'
 const EN = JSON.parse(readFileSync('messages/en.json', 'utf8')).SharePages.authAction
@@ -79,9 +82,13 @@ test('any other mode goes on to Firebase\'s own page on that key\'s authDomain, 
     assert.equal(answer.cookie, null, path)
     assertActionHeaders(answer, path)
   }
-  // The authDomain comes from configuration, never from the link; a configured domain must be a bare host.
-  assert.equal(new URL(ask(`/auth/action?mode=signIn&apiKey=${DEV_KEY}`, { env: { ...ENV, AUTH_ACTION_DOMAIN_DEV: 'auth.makan.example' } }).location).host, 'auth.makan.example')
-  for (const bad of ['evil.example/x', 'https://evil.example', 'evil.example?', '@evil.example', 'localhost']) {
+  // The authDomain comes from configuration, never from the link; a configured domain must be a bare host,
+  // and one of the project's own Firebase hosts or a host under makanofficial.com (review L5).
+  for (const good of ['auth.makanofficial.com', 'makan-devel.web.app', 'MAKAN-DEVEL.firebaseapp.com']) {
+    assert.equal(new URL(ask(`/auth/action?mode=signIn&apiKey=${DEV_KEY}`, { env: { ...ENV, AUTH_ACTION_DOMAIN_DEV: good } }).location).host, good.toLowerCase(), good)
+  }
+  for (const bad of ['evil.example/x', 'https://evil.example', 'evil.example?', '@evil.example', 'localhost', 'auth.makan.example', 'evil.web.app', 'evil.firebaseapp.com',
+    'munchies-expo.firebaseapp.com', 'evilmakanofficial.com', 'makanofficial.com.evil.example', 'firebaseapp.com', 'web.app']) {
     assert.equal(new URL(ask(`/auth/action?mode=signIn&apiKey=${DEV_KEY}`, { env: { ...ENV, AUTH_ACTION_DOMAIN_DEV: bad } }).rewrite).pathname, NOT_FOUND, bad)
   }
 })
@@ -103,11 +110,27 @@ test('a link for a built mode leaves its query in an HttpOnly cookie and moves t
     const cookie = answer.cookie
     assert.match(cookie, /^makan_auth_action=[A-Za-z0-9_-]+;/, path)
     assert.match(cookie, new RegExp(`Path=${target.replace(/\//g, '\\/')}(;|$)`), path)
-    assert.match(cookie, /HttpOnly/i); assert.match(cookie, /SameSite=lax/i); assert.match(cookie, /Secure/i); assert.match(cookie, /Max-Age=86400/)
-    assert.doesNotMatch(cookie, /SECRET/, 'the cookie value is encoded, not the code in clear')
+    assert.match(cookie, /HttpOnly/i); assert.match(cookie, /SameSite=lax/i); assert.match(cookie, /Secure/i)
+    // A session cookie: it does not outlive the browser (review L2).
+    assert.doesNotMatch(cookie, /Max-Age|Expires/i, path)
+    // base64url is not protection (HttpOnly and the Path are); this only checks the value is the encoded query.
+    assert.doesNotMatch(cookie, /SECRET/)
     const { decodeStoredLink } = lane({ env: ENV }).load('lib/auth-action.ts')
     assert.equal(decodeStoredLink(cookie.split(';')[0].split('=')[1]).query, path.slice(path.indexOf('?') + 1))
     assertActionHeaders(answer, path)
+  }
+  // Secure does not depend on the proxy's X-Forwarded-Proto: a request that reached the server as http still
+  // gets a Secure cookie (review L3). Only `next dev` leaves it off.
+  const proxy = lane({ env: ENV }).load('proxy.ts').proxy
+  const plain = proxy(new NextRequest(`http://www.makanofficial.com/auth/action?${query('resetPassword')}`, { headers: { host: 'www.makanofficial.com' } }))
+  assert.match(plain.headers.get('set-cookie'), /Secure/i)
+  const devProxy = lane({ env: { ...ENV, NODE_ENV: 'development' } }).load('proxy.ts').proxy
+  const dev = devProxy(new NextRequest(`http://localhost:3000/auth/action?${query('resetPassword')}`, { headers: { host: 'localhost:3000' } }))
+  assert.doesNotMatch(dev.headers.get('set-cookie'), /Secure/i)
+  // With no signing secret (or one too short), the route serves nothing: every link gets the not-found page.
+  for (const secret of [undefined, '', 'short-secret']) {
+    const answer = ask(`/auth/action?${query('resetPassword')}`, { env: { ...ENV, AUTH_ACTION_SECRET: secret } })
+    assert.equal(new URL(answer.rewrite).pathname, NOT_FOUND, String(secret)); assert.equal(answer.cookie, null)
   }
 })
 
@@ -152,9 +175,12 @@ const fail = (message, status = 400) => () => ({ status, body: { error: { code: 
 const offline = () => { throw new TypeError(`fetch failed ${CODE} ${PASSWORD}`) }
 const ok = body => () => ({ body })
 
-function pageLane({ google = {}, cookie, scripted = true, env = ENV, address = '192.0.2.20' } = {}) {
+function pageLane({ google = {}, cookie, scripted = true, env = ENV, address = '192.0.2.20', requestHeaders = NAVIGATION } = {}) {
   const modules = new Map(), logs = [], { fetch, calls } = fakeGoogle(google)
   const jar = new Map(cookie === undefined ? [] : [['makan_auth_action', cookie]])
+  const cookieSets = []
+  // The request's headers; a test may change them between calls (another client, another kind of fetch).
+  const request = { headers: { 'x-forwarded-for': address, ...requestHeaders, ...(scripted ? { 'next-action': 'abc' } : {}) } }
   const loggers = Object.fromEntries(['log', 'info', 'warn', 'error', 'debug'].map(level => [level, (...args) => logs.push(args.map(String).join(' '))]))
   function load(relative) {
     if (modules.has(relative)) return modules.get(relative)
@@ -163,7 +189,11 @@ function pageLane({ google = {}, cookie, scripted = true, env = ENV, address = '
     const importModule = id => {
       if (id === 'server-only') return {}
       if (id === 'react' || id === 'react/jsx-runtime') return id === 'react' ? realReact : require(id)
-      if (id === 'next/headers') return { cookies: async () => ({ get: name => (jar.has(name) ? { name, value: jar.get(name) } : undefined) }), headers: async () => new Headers({ 'x-forwarded-for': address, ...(scripted ? { 'next-action': 'abc' } : {}) }) }
+      if (id === 'next/headers') return {
+        cookies: async () => ({ get: name => (jar.has(name) ? { name, value: jar.get(name) } : undefined), set: (name, value, options) => cookieSets.push({ name, value, ...options }) }),
+        headers: async () => new Headers(request.headers),
+      }
+      if (id.startsWith('node:')) return require(id)
       if (id === 'next/navigation') return { notFound: () => { throw new Error('NOT_FOUND') }, redirect: url => { throw new Error(`REDIRECT:${url}`) } }
       if (id === 'next-intl') return { hasLocale: (locales, value) => locales.includes(value) }
       if (id === 'next-intl/server') return { getTranslations: async ({ locale, namespace }) => {
@@ -195,16 +225,28 @@ function pageLane({ google = {}, cookie, scripted = true, env = ENV, address = '
     const ResetFlow = load('app/auth-action/[locale]/ResetFlow.tsx').default
     return renderToStaticMarkup(realReact.createElement(ResetFlow, { initial: view, strings: words(locale), locale, supportHref: locale === 'id' ? '/id/support' : '/support', appPage: '/app' }))
   }
+  /** The seal the page would draw for the cookie's link (`at` moves the clock for a send seal). */
+  const seal = (purpose, at = Date.now()) => {
+    const link = flow.readStoredLink(flow.decodeStoredLink(jar.get('makan_auth_action')), env)
+    return load('lib/auth-action-seal.ts').sealFor(purpose, link, at, env)
+  }
+  // Each post carries the seal its card was drawn with, as the page sends it, unless the test sets `seal`.
+  const SEAL_FOR = { save: 'save', forgot: 'send', send: 'send' }
   const action = async (fields, previous = { view: 'choose', email: 'dewi@example.com' }) => {
-    const form = new FormData(); for (const [key, value] of Object.entries(fields)) form.set(key, value)
+    const form = new FormData(); for (const [key, value] of Object.entries(fields)) if (value !== null) form.set(key, value)
+    if (!('seal' in fields) && SEAL_FOR[fields.intent] && jar.has('makan_auth_action')) {
+      const drawn = seal(SEAL_FOR[fields.intent]); if (drawn) form.set('seal', drawn)
+    }
     return load('app/auth-action/[locale]/actions.ts').resetFlowAction(previous, form)
   }
-  return { load, render, card, action, calls, logs, jar, linkCookie }
+  return { load, render, card, action, seal, calls, logs, jar, cookieSets, request, linkCookie }
 }
 const withLink = (mode, google, extra = {}) => {
   const probe = pageLane()
   return pageLane({ google, cookie: probe.linkCookie(query(mode)), ...extra })
 }
+/** A view without its seal, for comparing the card it names. */
+const bare = view => Object.fromEntries(Object.entries(view).filter(([key]) => key !== 'seal'))
 const text = html => html.replace(/<[^>]+>/g, ' ').replace(/&#x27;|&#39;/g, '\'').replace(/&amp;/g, '&')
 const quiet = (run, label) => {
   assert.deepEqual(run.logs, [], `${label}: nothing is logged`)
@@ -270,7 +312,8 @@ for (const locale of ['en', 'id']) {
     // without it the page is handed the password back to refill the field.
     run = withLink('resetPassword', { resetPassword: offline })
     view = await run.action({ intent: 'save', password: PASSWORD, email: 'dewi@example.com', locale })
-    assert.deepEqual(view, { view: 'choose', email: 'dewi@example.com', error: 'network' })
+    assert.deepEqual(bare(view), { view: 'choose', email: 'dewi@example.com', error: 'network' })
+    assert.ok(view.seal, 'the card keeps its seal for the retry')
     html = run.card({ ...view, keep: PASSWORD }, locale)
     assert.ok(text(html).includes(s.networkError) && text(html).includes(s.savePassword))
     assert.match(html, new RegExp(`value="${PASSWORD}"`))
@@ -290,14 +333,14 @@ for (const locale of ['en', 'id']) {
     // Expired or used while the card was open.
     for (const message of ['EXPIRED_OOB_CODE', 'INVALID_OOB_CODE']) {
       run = withLink('resetPassword', { resetPassword: fail(message) })
-      assert.deepEqual(await run.action({ intent: 'save', password: PASSWORD, email: 'dewi@example.com', locale }), { view: 'expired' })
+      assert.deepEqual(bare(await run.action({ intent: 'save', password: PASSWORD, email: 'dewi@example.com', locale })), { view: 'expired' })
     }
     // Never a password checker: a valid-looking email and password posted with a used or expired code (even
     // claiming an earlier save got no answer) gets the expired card, and no sign-in call is ever made.
     for (const message of ['EXPIRED_OOB_CODE', 'INVALID_OOB_CODE']) {
       run = withLink('resetPassword', { resetPassword: fail(message), signInWithPassword: ok({ idToken: 'x' }) })
       const view = await run.action({ intent: 'save', password: PASSWORD, email: 'someone.else@example.com', pending: '1', locale })
-      assert.deepEqual(view, { view: 'expired' }, message)
+      assert.deepEqual(bare(view), { view: 'expired' }, message)
       assert.deepEqual(run.calls.map(call => call.method), ['resetPassword'])
       quiet(run, 'no oracle')
     }
@@ -310,11 +353,13 @@ for (const locale of ['en', 'id']) {
   test(`${locale}: Send a new link turns the card into the Forgot password form, then Email sent for every answer`, async () => {
     let run = withLink('resetPassword', {})
     const form = await run.action({ intent: 'forgot', locale }, { view: 'expired' })
-    assert.deepEqual(form, { view: 'forgot' })
+    assert.deepEqual(bare(form), { view: 'forgot' })
     assert.equal(run.calls.length, 0)
     const html = run.card(form, locale)
     for (const line of [s.forgotTitle, s.forgotBody, s.emailLabel, s.sendResetLink]) assert.ok(text(html).includes(line), line)
     assert.match(html, /type="email"/)
+    // The form carries the expired card's send seal on to Send reset link, in a hidden field.
+    assert.match(html, new RegExp(`<input type="hidden" name="seal" value="${form.seal.replace(/[.]/g, '\\.')}"`))
 
     // Every answer that depends on the address (sent, no account, disabled, limited) is the same Email sent,
     // so the form never tells anyone whether an address has an account.
@@ -336,7 +381,8 @@ for (const locale of ['en', 'id']) {
     for (const [index, answer] of refusals.entries()) {
       run = withLink('resetPassword', { sendOobCode: answer }, { address: `198.51.101.${index}` })
       const view = await run.action({ intent: 'send', email: 'dewi@example.com', locale }, { view: 'forgot' })
-      assert.deepEqual(view, { view: 'forgot', error: 'network' }, `refusal ${index}`)
+      assert.deepEqual(bare(view), { view: 'forgot', error: 'network' }, `refusal ${index}`)
+      assert.ok(view.seal, 'the form keeps its seal for the retry')
       assert.equal(run.calls.length, 1)
       quiet(run, `refusal ${index}`)
     }
@@ -347,7 +393,7 @@ for (const locale of ['en', 'id']) {
     // No answer at all: the si-fp-8 line under the form, the address kept.
     run = withLink('resetPassword', { sendOobCode: offline }, { address: '203.0.113.1' })
     const offlineView = await run.action({ intent: 'send', email: 'dewi@example.com', locale }, { view: 'forgot' })
-    assert.deepEqual(offlineView, { view: 'forgot', error: 'network' })
+    assert.deepEqual(bare(offlineView), { view: 'forgot', error: 'network' })
     assert.ok(text(run.card(offlineView, locale)).includes(s.networkError))
     quiet(run, 'send offline')
 
@@ -356,11 +402,6 @@ for (const locale of ['en', 'id']) {
     const typo = await run.action({ intent: 'send', email: 'dewi.example.com', locale }, { view: 'forgot' })
     assert.equal(typo.error, 'email'); assert.equal(run.calls.length, 0)
     assert.ok(text(run.card(typo, locale)).includes(s.invalidEmail))
-
-    // Past the per-address limit: still Email sent, and no more email requests.
-    run = withLink('resetPassword', { sendOobCode: ok({}) }, { address: `203.0.113.${locale === 'en' ? 50 : 51}` })
-    for (let i = 0; i < 8; i++) assert.deepEqual(await run.action({ intent: 'send', email: 'dewi@example.com', locale }, { view: 'forgot' }), { view: 'sent' })
-    assert.ok(run.calls.length <= 5, `${run.calls.length} sends`)
   })
 
   test(`${locale}: verification link: Email verified (si-v-12), expired or used (si-v-13)`, async () => {
@@ -459,4 +500,189 @@ test('every action-page string exists in both languages, comes from the approved
   assert.deepEqual([...STRING_KEYS].sort(), Object.keys(EN).sort())
   // The site's layout leaves the whole SharePages namespace out of the client messages.
   assert.match(readFileSync('app/[locale]/layout.tsx', 'utf8'), /namespace !== "SharePages"/)
+})
+
+// ---------- review fixes (REVIEW_RESET_PAGES.md, 24 Nov 2026) ----------
+
+const OTHER_CODE = 'OTHER-CODE-zyxwvutsrqponmlkjihgfedcba9876543210-SECRET'
+const sendTo = (run, email, address) => {
+  if (address) run.request.headers['x-forwarded-for'] = address
+  return run.action({ intent: 'send', email, locale: 'en' }, { view: 'forgot' })
+}
+
+test('M1: Send reset link sends only with the seal the page drew for a link Google said had expired', async () => {
+  // EXPIRED_OOB_CODE: the expired card carries a send seal. INVALID_OOB_CODE (used, or made up: Google gives
+  // one answer for both) shows the same card with no seal.
+  let run = withLink('resetPassword', { resetPassword: fail('EXPIRED_OOB_CODE') })
+  assert.match((await run.render('en')).html, /<input type="hidden" name="seal" value="[a-z0-9]+\.[A-Za-z0-9_-]{43}"/)
+  run = withLink('resetPassword', { resetPassword: fail('INVALID_OOB_CODE') })
+  const { html } = await run.render('en')
+  assert.ok(text(html).includes(EN.expired) && text(html).includes(EN.sendNewLink))
+  assert.doesNotMatch(html, /name="seal"/)
+  // A save that finds the code expired draws the seal too; one that finds it used does not.
+  assert.ok((await withLink('resetPassword', { resetPassword: fail('EXPIRED_OOB_CODE') }).action({ intent: 'save', password: PASSWORD, locale: 'en' })).seal)
+  assert.equal((await withLink('resetPassword', { resetPassword: fail('INVALID_OOB_CODE') }).action({ intent: 'save', password: PASSWORD, locale: 'en' })).seal, undefined)
+
+  // Without a valid send seal: the same Email sent, and nothing asked of Google.
+  const probe = withLink('resetPassword', {})
+  const otherLink = pageLane({ cookie: probe.linkCookie(query('resetPassword').replace(CODE, OTHER_CODE)) })
+  const otherSecret = pageLane({ cookie: probe.linkCookie(query('resetPassword')), env: { ...ENV, AUTH_ACTION_SECRET: 'another-signing-secret-0123456789abcdef' } })
+  for (const [label, seal] of [
+    ['none', null], ['empty', ''], ['made up', 'zzzzzz.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'], ['a save seal', probe.seal('save')],
+    ['drawn for another code', otherLink.seal('send')], ['drawn with another secret', otherSecret.seal('send')],
+    ['past its hour', probe.seal('send', Date.now() - 61 * 60 * 1000)], ['with extra parts', `${probe.seal('send')}.x`],
+  ]) {
+    run = withLink('resetPassword', { sendOobCode: ok({}) })
+    assert.deepEqual(await run.action({ intent: 'send', email: 'victim@example.com', seal, locale: 'en' }, { view: 'forgot' }), { view: 'sent' }, label)
+    assert.equal(run.calls.length, 0, label)
+    // Send a new link still opens the form, but without a seal to carry.
+    assert.deepEqual(await run.action({ intent: 'forgot', seal, locale: 'en' }, { view: 'expired' }), { view: 'forgot' }, label)
+  }
+  // With it: sent.
+  run = withLink('resetPassword', { sendOobCode: ok({}) })
+  assert.deepEqual(await run.action({ intent: 'send', email: 'dewi@example.com', locale: 'en' }, { view: 'forgot' }), { view: 'sent' })
+  assert.equal(run.calls.length, 1)
+})
+
+test('M1: at most 3 reset emails an hour to one address and 5 sends an hour from one client, per instance', async () => {
+  // One address, many clients (each with its own trusted address): 3 emails, then Email sent with nothing sent.
+  let run = withLink('resetPassword', { sendOobCode: ok({}) })
+  for (let i = 0; i < 8; i++) assert.deepEqual(await sendTo(run, i % 2 ? ' Victim@Example.com ' : 'victim@example.com', `198.51.100.${i}`), { view: 'sent' })
+  assert.equal(run.calls.length, 3)
+  // One client, many addresses: 5 sends.
+  run = withLink('resetPassword', { sendOobCode: ok({}) })
+  for (let i = 0; i < 8; i++) assert.deepEqual(await sendTo(run, `person${i}@example.com`, '203.0.113.7'), { view: 'sent' })
+  assert.equal(run.calls.length, 5)
+  // A client cannot buy fresh buckets by writing its own first X-Forwarded-For entries: only the last entry,
+  // the one the nearest proxy appended, counts.
+  run = withLink('resetPassword', { sendOobCode: ok({}) })
+  for (let i = 0; i < 8; i++) await sendTo(run, `spoof${i}@example.com`, `10.0.${i}.1, 192.0.2.${i}, 203.0.113.8`)
+  assert.equal(run.calls.length, 5)
+  quiet(run, 'limits')
+})
+
+test('M1: the limiter windows, and the client address it trusts', () => {
+  const limit = pageLane().load('lib/auth-action-limit.ts')
+  const t0 = Date.UTC(2026, 10, 24, 12), minute = 60_000
+  // Per address: 3 an hour, 6 a day.
+  const byAddress = at => limit.sendAllowed('a@example.com', `client-${at}`, t0 + at * minute)
+  assert.deepEqual([0, 1, 2, 3].map(byAddress), [true, true, true, false])
+  assert.deepEqual([61, 62, 63, 64].map(byAddress), [true, true, true, false])
+  assert.deepEqual([125, 300, 1439].map(byAddress), [false, false, false])
+  assert.equal(byAddress(1441), true)
+  // Per client: 5 an hour, 20 a day.
+  const byClient = (at, n) => limit.sendAllowed(`c${at}-${n}@example.com`, 'one-client', t0 + at * minute)
+  assert.deepEqual([0, 1, 2, 3, 4, 5].map(n => byClient(0, n)), [true, true, true, true, true, false])
+  for (const hour of [1, 2, 3]) for (let n = 0; n < 5; n++) assert.equal(byClient(hour * 61, n), true)
+  assert.equal(byClient(5 * 61, 0), false, '20 a day')
+  // A refused send is not counted against the other key.
+  assert.equal(limit.sendAllowed('fresh@example.com', 'another-client', t0), true)
+  // Page openings: 30 in 10 minutes.
+  const opens = Array.from({ length: 31 }, (_, n) => limit.openAllowed('opener', t0 + n))
+  assert.deepEqual([opens.filter(Boolean).length, opens[30]], [30, false])
+  assert.equal(limit.openAllowed('opener', t0 + 10 * minute + 1), true)
+
+  const address = (headers, env = {}) => limit.trustedClientAddress(new Headers(headers), env)
+  assert.equal(address({ 'x-forwarded-for': '6.6.6.6, 203.0.113.9' }), '203.0.113.9')
+  assert.equal(address({ 'x-forwarded-for': ' 203.0.113.9 ' }), '203.0.113.9')
+  assert.equal(address({}), 'unknown')
+  // App Hosting's own header, read only on App Hosting (FIREBASE_CONFIG set by the platform).
+  assert.equal(address({ 'x-fah-client-ip': '198.51.100.4', 'x-forwarded-for': '6.6.6.6, 35.191.1.1' }, { FIREBASE_CONFIG: '{}' }), '198.51.100.4')
+  assert.equal(address({ 'x-fah-client-ip': '198.51.100.4', 'x-forwarded-for': '6.6.6.6, 203.0.113.9' }), '203.0.113.9')
+  assert.equal(address({ 'x-forwarded-for': '6.6.6.6, 35.191.1.1' }, { FIREBASE_CONFIG: '{}' }), '35.191.1.1')
+})
+
+test('M3: verification and email-change codes are applied only for a browser opening the page', async () => {
+  const google = {
+    verifyEmail: { resetPassword: ok({ email: 'dewi@example.com', requestType: 'VERIFY_EMAIL' }), update: ok({}) },
+    verifyAndChangeEmail: { resetPassword: ok({ email: 'dewi@example.com', newEmail: 'dewi.l@example.com', requestType: 'VERIFY_AND_CHANGE_EMAIL' }), update: ok({}) },
+    recoverEmail: { resetPassword: ok({ email: 'dewi@example.com', newEmail: 'dewi.l@example.com', requestType: 'RECOVER_EMAIL' }), update: ok({}) },
+  }
+  for (const mode of Object.keys(google)) {
+    for (const [label, requestHeaders] of [
+      ['no fetch metadata (a scanner, curl, an old browser)', {}],
+      ['a fetch() call', { 'sec-fetch-mode': 'cors', 'sec-fetch-dest': 'empty' }],
+      ['a frame', { 'sec-fetch-mode': 'navigate', 'sec-fetch-dest': 'iframe' }],
+      ['a no-cors fetch', { 'sec-fetch-mode': 'no-cors', 'sec-fetch-dest': 'document' }],
+      ['only the mode', { 'sec-fetch-mode': 'navigate' }],
+    ]) {
+      const run = withLink(mode, google[mode], { requestHeaders })
+      const { thrown } = await run.render('en')
+      assert.equal(thrown, `REDIRECT:https://makan-devel.firebaseapp.com/__/auth/action?${query(mode)}`, `${mode}: ${label}`)
+      assert.equal(run.calls.length, 0, `${mode}: ${label}: nothing asked of Google, nothing applied`)
+    }
+    const run = withLink(mode, google[mode])
+    assert.equal((await run.render('en')).thrown, null, mode)
+    assert.deepEqual(run.calls.map(call => call.method), ['resetPassword', 'update'], mode)
+  }
+  // A reset link changes nothing by being opened: it is checked and drawn for any request.
+  const run = withLink('resetPassword', RESET_OK, { requestHeaders: {} })
+  assert.ok(text((await run.render('en')).html).includes(EN.chooseTitle))
+})
+
+test('L1: Save password acts only on the link its card was drawn for', async () => {
+  const google = { resetPassword: body => ({ body: { email: body.oobCode === CODE ? 'dewi@example.com' : 'mallory@example.com', requestType: 'PASSWORD_RESET' } }) }
+  const run = withLink('resetPassword', google)
+  const drawn = await run.render('en')
+  const seal = /name="seal" value="([^"]+)"/.exec(drawn.html)[1]
+  // Another link (a second email, or one planted by another site's top-level navigation) replaces the cookie.
+  run.jar.set('makan_auth_action', run.linkCookie(query('resetPassword').replace(CODE, OTHER_CODE)))
+  run.calls.length = 0
+  const view = await run.action({ intent: 'save', password: PASSWORD, email: 'dewi@example.com', seal, locale: 'en' })
+  // The typed password is set on no account: the card is drawn again for the cookie's own link.
+  assert.deepEqual(bare(view), { view: 'choose', email: 'mallory@example.com' })
+  assert.deepEqual(run.calls.map(call => call.body), [{ oobCode: OTHER_CODE }])
+  assert.equal(view.keep, undefined)
+  // A post with no seal at all is treated the same way.
+  run.calls.length = 0
+  assert.equal((await run.action({ intent: 'save', password: PASSWORD, seal: null, locale: 'en' })).view, 'choose')
+  assert.ok(run.calls.every(call => !('newPassword' in call.body)))
+  // Redrawn for a link that no answer covers: on to Firebase's own page.
+  const lost = withLink('resetPassword', { resetPassword: offline })
+  await assert.rejects(lost.action({ intent: 'save', password: PASSWORD, seal: 'x', locale: 'en' }), /REDIRECT:https:\/\/makan-devel\.firebaseapp\.com\/__\/auth\/action\?/)
+})
+
+test('L2: the link\'s cookie is cleared once the link is done with, and kept while it is still needed', async () => {
+  const cleared = run => run.cookieSets.filter(set => set.name === 'makan_auth_action' && set.value === '' && set.maxAge === 0 && set.httpOnly && set.secure)
+  for (const locale of ['en', 'id']) {
+    const path = locale === 'id' ? '/id/auth/action' : '/auth/action'
+    for (const [label, google, fields] of [
+      ['Password changed', RESET_OK, { intent: 'save', password: PASSWORD }],
+      ['This link doesn\'t work', { resetPassword: fail('USER_DISABLED') }, { intent: 'save', password: PASSWORD }],
+      ['Email sent', { sendOobCode: ok({}) }, { intent: 'send', email: 'dewi@example.com' }],
+    ]) {
+      const run = withLink('resetPassword', google)
+      await run.action({ ...fields, locale })
+      assert.deepEqual(cleared(run).map(set => set.path), [path], `${locale} ${label}`)
+    }
+    for (const [label, google, fields] of [
+      ['no connection', { resetPassword: offline }, { intent: 'save', password: PASSWORD }],
+      ['weak', RESET_OK, { intent: 'save', password: '123' }],
+      ['expired (Send a new link needs it)', { resetPassword: fail('EXPIRED_OOB_CODE') }, { intent: 'save', password: PASSWORD }],
+      ['send refused', { sendOobCode: fail('INTERNAL_ERROR', 500) }, { intent: 'send', email: 'dewi@example.com' }],
+      ['the form', {}, { intent: 'forgot' }],
+    ]) {
+      const run = withLink('resetPassword', google)
+      await run.action({ ...fields, locale })
+      assert.deepEqual(run.cookieSets, [], `${locale} ${label}`)
+    }
+  }
+})
+
+test('L6: a client opening the page over and over is sent on to Firebase\'s own page, asking Google nothing', async () => {
+  const run = withLink('resetPassword', RESET_OK)
+  for (let i = 0; i < 30; i++) assert.equal((await run.render('en')).thrown, null, `opening ${i}`)
+  assert.equal(run.calls.length, 30)
+  assert.equal((await run.render('en')).thrown, `REDIRECT:https://makan-devel.firebaseapp.com/__/auth/action?${query('resetPassword')}`)
+  assert.equal(run.calls.length, 30)
+  // Another client is not affected.
+  run.request.headers['x-forwarded-for'] = '198.51.100.99'
+  assert.equal((await run.render('en')).thrown, null)
+})
+
+test('L7: an address is put in its line exactly as it is', async () => {
+  for (const email of ['a$&b@example.com', "a$'b@example.com", 'a$`b@example.com', 'a$$b@example.com']) {
+    const run = withLink('resetPassword', { resetPassword: ok({ email, requestType: 'PASSWORD_RESET' }) })
+    assert.ok(text((await run.render('en')).html).includes(EN.forEmail.replace('{email}', () => email)), email)
+  }
 })

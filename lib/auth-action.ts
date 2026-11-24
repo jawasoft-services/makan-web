@@ -11,9 +11,11 @@
  *   used to send a visitor to a host of someone else's choosing.
  * - The modes with a Makan page are listed in BUILT_MODES. Any other mode goes on to Firebase's own page
  *   on that project's authDomain, with the query exactly as it arrived.
- * - The link's code is moved out of the address on the first load: the proxy keeps the query in a
- *   short-lived HttpOnly cookie scoped to the page's own path and sends the browser to the address with no
+ * - The link's code is moved out of the address on the first load: the proxy keeps the query in an
+ *   HttpOnly session cookie scoped to the page's own path and sends the browser to the address with no
  *   query. Nothing here logs; callers must not log the query, the cookie or the code either.
+ * - The route is served only when AUTH_ACTION_SECRET is set as well as a key: the page signs what it has
+ *   checked (lib/auth-action-seal.ts) with it. Without it every link gets the not-found page.
  */
 
 export type ActionLocale = "en" | "id"
@@ -36,10 +38,14 @@ export const INTERNAL_SEGMENT = "auth-action"
 export const ACTION_COOKIE = "makan_auth_action"
 
 /**
- * A day. Firebase's codes work for an hour, so a longer cookie keeps no code alive; it keeps the link's
- * apiKey for "Send a new link" on a page left open past the hour.
+ * The cookie's attributes. A session cookie (no Max-Age), so it does not outlive the browser; the form posts
+ * also clear it once the link is done with (Password changed, This link doesn't work, Email sent). Secure
+ * everywhere but `next dev`: it does not depend on the proxy's X-Forwarded-Proto, and current browsers
+ * accept a Secure cookie on http://localhost.
  */
-export const ACTION_COOKIE_MAX_AGE = 60 * 60 * 24
+export function actionCookieOptions(path: string, env: Env = process.env) {
+  return { httpOnly: true, sameSite: "lax" as const, secure: env.NODE_ENV !== "development", path }
+}
 
 const MAX_QUERY_LENGTH = 4096
 
@@ -52,26 +58,42 @@ export interface ActionProject {
 
 type Env = Record<string, string | undefined>
 
+/** The key the page signs with (AUTH_ACTION_SECRET, at least 32 characters), or null when it is not set. */
+export function actionSecret(env: Env = process.env): string | null {
+  const secret = env.AUTH_ACTION_SECRET?.trim()
+  return secret && secret.length >= 32 ? secret : null
+}
+
 /*
  * The allowlist. The key values are deploy configuration, never in the repository:
  *   AUTH_ACTION_KEY_DEV   the makan-devel web API key
  *   AUTH_ACTION_KEY_PROD  the munchies-expo (production) web API key
  * Each project's authDomain defaults to its firebaseapp.com host and can be set with
- * AUTH_ACTION_DOMAIN_DEV / AUTH_ACTION_DOMAIN_PROD.
+ * AUTH_ACTION_DOMAIN_DEV / AUTH_ACTION_DOMAIN_PROD, but only to that project's own Firebase hosts
+ * (<project>.firebaseapp.com, <project>.web.app) or a host under makanofficial.com: the link and its live
+ * code are sent on to that host, so any other value leaves the project unserved (the not-found page).
+ * AUTH_ACTION_SECRET (see actionSecret) must be set too, or no project is served.
  */
 const PROJECTS = [
-  { name: "dev", key: "AUTH_ACTION_KEY_DEV", domain: "AUTH_ACTION_DOMAIN_DEV", fallback: "makan-devel.firebaseapp.com" },
-  { name: "prod", key: "AUTH_ACTION_KEY_PROD", domain: "AUTH_ACTION_DOMAIN_PROD", fallback: "munchies-expo.firebaseapp.com" },
+  { name: "dev", key: "AUTH_ACTION_KEY_DEV", domain: "AUTH_ACTION_DOMAIN_DEV", id: "makan-devel" },
+  { name: "prod", key: "AUTH_ACTION_KEY_PROD", domain: "AUTH_ACTION_DOMAIN_PROD", id: "munchies-expo" },
 ] as const
 
 const HOST = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/i
 
+/** A host the project's links may be sent on to: its own Firebase hosts, or one under makanofficial.com. */
+function ownAuthHost(host: string, projectId: string): boolean {
+  const lower = host.toLowerCase()
+  return lower === `${projectId}.firebaseapp.com` || lower === `${projectId}.web.app` || lower.endsWith(".makanofficial.com")
+}
+
 export function actionProjects(env: Env = process.env): ActionProject[] {
   const projects: ActionProject[] = []
+  if (!actionSecret(env)) return projects
   for (const project of PROJECTS) {
     const apiKey = env[project.key]?.trim()
-    const authDomain = env[project.domain]?.trim() || project.fallback
-    if (!apiKey || !HOST.test(authDomain)) continue
+    const authDomain = env[project.domain]?.trim() || `${project.id}.firebaseapp.com`
+    if (!apiKey || !HOST.test(authDomain) || !ownAuthHost(authDomain, project.id)) continue
     projects.push({ name: project.name, apiKey, authDomain })
   }
   return projects
@@ -189,14 +211,20 @@ export const MIN_PASSWORD_LENGTH = 6
 
 /** Which card the page shows. Each one is a board (RM20616 A10 reset_boards, approved 24 Nov 2026). */
 export type ActionView =
-  /** si-fp-5; `network` adds the si-fp-8 line, `weak` turns the password rule red. */
-  | { view: "choose"; email: string | null; error?: "network" | "weak"; keep?: string }
+  /**
+   * si-fp-5; `network` adds the si-fp-8 line, `weak` turns the password rule red. `seal` ties the save form
+   * to the link the card was drawn for (lib/auth-action-seal.ts).
+   */
+  | { view: "choose"; email: string | null; error?: "network" | "weak"; keep?: string; seal?: string }
   /** si-fp-6 (si-fp-13 on a computer). */
   | { view: "changed" }
-  /** si-fp-expired / si-fp-9. */
-  | { view: "expired" }
+  /**
+   * si-fp-expired / si-fp-9. `seal` is present only when Google said this link's code had expired: it is
+   * what lets Send reset link send (lib/auth-action-seal.ts).
+   */
+  | { view: "expired"; seal?: string }
   /** si-fp-10 / si-fp-12; `email` adds the invalid-address line, `network` the si-fp-8 line. */
-  | { view: "forgot"; error?: "network" | "email"; keep?: string }
+  | { view: "forgot"; error?: "network" | "email"; keep?: string; seal?: string }
   /** si-fp-11. */
   | { view: "sent" }
   /** si-fp-7: the account was disabled or deleted. */

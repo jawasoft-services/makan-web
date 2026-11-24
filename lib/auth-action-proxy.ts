@@ -1,12 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server"
 import {
   ACTION_COOKIE,
-  ACTION_COOKIE_MAX_AGE,
   ACTION_HEADERS,
   PAGE_HEADERS,
   ACTION_PATH,
   BUILT_MODES,
   INTERNAL_SEGMENT,
+  actionCookieOptions,
   carriesLink,
   cleanPath,
   encodeStoredLink,
@@ -23,9 +23,10 @@ import {
  * 1. A link with an unknown or missing apiKey, or a built mode with no code: the site's not-found page.
  * 2. A link whose mode has no Makan page: 302 to Firebase's own handler on that project's authDomain,
  *    with the query byte for byte.
- * 3. A link for a built mode: the query goes into an HttpOnly cookie scoped to the page's own path, and
- *    the browser is sent (303) to that path with no query, so the code is in the address only on the
- *    first load and never in a later request line, form post, history entry or analytics page view.
+ * 3. A link for a built mode: the query goes into an HttpOnly session cookie scoped to the page's own path
+ *    (a second link opened in the same language replaces the first; the form posts check which one a card
+ *    was drawn for), and the browser is sent (303) to that path with no query, so the code is in the
+ *    address only on the first load and never in a later request line, form post, history entry or analytics page view.
  * 4. The clean address: served by the page under the internal `auth-action` segment, which has its own
  *    document (no site header, no analytics, no other script).
  * Every answer carries no-store and noindex; every answer to a request carrying the link carries
@@ -64,13 +65,7 @@ export function authActionResponse(request: NextRequest): NextResponse | null {
     if (!params.get("oobCode")) return notFound(request)
     const path = cleanPath(linkLocale(prefix, params.get("lang")))
     const response = NextResponse.redirect(new URL(path, request.nextUrl.origin), 303)
-    response.cookies.set(ACTION_COOKIE, encodeStoredLink({ query }), {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: request.nextUrl.protocol === "https:",
-      path,
-      maxAge: ACTION_COOKIE_MAX_AGE,
-    })
+    response.cookies.set(ACTION_COOKIE, encodeStoredLink({ query }), actionCookieOptions(path))
     return withActionHeaders(response)
   }
 

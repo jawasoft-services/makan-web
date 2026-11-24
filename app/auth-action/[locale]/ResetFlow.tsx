@@ -30,15 +30,19 @@ export default function ResetFlow({ initial, strings: s, locale, supportHref, ap
   if (answered !== state) {
     setAnswered(state)
     setCleared(false)
-    // The same card keeps what was typed; a different card (the email form after a password) starts empty.
-    setTyped(keepOf(state) || (state.view === answered.view ? typed : ""))
+    // The same card keeps what was typed; a different card (the email form after a password, or the password
+    // card drawn again for another account's link) starts empty.
+    setTyped(keepOf(state) || (sameCard(state, answered) ? typed : ""))
   }
   const error = cleared ? undefined : "error" in state ? state.error : undefined
 
+  // The seal the server drew with this card (lib/auth-action-seal.ts); it goes back with the form post.
+  const seal = "seal" in state && state.seal ? state.seal : null
   const hidden = (intent: string) => (
     <>
       <input type="hidden" name="intent" value={intent} />
       <input type="hidden" name="locale" value={locale} />
+      {seal ? <input type="hidden" name="seal" value={seal} /> : null}
     </>
   )
   const submit = (label: string, wide = false) => (
@@ -176,6 +180,11 @@ export default function ResetFlow({ initial, strings: s, locale, supportHref, ap
       // The opening card is always one of the above; a later answer can only be one of them too.
       return null
   }
+}
+
+function sameCard(next: ActionView, previous: ActionView): boolean {
+  if (next.view !== previous.view) return false
+  return next.view !== "choose" || previous.view !== "choose" || next.email === previous.email
 }
 
 function keepOf(view: ActionView): string {
