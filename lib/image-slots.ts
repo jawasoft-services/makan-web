@@ -24,11 +24,10 @@ export class ImageSlotTimeout extends Error {
 export async function withImageSlot<T>(work: () => Promise<T>, { maxWaitMs }: { maxWaitMs?: number } = {}): Promise<T> {
   if (active < IMAGE_SLOTS) active++
   else await new Promise<void>((resolve, reject) => {
-    let timer: ReturnType<typeof setTimeout> | undefined
+    // `take` runs only after this executor returns, by which time `timer` is set.
     const take = () => { clearTimeout(timer); resolve() }
     waiting.push(take)
-    if (maxWaitMs === undefined) return
-    timer = setTimeout(() => {
+    const timer = maxWaitMs === undefined ? undefined : setTimeout(() => {
       waiting.splice(waiting.indexOf(take), 1)
       reject(new ImageSlotTimeout())
     }, maxWaitMs)

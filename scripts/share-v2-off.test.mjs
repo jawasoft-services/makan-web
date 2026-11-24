@@ -69,7 +69,7 @@ const SLOT_EDITS = {
 }
 // The pinned routes now return what lib/image-slots.ts returns, so it is pinned too: any edit to it,
 // renderImage's status or headers included, must come back through this guard with a new hash.
-const IMAGE_SLOTS_SHA256 = '657fdfc8078c49a18eda74127cdad1b271f84043077cbe5016ee976491adad70'
+const IMAGE_SLOTS_SHA256 = '0e14ad3eeb2fbaa622fd4a57572b815a278cc88b8c1321acc46c69c17e8339ee'
 
 /** `base` with each edit applied exactly `times` times (default once); fails if an edit does not occur that often. */
 function withEdits(path, base, edits) {
