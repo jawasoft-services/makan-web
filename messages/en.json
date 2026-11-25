@@ -1116,6 +1116,35 @@
     "profileTitle": "{name} (@{handle}) on Makan",
     "top3": "TOP 3",
     "maitred": "Maître d’",
-    "recent": "Recent"
+    "recent": "Recent",
+    "authAction": {
+      "doesNotWork": "This link doesn’t work",
+      "contactSupport": "Contact support",
+      "chooseTitle": "Choose a new password",
+      "forEmail": "For {email}",
+      "newPasswordLabel": "NEW PASSWORD",
+      "showPassword": "Show password",
+      "passwordRule": "Password must be at least 6 characters long.",
+      "savePassword": "Save password",
+      "networkError": "Network error. Please check your connection and try again.",
+      "expired": "This link has expired.",
+      "sendNewLink": "Send a new link",
+      "forgotTitle": "Forgot your password?",
+      "forgotBody": "Enter your email and we’ll send a link to reset your password.",
+      "emailLabel": "EMAIL",
+      "invalidEmail": "Please enter a valid email address.",
+      "sendResetLink": "Send reset link",
+      "emailSentTitle": "Email sent",
+      "emailSentBody": "If your email is in our system, you’ll get a reset link soon.",
+      "passwordChanged": "Password changed",
+      "signInWithNewPassword": "Open Makan and sign in with your new password.",
+      "openMakan": "Open Makan",
+      "emailVerified": "Email verified",
+      "emailChanged": "Email changed",
+      "signInWithEmail": "Open Makan and sign in with {email}.",
+      "emailChangeUndone": "Email change undone",
+      "emailIsAgain": "Your email is {email} again.",
+      "changeEmailAgain": "Change your email again in Makan."
+    }
   }
 }

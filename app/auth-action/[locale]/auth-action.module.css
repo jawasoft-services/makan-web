@@ -1,0 +1,332 @@
+/*
+ * RM20616 A10 unit 10 (R1) — the Makan web frame of the approved boards si-fp-5 to si-fp-13, si-v-12,
+ * si-v-13 and web-email-*: the orange band with the wordmark, the tint page, one flat card (no shadow),
+ * one 56 px orange button. Values are the boards' own; the orange is the site's locked brand orange.
+ * Emails and these pages stay light in dark mode (board note n-si-fp-6), so there is no dark scheme.
+ */
+
+.page {
+  --orange: #ff9932;
+  --tint: #fff7ef;
+  --card: #fffffe;
+  --card-line: #f3e6d8;
+  --ink: #11181d;
+  --secondary: #5b6b75;
+  --field: #f6f1ec;
+  --eye: #ad5201;
+  --negative: #b42318;
+  --negative-icon: #c62828;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--tint);
+  color: var(--ink);
+  color-scheme: light;
+  font-family: var(--font-jakarta), "Plus Jakarta Sans", system-ui, sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+.band {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 76px;
+  background: var(--orange);
+}
+
+.wordmark {
+  display: block;
+  width: 112px;
+  height: 36px;
+  background: var(--card);
+  -webkit-mask: url("/redesign/logo.svg") center / contain no-repeat;
+  mask: url("/redesign/logo.svg") center / contain no-repeat;
+}
+
+.main {
+  padding: 20px 16px 32px;
+}
+
+.card {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0 auto;
+  padding: 4px 24px 24px;
+  border: 1px solid var(--card-line);
+  border-radius: 20px;
+  background: var(--card);
+  color: var(--ink);
+  text-align: center;
+}
+
+.clip {
+  display: flex;
+  justify-content: center;
+  padding-top: 8px;
+}
+
+.clip video,
+.clip img {
+  display: block;
+  flex-shrink: 0;
+}
+
+.clip img {
+  display: none;
+}
+
+.title {
+  margin: 0;
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.line {
+  margin: 0;
+  padding: 8px 0 0;
+  font-size: 17px;
+  line-height: 24px;
+  color: var(--secondary);
+  overflow-wrap: anywhere;
+}
+
+.forEmail {
+  padding: 6px 0 0;
+}
+
+.form {
+  margin: 0;
+  padding-top: 8px;
+  text-align: left;
+}
+
+.formless {
+  margin: 0;
+}
+
+.form.afterLine {
+  padding-top: 16px;
+}
+
+.form .button.wide {
+  margin-top: 24px;
+}
+
+.label {
+  display: block;
+  padding: 0 4px 6px;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: var(--secondary);
+}
+
+.field {
+  /* As drawn: 52 px inside a 2 px border (56 px in all). */
+  box-sizing: content-box;
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  padding: 0 16px;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: var(--field);
+}
+
+.field:focus-within {
+  border-color: var(--orange);
+}
+
+.passwordField {
+  padding-right: 4px;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--ink);
+  caret-color: var(--orange);
+  font: inherit;
+  font-size: 17px;
+  line-height: 22px;
+}
+
+/* The board's dots: 20 px with 3 px spacing. */
+.input[type="password"] {
+  font-size: 20px;
+  letter-spacing: 3px;
+}
+
+.eye {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--eye);
+  cursor: pointer;
+}
+
+.eye:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 0;
+}
+
+.eye svg {
+  width: 20px;
+  height: 20px;
+}
+
+.rule {
+  margin: 0;
+  padding: 8px 4px 0;
+  font-size: 15px;
+  line-height: 20px;
+  color: var(--secondary);
+}
+
+.rule.wrong {
+  color: var(--negative);
+}
+
+.alert {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: 12px 4px 0;
+  font-size: 15px;
+  line-height: 20px;
+  color: var(--negative);
+}
+
+.alert svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  color: var(--negative-icon);
+}
+
+.underField {
+  padding-top: 8px;
+}
+
+.button {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 56px;
+  margin: 24px 0 0;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--orange);
+  color: var(--card);
+  font: inherit;
+  font-size: 17px;
+  line-height: 22px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 120ms ease-out;
+}
+
+.form .button {
+  margin-top: 20px;
+}
+
+.button:active {
+  transform: scale(0.97);
+}
+
+.button:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.button[aria-busy="true"] {
+  cursor: progress;
+}
+
+.spinner {
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid rgb(255 255 254 / 0.35);
+  border-top-color: var(--card);
+  border-radius: 50%;
+  animation: spin 800ms linear infinite;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clip video {
+    display: none;
+  }
+
+  .clip img {
+    display: block;
+  }
+
+  .spinner {
+    animation-duration: 2s;
+  }
+
+  .button {
+    transition: none;
+  }
+}
+
+/* A computer's window (boards si-fp-9 to si-fp-13): the card sits in the middle under the full-width band. */
+@media (min-width: 600px) {
+  .main {
+    padding-top: 48px;
+  }
+
+  .card {
+    width: 440px;
+  }
+}
+
+/*
+ * "On a computer" (Devon, 24 Nov 2026, answer 3): a fine pointer that can hover, in a window wider than a
+ * phone. Open Makan is hidden there; the line above it already says what to do. Pure CSS, so it holds with
+ * JavaScript off, and a touch tablet keeps the button.
+ */
+@media (hover: hover) and (pointer: fine) and (min-width: 768px) {
+  .phoneOnly {
+    display: none;
+  }
+}
