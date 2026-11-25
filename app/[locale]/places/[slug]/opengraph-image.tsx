@@ -44,7 +44,7 @@ export default async function Image({ params }: { params: Promise<{ locale: stri
   const { locale, slug } = await params
   const t = (locale === "id" ? id : en).Places
   const place = await getDirectoryPlace(slug)
-  if (!place) return createDecisionSocialImage("Makan", t.somewhere, 108)
+  if (!place) return createDecisionSocialImage("Makan", t.somewhere, 108, { logo: true })
   const standings = await getEatStandings()
   const row = standings.all.find((r) => r.placeId === place.placeId) ?? null
   const city = place.where ? standings.cities.find((c) => c.city === place.where?.city) : undefined
