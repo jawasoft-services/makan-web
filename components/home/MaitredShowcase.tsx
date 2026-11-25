@@ -6,6 +6,8 @@ import { localizePath } from "@/i18n/paths"
 import { getMaitredDirectory, type MaitredVenue } from "@/lib/maitred"
 import { getPlacePhoto } from "@/lib/place-photo"
 import { getVerifiedMenuPrice } from "@/lib/verified-menu-price"
+import { thumbUrl } from "@/lib/thumb"
+import { localPhoto } from "@/lib/local-photo"
 
 // All eligible holders, without inferring vacancy from a missing or filtered entry.
 export default async function MaitredShowcase({ dedicated = false }: { dedicated?: boolean }) {
@@ -102,7 +104,8 @@ function PickCard({
   menuPriceLabel: (price: string) => string
   wide: boolean
 }) {
-  const src = venue.photo ?? google?.uri ?? null
+  // Meal photos go through the resize route: the originals are phone photos up to 2048px wide.
+  const src = venue.photo ? thumbUrl(localPhoto(venue.photo, 330), 720) : google?.uri ?? null
   const menuPrice = getVerifiedMenuPrice(venue.slug, venue.notes.always)
   return (
     <div
@@ -148,7 +151,7 @@ function Avatar({ venue, className }: { venue: MaitredVenue; className: string }
   const box = `relative shrink-0 overflow-hidden rounded-full bg-brand-line ${className}`
   return venue.holderPhoto ? (
     <span className={box}>
-      <Image src={venue.holderPhoto} alt="" fill sizes="36px" className="object-cover" />
+      <Image src={thumbUrl(venue.holderPhoto, 240)} alt="" fill sizes="36px" className="object-cover" />
     </span>
   ) : (
     <span aria-hidden className={`${box} flex items-center justify-center text-sm font-bold text-brand-muted`}>
