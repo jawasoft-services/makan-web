@@ -67,6 +67,19 @@ const SLOT_EDITS = {
     ["  )\n", "  ))\n"],
   ],
 }
+// Devon, 25 Nov 2026 ("always use our logo instead of the text makan if its an asset"; "Yes, on a website branch"):
+// the preview picture for an unknown place shows the logo file instead of the typed word. These two pinned files may
+// also differ by exactly these edits, applied after the image-slot edits; a place that exists draws what it drew.
+const LOGO_EDITS = {
+  "app/[locale]/_social-image.tsx": [
+    ["\n/** Two words and the promise, in the brand face, for the decision home. */\nexport async function createDecisionSocialImage(title: string, sub: string, titleSize = 108) {\n", "\n// The site's wordmark file, public/redesign/logo-orange.svg (viewBox 902 x 209): its ink box in viewBox units.\nconst LOGO_INK = { left: 5.25, top: 5, height: 198.75, viewWidth: 902, viewHeight: 209 }\n\n/**\n * Two words and the promise, in the brand face, for the decision home. With `logo`, the title is the Makan logo file\n * instead of words typed in a font (Devon, 25 Nov 2026: \"always use our logo instead of the text makan if its an\n * asset\"): its ink as tall as the typed word's (76 % of the title size: 82 px at 108), in the same place, with the\n * title as its alt text.\n */\nexport async function createDecisionSocialImage(title: string, sub: string, titleSize = 108, { logo = false }: { logo?: boolean } = {}) {\n"],
+    ["  ])\n", "  ])\n  const logoUri = logo ? `data:image/svg+xml;base64,${(await readFile(join(process.cwd(), \"public\", \"redesign\", \"logo-orange.svg\"))).toString(\"base64\")}` : null\n  const logoScale = Math.round(titleSize * 0.76) / LOGO_INK.height\n"],
+    ["          <div style={{ display: \"flex\", flexDirection: \"column\" }}>\n            <div style={{ fontSize: titleSize, fontWeight: 700, lineHeight: 1, letterSpacing: \"-3px\", color: \"#2B1503\" }}>{title}</div>\n", "          <div style={{ display: \"flex\", flexDirection: \"column\" }}>\n            {logoUri ? (\n              <div style={{ display: \"flex\", height: titleSize }}>\n                {/* eslint-disable-next-line @next/next/no-img-element */}\n                <img src={logoUri} alt={title} width={Math.round(LOGO_INK.viewWidth * logoScale)} height={Math.round(LOGO_INK.viewHeight * logoScale)}\n                  style={{ marginTop: Math.round(titleSize * 0.157 - LOGO_INK.top * logoScale), marginLeft: Math.round(8 - LOGO_INK.left * logoScale) }} />\n              </div>\n            ) : (\n              <div style={{ fontSize: titleSize, fontWeight: 700, lineHeight: 1, letterSpacing: \"-3px\", color: \"#2B1503\" }}>{title}</div>\n            )}\n"],
+  ],
+  "app/[locale]/places/[slug]/opengraph-image.tsx": [
+    ["  const place = await getDirectoryPlace(slug)\n  if (!place) return createDecisionSocialImage(\"Makan\", t.somewhere, 108)\n", "  const place = await getDirectoryPlace(slug)\n  if (!place) return createDecisionSocialImage(\"Makan\", t.somewhere, 108, { logo: true })\n"],
+  ],
+}
 // The pinned routes now return what lib/image-slots.ts returns, so it is pinned too: any edit to it,
 // renderImage's status or headers included, must come back through this guard with a new hash.
 const IMAGE_SLOTS_SHA256 = '0e14ad3eeb2fbaa622fd4a57572b815a278cc88b8c1321acc46c69c17e8339ee'
@@ -84,8 +97,9 @@ function withEdits(path, base, edits) {
 test('switch off: every page, card and config a share link reaches today is byte-identical to main at 365a96e', { skip: !baseAvailable && 'commit 365a96e is not in this clone' }, () => {
   for (const path of UNTOUCHED) {
     const base = atBase(path)
-    const expected = SLOT_EDITS[path] ? withEdits(path, base, SLOT_EDITS[path]) : base
-    assert.equal(readFileSync(path, 'utf8'), expected, `${path} differs from ${BASE.slice(0, 7)}${SLOT_EDITS[path] ? ' plus its image-slot edits' : ''}`)
+    const edits = [...(SLOT_EDITS[path] || []), ...(LOGO_EDITS[path] || [])]
+    const expected = edits.length ? withEdits(path, base, edits) : base
+    assert.equal(readFileSync(path, 'utf8'), expected, `${path} differs from ${BASE.slice(0, 7)}${edits.length ? ' plus its image-slot and logo edits' : ''}`)
   }
   assert.equal(createHash('sha256').update(readFileSync('lib/image-slots.ts')).digest('hex'), IMAGE_SLOTS_SHA256, 'lib/image-slots.ts changed: the pinned share routes return what it returns')
 })
