@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { lane, USER, MEAL, PLACE, MEAL_ROUTE, BUCKET, user, meal, card, fence, storage } from './share-v2-test-lane.mjs'
+import { lane, USER, MEAL, PLACE, MEAL_ROUTE, BUCKET, user, meal, card, cardRecord, fence, storage } from './share-v2-test-lane.mjs'
 
 // RM20616 A12 U3 — the shared meal page, /meal/<id> (board G3), and its gone state (board web-gone).
 const open = (run, locale = 'en', id = MEAL) => run.page(MEAL_ROUTE, { locale, id })
@@ -100,13 +100,16 @@ test('og:image is the stored card when there is one, and today\'s image when the
   const none = lane(); none.seed.set(`meals/${MEAL}`, meal({ shareCardUrl: `${storage}?story-card` }))
   assert.deepEqual((await open(none)).metadata.openGraph.images, [{ url: `${storage}?story-card`, width: 1080, height: 1920 }])
   assert.deepEqual((await open(lane())).metadata.openGraph.images, [{ url: storage, width: 1080, height: 1920 }])
-  const run = lane(); run.seed.set(`shareCardMeta/meal_${MEAL}`, { hash: '0f3a', url: card('meal', MEAL), updatedAt: 1 })
+  const run = lane(); run.seed.set(`shareCardMeta/meal_${MEAL}`, cardRecord('meal', MEAL))
   const stored = await open(run)
   assert.deepEqual(stored.metadata.openGraph.images, [{ url: card('meal', MEAL), width: 1200, height: 630 }])
   assert.deepEqual(stored.metadata.twitter.images, [card('meal', MEAL)])
+  // The Bahasa page shows the Bahasa card.
+  const bahasa = lane(); bahasa.seed.set(`shareCardMeta/meal_${MEAL}`, cardRecord('meal', MEAL))
+  assert.deepEqual((await open(bahasa, 'id')).metadata.openGraph.images, [{ url: card('meal', MEAL, BUCKET, 'id'), width: 1200, height: 630 }])
   // Not a card, another meal's card, and a card in another project's bucket all fall back to today's image.
   for (const url of [`${storage}?not-a-card`, card('meal', 'another-meal-1'), card('meal', MEAL, 'another-project.firebasestorage.app'), card('place', MEAL)]) {
-    const bad = lane(); bad.seed.set(`shareCardMeta/meal_${MEAL}`, { url })
+    const bad = lane(); bad.seed.set(`shareCardMeta/meal_${MEAL}`, cardRecord('meal', MEAL, { cards: { en: { path: 'x', url }, id: { path: 'x', url } } }))
     assert.deepEqual((await open(bad)).metadata.openGraph.images, [{ url: storage, width: 1080, height: 1920 }], url)
   }
 })
@@ -162,7 +165,7 @@ test('with no bucket configured a photo is accepted from the storage host, as to
   const run = lane({ env: { SHARE_V2_PAGES: '1' } })
   const elsewhere = storage.replace(BUCKET, 'some-project.firebasestorage.app')
   run.seed.set(`meals/${MEAL}`, meal({ imageURL: elsewhere }))
-  run.seed.set(`shareCardMeta/meal_${MEAL}`, { hash: '0f3a', url: card('meal', MEAL), updatedAt: 1 })
+  run.seed.set(`shareCardMeta/meal_${MEAL}`, cardRecord('meal', MEAL))
   const out = await open(run)
   assert.match(out.html, /Meal by @dewi\.l/)
   assert.deepEqual(out.metadata.openGraph.images, [{ url: elsewhere, width: 1080, height: 1920 }], 'today\'s image, not the card')

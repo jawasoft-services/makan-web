@@ -9,6 +9,7 @@ import { OpenInMakanButton } from '@/components/share/ShareActions'
 import styles from '@/components/share/share-pages.module.css'
 import { localizePath } from '@/i18n/paths'
 import { getDirectoryPlaceById } from '@/lib/place-directory'
+import { shareCardFor } from '@/lib/share-card'
 import { SHARE_V2_NOT_SERVED, sharePageUrl, shareV2PageServed, smartAppBanner } from '@/lib/share-page'
 import { getSharedMeal } from '@/lib/shared-meal'
 
@@ -34,7 +35,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const url = sharePageUrl(locale, `/meal/${meal.id}`)
   const title = meal.handle ? t('mealBy', { username: meal.handle }) : meal.dish || undefined
   // The stored card when the app's backend has rendered one; otherwise the image today's page uses.
-  const image = meal.cardUrl ? { url: meal.cardUrl, width: 1200, height: 630 } : { url: meal.fallbackImage, width: 1080, height: 1920 }
+  // The card for this page's language only: an English page never shows the Bahasa card, nor the reverse.
+  const cardUrl = shareCardFor(meal.cardUrls, locale)
+  const image = cardUrl ? { url: cardUrl, width: 1200, height: 630 } : { url: meal.fallbackImage, width: 1080, height: 1920 }
   return {
     ...(title ? { title } : {}),
     alternates: { canonical: url },

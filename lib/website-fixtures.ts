@@ -52,14 +52,14 @@ export function fixturePublicProfile(key: string): PublicProfileData | null {
   const profileMeal = (index: number) => ({ id: meals[index].id, locationName: base.name, imageURL: meals[index].src, placeId: base.placeId, rank: index + 1 })
   return { key, slug: `alex-${key}`, name: 'Alex', handle: 'alex', avatar: '',
     top3: empty ? [] : [profileMeal(0), profileMeal(2)], recent: empty ? [] : meals.map((_, index) => profileMeal(index)),
-    rolePlaceIds: empty ? [] : [base.placeId], cardUrl: null }
+    rolePlaceIds: empty ? [] : [base.placeId], cardUrls: { en: null, id: null } }
 }
 /** The Share v2 meal page: the public fixture meal, and null for the private sentinel and unknown ids. */
 export function fixtureSharedMeal(id: string): SharedMeal | null {
   if (unavailable) return null
   const meal = meals.find(m => m.id === id)
   return meal ? { id, photo: meal.src, dish: id === 'fixture-public-meal' ? 'Harissa prawns' : '', handle: meal.username, avatar: '',
-    placeId: base.placeId, locationName: base.name, fallbackImage: meal.src, cardUrl: null } : null
+    placeId: base.placeId, locationName: base.name, fallbackImage: meal.src, cardUrls: { en: null, id: null } } : null
 }
 export const fixturePublicMeals = (): PublicMeal[] => unavailable ? [] : meals.map(m => ({ src: m.src, alt: m.caption, caption: m.caption, locationName: base.name, mealType: m.mealType, username: m.username }))
 export const fixturePlaceStats = (): PlaceStats => ({ places: unavailable ? 0 : places.length, recentMeals: unavailable ? 0 : meals.length, mealCount: unavailable ? 0 : 5700, topPlaces: unavailable ? [] : [{ name: base.name, meals: meals.length }] })

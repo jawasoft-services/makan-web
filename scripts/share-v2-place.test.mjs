@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
-import { lane, PLACE, PLACE_ROUTE, DINERS, place, venue, user, meal, card, fence, storage } from './share-v2-test-lane.mjs'
+import { lane, PLACE, PLACE_ROUTE, BUCKET, DINERS, place, venue, user, meal, card, cardRecord, fence, storage } from './share-v2-test-lane.mjs'
 
 // RM20616 A12 U3 — the restaurant page a shared place link opens (boards X2, A7, E3, F3).
 const SLUG = venue.slug
@@ -68,15 +68,18 @@ test('og:image is the stored card when there is one, and today\'s per-request ca
   assert.equal(today.metadata.title, 'Warung Bu Sri')
   assert.deepEqual(today.metadata.itunes, { appId: '6756131450', appArgument: `https://www.makanofficial.com/places/${SLUG}` })
   assert.equal(none.reads.filter(path => path === `shareCardMeta/place_${PLACE}`).length, 1)
-  const run = lane(); run.useCache(); run.seed.set(`shareCardMeta/place_${PLACE}`, { hash: '0f3a', url: card('place', PLACE), updatedAt: 1 })
+  const run = lane(); run.useCache(); run.seed.set(`shareCardMeta/place_${PLACE}`, cardRecord('place', PLACE))
   const stored = await open(run, 'id')
-  assert.equal(stored.metadata.openGraph.images[0].url, card('place', PLACE))
-  assert.deepEqual(stored.metadata.twitter.images, [card('place', PLACE)])
+  // A Bahasa page shows the Bahasa card, and an English page the English one, from the one record.
+  assert.equal(stored.metadata.openGraph.images[0].url, card('place', PLACE, BUCKET, 'id'))
+  assert.deepEqual(stored.metadata.twitter.images, [card('place', PLACE, BUCKET, 'id')])
   run.reads.length = 0
-  await open(run, 'id'); await open(run)
-  assert.deepEqual(run.reads, [], 'the card is read once per place every five minutes, not per view')
+  const english = await open(run)
+  assert.equal(english.metadata.openGraph.images[0].url, card('place', PLACE, BUCKET, 'en'))
+  await open(run, 'id')
+  assert.deepEqual(run.reads, [], 'the card is read once per place every five minutes, for both languages, not per view')
   for (const url of [card('place', 'ChIJanotherplace1'), card('place', PLACE, 'another-project.firebasestorage.app'), card('meal', PLACE)]) {
-    const bad = lane(); bad.useCache(); bad.seed.set(`shareCardMeta/place_${PLACE}`, { url })
+    const bad = lane(); bad.useCache(); bad.seed.set(`shareCardMeta/place_${PLACE}`, cardRecord('place', PLACE, { cards: { en: { path: 'x', url }, id: { path: 'x', url } } }))
     assert.equal((await open(bad)).metadata.openGraph.images[0].url, `https://www.makanofficial.com/places/${SLUG}/opengraph-image`, url)
   }
 })
@@ -220,7 +223,7 @@ test('the preview image never shows a meal photo by a hidden account: it falls b
   const second = lane(); second.useCache(); second.seed.set(`users/${DINERS[1]}`, user({ accountStatus: 'held' }))
   assert.equal((await open(second)).metadata.openGraph.images[0].url, todays)
   // A stored card is used as it is (U2 renders it under the same rule), and a place with no meals keeps today's text card.
-  const stored = lane(); stored.useCache(); stored.seed.set(`users/${DINERS[0]}`, user({ accountStatus: 'held' })); stored.seed.set(`shareCardMeta/place_${PLACE}`, { url: card('place', PLACE) })
+  const stored = lane(); stored.useCache(); stored.seed.set(`users/${DINERS[0]}`, user({ accountStatus: 'held' })); stored.seed.set(`shareCardMeta/place_${PLACE}`, cardRecord('place', PLACE))
   assert.equal((await open(stored)).metadata.openGraph.images[0].url, card('place', PLACE))
   const bare = lane(); bare.useCache(); bare.state.place = place({ meals: [] })
   assert.equal((await open(bare)).metadata.openGraph.images[0].url, todays)

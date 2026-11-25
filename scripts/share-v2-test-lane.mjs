@@ -22,8 +22,23 @@ export const PLACE = 'ChIJknownplace01'
 export const YEAR = 2026
 export const BUCKET = 'munchies-expo.firebasestorage.app'
 export const storage = `https://firebasestorage.googleapis.com/v0/b/${BUCKET}/o/photo.jpg`
-/** The stored card of one subject, as U2 is to write it: shareCards/<kind>/<id>/<hash>.jpg in Makan's bucket. */
-export const card = (kind, id, bucket = BUCKET) => `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/shareCards%2F${kind}%2F${id}%2F0f3a.jpg?alt=media&token=t`
+/**
+ * The stored card of one subject, as U2 writes it (functions/shareCards/store.js, CARD_PATH):
+ * shareCards/<kind>/<id>/<32 hex>-<en|id>-<12 hex>.jpg in Makan's bucket.
+ */
+export const HASH = '0f3a'.padEnd(32, '0')
+export const cardPath = (kind, id, locale = 'en') => `shareCards/${kind}/${id}/${HASH}-${locale}-${locale === 'en' ? 'aaaaaaaaaaaa' : 'bbbbbbbbbbbb'}.jpg`
+/** A download token as U2 makes one (crypto.randomUUID). */
+export const TOKEN = '123e4567-e89b-42d3-a456-426614174000'
+export const OTHER_TOKEN = '00000000-1111-4222-8333-444444444444'
+export const card = (kind, id, bucket = BUCKET, locale = 'en', token = TOKEN) => `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(cardPath(kind, id, locale))}?alt=media&token=${token}`
+/** A current card record with one drawing per language (U2's shape), plus the private fields the website must never read. */
+export const cardRecord = (kind, id, extra = {}) => ({
+  kind, subjectId: id, ownerUid: kind === 'place' ? null : USER, photoOwnerUid: 'PRIVATE-PHOTO-OWNER-UID', drawnPhotoOwnerUid: 'PRIVATE-DRAWN-OWNER-UID', drawnPhotoMealId: 'meal-of-photo',
+  hash: HASH, want: null, drop: false, failed: null, retired: [cardPath(kind, id, 'en').replace(HASH, 'f'.repeat(32))],
+  cards: { en: { path: cardPath(kind, id, 'en'), url: card(kind, id, BUCKET, 'en') }, id: { path: cardPath(kind, id, 'id'), url: card(kind, id, BUCKET, 'id') } },
+  ...extra,
+})
 /** The deletion fence of an account: the document the server writes while it deletes it. */
 export const fence = (uid) => `accountDeletionFences/${createHash('sha256').update(uid).digest('hex')}`
 export const DINERS = ['diner-1', 'diner-2']
@@ -54,7 +69,22 @@ export function seedAll(seed = new Map()) {
   return seed
 }
 
-function fakeProvider(seed, reads, failures) {
+/** What Firestore returns for a field mask: only the masked paths that exist, nested as stored ('want.hash' gives { want: { hash } }). */
+function project(data, mask) {
+  const out = {}
+  for (const field of mask) {
+    const parts = field.split('.')
+    let value = data
+    for (const part of parts) value = value !== null && typeof value === 'object' && !Array.isArray(value) ? value[part] : undefined
+    if (value === undefined) continue
+    let into = out
+    for (const part of parts.slice(0, -1)) into = into[part] ??= {}
+    into[parts.at(-1)] = value
+  }
+  return out
+}
+
+function fakeProvider(seed, reads, failures, masks) {
   const read = async path => { reads.push(path); if (failures.has(path)) throw new Error('Synthetic read failure'); return record(path, seed.get(path)) }
   const ref = path => ({ path, get: () => read(path) })
   function collection(path, filters = [], count = Infinity, descending = false) {
@@ -74,9 +104,11 @@ function fakeProvider(seed, reads, failures) {
   return { doc: ref, collection, getAll: async (...refs) => {
     const mask = refs.at(-1)?.fieldMask
     if (mask) refs.pop()
+    // Every batched read and the field mask it asked for, so a test can see what was requested.
+    masks.push({ paths: refs.map(target => target.path), mask: mask ? [...mask] : null })
     return Promise.all(refs.map(async target => {
       const snap = await target.get()
-      return mask && snap.exists ? record(target.path, Object.fromEntries(mask.filter(key => snap.data()[key] !== undefined).map(key => [key, snap.data()[key]]))) : snap
+      return mask && snap.exists ? record(target.path, project(snap.data(), mask)) : snap
     }))
   } }
 }
@@ -86,16 +118,25 @@ function fakeProvider(seed, reads, failures) {
  * local fixture lane (no database at all). `source` maps a file to replacement source, for the rule-removal check.
  */
 export function lane({ env = { SHARE_V2_PAGES: '1', SHARE_STORAGE_BUCKETS: BUCKET }, fixtures = false, source = () => null } = {}) {
-  const seed = seedAll(), reads = [], failures = new Set(), modules = new Map(), stored = new Map(), logs = []
+  const seed = seedAll(), reads = [], failures = new Set(), modules = new Map(), stored = new Map(), logs = [], masks = []
   const state = { place: place(), row: { placeId: PLACE, rank: 7, cityRank: 3, matchups: 12, eats: 9, yeets: 3 }, computedAt: '2026-11-20T00:00:00.000Z', maitred: { status: 'held', venue }, directory: { status: 'ready', venues: [venue] }, googlePhoto: null, failCrowns: false, review: null,
     // What the page sees of the request. `null` is a request proxy.ts rewrote: it carries the proxy's own mark
     // (lib/share-v2-mark.ts). Set it to an object to play a request that reached the page some other way.
-    headers: null, clock: Date.UTC(YEAR, 10, 24) }
+    headers: null, clock: Date.UTC(YEAR, 10, 24), serveStale: false }
   let requests = new Map()
-  const db = fakeProvider(seed, reads, failures)
+  const db = fakeProvider(seed, reads, failures, masks)
   const cacheStore = {
     generateSimpleCacheKey: async key => key,
-    get: async key => { const cached = stored.get(key); return cached ? { value: cached.value, isStale: state.clock - cached.at >= cached.value.revalidate * 1000 } : null },
+    // With `state.serveStale`, the store behaves as Next's does inside a page render: an expired entry is served once
+    // as it is while it is refreshed (here: dropped, so the next call reads again). Off, an expired entry is read again
+    // at once, as unstable_cache does outside a render.
+    get: async key => {
+      const cached = stored.get(key)
+      if (!cached) return null
+      const expired = cached.value.revalidate !== false && state.clock - cached.at >= cached.value.revalidate * 1000
+      if (expired && state.serveStale) { stored.delete(key); return { value: cached.value, isStale: false } }
+      return { value: cached.value, isStale: expired }
+    },
     set: async (key, value) => { stored.set(key, { value, at: state.clock }) },
   }
   class ClockDate extends Date {
@@ -175,7 +216,7 @@ export function lane({ env = { SHARE_V2_PAGES: '1', SHARE_STORAGE_BUCKETS: BUCKE
       return { metadata: null, html: '', thrown: error.message, text: '' }
     }
   }
-  return { seed, reads, failures, state, logs, load, page, nextRequest, db, env: processLike.env, useCache: () => { globalThis.__incrementalCache = cacheStore } }
+  return { seed, reads, masks, failures, state, logs, load, page, nextRequest, db, env: processLike.env, useCache: () => { globalThis.__incrementalCache = cacheStore } }
 }
 
 export const PLACE_ROUTE = 'app/[locale]/share-v2/places/[slug]/page.tsx'
