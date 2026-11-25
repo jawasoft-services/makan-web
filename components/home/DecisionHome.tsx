@@ -23,6 +23,7 @@ import StoreLink from './StoreLink'
 import DishWall, { type WallCard } from './DishWall'
 import ChapterStage from './ChapterStage'
 import './dish-home.css'
+import { localPhoto } from '@/lib/local-photo'
 
 // Display type for the headlines; Plus Jakarta Sans stays the text face.
 const fraunces = Fraunces({ subsets: ['latin'], weight: ['400', '600'], variable: '--font-fraunces', display: 'swap' })
@@ -94,7 +95,7 @@ export default async function DecisionHome({ locale }: { locale: string }) {
     </section>
 
     <div className="dish-light">
-      <section className="restaurants" id="restaurants" aria-labelledby="restaurant-title"><figure className="restaurant-photo"><Image src="/redesign/prawns.jpg" width={2048} height={2048} alt="Harissa prawns at Kendal Street Kitchen" /><figcaption className="venue-tag">Kendal Street Kitchen</figcaption></figure><div className="restaurant-copy"><p className="restaurant-label">{t('restaurant')}</p><h2 id="restaurant-title">{t('restaurantheadline')}</h2><p className="restaurant-intro">{t('restaurantbody')}</p><ul className="restaurant-benefits">{benefits.map(([head, body]) => <li key={head}><h3>{head}</h3><p>{body}</p></li>)}</ul><Link className="button ink" href={localizePath(locale, '/partner')}>{t('partner')}{arrow}</Link></div></section>
+      <section className="restaurants" id="restaurants" aria-labelledby="restaurant-title"><figure className="restaurant-photo"><Image src={localPhoto('/redesign/prawns.jpg', 600)} width={1280} height={1280} alt="Harissa prawns at Kendal Street Kitchen" /><figcaption className="venue-tag">Kendal Street Kitchen</figcaption></figure><div className="restaurant-copy"><p className="restaurant-label">{t('restaurant')}</p><h2 id="restaurant-title">{t('restaurantheadline')}</h2><p className="restaurant-intro">{t('restaurantbody')}</p><ul className="restaurant-benefits">{benefits.map(([head, body]) => <li key={head}><h3>{head}</h3><p>{body}</p></li>)}</ul><Link className="button ink" href={localizePath(locale, '/partner')}>{t('partner')}{arrow}</Link></div></section>
       <MaitredShowcase /><StandingsPreview />
       <section className="home-faq" id="faq"><h2>{locale === 'id' ? 'Masih penasaran?' : 'Still curious?'}</h2><div>{faqs.map(item => <details name="home-faq" key={item.q}><summary>{item.q}<span aria-hidden="true">+</span></summary><p>{item.a}</p></details>)}</div></section><FaqSchema items={faqs} />
     </div>

@@ -2,6 +2,7 @@ import Image from 'next/image'
 import { IllustrationPortrait } from '@/components/maitred/MaitredIllustration'
 import { OWNER_NATIVE_PICKS } from './owner-native-data'
 import styles from './owner-native-mockup.module.css'
+import { localPhoto } from '@/lib/local-photo'
 
 const glyphs = { search: '\uf563', map: '\uf443', navigate: '\uf470', bookmark: '\uf1a9', forward: '\uf23b', arrow: '\uf133', home: '\uf383', calendar: '\uf1d6', profile: '\uf4aa', camera: '\uf1db', back: '\uf229', podium: '\uf4e4' }
 function Icon({ name, size = 20 }: { name: keyof typeof glyphs; size?: number }) {
@@ -36,7 +37,7 @@ type NativeCopy = typeof copy.en
 function PicksCard({ text }: { text: NativeCopy }) {
   const list = OWNER_NATIVE_PICKS.ranked
   return <div className={styles.picksFeatured}><div className={styles.picksCard} data-native-picks-card={list.id}>
-    <div className={styles.picksPhoto}><Image src={list.imageSrc} alt={list.leadingRating.restaurantName} fill sizes="362px" /><span className={styles.picksPhotoShade} /><div className={styles.picksTopRow}><span className={styles.picksChip}><Icon name="podium" size={12} />{text.liveRanking}</span><span className={styles.picksSeal}><b>{list.leadingRating.eatPercent}%</b><span>EAT</span></span></div></div>
+    <div className={styles.picksPhoto}><Image src={localPhoto(list.imageSrc, 362)} alt={list.leadingRating.restaurantName} fill sizes="362px" /><span className={styles.picksPhotoShade} /><div className={styles.picksTopRow}><span className={styles.picksChip}><Icon name="podium" size={12} />{text.liveRanking}</span><span className={styles.picksSeal}><b>{list.leadingRating.eatPercent}%</b><span>EAT</span></span></div></div>
     <div className={styles.picksCopy}><p className={styles.picksMarket}>{text.publicEatOrYeet}</p><p className={styles.picksTitle}>{list.title} <em>{list.titleItalicWord}</em></p><p className={styles.picksSubtitle}>{list.subtitle}</p><div className={styles.picksMeta}><span>{text.minimumMatchups}</span><Icon name="arrow" size={15} /></div></div>
   </div></div>
 }
@@ -53,15 +54,15 @@ function Discover({ text, mapImage }: { text: NativeCopy; mapImage: string }) {
       </div>
       <section className={styles.decisionSection} data-native-owner-section="decision">
         <div className={styles.sectionHeading}><p className={styles.sectionTitle}>{text.option}</p><p className={styles.secondary}>{text.optionBody}</p></div>
-        <div className={styles.decisionRail}><div className={styles.decisionCard}><Image src="/redesign/prawns.jpg" alt="Harissa prawns at Kendal Street Kitchen" width={2048} height={2048} sizes="334px" /><span className={styles.decisionGradient} /><span className={styles.sourcePill}><Flame size={17} />{text.source}</span><span className={styles.distance}><Icon name="navigate" size={14} />{text.distance}</span><div className={styles.decisionCopy}><strong>Kendal Street Kitchen</strong><p>London · Harissa prawns</p><span>{text.viewPlace}<Icon name="arrow" size={17} /></span></div></div></div>
+        <div className={styles.decisionRail}><div className={styles.decisionCard}><Image src={localPhoto('/redesign/prawns.jpg', 334)} alt="Harissa prawns at Kendal Street Kitchen" width={1024} height={1024} sizes="334px" /><span className={styles.decisionGradient} /><span className={styles.sourcePill}><Flame size={17} />{text.source}</span><span className={styles.distance}><Icon name="navigate" size={14} />{text.distance}</span><div className={styles.decisionCopy}><strong>Kendal Street Kitchen</strong><p>London · Harissa prawns</p><span>{text.viewPlace}<Icon name="arrow" size={17} /></span></div></div></div>
       </section>
       <section className={styles.cravingsSection} data-native-owner-section="cravings">
         <div className={styles.sectionHeading}><div className={styles.headingRow}><p className={styles.sectionTitle}><Flame />{text.cravingsTitle}</p><span className={styles.seeAll}>{text.seeAll}<Icon name="forward" size={16} /></span></div><p className={styles.secondary}>{text.cravingsBody}</p></div>
-        <div className={styles.cravingsRail}>{cravings.map(meal => <div className={styles.cravingCard} key={meal.caption}><div className={styles.cravingImage}><Image src={meal.image} alt={meal.caption} width={2048} height={2048} sizes="164px" /><span className={styles.flameBadge}><Flame size={18} /></span></div><strong>Kendal Street Kitchen</strong><p>{meal.caption}</p></div>)}</div>
+        <div className={styles.cravingsRail}>{cravings.map(meal => <div className={styles.cravingCard} key={meal.caption}><div className={styles.cravingImage}><Image src={localPhoto(meal.image, 164)} alt={meal.caption} width={320} height={320} sizes="164px" /><span className={styles.flameBadge}><Flame size={18} /></span></div><strong>Kendal Street Kitchen</strong><p>{meal.caption}</p></div>)}</div>
       </section>
       <section className={styles.friendsSection} data-native-owner-section="friends">
         <div className={styles.friendsHeading}><p className={styles.sectionTitle}>Where your friends ate lately</p><p className={styles.secondary}>Places shared in your circle&apos;s meals</p></div>
-        <div className={styles.friendsRail}>{[{ image: '/redesign/dining.jpg', name: 'Jamie & Alex', portrait: 1 }, { image: '/redesign/prawns.jpg', name: 'Priya', portrait: 2 }].map(place => <div className={styles.friendCard} key={place.name}><Image src={place.image} alt="Meal at Kendal Street Kitchen" width={2048} height={2048} sizes="150px" /><div className={styles.friendInfo}><strong>Kendal Street Kitchen</strong><div className={styles.friendProof}><span><IllustrationPortrait portrait={place.portrait} /></span><p>{place.name}</p></div></div></div>)}</div>
+        <div className={styles.friendsRail}>{[{ image: '/redesign/dining.jpg', name: 'Jamie & Alex', portrait: 1 }, { image: '/redesign/prawns.jpg', name: 'Priya', portrait: 2 }].map(place => <div className={styles.friendCard} key={place.name}><Image src={localPhoto(place.image, 150)} alt="Meal at Kendal Street Kitchen" width={320} height={320} sizes="150px" /><div className={styles.friendInfo}><strong>Kendal Street Kitchen</strong><div className={styles.friendProof}><span><IllustrationPortrait portrait={place.portrait} /></span><p>{place.name}</p></div></div></div>)}</div>
       </section>
       <section className={styles.aroundSection} data-native-owner-section="map">
         <div className={styles.aroundHeading}><div><p className={styles.sectionTitle}>{text.mapTitle}</p><p className={styles.secondary}>{text.mapBody}</p></div><span className={styles.openMap}>{text.openMap}<Icon name="forward" size={15} /></span></div>

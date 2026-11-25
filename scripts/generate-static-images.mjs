@@ -60,6 +60,30 @@ const groups = [
     quality: 82,
   },
   {
+    // Photos the native mockups and marketing pages show at 75–600 CSS px. Pages pick one size
+    // through lib/local-photo.ts; keep these widths in step with LOCAL_PHOTO_SETS there.
+    sourceDir: path.join(publicRoot, 'redesign'),
+    outputDir: path.join(outputRoot, 'redesign-photos'),
+    match: /\.jpg$/i,
+    widths: [320, 640, 1024, 1280],
+    quality: 82,
+  },
+  {
+    sourceDir: path.join(publicRoot, 'redesign', 'native'),
+    outputDir: path.join(outputRoot, 'redesign-native'),
+    match: /\.jpg$/i,
+    widths: [320, 640, 1024, 1280],
+    quality: 82,
+  },
+  {
+    // Full-size app screenshots shown inside a phone frame on /partner.
+    sourceDir: path.join(publicRoot, 'redesign', 'native'),
+    outputDir: path.join(outputRoot, 'redesign-native'),
+    match: /^reference-feed-(?:en|id)\.png$/i,
+    widths: [320, 640, 1024, 1280],
+    quality: 90,
+  },
+  {
     sourceDir: path.join(publicRoot, 'blog', 'uli-marylebone'),
     outputDir: path.join(outputRoot, 'blog', 'uli-marylebone'),
     match: /\.(?:jpg|jpeg|png|webp)$/i,
