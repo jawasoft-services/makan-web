@@ -18,6 +18,11 @@ runInNewContext(ts.transpileModule(readFileSync('lib/verified-menu-price.ts', 'u
   throw new Error(`Unexpected import: ${id}`)
 } })
 
+// The real resize-URL and local-photo helpers, so the cards render the photo address the site serves.
+const real = file => { const exports = {}; runInNewContext(ts.transpileModule(readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, { exports, URL, URLSearchParams }); return exports }
+const thumb = real('lib/thumb.ts')
+const localPhoto = real('lib/local-photo.ts')
+
 function load(file, locale, directory = { status: 'ready', venues: [] }) {
   const messages = JSON.parse(readFileSync(`messages/${locale}.json`, 'utf8'))
   const exports = {}
@@ -35,6 +40,8 @@ function load(file, locale, directory = { status: 'ready', venues: [] }) {
     if (id === '@/lib/maitred') return { getMaitredDirectory: async () => directory }
     if (id === '@/lib/place-photo') return { getPlacePhoto: async () => null }
     if (id === '@/lib/verified-menu-price') return menuPrices
+    if (id === '@/lib/thumb') return thumb
+    if (id === '@/lib/local-photo') return localPhoto
     throw new Error(`Unexpected import: ${id}`)
   } })
   return exports.default

@@ -1,8 +1,9 @@
 // The dish wall's Three.js scene, loaded with import() only after the page has painted and only
 // when the visitor allows motion and the browser has WebGL. Real meal photos sit on a spiral;
-// scrolling turns it, flies the camera through it and clears it for the five meal previews.
+// scrolling turns it, spins each photo in place, flies the camera through it and clears it for
+// the five meal previews. The photos never bend.
 //
-// Cost: one renderer, one shared 16x16 plane, one InstancedMesh (one draw call) and one texture
+// Cost: one renderer, one shared flat plane, one InstancedMesh (one draw call) and one texture
 // built in the browser from the page's own cached /api/thumb tiles. Rendering stops off screen
 // and drops to 30 fps after two seconds without scrolling.
 import * as THREE from 'three'
@@ -19,7 +20,7 @@ const mix = (a: number, b: number, t: number) => a + (b - a) * t
 const vertexShader = /* glsl */`
   attribute vec2 aCell;
   attribute float aSeed;
-  uniform float uVel;
+  uniform float uSpin;
   uniform float uTime;
   varying vec2 vUv;
   varying vec2 vCell;
@@ -28,10 +29,12 @@ const vertexShader = /* glsl */`
     vUv = uv;
     vCell = aCell;
     vec3 p = position;
-    p.z -= p.x * p.x * 0.18;                                   // wrap around the cylinder
-    p.z += uVel * (0.55 + aSeed * 0.4) * sin(uv.y * 3.14159);  // scroll speed bends the card
-    p.y += uVel * 0.22 * (uv.x - 0.5) * (uv.x - 0.5) * 4.0;    // and drags its edges
-    p.y += sin(uTime * 0.6 + aSeed * 6.28) * 0.04;             // idle drift
+    // Each card stays a flat photo and turns about its own upright centre line. Whole-number
+    // multiples of uSpin mean every card faces square again whenever uSpin rests on a half turn.
+    float a = uSpin * (1.0 + floor(aSeed * 3.0));
+    float c = cos(a), s = sin(a);
+    p = vec3(p.x * c, p.y, -p.x * s);
+    p.y += sin(uTime * 0.6 + aSeed * 6.28) * 0.04;             // idle drift: moves, never bends
     vec4 mv = modelViewMatrix * instanceMatrix * vec4(p, 1.0);
     vDepth = -mv.z;
     gl_Position = projectionMatrix * mv;
@@ -60,24 +63,38 @@ const fragmentShader = /* glsl */`
   }
 `
 
-/** Draws the tiles into the GRID x GRID atlas canvas, one by one. Tiles that fail to load stay ink. */
-function fillAtlas(canvas: HTMLCanvasElement, tiles: readonly string[]) {
+/** Waits before each retry of a tile that failed (a cold resize can time out once). */
+const RETRY_MS = [1500, 4000]
+
+/**
+ * Draws the tiles into the GRID x GRID atlas canvas as each one arrives and calls `onTile` after
+ * each, so the spiral fills in photo by photo instead of waiting for the slowest. A failed tile is
+ * tried again twice; one that still fails stays ink. The thumbnail route answers a failure with a
+ * redirect to the original, which Firebase serves without CORS, so only a retry of the thumbnail
+ * can put that photo in the canvas.
+ */
+function fillAtlas(canvas: HTMLCanvasElement, tiles: readonly string[], onTile: () => void, alive: () => boolean) {
   const ctx = canvas.getContext('2d')!
   ctx.fillStyle = '#11181C'
   ctx.fillRect(0, 0, canvas.width, canvas.height)
-  return Promise.all(tiles.slice(0, GRID * GRID).map((src, i) => new Promise<void>((resolve) => {
-    const img = new Image()
-    img.crossOrigin = 'anonymous'
-    img.decoding = 'async'
-    img.onload = () => {
-      // Centre-crop to a square, as the app's meal preview does.
-      const s = Math.min(img.naturalWidth, img.naturalHeight)
-      ctx.drawImage(img, (img.naturalWidth - s) / 2, (img.naturalHeight - s) / 2, s, s, (i % GRID) * CELL, Math.floor(i / GRID) * CELL, CELL, CELL)
-      resolve()
+  tiles.slice(0, GRID * GRID).forEach((src, i) => {
+    const load = (attempt: number) => {
+      if (!alive()) return
+      const img = new Image()
+      img.crossOrigin = 'anonymous'
+      img.decoding = 'async'
+      img.onload = () => {
+        if (!alive()) return
+        // Centre-crop to a square, as the app's meal preview does.
+        const s = Math.min(img.naturalWidth, img.naturalHeight)
+        ctx.drawImage(img, (img.naturalWidth - s) / 2, (img.naturalHeight - s) / 2, s, s, (i % GRID) * CELL, Math.floor(i / GRID) * CELL, CELL, CELL)
+        onTile()
+      }
+      img.onerror = () => { if (attempt < RETRY_MS.length) setTimeout(() => load(attempt + 1), RETRY_MS[attempt]) }
+      img.src = src
     }
-    img.onerror = () => resolve()
-    img.src = src
-  })))
+    load(0)
+  })
 }
 
 export type WallOptions = {
@@ -106,18 +123,24 @@ export function startDishWall({ section, stage, canvas, tiles, progress, coarse 
   texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy())
   let dirty = true
   let disposed = false
-  // One upload once every tile is drawn (they are the still grid's images, already in the browser cache).
-  fillAtlas(atlas, tiles).then(() => { if (!disposed) { texture.needsUpdate = true; dirty = true } })
+  // Re-upload the atlas at most every 200 ms while tiles arrive: a few uploads in all, and the
+  // first photos show as soon as they are here (most are the still grid's, already cached).
+  let uploadQueued = false
+  fillAtlas(atlas, tiles, () => {
+    if (uploadQueued) return
+    uploadQueued = true
+    setTimeout(() => { uploadQueued = false; if (!disposed) { texture.needsUpdate = true; dirty = true } }, 200)
+  }, () => !disposed)
 
   const uniforms = {
     uAtlas: { value: texture },
     uInk: { value: new THREE.Color('#11181C') },
-    uVel: { value: 0 },
+    uSpin: { value: 0 },
     uTime: { value: 0 },
     uDim: { value: 1 },
   }
   const material = new THREE.ShaderMaterial({ uniforms, vertexShader, fragmentShader, side: THREE.DoubleSide })
-  const geometry = new THREE.PlaneGeometry(1, 1, 16, 16)
+  const geometry = new THREE.PlaneGeometry(1, 1)
   const cells = new Float32Array(count * 2)
   const seeds = new Float32Array(count)
   for (let i = 0; i < count; i++) {
@@ -166,6 +189,7 @@ export function startDishWall({ section, stage, canvas, tiles, progress, coarse 
   let lastFrame = 0
   let lastScatter = -1
   let vel = 0
+  let spin = 0
   let px = 0, py = 0, tx = 0, ty = 0
   let raf = 0
   const started = performance.now()
@@ -197,6 +221,10 @@ export function startDishWall({ section, stage, canvas, tiles, progress, coarse 
     const raw = dt > 0 ? (p - lastP) / dt : 0
     lastP = p
     vel += (clamp(raw * 4, -1.6, 1.6) - vel) * 0.12
+    // Scrolling spins the photos in place; when the scroll stops they ease back to square,
+    // to the nearest half turn (the back of a card shows the same photo).
+    spin += vel * dt * 5
+    if (Math.abs(vel) < 0.08) spin += (Math.round(spin / Math.PI) * Math.PI - spin) * Math.min(1, dt * 4)
 
     const fly = smooth(0.12, 0.78, p)
     const scatter = smooth(0.72, 0.92, p)
@@ -211,7 +239,7 @@ export function startDishWall({ section, stage, canvas, tiles, progress, coarse 
     camera.position.set(px * 0.6, -py * 0.4, mix(12.5, 1.4, fly) + scatter * 2.5)
     camera.lookAt(0, 0, mix(0, -6, fly))
 
-    uniforms.uVel.value = vel
+    uniforms.uSpin.value = spin
     uniforms.uTime.value = time
     uniforms.uDim.value = 1 - scatter * 0.75
     renderer.render(scene, camera)
