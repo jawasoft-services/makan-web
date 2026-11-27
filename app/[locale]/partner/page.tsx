@@ -48,13 +48,19 @@ export default async function PartnerPage({ params }: {params: Promise<{locale: 
   const steps = t.raw('getting_started') as [string,string][]
   const regular = places('maitredRegular')
 
-  // The city with the most ranked restaurants, and in it the best-ranked restaurant with three public photos.
-  const city = [...standings.cities].sort((a, b) => b.rows.length - a.rows.length)[0] ?? null
+  // Devon, 27 Nov 2026 ("EN London, ID Jakarta"): each language features the city its owners are in; if that city
+  // has no ranked page yet, the city with the most ranked restaurants. In it, the best-ranked place with three photos.
+  const home = locale === 'id' ? 'jakarta' : 'london'
+  const city = standings.cities.find(c => c.slug === home || c.city.toLowerCase() === home)
+    ?? [...standings.cities].sort((a, b) => b.rows.length - a.rows.length)[0] ?? null
   const byId = new Map(directory.map(p => [p.placeId, p]))
   const cardRank = city ? city.rows.findIndex(r => (byId.get(r.placeId)?.meals.length ?? 0) >= 3) : -1
   const card = city && cardRank >= 0 ? byId.get(city.rows[cardRank].placeId) ?? null : null
   // Public web rule (Devon, RM20711): a Maître d’ is "A regular", never a name.
-  const usuals = maitred.venues.filter(v => v.notes.always).slice(0, 3)
+  // The featured city's Maître d’ usual orders first, then others, three at most.
+  const inCity = (v: { where: { city: string } | null }) => Boolean(city && v.where?.city.toLowerCase() === city.city.toLowerCase())
+  const published = maitred.venues.filter(v => v.notes.always)
+  const usuals = [...published.filter(inCity), ...published.filter(v => !inCity(v))].slice(0, 3)
   const reviews = getAllReviews()
   const src = (m: { thumb: string; src: string }) => m.thumb || thumbUrl(m.src, 480)
   const whereOf = (w: { city: string; country: string } | null) => w ? [w.city, w.country].filter(Boolean).join(', ') : ''
