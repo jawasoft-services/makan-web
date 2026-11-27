@@ -3,6 +3,7 @@ import type { AgrData, AgrFeedItem, AgrPin, AgrStanding, AgrSticker } from '@/co
 import type { StandingRow } from '@/lib/aggregates/types'
 import type { PublicMeal } from '@/lib/makan-stats'
 import { thumbUrl } from '@/lib/thumb'
+import { maitredCardDish } from '@/lib/dish-pages'
 
 /** RM20773: shapes the readers' results into the home page's data. Pure, so it is unit-tested. */
 
@@ -25,12 +26,18 @@ export function buildAgrData(input: {
   meals: PublicMeal[]
   standings: { rows: StandingRow[]; all: StandingRow[]; countries: number }
   venues: { placeId: string; name: string; lat: number | null; lng: number | null }[]
-  maitred: { name: string; notes: { always: string } }[]
+  maitred: { placeId?: string; name: string; notes: { always: string } }[]
+  /**
+   * RM20616 dish pages L6: placeId → the app's dish answer (null for none), given only while the answers are shown
+   * (lib/dish-pages.ts dishAnswersShown). A card then names that answer when it is the Maître d's pick, never the free
+   * text; a venue without one has no card. Absent, the cards are the holders' own picks, as before.
+   */
+  dishAnswers?: ReadonlyMap<string, { name: string; maitred: boolean } | null>
   /** placeId → newest public meal thumbnail there, from the place directory. Feeds the board and the globe pins. */
   thumbs?: Record<string, string>
   t: Record<string, string>
 }): AgrData {
-  const { meals, standings, venues, maitred, locale, t, thumbs = {} } = input
+  const { meals, standings, venues, maitred, locale, t, thumbs = {}, dishAnswers } = input
   const rowByName = new Map(standings.all.map((r) => [key(r.name), r]))
   const photoByVenue = new Map<string, string>()
   for (const m of meals) if (m.locationName && !photoByVenue.has(key(m.locationName))) photoByVenue.set(key(m.locationName), m.src)
@@ -64,10 +71,11 @@ export function buildAgrData(input: {
     }
   })
 
+  const cardDish = (v: { placeId?: string; notes: { always: string } }) => dishAnswers ? maitredCardDish(dishAnswers.get(v.placeId ?? '')) : v.notes.always
   const stickers: AgrSticker[] = maitred
-    .filter((v) => v.notes.always)
+    .filter((v) => cardDish(v))
     .slice(0, STICKERS)
-    .map((v) => ({ venue: v.name, dish: v.notes.always, holder: HOLDER, initial: HOLDER.slice(0, 1) }))
+    .map((v) => ({ venue: v.name, dish: cardDish(v) as string, holder: HOLDER, initial: HOLDER.slice(0, 1) }))
 
   return {
     locale,

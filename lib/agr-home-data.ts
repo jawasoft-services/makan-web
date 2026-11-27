@@ -10,6 +10,7 @@ import { getPlaceDirectory } from '@/lib/place-directory'
 import { getRecentPublicMeals, type PublicMeal } from '@/lib/makan-stats'
 import { getPublicVenues } from '@/lib/public-venues'
 import { thumbUrl } from '@/lib/thumb'
+import { dishAnswersShown } from '@/lib/dish-pages'
 import en from '@/messages/en.json'
 import id from '@/messages/id.json'
 
@@ -86,6 +87,8 @@ export async function getAgrHomeData(locale: string): Promise<AgrData> {
     // venue read failed) still get one, so the globe never loses its photos.
     venues: [...venues, ...places.filter((p) => !venueIds.has(p.placeId))],
     maitred: maitred.venues,
+    // RM20616 dish pages L6: with the answers shown, a Maître d' card names the app's answer (from the same directory).
+    ...(dishAnswersShown() ? { dishAnswers: new Map(places.flatMap((p) => p.dishes ? [[p.placeId, p.dishes.answer] as const] : [])) } : {}),
     thumbs,
     t: runtimeStrings(messages),
   })
