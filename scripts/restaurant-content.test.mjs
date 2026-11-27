@@ -19,7 +19,7 @@ function lane(locale = 'en') {
     if (modules.has(file)) return modules.get(file)
     const exports = {}; modules.set(file, exports)
     const code = ts.transpileModule(readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX } }).outputText
-    runInNewContext(code, { exports, URL, console, fetch() { throw Error('No network in source tests') }, require(id) {
+    runInNewContext(code, { exports, URL, console, process: { env: {} }, fetch() { throw Error('No network in source tests') }, require(id) {
       if (id === './MealGallery') return { MealGallery: () => null }
       if (id === 'react/jsx-runtime' || id === 'node:crypto') return require(id)
       if (id === 'react') return { cache: fn => (...args) => {

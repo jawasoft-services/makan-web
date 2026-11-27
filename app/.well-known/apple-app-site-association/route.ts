@@ -12,7 +12,22 @@ const CLAIM_COMPONENTS = [
   { "/": "/verified", comment: "Return to Makan after verifying an email address" },
 ]
 
+// RM20616 growth item 1 (App Clip), unit U4 — the MakanDev App Clip, and the MakanDev app taking
+// restaurant page links (/places/<slug>, the table card's QR and every shared place link). Behind
+// APP_CLIP_DEV_LINKS, on only for the exact value "1": with it off this file is exactly what it was
+// before this unit. The production app's /places/ links and its clip are the release step (A12).
+// Apple: "Associating your App Clip with your website" (the `appclips` key) and "Supporting associated
+// domains" (<team id>.<bundle id>; the team id is the one this file already uses).
+const DEV_CLIP_APP_ID = "T3Z49Z9YUB.com.makanofficial.makandev.Clip"
+const DEV_PLACE_COMPONENTS = [
+  { "/": "/places/*", comment: "Open a restaurant page link in MakanDev" },
+  { "/": "/id/places/*", comment: "Open an Indonesian restaurant page link in MakanDev" },
+]
+
+const appClipDevLinksOn = (): boolean => process.env.APP_CLIP_DEV_LINKS === "1"
+
 export function GET() {
+  const clip = appClipDevLinksOn()
   return Response.json(
     {
       applinks: {
@@ -28,9 +43,10 @@ export function GET() {
           }, ...CLAIM_COMPONENTS],
         }, {
           appIDs: ["T3Z49Z9YUB.com.makanofficial.makandev"],
-          components: CLAIM_COMPONENTS,
+          components: clip ? [...CLAIM_COMPONENTS, ...DEV_PLACE_COMPONENTS] : CLAIM_COMPONENTS,
         }],
       },
+      ...(clip ? { appclips: { apps: [DEV_CLIP_APP_ID] } } : {}),
     },
     {
       headers: {

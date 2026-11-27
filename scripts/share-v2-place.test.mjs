@@ -240,3 +240,17 @@ test('the page and its preview share one author check per request, and a failed 
   assert.doesNotMatch(out.text, /photo\.jpg|place-meal-/)
   assert.equal(out.metadata.openGraph.images[0].url, 'https://www.makanofficial.com/opengraph-image')
 })
+
+// RM20616 U4 — the dev App Clip on the shared place page. Off, the banner is today's (`itunes`); on, the same
+// banner tag also names the MakanDev App Clip, and there is still only one banner.
+test('the App Clip banner switch: off keeps today\'s Smart App Banner, on adds the dev clip to that one tag', async () => {
+  const env = { SHARE_V2_PAGES: '1', SHARE_STORAGE_BUCKETS: BUCKET }
+  for (const value of [undefined, '', '0', 'true', ' 1']) {
+    const off = await open(lane({ env: value === undefined ? env : { ...env, APP_CLIP_DEV_BANNER: value } }))
+    assert.deepEqual(off.metadata.itunes, { appId: '6756131450', appArgument: `https://www.makanofficial.com/places/${SLUG}` }, String(value))
+    assert.equal(off.metadata.other, undefined, String(value))
+  }
+  const on = await open(lane({ env: { ...env, APP_CLIP_DEV_BANNER: '1' } }), 'id')
+  assert.equal(on.metadata.itunes, undefined)
+  assert.equal(on.metadata.other['apple-itunes-app'], `app-id=6756131450, app-clip-bundle-id=com.makanofficial.makandev.Clip, app-argument=https://www.makanofficial.com/id/places/${SLUG}`)
+})

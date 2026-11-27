@@ -17,6 +17,8 @@ import { localizePath } from '@/i18n/paths'
 import { thumbUrl } from '@/lib/thumb'
 import { safeJsonLd } from '@/lib/safe-json-ld'
 import { getReviewForPlace } from '@/lib/reviews'
+import { appClipBannerMetadata, appStoreBanner } from '@/lib/app-clip'
+import { APP_STORE_URL } from '@/lib/links'
 
 /** A public restaurant: original meal photos, Maître d’ notes, standings and directions.
  * The web publishes a separate, filtered projection; app-only progress is never included.
@@ -71,8 +73,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     locale,
     image: `${SITE_URL}${path}/opengraph-image`,
   })
+  // RM20616 U4: the Smart App Banner naming the dev App Clip, only with APP_CLIP_DEV_BANNER on (lib/app-clip.ts).
+  // With it off nothing is added and this page has no banner, as before.
+  const clip = appClipBannerMetadata(appStoreBanner(APP_STORE_URL, `${SITE_URL}${path}`))
+  const withClip = clip ? { ...meta, ...clip } : meta
   // A single meal with no matchups is a real page but not a search result.
-  return indexable ? meta : { ...meta, robots: { index: false, follow: true } }
+  return indexable ? withClip : { ...withClip, robots: { index: false, follow: true } }
 }
 
 export default async function PlacePage({ params }: Props) {

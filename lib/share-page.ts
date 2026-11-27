@@ -3,6 +3,7 @@ import { cache } from 'react'
 import { unstable_cache } from 'next/cache'
 import { headers } from 'next/headers'
 import { getDb } from '@/lib/firebase-admin'
+import { appStoreBanner, type SmartAppBanner } from '@/lib/app-clip'
 import { APP_STORE_URL } from '@/lib/links'
 import { loadAuthorMayAppear, loadMealOwners } from '@/lib/place-meals-data'
 import { NO_SHARE_CARD, readShareCardUrls, shareCardFor } from '@/lib/share-card'
@@ -17,9 +18,8 @@ import { WEBSITE_FIXTURES } from '@/lib/website-fixtures'
 export const sharePageUrl = (locale: string, path: string): string => `${SITE_URL}${locale === 'id' ? '/id' : ''}${path}`
 
 /** Apple's Smart App Banner: the App Store app, and this page's address for the app to open. */
-export function smartAppBanner(url: string): { appId: string; appArgument: string } | undefined {
-  const appId = APP_STORE_URL.match(/id(\d+)/)?.[1]
-  return appId ? { appId, appArgument: url } : undefined
+export function smartAppBanner(url: string): SmartAppBanner | undefined {
+  return appStoreBanner(APP_STORE_URL, url)
 }
 
 const PLACE_CARD_WINDOW_MS = 300_000

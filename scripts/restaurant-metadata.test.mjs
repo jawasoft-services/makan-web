@@ -17,13 +17,13 @@ const unusedImports = new Set([
 ])
 
 // Execute the real metadata exports with fixture readers; no database or paid provider imports.
-function loadModule(file, dependencies = {}) {
+function loadModule(file, dependencies = {}, env = {}) {
   const { outputText } = ts.transpileModule(readFileSync(file, 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX },
   })
   const exports = {}
   runInNewContext(outputText, {
-    exports, URL,
+    exports, URL, process: { env },
     require(id) {
       if (id in dependencies) return dependencies[id]
       assert.ok(unusedImports.has(id), `Unexpected import: ${id}`)
@@ -40,11 +40,14 @@ const base = {
   meals: [{ caption: 'PRIVATE SENTINEL', username: 'PRIVATE USER' }, {}], indexable: true,
 }
 
-async function render(locale, place, row = null) {
+async function render(locale, place, row = null, env = {}) {
   const messages = JSON.parse(readFileSync(`messages/${locale}.json`, 'utf8'))
   const route = loadModule(routeFile, {
     'react': { cache: fn => fn },
     '@/lib/reviews': { getReviewForPlace: () => undefined },
+    // RM20616 U4: the dev App Clip banner (off unless APP_CLIP_DEV_BANNER=1).
+    '@/lib/app-clip': loadModule('lib/app-clip.ts', {}, env),
+    '@/lib/links': loadModule('lib/links.ts'),
     '@/lib/site-metadata': metadata,
     '@/lib/place-directory': { getDirectoryPlace: async () => place },
     '@/lib/eat-standings': { getEatStandings: async () => ({ all: row ? [row] : [] }) },
@@ -108,5 +111,32 @@ for (const locale of ['en', 'id']) {
 
   test(`${locale}: deleted or unavailable restaurant has no metadata`, async () => {
     assert.equal(Object.keys(await render(locale, null)).length, 0)
+  })
+}
+
+// RM20616 U4 — the dev App Clip's Smart App Banner. Off (unset or any value but "1"), the metadata is
+// exactly what the page returned before: no banner at all. On, one apple-itunes-app tag names the clip.
+for (const locale of ['en', 'id']) {
+  test(`${locale}: the App Clip banner adds nothing with APP_CLIP_DEV_BANNER off, and one tag with it on`, async () => {
+    const before = await render(locale, base)
+    for (const value of ['', '0', 'true', ' 1', '1 ']) {
+      assert.deepEqual(await render(locale, base, null, { APP_CLIP_DEV_BANNER: value }), before, JSON.stringify(value))
+    }
+    assert.equal(before.other, undefined)
+    assert.equal(before.itunes, undefined)
+    const on = await render(locale, base, null, { APP_CLIP_DEV_BANNER: '1' })
+    const path = `${locale === 'id' ? '/id' : ''}/places/${base.slug}`
+    // Compared field by field: the object comes from the module's own VM context.
+    assert.deepEqual(Object.keys(on.other), ['apple-itunes-app'])
+    assert.equal(on.other['apple-itunes-app'], `app-id=6756131450, app-clip-bundle-id=com.makanofficial.makandev.Clip, app-argument=${metadata.SITE_URL}${path}`)
+    assert.equal(on.itunes, undefined)
+    const { other, ...rest } = on
+    assert.ok(other)
+    assert.equal(JSON.stringify(rest), JSON.stringify(before))
+    // The robots rule for a thin page still applies with the banner on.
+    const thin = await render(locale, { ...base, indexable: false, meals: [{}] }, null, { APP_CLIP_DEV_BANNER: '1' })
+    assert.equal(thin.robots.index, false)
+    assert.equal(thin.robots.follow, true)
+    assert.ok(thin.other)
   })
 }

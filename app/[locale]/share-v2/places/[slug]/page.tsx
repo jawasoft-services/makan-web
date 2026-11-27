@@ -17,6 +17,7 @@ import { safeJsonLd } from '@/lib/safe-json-ld'
 import PlacesMapLoader from '@/components/map/PlacesMapLoader'
 import legacy from '@/components/standings/public-pages.module.css'
 import { getReviewForPlace } from '@/lib/reviews'
+import { appClipBannerMetadata } from '@/lib/app-clip'
 import { SHARE_V2_NOT_SERVED, getPlaceShareCard, getVisiblePlaceMealIds, sharePageUrl, shareV2PageServed, smartAppBanner } from '@/lib/share-page'
 import { PLACE_MAITRED_LINE, PLACE_PAGE_KEEPS } from '@/lib/share-page-choices'
 import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
@@ -67,7 +68,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: publicMealCount ? t('metaDescriptionFood', { place: placeText, count: publicMealCount }) : t('metaDescriptionEmpty', { place: placeText }),
     path, locale, image: card ?? (todaysCardShowsNobodyHidden ? `${SITE_URL}${path}/opengraph-image` : undefined),
   })
-  return { ...meta, itunes: smartAppBanner(`${SITE_URL}${path}`), ...(indexable ? {} : { robots: { index: false, follow: true } }) }
+  // RM20616 U4: with APP_CLIP_DEV_BANNER on, the same banner also names the dev App Clip (lib/app-clip.ts).
+  const banner = smartAppBanner(`${SITE_URL}${path}`)
+  return { ...meta, ...(appClipBannerMetadata(banner) ?? { itunes: banner }), ...(indexable ? {} : { robots: { index: false, follow: true } }) }
 }
 
 export default async function SharedPlacePage({ params }: Props) {
