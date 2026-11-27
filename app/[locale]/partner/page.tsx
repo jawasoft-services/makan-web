@@ -57,10 +57,11 @@ export default async function PartnerPage({ params }: {params: Promise<{locale: 
   const cardRank = city ? city.rows.findIndex(r => (byId.get(r.placeId)?.meals.length ?? 0) >= 3) : -1
   const card = city && cardRank >= 0 ? byId.get(city.rows[cardRank].placeId) ?? null : null
   // Public web rule (Devon, RM20711): a Maître d’ is "A regular", never a name.
-  // The featured city's Maître d’ usual orders first, then others, three at most.
-  const inCity = (v: { where: { city: string } | null }) => Boolean(city && v.where?.city.toLowerCase() === city.city.toLowerCase())
-  const published = maitred.venues.filter(v => v.notes.always)
-  const usuals = [...published.filter(inCity), ...published.filter(v => !inCity(v))].slice(0, 3)
+  // Maître d’ usual orders nearest the featured city first: that city, then the same country (Jakarta's are in
+  // Tangerang and Depok today), then the rest; three at most. Each card names its own city.
+  const near = (v: { where: { city: string; country: string } | null }) => !city || !v.where ? 2
+    : v.where.city.toLowerCase() === city.city.toLowerCase() ? 0 : v.where.country.toLowerCase() === city.country.toLowerCase() ? 1 : 2
+  const usuals = maitred.venues.filter(v => v.notes.always).map((v, i) => ({ v, i })).sort((a, b) => near(a.v) - near(b.v) || a.i - b.i).map(({ v }) => v).slice(0, 3)
   const reviews = getAllReviews()
   const src = (m: { thumb: string; src: string }) => m.thumb || thumbUrl(m.src, 480)
   const whereOf = (w: { city: string; country: string } | null) => w ? [w.city, w.country].filter(Boolean).join(', ') : ''
