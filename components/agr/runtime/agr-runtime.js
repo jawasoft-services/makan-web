@@ -552,11 +552,22 @@ export function mountAgr(root, data) {
   }
 
   // ---- chapter 8: the globe (./globe.js), loaded as it comes near ----
-  let globe = null, globeLoading = false
+  let globe = null, globeLoading = false, pinsWarm = false
+  // Devon, 27 Nov 2026: pins should show already loaded. About four screens before the globe, fetch
+  // every pin photo (12 at a time, CDN-cached) so globe.js finds them in the browser cache.
+  function warmPins() {
+    pinsWarm = true
+    const urls = data.pins.map((p) => p[2]).filter(Boolean)
+    let i = 0, active = 0
+    const next = () => { while (active < 12 && i < urls.length && !dead) { const im = new Image(); active++; im.onload = im.onerror = () => { active--; next() }; im.src = urls[i++] } }
+    next()
+  }
   function mapFrame() {
     if (globe) { globe.frame(); return }
     if (globeLoading) return
-    const r = cmEl.getBoundingClientRect(), near = r.bottom > -innerHeight * 0.5 && r.top < innerHeight * 1.6
+    const r = cmEl.getBoundingClientRect()
+    if (!pinsWarm && !reduce && r.top < innerHeight * 4) warmPins()
+    const near = r.bottom > -innerHeight * 0.5 && r.top < innerHeight * 1.6
     if (!near) return
     globeLoading = true
     import('./globe.js').then((m) => {
