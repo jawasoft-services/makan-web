@@ -197,6 +197,7 @@ function moduleLane({ env = ON, answers = {} } = {}) {
         const t = key => strings[key]; t.raw = key => { assert.ok(key in strings, `missing ${key}`); return strings[key] }; return t
       } }
       if (id === 'next/font/local') return { default: () => ({ variable: 'font' }) }
+      if (id === 'next-intl/plugin') return { default: () => config => config }
       if (id === '@/i18n/routing') return { routing: { locales: ['en', 'id'], defaultLocale: 'en' } }
       if (id.endsWith('.css')) return { default: new Proxy({}, { get: (_, key) => key }) }
       if (id.startsWith('@/') || id.startsWith('.')) {
@@ -471,4 +472,29 @@ test('the code is never written to a log, an error report or a URL query', () =>
   }
   // The proxy changed by one call only, and logs nothing either.
   assert.doesNotMatch(readFileSync('proxy.ts', 'utf8'), /console\./)
+})
+
+test('the site\'s Content-Security-Policy lets only the /d/ page connect to the two callables (seen blocked in a browser, 27 Nov 2026)', async () => {
+  const config = moduleLane({ env: { NODE_ENV: 'production' } }).load('next.config.ts').default
+  const rules = await config.headers()
+  // Next applies every rule whose source matches, in order; for the same key the last one wins (next.config headers docs).
+  const csp = path => {
+    let value = null
+    for (const rule of rules) {
+      const pattern = new RegExp(`^${rule.source.replace(/:path\*/g, '.*').replace(/:\w+/g, '[^/]+')}$`)
+      if (!pattern.test(path)) continue
+      for (const header of rule.headers) if (header.key === 'Content-Security-Policy') value = header.value
+    }
+    return value
+  }
+  const connect = path => csp(path)?.split(';').map(part => part.trim()).find(part => part.startsWith('connect-src')) ?? ''
+  for (const path of [`/d/${CODE}`, `/en/d/${CODE}`, `/id/d/${CODE}`]) {
+    assert.match(connect(path), /https:\/\/us-central1-munchies-expo\.cloudfunctions\.net(\s|$)/, path)
+    assert.match(connect(path), /https:\/\/us-central1-makan-devel\.cloudfunctions\.net(\s|$)/, path)
+    // Everything else in the policy is the site's own.
+    assert.equal(csp(path).replace(/connect-src[^;]*/, ''), csp('/').replace(/connect-src[^;]*/, ''), path)
+  }
+  for (const path of ['/', '/support', '/places/x', `/d/${CODE}/x`, `/notice-link/en/${CODE}`, `/auth/action`]) {
+    assert.doesNotMatch(connect(path), /cloudfunctions/, path)
+  }
 })
