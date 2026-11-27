@@ -140,7 +140,7 @@ export default async function PartnerPage({ params }: {params: Promise<{locale: 
       <div className="wrap">
         <div className="split faqwrap">
           <h2 className="big md" data-rise="">{t('faq_title')}</h2>
-          <div className="faq">{faqs.map(([q, a], i) => <details key={q} open={i === 0}><summary>{q}</summary><p>{a}</p></details>)}</div>
+          <div className="faq">{faqs.map(([q, a], i) => <details name="partner-faq" key={q} open={i === 0}><summary>{q}</summary><p>{a}</p></details>)}</div>
         </div>
         <h2 className="big xl" data-rise="" style={{ marginTop: '14vh' }}>{t.rich('offer_titleRich', { em })}</h2>
         <p className="lede" data-rise="" style={{ maxWidth: '44ch' }}>{t('offer_body')}</p>
