@@ -112,9 +112,16 @@ test('switch off: every page, card and config a share link reaches today is byte
 test('switch off: the only edits to existing files are additive and inert', { skip: !baseAvailable && 'commit 365a96e is not in this clone' }, () => {
   // Messages: every string main had is unchanged. RM20773 (26 Nov 2026) adds the site shell's and the rebuilt
   // pages' strings, so new keys may join; none of main's may change or go.
+  // RM20773 (27 Nov 2026): the owner page moved its search to the top, so this FAQ answer drops "below" and the
+  // sentence about app screens the page no longer shows (deletions only, en and id). Nothing else may change.
+  const EDITED = { 'PartnerRedesign.faqs': (now, base) => now.length === base.length && now.every((pair, i) => i === 2
+    ? pair[0] === base[i][0] && base[i][1].replace(/ (below|di bawah)/, '').startsWith(pair[1].slice(0, -1)) && pair[1].length < base[i][1].length
+    : JSON.stringify(pair) === JSON.stringify(base[i])) }
   const keepsStrings = (now, base, label) => {
     for (const [key, value] of Object.entries(base)) {
-      if (value && typeof value === 'object' && !Array.isArray(value)) keepsStrings(now?.[key], value, `${label}.${key}`)
+      const path = `${label}.${key}`.split('.').slice(1).join('.'), edited = EDITED[path]
+      if (edited && Array.isArray(value)) assert.ok(edited(now?.[key], value), `${label}.${key} changed beyond the RM20773 deletion`)
+      else if (value && typeof value === 'object' && !Array.isArray(value)) keepsStrings(now?.[key], value, `${label}.${key}`)
       else assert.deepEqual(now?.[key], value, `${label}.${key} was changed or removed`)
     }
   }
