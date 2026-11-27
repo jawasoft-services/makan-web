@@ -83,7 +83,8 @@ function ask(path, { env = ON, headers = {} } = {}, source = () => null) {
     status: response.status, location: response.headers.get('location'), rewrite: response.headers.get('x-middleware-rewrite'),
     intl: response.headers.get('x-test-intl'), locale: response.headers.get('x-middleware-request-x-next-intl-locale'),
     cache: response.headers.get('cache-control'), referrer: response.headers.get('referrer-policy'), robots: response.headers.get('x-robots-tag'),
-    cookie: response.headers.get('set-cookie'),
+    // The expiry is a clock reading; two calls a second apart differ only there.
+    cookie: response.headers.get('set-cookie')?.replace(/Expires=[^;]+/, 'Expires=…') ?? null,
   }
 }
 const rewritten = answer => (answer.rewrite ? new URL(answer.rewrite).pathname : null)
