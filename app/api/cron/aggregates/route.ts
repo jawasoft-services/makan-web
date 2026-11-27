@@ -52,11 +52,15 @@ export async function GET(request: Request) {
     // (their hashes for the writer, their dishes for the dish step) and each place gets its `dishes`.
     const dishes = dishPagesOn()
     const storedWork = dishes ? readStoredPlaces(db) : null
-    // U2: a venue taken down gets no dishes. One read of config/webListing per run, with dish pages on only.
-    const hiddenWork = dishes ? readHiddenPlaceIds(db) : null
+    // U2: a venue taken down gets no dishes. One read of config/webListing per run, with dish pages on only. The list
+    // only spares those venues' dishes (their pages are already gone through the readers), so a failed read is logged
+    // and the run carries on as if nothing were hidden: it never costs the hourly refresh (review L3).
+    const hiddenWork = dishes ? readHiddenPlaceIds(db).catch(() => {
+      console.error('aggregates: takedown list unavailable; dishes computed as if nothing were hidden.')
+      return new Set<string>()
+    }) : null
     // Awaited later; a failure still fails the run there, but is never an unhandled rejection meanwhile.
     storedWork?.catch(() => {})
-    hiddenWork?.catch(() => {})
     // Maître d' venues get a page even without public meals, so the
     // directory is built after the holders are read.
     const standingsWork = timed('standings', computeEatStandings(db))
