@@ -10,6 +10,7 @@ import { getEatStandings } from '@/lib/eat-standings'
 import { getMaitredDirectory } from '@/lib/maitred'
 import { getPlaceDirectory } from '@/lib/place-directory'
 import { getHiddenPlaceIds } from '@/lib/web-listing'
+import { dishAnswersShown, maitredCardDish } from '@/lib/dish-pages'
 import { getAllReviews } from '@/lib/reviews'
 import { thumbUrl } from '@/lib/thumb'
 import { localizePath } from '@/i18n/paths'
@@ -61,8 +62,13 @@ export default async function PartnerPage({ params }: {params: Promise<{locale: 
   // Public web rule (Devon, RM20711): a Maître d’ is "A regular", never a name.
   // The featured city's Maître d’ usual orders first, then others, three at most.
   const inCity = (v: { where: { city: string } | null }) => Boolean(city && v.where?.city.toLowerCase() === city.city.toLowerCase())
+  // RM20616 dish pages L6 (Devon, "Same rule everywhere"): while the place page's dish answers are shown, a usual order
+  // is the app's answer when it is the Maître d's pick (the dish the venue's page names), never the free text; a venue
+  // with no such answer is not featured, as a holder with no usual is not today.
+  const answersShown = dishAnswersShown()
+  const usualOf = (v: { placeId: string; notes: { always: string } }) => answersShown ? maitredCardDish(byId.get(v.placeId)?.dishes?.answer) : v.notes.always
   // RM20616 dish pages U2: nor is one of the featured usual orders.
-  const published = maitred.venues.filter(v => v.notes.always && !hidden.has(v.placeId))
+  const published = maitred.venues.filter(v => usualOf(v) && !hidden.has(v.placeId))
   const usuals = [...published.filter(inCity), ...published.filter(v => !inCity(v))].slice(0, 3)
   const reviews = getAllReviews()
   const src = (m: { thumb: string; src: string }) => m.thumb || thumbUrl(m.src, 480)
@@ -106,7 +112,7 @@ export default async function PartnerPage({ params }: {params: Promise<{locale: 
         </div>
         <div>
           {usuals.map(v => <div className="pd-mditem" key={v.placeId} data-pop="">
-            <div className="mdcard"><span className="mdcap">{places('maitredOrderEyebrow')}</span><span className="mddish">{v.notes.always}</span><div className="mdrow"><span className="mdav"><svg className="crown" viewBox="0 0 35 27" width="18" height="14" aria-hidden="true"><path d="M4 7 L11 12 L17 3 L23 12 L31 6 L28 21 Q17 24 7 21 Z" fill="#FF9932" stroke="#FF9932" strokeWidth="2" strokeLinejoin="round"/></svg><i aria-hidden="true">{regular.charAt(0)}</i></span><span className="mdwho"><b>{regular}</b><span>Maître d’ · {v.name}{v.where?.city ? `, ${v.where.city}` : ''}</span></span></div></div>
+            <div className="mdcard"><span className="mdcap">{places('maitredOrderEyebrow')}</span><span className="mddish">{usualOf(v)}</span><div className="mdrow"><span className="mdav"><svg className="crown" viewBox="0 0 35 27" width="18" height="14" aria-hidden="true"><path d="M4 7 L11 12 L17 3 L23 12 L31 6 L28 21 Q17 24 7 21 Z" fill="#FF9932" stroke="#FF9932" strokeWidth="2" strokeLinejoin="round"/></svg><i aria-hidden="true">{regular.charAt(0)}</i></span><span className="mdwho"><b>{regular}</b><span>Maître d’ · {v.name}{v.where?.city ? `, ${v.where.city}` : ''}</span></span></div></div>
           </div>)}
           <div className="rules" data-rise=""><h3>{widget('rulesTitle')}</h3><ul>
             <li>{widget('rulesQualify')}</li>

@@ -275,6 +275,7 @@ test('Maître d\' listings: a pick card and an "others" row stay, with the name 
   const thumb = load('lib/thumb.ts', {}), localPhoto = load('lib/local-photo.ts', {})
   for (const locale of ['en', 'id']) {
     const deps = hidden => surfaceDeps(locale, hidden, { '@/lib/maitred': { getMaitredDirectory: async () => ({ status: 'ready', venues: [pick, other] }) },
+      '@/lib/dish-pages': { dishAnswersShown: () => false, maitredCardDish: () => null }, '@/lib/place-directory': { getPlaceDirectory: async () => { throw new Error('not read') } },
       '@/lib/place-photo': { getPlacePhoto: async () => null }, '@/lib/verified-menu-price': { getVerifiedMenuPrice: () => null },
       '@/lib/thumb': thumb, '@/lib/local-photo': localPhoto })
     const render = async (hidden, source = null) => renderToStaticMarkup(await load('components/home/MaitredShowcase.tsx', deps(hidden), { source }).default({}))
@@ -331,6 +332,8 @@ test('the owner page: the featured card and usual orders pass over a venue taken
     '@/lib/reviews': { getAllReviews: () => [] }, '@/lib/thumb': load('lib/thumb.ts', {}), '@/lib/local-photo': load('lib/local-photo.ts', {}),
     './PartnerForm': { default: () => null }, './FindRestaurant': { default: () => null }, './owners.css': {},
     '@/lib/web-listing': { getHiddenPlaceIds: async () => new Set(hidden) },
+    // Dish answers not shown (the switches off): scripts/maitred-cards.test.mjs covers them on this page.
+    '@/lib/dish-pages': load('lib/dish-pages.ts', { '@/lib/share-v2': load('lib/share-v2.ts', {}, { globals: { process: { env: {} } } }) }, { globals: { process: { env: {} } } }),
   })
   for (const locale of ['en', 'id']) {
     const render = async (hidden, source = null) => renderToStaticMarkup(await load('app/[locale]/partner/page.tsx', deps(hidden, locale), { source }).default({ params: Promise.resolve({ locale }) }))
