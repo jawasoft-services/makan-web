@@ -9,6 +9,8 @@ import { getVerifiedMenuPrice } from "@/lib/verified-menu-price"
 import { thumbUrl } from "@/lib/thumb"
 import { localPhoto } from "@/lib/local-photo"
 import { getHiddenPlaceIds } from "@/lib/web-listing"
+import { getPlaceDirectory } from "@/lib/place-directory"
+import { dishAnswersShown, maitredCardDish } from "@/lib/dish-pages"
 
 // All eligible holders, without inferring vacancy from a missing or filtered entry.
 export default async function MaitredShowcase({ dedicated = false }: { dedicated?: boolean }) {
@@ -19,8 +21,13 @@ export default async function MaitredShowcase({ dedicated = false }: { dedicated
   const t = await getTranslations("Decision.Maitred")
   const tp = await getTranslations("Places")
   const locale = await getLocale()
-  const picks = venues.filter((v) => v.notes.always)
-  const others = venues.filter((v) => !v.notes.always)
+  // RM20616 dish pages L6 (Devon, "Same rule everywhere"): while the place page's dish answers are shown, a pick card names
+  // the app's answer when it is the Maître d's pick (the dish the venue's page names), never the free text; any other
+  // holder is listed among the others, with no dish. The directory is read only then (its own 1 h cache).
+  const places = dishAnswersShown() ? new Map((await getPlaceDirectory()).map((p) => [p.placeId, p])) : null
+  const usualOf = (v: MaitredVenue) => (places ? maitredCardDish(places.get(v.placeId)?.dishes?.answer) : v.notes.always)
+  const picks = venues.filter((v) => usualOf(v))
+  const others = venues.filter((v) => !usualOf(v))
   const single = dedicated && picks.length === 1 && !others.length
   // The Google photo (month-cached, credited) only where no public meal has one.
   const googlePhotos = await Promise.all(picks.map((v) => (v.photo ? null : getPlacePhoto(v.placeId))))
@@ -48,7 +55,7 @@ export default async function MaitredShowcase({ dedicated = false }: { dedicated
         <ul data-beat style={{ "--beat": 3 } as React.CSSProperties} className={`mt-10 grid grid-cols-1 gap-3 sm:gap-4 ${single ? "" : "sm:grid-cols-2 lg:grid-cols-3"}`}>
           {picks.map((v, i) => (
             <li key={v.placeId} className="flex">
-              <PickCard venue={v} linked={!hidden.has(v.placeId)} locale={locale} google={googlePhotos[i]} credit={(author) => tp("photoCredit", { author })} byline={t("byline", { name: v.holderName })} label={t("whatToOrder")} menuPriceLabel={(price) => tp("menuPriceLabel", { price })} wide={single} />
+              <PickCard venue={v} dish={usualOf(v) as string} linked={!hidden.has(v.placeId)} locale={locale} google={googlePhotos[i]} credit={(author) => tp("photoCredit", { author })} byline={t("byline", { name: v.holderName })} label={t("whatToOrder")} menuPriceLabel={(price) => tp("menuPriceLabel", { price })} wide={single} />
             </li>
           ))}
           {others.length ? (
@@ -94,6 +101,7 @@ export default async function MaitredShowcase({ dedicated = false }: { dedicated
 
 function PickCard({
   venue,
+  dish,
   linked,
   locale,
   google,
@@ -104,6 +112,8 @@ function PickCard({
   wide,
 }: {
   venue: MaitredVenue
+  /** The dish the card names: the holder's pick, or the app's answer while dish answers are shown (RM20616 L6). */
+  dish: string
   /** False for a venue taken down (RM20616 dish pages U2): its name is plain text and the card is not a link. */
   linked: boolean
   locale: string
@@ -116,7 +126,7 @@ function PickCard({
 }) {
   // Meal photos go through the resize route: the originals are phone photos up to 2048px wide.
   const src = venue.photo ? thumbUrl(localPhoto(venue.photo, 330), 720) : google?.uri ?? null
-  const menuPrice = getVerifiedMenuPrice(venue.slug, venue.notes.always)
+  const menuPrice = getVerifiedMenuPrice(venue.slug, dish)
   return (
     <div
       className={`group relative flex w-full gap-3.5 rounded-2xl border border-brand-line bg-brand-card p-3 sm:gap-0 sm:overflow-hidden sm:p-0 ${wide ? "sm:flex-row" : "sm:flex-col"}`}
@@ -142,7 +152,7 @@ function PickCard({
           </span>
         ) : null}
         <span className="mt-4 hidden text-[0.72rem] font-extrabold uppercase tracking-[0.14em] text-brand-orange sm:block">{label}</span>
-        <span className="mt-2 text-base font-semibold leading-[1.3] text-brand-ink sm:mt-1 sm:text-[1.1875rem]">{venue.notes.always}</span>
+        <span className="mt-2 text-base font-semibold leading-[1.3] text-brand-ink sm:mt-1 sm:text-[1.1875rem]">{dish}</span>
         {menuPrice ? <a href={menuPrice.menuUrl} className="relative z-10 mt-1 inline-flex min-h-11 w-fit items-center text-sm font-semibold leading-[1.4] text-brand-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink">{menuPriceLabel(menuPrice.price)}</a> : null}
         <span className="mt-2 flex items-center gap-2 text-sm leading-[1.35] text-brand-ink sm:mt-4 sm:gap-2.5 sm:text-[0.9375rem]">
           <Avatar venue={venue} className="h-7 w-7 sm:h-9 sm:w-9" />

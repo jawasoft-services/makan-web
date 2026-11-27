@@ -40,6 +40,9 @@ function load(file, locale, directory = { status: 'ready', venues: [] }, hidden 
     if (id === '@/lib/maitred') return { getMaitredDirectory: async () => directory }
     // RM20616 dish pages U2: the venues config/webListing takes down.
     if (id === '@/lib/web-listing') return { getHiddenPlaceIds: async () => new Set(hidden) }
+    // RM20616 dish pages L6: dish answers not shown here (scripts/maitred-cards.test.mjs covers them), so no directory read.
+    if (id === '@/lib/dish-pages') return { dishAnswersShown: () => false, maitredCardDish: () => null }
+    if (id === '@/lib/place-directory') return { getPlaceDirectory: async () => { throw new Error('the directory is not read while dish answers are not shown') } }
     if (id === '@/lib/place-photo') return { getPlacePhoto: async () => null }
     if (id === '@/lib/verified-menu-price') return menuPrices
     if (id === '@/lib/thumb') return thumb
