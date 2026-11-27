@@ -1139,6 +1139,7 @@
     "whatToOrder": "What to order here",
     "maitredLine": "{name}, Maître d’",
     "aRegular": "A regular",
+    "dishesRatedHere": "Dishes rated here",
     "whatPeopleAte": "What people ate",
     "rankCityMonth": "#{rank} in {city} · {month}",
     "address": "Address",

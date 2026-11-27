@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { notFound, permanentRedirect } from 'next/navigation'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Footer from '@/components/Footer'
+import DishSection from '@/components/share/DishSection'
 import SiteSchema from '@/components/SiteSchema'
 import { OpenInMakanButton } from '@/components/share/ShareActions'
 import styles from '@/components/share/share-pages.module.css'
@@ -20,6 +21,9 @@ import { getReviewForPlace } from '@/lib/reviews'
 import { SHARE_V2_NOT_SERVED, getPlaceShareCard, getVisiblePlaceMealIds, sharePageUrl, shareV2PageServed, smartAppBanner } from '@/lib/share-page'
 import { PLACE_MAITRED_LINE, PLACE_PAGE_KEEPS } from '@/lib/share-page-choices'
 import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
+import { MAX_RATED_DISHES } from '@/lib/aggregates/dishes'
+import { dishPagesOn } from '@/lib/dish-pages'
+import { matchDishPhotos } from '@/lib/dish-photo-match'
 import { thumbUrl } from '@/lib/thumb'
 
 /**
@@ -96,6 +100,20 @@ export default async function SharedPlacePage({ params }: Props) {
   const meta = [place.cuisine.join(', '), place.where?.city ?? ''].filter(Boolean)
   // Devon's choice (lib/share-page-choices.ts). The holder's name is not an option.
   const maitredLine = PLACE_MAITRED_LINE === 'a-regular-maitred' ? t('maitredLine', { name: t('aRegular') }) : PLACE_MAITRED_LINE === 'a-regular' ? t('aRegular') : ''
+  // RM20616 dish pages U3 (DISH_PAGES, boards dp-*-a): the app's answer and the dishes diners rated, from the place
+  // aggregate (no read of its own). It replaces the Maître d's note: the web shows the app's answer only (Devon, Q1).
+  // With no `dishes` yet (not computed) there is no block at all. A row's photo is one of `meals`, the meals that
+  // passed the author check above, and is the grid tile's own file (Devon, Q5: "Let it repeat").
+  const dishesOn = dishPagesOn()
+  const dishes = dishesOn ? place.dishes : undefined
+  const answer = dishes?.answer ?? null
+  const rated = answer && dishes ? dishes.rated.slice(0, MAX_RATED_DISHES) : []
+  const photoOf = matchDishPhotos(rated, answer?.name ?? '', meals)
+  const dishRows = rated.map((name) => {
+    const meal = meals.find((m) => m.id === photoOf.get(name))
+    return { name, photo: meal ? { mealId: meal.id, src: meal.thumb || thumbUrl(meal.src, 480) } : null }
+  })
+  const firstDay = dishes ? await getTranslations({ locale, namespace: 'Decision.FirstDay' }) : null
   const review = PLACE_PAGE_KEEPS.firsthandReview ? getReviewForPlace(place.slug) : null
   const dayMonthYear = new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })
   const hasGeo = place.lat !== null && place.lng !== null
@@ -127,7 +145,10 @@ export default async function SharedPlacePage({ params }: Props) {
           <h1 className={styles.name}>{place.name}</h1>
           {meta.length ? <p className={styles.meta}>{meta.join(' · ')}</p> : null}
 
-          {pick ? <section className={styles.order} aria-labelledby="what-to-order">
+          {dishes && firstDay ? <DishSection answer={answer} thin={!answer && meals.length > 0} rows={dishRows} prefix={prefix}
+            labels={{ whatToOrder: t('whatToOrder'), maitredLine, notEnough: firstDay('emptyState'), dishesRatedHere: t('dishesRatedHere'), mealAlt }} /> : null}
+
+          {!dishesOn && pick ? <section className={styles.order} aria-labelledby="what-to-order">
             <h2 id="what-to-order" className={styles.eyebrow}>
               <Image src="/redesign/maitred-crown.svg" alt="" width={26} height={20} className={styles.crown} />
               {t('whatToOrder')}
