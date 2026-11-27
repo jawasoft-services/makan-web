@@ -55,7 +55,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params
   const found = await load(slug)
   if (!found) return {}
-  const { place, indexable } = found
+  const { place } = found
   const t = await getTranslations({ locale, namespace: 'Places' })
   const path = `${locale === 'id' ? '/id' : ''}/places/${place.slug}`
   const publicMealCount = place.publicMealCount ?? place.meals.length
@@ -66,11 +66,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const card = await getPlaceShareCard(place.placeId, locale)
   const newest = place.meals[0]
   const todaysCardShowsNobodyHidden = card !== null || !newest || (await getVisiblePlaceMealIds(place.placeId, place.meals.map((m) => m.id))).has(newest.id)
+  // RM20616 dish pages U4 (DISH_PAGES): with the app's answer, the approved "What to order at …" title and description
+  // (board dp-serp); without one, the live place page's own title family (Devon, Q3). Names as written, never
+  // translated. A page with no visible meal and no answer is not indexed. The JSON-LD below is not changed.
+  const dishesOn = dishPagesOn()
+  const answer = dishesOn ? place.dishes?.answer ?? null : null
+  const share = answer ? await getTranslations({ locale, namespace: 'SharePages' }) : null
+  const title = !dishesOn ? place.name
+    : answer && share ? (place.where ? share('metaTitleWhatToOrderLocated', { name: place.name, city: place.where.city }) : share('metaTitleWhatToOrder', { name: place.name }))
+    : place.where ? t(publicMealCount ? 'metaTitleFoodLocated' : 'metaTitleLocated', { name: place.name, city: place.where.city })
+    : t(publicMealCount ? 'metaTitleFood' : 'metaTitle', { name: place.name })
   const meta = createPageMetadata({
-    title: place.name,
-    description: publicMealCount ? t('metaDescriptionFood', { place: placeText, count: publicMealCount }) : t('metaDescriptionEmpty', { place: placeText }),
+    title,
+    description: answer && share ? share(answer.maitred ? 'metaDescriptionDishMaitred' : 'metaDescriptionDishEat', { place: placeText, dish: answer.name })
+      : publicMealCount ? t('metaDescriptionFood', { place: placeText, count: publicMealCount }) : t('metaDescriptionEmpty', { place: placeText }),
     path, locale, image: card ?? (todaysCardShowsNobodyHidden ? `${SITE_URL}${path}/opengraph-image` : undefined),
   })
+  // The author check is the page's own, shared within the request: no extra read.
+  const nothingToShow = dishesOn && !answer && !(place.meals.length && (await getVisiblePlaceMealIds(place.placeId, place.meals.map((m) => m.id))).size)
+  const indexable = found.indexable && !nothingToShow
   return { ...meta, itunes: smartAppBanner(`${SITE_URL}${path}`), ...(indexable ? {} : { robots: { index: false, follow: true } }) }
 }
 
