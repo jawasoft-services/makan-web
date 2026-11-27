@@ -1175,6 +1175,25 @@
       "emailChangeUndone": "Perubahan email dibatalkan",
       "emailIsAgain": "Emailmu kembali {email}.",
       "changeEmailAgain": "Ubah emailmu lagi di Makan."
+    },
+    "noticeLink": {
+      "claimedTitle": "{place} telah diklaim di Makan",
+      "tellUs": "Tidak benar? Beri tahu kami",
+      "whatsWrong": "Apa yang salah?",
+      "looksAtIt": "Makan memeriksanya sebelum ada yang berubah. {place} tidak diberi tahu siapa yang meminta.",
+      "reasonOwner": "Aku pemilik restoran ini",
+      "reasonStaff": "Aku kerja di sini dan kami tidak mengklaimnya",
+      "reasonOther": "Yang lain",
+      "anythingElse": "LAINNYA (OPSIONAL)",
+      "send": "Kirim",
+      "gotIt": "Sudah kami terima",
+      "willLook": "Makan akan memeriksanya dalam 2 hari kerja dan menghubungimu lewat nomor telepon restoran.",
+      "doesNotWork": "Tautan ini tidak berfungsi",
+      "contactSupport": "Hubungi dukungan",
+      "nobodyRuns": "Tidak ada yang mengelola halaman ini di Makan sampai ada yang mengklaimnya lagi.",
+      "ownThisPlace": "Pemilik tempat ini? Klaim",
+      "networkError": "Terjadi masalah jaringan. Periksa koneksimu lalu coba lagi.",
+      "tooMany": "Terlalu banyak percobaan. Tunggu sebentar lalu coba lagi."
     }
   },
   "Agr": {

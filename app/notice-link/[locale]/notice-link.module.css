@@ -1,0 +1,111 @@
+/*
+ * RM20616 O1 — what board own-n2 adds to the account-email pages' web frame (auth-action.module.css): the three
+ * reasons, the optional note, and the card's top padding when no clip sits above the title. Values are the board's.
+ */
+
+.formTitle {
+  padding-top: 20px;
+}
+
+.formLine {
+  padding-bottom: 4px;
+}
+
+.form {
+  margin: 0;
+  text-align: left;
+}
+
+.reasons {
+  padding-top: 8px;
+}
+
+.reason {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 52px;
+  cursor: pointer;
+}
+
+.reasonText {
+  flex: 1;
+  font-size: 17px;
+  line-height: 24px;
+  color: var(--ink);
+}
+
+/* The native radio stays in the page for the keyboard and screen readers; the board's circle is drawn beside it. */
+.radioInput {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.radio {
+  box-sizing: border-box;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #eaeaeb;
+  border-radius: 12px;
+  color: transparent;
+}
+
+.radio svg {
+  width: 16px;
+  height: 16px;
+}
+
+.radioInput:checked + .radio {
+  border: 0;
+  background: var(--eye);
+  color: #ffffff;
+}
+
+.radioInput:focus-visible + .radio {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+.noteLabel {
+  padding-top: 16px;
+}
+
+.note {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-height: 52px;
+  max-height: 160px;
+  margin: 0;
+  padding: 13px 16px;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  outline: none;
+  background: var(--field);
+  color: var(--ink);
+  caret-color: var(--orange);
+  font: inherit;
+  font-size: 17px;
+  line-height: 22px;
+  resize: none;
+  field-sizing: content;
+}
+
+.note:focus {
+  border-color: var(--orange);
+}
+
+.blocked {
+  padding: 8px 0 0;
+  text-align: left;
+}

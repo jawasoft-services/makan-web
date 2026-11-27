@@ -1175,6 +1175,25 @@
       "emailChangeUndone": "Email change undone",
       "emailIsAgain": "Your email is {email} again.",
       "changeEmailAgain": "Change your email again in Makan."
+    },
+    "noticeLink": {
+      "claimedTitle": "{place} was claimed on Makan",
+      "tellUs": "Not right? Tell us",
+      "whatsWrong": "What’s wrong?",
+      "looksAtIt": "Makan looks at it before anything changes. {place} isn’t told who asked.",
+      "reasonOwner": "I own this restaurant",
+      "reasonStaff": "I work here and we didn’t claim it",
+      "reasonOther": "Something else",
+      "anythingElse": "ANYTHING ELSE (OPTIONAL)",
+      "send": "Send",
+      "gotIt": "We’ve got it",
+      "willLook": "Makan will look at it within 2 working days and contact you on the restaurant’s phone.",
+      "doesNotWork": "This link doesn’t work",
+      "contactSupport": "Contact support",
+      "nobodyRuns": "Nobody will run this page on Makan until someone claims it again.",
+      "ownThisPlace": "Own this place? Claim it",
+      "networkError": "Network error. Please check your connection and try again.",
+      "tooMany": "Too many attempts. Please wait a moment and try again."
     }
   },
   "Agr": {

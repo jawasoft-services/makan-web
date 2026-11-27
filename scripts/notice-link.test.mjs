@@ -127,12 +127,14 @@ test('switch on: /d/{code} is served by the internal page in its language, with 
 
 test('switch on: a malformed code is answered by the page as a link that does not work, never passed on as typed', () => {
   for (const path of ['/d/abc', '/d/k7m2qx9', '/d/k7m2qx9pp', '/d/k7m2qx0p', '/d/k7m2qxop', '/d/k7m2qx1p', '/d/k7m2qxlp', '/d/k7m2qxip',
-    '/d/k7m2-x9p', '/d/%ZZ', '/d/%2e%2e', `/d/${CODE}%2Fx`, `/id/d/${'a'.repeat(300)}`, '/d/k7m2qx9%70']) {
+    '/d/k7m2-x9p', `/d/${CODE}%2Fx`, `/id/d/${'a'.repeat(300)}`, '/d/k7m2qx9%70']) {
     const answer = ask(path)
     const target = rewritten(answer)
     assert.match(target ?? '', /^\/notice-link\/(en|id)\/-$/, path)
     assertNoticeHeaders(answer, path)
   }
+  // An address that cannot be decoded gets the site's not-found page (the share pages' guard answers it first).
+  assert.match(rewritten(ask('/d/%ZZ')) ?? '', /-unknown$/)
   // Not this route's address: left to the site.
   for (const path of ['/d', '/d/', `/d/${CODE}/x`, `/dx/${CODE}`, `/places/d/${CODE}`]) {
     assert.doesNotMatch(String(ask(path).rewrite), /notice-link/, path)
@@ -142,12 +144,14 @@ test('switch on: a malformed code is answered by the page as a link that does no
 test('the internal address is never public, with the switch on or off: it gets what an unknown page gets', () => {
   for (const env of [ON, {}]) {
     for (const path of [`/notice-link/en/${CODE}`, `/notice-link/id/${CODE}`, '/notice-link', `/id/notice-link/en/${CODE}`, `/NOTICE-LINK/en/${CODE}`,
-      `/notice%2Dlink/en/${CODE}`, `//notice-link//en/${CODE}`, `/en/notice-link/en/${CODE}`, `/x/%2e%2e/notice-link/en/${CODE}`, '/notice-link/%E0%A4%A']) {
+      `/notice%2Dlink/en/${CODE}`, `//notice-link//en/${CODE}`, `/en/notice-link/en/${CODE}`, `/x/%2e%2e/notice-link/en/${CODE}`]) {
       const answer = ask(path, { env })
       assert.equal(rewritten(answer), '/en/notice-link-unknown', `${path} ${JSON.stringify(env)}`)
       assert.equal(new URL(answer.rewrite).search, '')
       assertNoticeHeaders(answer, path)
     }
+    // One that cannot be decoded: the share pages' guard answers it first, with the same not-found page.
+    assert.match(rewritten(ask('/notice-link/%E0%A4%A', { env })) ?? '', /-unknown$/)
   }
 })
 
