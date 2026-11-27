@@ -116,13 +116,14 @@ export default async function SharedPlacePage({ params }: Props) {
   const maitredLine = PLACE_MAITRED_LINE === 'a-regular-maitred' ? t('maitredLine', { name: t('aRegular') }) : PLACE_MAITRED_LINE === 'a-regular' ? t('aRegular') : ''
   // RM20616 dish pages U3 (DISH_PAGES, boards dp-*-a): the app's answer and the dishes diners rated, from the place
   // aggregate (no read of its own). It replaces the Maître d's note: the web shows the app's answer only (Devon, Q1).
-  // With no `dishes` yet (not computed) there is no block at all. A row's photo is one of `meals`, the meals that
-  // passed the author check above, and is the grid tile's own file (Devon, Q5: "Let it repeat").
+  // With no `dishes` (not computed, or a venue that opted out of dish names) there is no block at all. A row's photo is
+  // one of `meals`, the meals that passed the author check above, whose caption is exactly that dish (Devon, "Exact dish
+  // only"), and is the grid tile's own file (Devon, Q5: "Let it repeat").
   const dishesOn = dishPagesOn()
   const dishes = dishesOn ? place.dishes : undefined
   const answer = dishes?.answer ?? null
   const rated = answer && dishes ? dishes.rated.slice(0, MAX_RATED_DISHES) : []
-  const photoOf = matchDishPhotos(rated, answer?.name ?? '', meals)
+  const photoOf = matchDishPhotos(rated, meals)
   const dishRows = rated.map((name) => {
     const meal = meals.find((m) => m.id === photoOf.get(name))
     return { name, photo: meal ? { mealId: meal.id, src: meal.thumb || thumbUrl(meal.src, 480) } : null }

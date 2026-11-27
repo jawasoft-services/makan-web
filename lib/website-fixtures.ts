@@ -43,11 +43,14 @@ const places: DirectoryPlace[] = [base,
 // RM20616 dish pages — the fixture restaurant's dish section, set by MAKAN_WEBSITE_FIXTURE_DISHES: unset is "not
 // computed" (no block); `answer` is an Eat or Yeet answer with four rated dishes (dishes from Devon's own review of the
 // place, no drinks); `maitred` is the same answer as the Maître d' pick; `thin` has no answer (the not-enough line).
-// The other fixture place never has dishes. "Tiramisu after dinner" names a rated dish, so that row has a photo.
+// The other fixture place never has dishes.
 export const FIXTURE_DISHES = process.env.MAKAN_WEBSITE_FIXTURE_DISHES ?? ''
 if (WEBSITE_FIXTURES && !['', 'answer', 'maitred', 'thin'].includes(FIXTURE_DISHES)) throw new Error('Unknown website fixture dish state.')
 if (WEBSITE_FIXTURES && FIXTURE_DISHES) base.dishes = FIXTURE_DISHES === 'thin' ? { answer: null, rated: [] }
-  : { answer: { name: 'Harissa prawns', maitred: FIXTURE_DISHES === 'maitred' }, rated: ['Tiramisu', 'Carbonara', 'Mushroom risotto', 'Truffle fries'] }
+  : { answer: { name: 'Harissa prawns', maitred: FIXTURE_DISHES === 'maitred' }, rated: ['Kendal\'s tiramisu', 'Carbonara', 'Mushroom risotto', 'Truffle fries'] }
+// A photo lands on a row only when its caption is exactly that dish (Devon, 27 Nov 2026), so in the dish states the
+// tiramisu meal is captioned as the dish ("Kendal's tiramisu", the review's own item); the shared `meals` stay as they are.
+if (WEBSITE_FIXTURES && FIXTURE_DISHES) base.meals = meals.map(meal => meal.id === 'fixture-public-meal-2' ? { ...meal, caption: 'Kendal\'s tiramisu' } : meal)
 // RM20616 dish pages U2 — MAKAN_WEBSITE_FIXTURE_TAKEDOWN=1 plays config/webListing with the fixture restaurant
 // taken down (lib/web-listing.ts): its page goes; it stays in the standings and the Maître d' listings.
 export const fixtureHiddenPlaceIds = (): string[] => process.env.MAKAN_WEBSITE_FIXTURE_TAKEDOWN === '1' ? [FIXTURE_PLACE_ID] : []

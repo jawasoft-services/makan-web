@@ -17,7 +17,8 @@ const photo = n => `${storage}?m${n}`
 const meals = (...captions) => captions.map((caption, i) => ({ id: `place-meal-${i + 1}`, src: photo(i + 1), thumb: '', caption, mealType: 'Dinner', username: `diner_handle_${i + 1}`, at: '2026-11-05T18:00:00.000Z' }))
 const ANSWER = { name: 'Nasi campur ayam betutu', maitred: false }
 const RATED = ['Nasi goreng udang', 'Sate', 'Nasi campur ayam', 'Mie goreng']
-const dishPlace = (dishes, captions = ['Nasi goreng udang tonight', 'Sate with friends']) => place({ meals: meals(...captions), dishes })
+// Each caption names exactly one rated dish (Devon, 27 Nov 2026: "Exact dish only"), so those rows get a photo.
+const dishPlace = (dishes, captions = ['Nasi goreng udang', 'Mie goreng']) => place({ meals: meals(...captions), dishes })
 const withDishes = (dishes, captions) => { const run = lane({ env: ON }); run.useCache(); run.state.place = dishPlace(dishes, captions); return run }
 /** The dish section only: from the answer block up to "What people ate". */
 const section = html => html.slice(html.indexOf('<section class="answer"'), html.indexOf('id="what-people-ate"') > 0 ? html.indexOf('<section aria-labelledby="what-people-ate"') : undefined)
@@ -30,11 +31,11 @@ test('answer (dp-answer-a): the app\'s answer on the tint, then the rated dishes
     assert.match(html, new RegExp(`^<section class="answer" aria-labelledby="what-to-order"><h2 id="what-to-order" class="answerLabel">${t.whatToOrder.replace('?', '\\?')}</h2><p class="answerDish">Nasi campur ayam betutu</p></section>`))
     assert.match(html, new RegExp(`<h2 id="dishes-rated-here" class="heading">${t.dishesRatedHere}</h2>`))
     assert.deepEqual([...html.matchAll(/<span class="dishName">([^<]*)<\/span>/g)].map(m => m[1]), RATED)
-    // "Nasi goreng udang tonight" and "Sate with friends" name two rows; the others have no photo.
+    // Captions "Nasi goreng udang" and "Mie goreng" are exactly two rated dishes: those two rows have a photo.
     const prefix = locale === 'id' ? '/id' : ''
     assert.match(html, new RegExp(`<li class="dishRow"><span class="dishName">Nasi goreng udang</span><a href="${prefix}/meal/place-meal-1" class="dishPhoto"><img src="[^"]*photo\\.jpg%3Fm1"`))
-    assert.match(html, new RegExp(`<span class="dishName">Sate</span><a href="${prefix}/meal/place-meal-2" class="dishPhoto">`))
-    assert.match(html, /<li class="dishRow"><span class="dishName">Mie goreng<\/span><\/li>/)
+    assert.match(html, new RegExp(`<span class="dishName">Mie goreng</span><a href="${prefix}/meal/place-meal-2" class="dishPhoto">`))
+    assert.match(html, /<li class="dishRow"><span class="dishName">Sate<\/span><\/li>/)
     assert.doesNotMatch(html, /answerBy|crown|A regular|Pelanggan tetap/, 'an Eat or Yeet answer has no Maître d\' line')
     // The section comes where the Maître d's note was: after the name, before "What people ate".
     assert.ok(out.html.indexOf('class="answer"') > out.html.indexOf('<h1 class="name">') && out.html.indexOf('class="answer"') < out.html.indexOf('what-people-ate'))
@@ -72,6 +73,20 @@ test('nothing here (dp-empty), not computed, or every photo hidden: no block tha
   assert.match(alone.html, /answerDish/); assert.doesNotMatch(alone.html, /dishes-rated-here/)
 })
 
+// M2 (review, 27 Nov 2026): a venue that opted out of dish names gets no `dishes` from the cron (lib/aggregates/dishes.ts),
+// so its page draws no block at all, as the app shows no decision section for it: never "Not enough meals here yet".
+test('a venue that opted out of dish names: no block at all, however many meals its page shows', async () => {
+  for (const locale of ['en', 'id']) {
+    const run = lane({ env: ON }); run.useCache()
+    run.state.place = place({ meals: meals('Nasi goreng udang', 'Mie goreng') })
+    run.state.maitred = { status: 'held', venue: { ...venue, notes: { ...venue.notes, always: 'Nasi goreng udang' } } }
+    const out = await open(run, locale)
+    assert.match(out.html, /what-people-ate/)
+    assert.doesNotMatch(out.html, /class="answer"|what-to-order|answerThin|dishes-rated-here|class="order"/)
+    assert.ok(!out.html.includes(strings(locale).Decision.FirstDay.emptyState))
+  }
+})
+
 test('Q1, the app\'s answer only: a Maître d\' note that is not the answer is never shown', async () => {
   const run = withDishes({ answer: { name: 'Sate', maitred: false }, rated: ['Nasi goreng udang', 'Mie goreng'] })
   run.state.maitred = { status: 'held', venue: { ...venue, notes: { ...venue.notes, always: 'FREE TEXT PICK NOT ON THE LIST' } } }
@@ -94,7 +109,7 @@ test('a row photo comes only from a meal the page shows: a held, suspended, spam
     ['check failed', run => run.failures.add(`users/${DINERS[0]}`)],
   ]
   for (const [why, change] of hide) {
-    const run = withDishes({ answer: ANSWER, rated: RATED }, ['Nasi goreng udang tonight', 'Nasi goreng udang again']); change(run)
+    const run = withDishes({ answer: ANSWER, rated: RATED }, ['Nasi goreng udang', 'Nasi goreng udang']); change(run)
     const out = await open(run)
     assert.ok(!out.html.includes(photo(1)) && !out.html.includes(encodeURIComponent(photo(1))) && !out.html.includes('place-meal-1'), why)
     if (why === 'check failed') { assert.doesNotMatch(section(out.html), /dishPhoto/, why); continue }
@@ -102,27 +117,39 @@ test('a row photo comes only from a meal the page shows: a held, suspended, spam
   }
 })
 
-test('another dish\'s photo is never borrowed: longest name wins, and a caption naming the answer lends nothing', async () => {
-  // "Nasi campur ayam betutu" (the answer) holds "Nasi campur ayam" (a row): its photo is not that row's.
-  const out = await open(withDishes({ answer: ANSWER, rated: RATED }, ['Nasi campur ayam betutu, the best', 'Mie goreng for two']))
-  const html = section(out.html)
+// M1 (review, 27 Nov 2026) and Devon's answer, "Exact dish only": a photo goes on a dish row only when the meal's
+// caption names that exact dish (folded: case, accents and punctuation aside). Anything else leaves the row without one.
+test('exact dish only: a variant, a longer name or a caption naming two dishes never lends its photo; an exact name does', async () => {
+  const rowsOf = async (rated, captions) => {
+    const html = section((await open(withDishes({ answer: ANSWER, rated }, captions))).html)
+    return Object.fromEntries([...html.matchAll(/<span class="dishName">([^<]*)<\/span>(<a href="\/meal\/([^"]+)")?/g)].map(m => [m[1], m[3] ?? null]))
+  }
+  // "Sate lilit" is not "Sate" (only "Sate" is rated: the web never sees the unrated "Sate lilit").
+  assert.deepEqual(await rowsOf(['Sate', 'Lawar'], ['Sate lilit', 'Sate lilit again']), { Sate: null, Lawar: null })
+  // A variant family: "Nasi goreng seafood" is not "Nasi goreng".
+  assert.deepEqual(await rowsOf(['Nasi goreng', 'Mie goreng'], ['Nasi goreng seafood', 'Mie goreng jawa']), { 'Nasi goreng': null, 'Mie goreng': null })
+  // A caption naming two dishes is a photo of neither.
+  assert.deepEqual(await rowsOf(['Babi guling', 'Lawar'], ['Babi guling and lawar', 'Lawar, babi guling']), { 'Babi guling': null, Lawar: null })
+  // Extra words are not the dish either.
+  assert.deepEqual(await rowsOf(['Nasi goreng udang', 'Sate'], ['Nasi goreng udang tonight', 'Sate with friends']), { 'Nasi goreng udang': null, Sate: null })
+  // The exact dish, case, accents and punctuation aside, lands; the newest meal that names it wins, one photo per dish.
+  assert.deepEqual(await rowsOf(['Nasi goreng', 'Babi guling'], ['NASI GORENG!', 'Nasi goreng']), { 'Nasi goreng': 'place-meal-1', 'Babi guling': null })
+  assert.deepEqual(await rowsOf(['Bebek betutu', 'Lawar'], ['Lawar', 'Bébek  betutu.']), { 'Bebek betutu': 'place-meal-2', Lawar: 'place-meal-1' })
+})
+
+test('the answer follows the same rule: its block has no photo, and a caption naming the answer lends nothing to a row', async () => {
+  const html = section((await open(withDishes({ answer: ANSWER, rated: RATED }, ['Nasi campur ayam betutu', 'Nasi campur ayam betutu']))).html)
+  assert.doesNotMatch(html, /<img|dishPhoto|place-meal-/)
   assert.match(html, /<li class="dishRow"><span class="dishName">Nasi campur ayam<\/span><\/li>/)
-  assert.match(html, /<span class="dishName">Mie goreng<\/span><a href="\/meal\/place-meal-2"/)
-  assert.doesNotMatch(html, /place-meal-1/)
-  // A whole word only: "Sateh" is not "Sate"; "Mie gorengan" is not "Mie goreng".
-  const words = section((await open(withDishes({ answer: ANSWER, rated: RATED }, ['Sateh madura here', 'Mie gorengan tonight']))).html)
-  assert.doesNotMatch(words, /dishPhoto/)
-  // One photo per dish: two meals naming the same dish give the newer one.
-  const twice = section((await open(withDishes({ answer: ANSWER, rated: RATED }, ['Sate with friends', 'Sate again tonight']))).html)
-  assert.equal(twice.match(/dishPhoto/g).length, 1); assert.match(twice, /\/meal\/place-meal-1/)
 })
 
 test('nobody named, nothing counted: no @, handle, caption, rank, price or menu section in the dish section', async () => {
-  const run = withDishes({ answer: { ...ANSWER, maitred: true }, rated: RATED }, ['Nasi goreng udang tonight', 'Sate with friends'])
+  const run = withDishes({ answer: { ...ANSWER, maitred: true }, rated: RATED }, ['Nasi goreng udang', 'Mie goreng'])
   for (const locale of ['en', 'id']) {
     const html = section((await open(run, locale)).html)
     assert.ok(html.length > 200)
-    assert.doesNotMatch(html, /@|diner_handle|HOLDER|tonight|with friends|CAPTION/)
+    assert.ok(html.includes('dishPhoto'), 'rows with photos are checked too')
+    assert.doesNotMatch(html, /@|diner_handle|HOLDER|CAPTION/)
     assert.doesNotMatch(html.replace(/<[^>]+>/g, ''), /\d/, 'no rank, count or price in the words shown')
     assert.doesNotMatch(html, /MENU|IDR|Rp|★|rating/i)
   }
@@ -168,7 +195,7 @@ test('the fixture lane renders each dish state in English and Bahasa with no dat
       if (state === 'thin') assert.ok(out.html.includes(strings(locale).Decision.FirstDay.emptyState))
       else {
         assert.match(out.html, /<p class="answerDish">Harissa prawns<\/p>/)
-        assert.match(out.html, /<span class="dishName">Tiramisu<\/span><a href="(\/id)?\/meal\/fixture-public-meal-2" class="dishPhoto">/)
+        assert.match(out.html, /<span class="dishName">Kendal&#x27;s tiramisu<\/span><a href="(\/id)?\/meal\/fixture-public-meal-2" class="dishPhoto">/)
         assert.equal(out.html.includes('class="answerBy"'), state === 'maitred')
       }
       assert.doesNotMatch(out.text, /Alex|makan_fixture/)
