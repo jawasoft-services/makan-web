@@ -1,6 +1,6 @@
 /**
  * RM20773 (Devon, 27 Nov 2026: "lets make a founder story"): the founder story at /story and /id/story.
- * DRAFT: every line here waits for Devon's word-for-word approval before it ships. Claims and their sources:
+ * Approved word for word by Devon (27 Nov 2026: "Approve as drafted"; the friends-still-post line cut: "No, cut it"). Claims and their sources:
  * side-session-notes/…/founder-story/CLAIM-LEDGER.md. The retired article (story-copy.ts) is raw material only;
  * nothing here repeats a home page line. {mealCount} is the live count; its sentence hides without one.
  */
@@ -38,7 +38,6 @@ export const founderStory: Record<'en' | 'id', FounderStory> = {
       ] },
       { h: 'Where it is now', p: [
         'Makan went live on 19 June 2026. People have saved {mealCount} meals on it so far.',
-        'Some of the friends from that first story still post on it, doing what they did in 2020: putting up a plate so someone else knows what to order.',
       ] },
     ],
   },
@@ -67,7 +66,6 @@ export const founderStory: Record<'en' | 'id', FounderStory> = {
       ] },
       { h: 'Sekarang', p: [
         'Makan rilis pada 19 Juni 2026. Sejauh ini sudah {mealCount} makanan disimpan di sana.',
-        'Beberapa teman dari story pertama itu masih mengunggah di sana, melakukan hal yang sama seperti tahun 2020: mengunggah satu piring supaya orang lain tahu mau pesan apa.',
       ] },
     ],
   },

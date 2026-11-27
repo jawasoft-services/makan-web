@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 /**
  * RM20773 (Devon, 27 Nov 2026: "lets make a founder story"): the founder story, in the rebuilt site's document
  * layout (the blog's family): the headline and dek, the chapters with a contents list, then the app link.
- * The copy is components/story/founder-story.ts. The meal count is live (the cached reader the retired page used).
+ * The copy is components/story/founder-story.ts. The meal count is live (the cached reader the retired page used); without it, only that sentence is left out.
  */
 export default async function StoryPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -34,7 +34,7 @@ export default async function StoryPage({ params }: { params: Promise<{ locale: 
       <DocPage title={s.title} lede={<>{s.dek}<span className="story-by">{s.byline}</span></>} toc={toc}>
         {s.chapters.map(c => <section key={c.h}>
           <h2 id={slugId(c.h)}>{c.h}</h2>
-          {c.p.filter(p => meals !== null || !p.includes('{mealCount}')).map(p => <p key={p}>{p.replace('{mealCount}', meals ?? '')}</p>)}
+          {c.p.map(p => meals === null ? p.replace(/\s*[^.]*\{mealCount\}[^.]*\./, '').trim() : p.replace('{mealCount}', meals)).filter(Boolean).map(p => <p key={p}>{p}</p>)}
         </section>)}
         <p><Link className="btn or" href={localizePath(locale, '/app')}>{t('app')} →</Link></p>
       </DocPage>
