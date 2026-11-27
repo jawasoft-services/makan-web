@@ -9,6 +9,22 @@ const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v))
 const ease = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
 const jump = (y: number) => window.scrollTo({ top: y, left: 0, behavior: 'instant' })
 
+declare global { interface WindowEventMap { 'makan:jump': Event } }
+
+/** Snaps and holds stand down for this long after a section jump, so they never pull the page away from it. */
+export const JUMP_QUIET_MS = 1200
+
+/**
+ * Devon, 27 Nov 2026: header links must land instantly at the top of their page or section. A link to a
+ * section of the page already open (the home page's /#c3b, /#get, /#story) jumps there at once: no smooth
+ * scroll down the long home page, and the magnetic stops are told to stand down (`makan:jump`). A link to
+ * another page navigates as usual; the home page's HashScroll lands it the same way.
+ */
+export function jumpToSection(el: Element) {
+  window.dispatchEvent(new Event('makan:jump'))
+  jump(el.getBoundingClientRect().top + window.scrollY)
+}
+
 /**
  * The shell's motion runtime, from the approved prototype's kit.js, for every page:
  * - the chopsticks cursor (mouse only);
@@ -22,6 +38,25 @@ const jump = (y: number) => window.scrollTo({ top: y, left: 0, behavior: 'instan
  */
 export default function SiteMotion() {
   const pathname = usePathname()
+
+  useEffect(() => {
+    const click = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+      const a = (e.target as Element | null)?.closest?.('a[href]') as HTMLAnchorElement | null
+      if (!a || a.target === '_blank') return
+      const url = new URL(a.href, location.href)
+      if (url.origin !== location.origin || url.pathname.replace(/\/$/, '') !== location.pathname.replace(/\/$/, '') || url.search !== location.search) return
+      // the page already open: a section link jumps to the section, a plain link (the logo, "The app" on the
+      // home page) jumps back to the top
+      const el = url.hash ? document.getElementById(decodeURIComponent(url.hash.slice(1))) : document.documentElement
+      if (!el) return
+      e.preventDefault()
+      jumpToSection(el)
+      if (location.hash !== url.hash) history.pushState(history.state, '', url.hash || url.pathname)
+    }
+    document.addEventListener('click', click, true)
+    return () => document.removeEventListener('click', click, true)
+  }, [])
 
   // The cursor lives for the whole visit.
   useEffect(() => {
@@ -137,12 +172,13 @@ export default function SiteMotion() {
 
     // magnetic stops, after GSAP's snapTo: 'labelsDirectional'
     const stops = $$('[data-stop]')
+    let quietUntil = 0
     const SN = { active: false, dir: 1, lastY: scrollY, idle: 0, touching: false, hold: null as null | { y: number; until: number } }
     const docTop = (e: HTMLElement | null) => { let y = 0; while (e) { y += e.offsetTop; e = e.offsetParent as HTMLElement | null } return y }
     const stopY = (el: HTMLElement) => { const top = el.dataset.stop === 'top'; return docTop(el) + (top ? 0 : el.offsetHeight / 2) - innerHeight * (top ? 0.18 : 0.5) }
     const held = () => Boolean(SN.hold && performance.now() < SN.hold.until)
     const snapCheck = () => {
-      if (reduce || !stops.length || SN.active || SN.touching || held()) return
+      if (reduce || !stops.length || SN.active || SN.touching || held() || performance.now() < quietUntil) return
       const H = innerHeight, y = scrollY
       let ahead: number | null = null, ad = 1e9, back: number | null = null, bk = 1e9
       stops.forEach(el => { const t = stopY(el), d = (t - y) * SN.dir; if (d >= 0 && d < H * 0.35 && d < ad) { ad = d; ahead = t } if (d < 0 && -d < H * 0.08 && -d < bk) { bk = -d; back = t } })
@@ -167,6 +203,7 @@ export default function SiteMotion() {
       on('touchend', () => { SN.touching = false; clearTimeout(SN.idle); SN.idle = window.setTimeout(snapCheck, 220) }, { passive: true })
       on('keydown', () => { if (SN.active) SN.active = false }, { passive: true })
       on('mousedown', () => { if (SN.active) SN.active = false }, { passive: true })
+      on('makan:jump', () => { SN.active = false; SN.hold = null; clearTimeout(SN.idle); quietUntil = performance.now() + JUMP_QUIET_MS })
       offs.push(() => { SN.active = false; clearTimeout(SN.idle) })
     }
 

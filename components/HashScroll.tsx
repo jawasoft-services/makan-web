@@ -2,6 +2,8 @@
 
 import { useEffect } from 'react'
 
+import { jumpToSection } from '@/components/site/SiteMotion'
+
 /**
  * Scrolls the homepage to the section named in the URL hash after the sections
  * have mounted.
@@ -30,8 +32,10 @@ export default function HashScroll() {
       if (el) {
         // Prefer Lenis so the position matches the page's own smooth scroll;
         // fall back to the native API when Lenis is not mounted.
-        if (window.__lenis) window.__lenis.scrollTo(el, { offset: 0 })
-        else el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        // RM20773: land at once at the section's top (Devon: "make it redirect instantly"); the page's
+        // magnetic stops stand down for the jump (components/site/SiteMotion).
+        if (window.__lenis) window.__lenis.scrollTo(el, { offset: 0, immediate: true })
+        else jumpToSection(el)
         return
       }
       // The section may not be laid out yet on first paint; retry briefly.

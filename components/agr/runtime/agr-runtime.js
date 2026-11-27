@@ -650,7 +650,7 @@ export function mountAgr(root, data) {
   // ---- magnetic stops: when the scroll comes to rest near an aha moment, it eases onto it and pauses there.
   // Same idea as GSAP ScrollTrigger snap { snapTo: 'labelsDirectional', delay }: only after scrolling stops,
   // only toward the next moment in the direction you were going, and never fighting a hand that is still scrolling.
-  const SNAP = { active: false, target: 0, dir: 1, lastY: scrollY, idle: 0, touching: false }
+  const SNAP = { active: false, target: 0, dir: 1, lastY: scrollY, idle: 0, touching: false, quietUntil: 0 }
   const secY = (el, p) => { if (!el) return null; const top = el.getBoundingClientRect().top + scrollY, run = el.offsetHeight - innerHeight; return top + p * Math.max(0, run) }
   // layout position, ignoring the reveal transforms that slide text in (a moving target would make the snap miss)
   const docTop = (e) => { let y = 0; while (e) { y += e.offsetTop; e = e.offsetParent } return y }
@@ -674,7 +674,7 @@ export function mountAgr(root, data) {
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
   const snapCancel = () => { SNAP.active = false }
   function snapCheck() {
-    if (reduce || SNAP.active || SNAP.touching || heldY() !== null) return
+    if (reduce || SNAP.active || SNAP.touching || heldY() !== null || performance.now() < SNAP.quietUntil) return
     const H = innerHeight, y = scrollY
     let ahead = null, ad = 1e9, back = null, bk = 1e9
     STOPS.forEach((f) => {
@@ -706,6 +706,8 @@ export function mountAgr(root, data) {
     unlater(SNAP.idle); SNAP.idle = later(snapCheck, 170)
   }, { passive: true })
   // a hand on the wheel, keys or screen always wins over a snap in progress
+  // a header link jumped straight to a section (components/site/SiteMotion): drop any snap or hold, stay quiet
+  on(window, 'makan:jump', () => { snapCancel(); PAGEHOLD = null; unlater(SNAP.idle); SNAP.quietUntil = performance.now() + 1200 })
   ;['wheel', 'touchstart', 'keydown', 'mousedown'].forEach((ev) => on(window, ev, () => { if (ev === 'touchstart') SNAP.touching = true; if (SNAP.active && heldY() === null) snapCancel() }, { passive: true }))
   on(window, 'touchend', () => { SNAP.touching = false; unlater(SNAP.idle); SNAP.idle = later(snapCheck, 220) }, { passive: true })
   on(window, 'wheel', stopEv, { passive: false }); on(window, 'touchmove', stopEv, { passive: false })
