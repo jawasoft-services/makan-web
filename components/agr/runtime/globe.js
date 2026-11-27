@@ -14,8 +14,12 @@ const sm = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t) }
 // big cities shown as open seats when no meal is pinned near them (the prototype's list)
 const GHOSTS = [[35.68, 139.69], [37.57, 126.98], [13.76, 100.5], [25.03, 121.57], [31.23, 121.47], [39.9, 116.41], [10.82, 106.63], [3.14, 101.69], [14.6, 120.98], [19.08, 72.88], [28.61, 77.21], [25.2, 55.27], [41.01, 28.98], [32.09, 34.78], [30.04, 31.24], [31.63, -8.01], [6.52, 3.38], [-33.92, 18.42], [38.72, -9.14], [41.39, 2.17], [41.9, 12.5], [52.52, 13.4], [48.21, 16.37], [37.98, 23.73], [34.05, -118.24], [37.77, -122.42], [41.88, -87.63], [19.43, -99.13], [-23.55, -46.63], [-34.6, -58.38], [4.71, -74.07], [43.65, -79.38], [-33.87, 151.21], [-36.85, 174.76]]
 const LONDON = { lat: 51.51, lng: -0.13 }, ENDV = { lat: 32, lng: 58 }
-// pin photos load as pins come into view, a few at a time (they are /api/thumb resizes)
-const MAX_LOADING = 6
+// Devon, 27 Nov 2026: "can we preload the images, so it shows already all loaded?" Every pin photo
+// starts loading as the globe mounts (the runtime has usually fetched them already, a few screens
+// earlier), nearest London first, and a pin shows its photo bubble only once the photo is in, a plain
+// dot until then, so there is never an empty bubble. The photos are CDN-cached (/api/thumb is immutable).
+const MAX_LOADING = 12
+const PHOTO = '<span class="gp"><img alt="" decoding="async"><i></i><b></b></span>'
 
 function angDist(a, b) { const s = Math.sin(a.lat * DEG) * Math.sin(b.lat * DEG) + Math.cos(a.lat * DEG) * Math.cos(b.lat * DEG) * Math.cos((a.lng - b.lng) * DEG); return Math.acos(clamp(s, -1, 1)) }
 // three-globe's polar2Cartesian
@@ -80,8 +84,7 @@ export function mountGlobe(cmEl, gEl, opts) {
   for (const p of all) {
     const el = document.createElement('div')
     if (p.ghost) { el.className = 'gpin ghost'; el.innerHTML = '<span class="gp"><u></u><i></i><b></b></span>' }
-    else if (p.s) { el.className = 'gpin'; el.innerHTML = '<span class="gp"><img alt="" decoding="async"><i></i><b></b></span>'; p.img = el.querySelector('img') }
-    else { el.className = 'gpin dot'; el.innerHTML = '<span class="gp"><b></b></span>' }
+    else { el.className = 'gpin dot'; el.innerHTML = '<span class="gp"><b></b></span>' }   // a photo pin is a dot until its photo is in
     el.style.display = 'none'
     p.el = el; p.pos = toXYZ(p.lat, p.lng, 0, new Vector3()); p.shown = false; p.x = NaN; p.y = NaN
     pinsBox.appendChild(el)
@@ -89,13 +92,19 @@ export function mountGlobe(cmEl, gEl, opts) {
   let loading = 0
   const queue = []
   const pump = () => {
-    while (loading < MAX_LOADING && queue.length) {
-      const p = queue.shift(); loading++
-      const done = () => { loading--; pump() }
-      p.img.onload = done; p.img.onerror = done; p.img.src = p.s
+    while (loading < MAX_LOADING && queue.length && !dead) {
+      const p = queue.shift(), im = new Image(); loading++
+      im.decoding = 'async'
+      im.onload = () => {
+        loading--
+        if (!dead) { p.el.classList.remove('dot'); p.el.innerHTML = PHOTO; p.el.querySelector('img').src = p.s }
+        pump()
+      }
+      im.onerror = () => { loading--; pump() }   // the pin stays a dot
+      im.src = p.s
     }
   }
-  const wantPhoto = (p) => { if (p.img && !p.queued) { p.queued = true; queue.push(p); pump() } }
+  for (const p of PINS) if (p.s) queue.push(p)
 
   // controls: off while the scroll drives the camera; at the end the globe spins freely
   const controls = new OrbitControls(camera, renderer.domElement)
@@ -106,6 +115,7 @@ export function mountGlobe(cmEl, gEl, opts) {
   controls.addEventListener('change', () => { dirty = true })
 
   let w = 0, h = 0, dirty = true, glFree = false, glVisible = false, raf = 0, last = 0, tween = null, dead = false
+  pump()   // start the pin photos now that `dead` exists
   function size() {
     const W = gEl.clientWidth, H = gEl.clientHeight
     if (W !== w || H !== h) { w = W; h = H; renderer.setSize(w, h, false); camera.aspect = w / Math.max(1, h); camera.updateProjectionMatrix(); dirty = true }
@@ -152,7 +162,7 @@ export function mountGlobe(cmEl, gEl, opts) {
         p.el.style.transform = 'translate(-50%,-50%) translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)'
         p.el.style.zIndex = String(Math.round(100000 - p.pos.distanceTo(c) * 10))
       }
-      if (p.on !== p.shown) { p.shown = p.on; p.el.classList.toggle('on', p.on); if (p.on) wantPhoto(p) }
+      if (p.on !== p.shown) { p.shown = p.on; p.el.classList.toggle('on', p.on) }
     }
   }
   function render(now) {
