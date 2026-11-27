@@ -27,6 +27,11 @@ const contentSecurityPolicy = [
   "upgrade-insecure-requests",
 ].join("; ");
 
+// RM20616 O1 — the approval text's link page (/d/{code}) calls two public callables from the visitor's browser at the
+// function's own URL (lib/notice-link.ts). Only that page may connect there; the rest of the policy is the site's.
+const noticeLinkFunctions = "https://us-central1-makan-devel.cloudfunctions.net https://us-central1-munchies-expo.cloudfunctions.net";
+const noticeLinkContentSecurityPolicy = contentSecurityPolicy.replace("connect-src 'self'", `connect-src 'self' ${noticeLinkFunctions}`);
+
 // Security response headers applied to every route.
 const securityHeaders = [
   // Clickjacking protection (legacy header for older browsers).
@@ -99,6 +104,11 @@ const nextConfig: NextConfig = {
         source: "/:path*",
         headers: securityHeaders,
       },
+      // RM20616 O1 — after the rule above, so this value is the one sent (the last rule to set a key wins).
+      ...["/d/:code", "/en/d/:code", "/id/d/:code"].map((source) => ({
+        source,
+        headers: [{ key: "Content-Security-Policy", value: noticeLinkContentSecurityPolicy }],
+      })),
       {
         source: "/invite/:path*",
         headers: [
