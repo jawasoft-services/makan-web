@@ -1,6 +1,7 @@
 import 'server-only'
 import { getDirectoryPlaceById, type DirectoryPlace } from '@/lib/place-directory'
 import { thumbUrl } from '@/lib/thumb'
+import { photoAllowed } from '@/lib/dish-wall'
 
 /** The most places one standings render reads: the same budget the earlier GuideStory spent (24 documents). */
 const MAX_PLACES = 24
@@ -23,14 +24,14 @@ export async function getStandingsPhotos(rankedIds: string[], busiestIds: string
   unique.forEach((id, i) => { const p = loaded[i]; if (p) byId.set(id, p) })
   const thumbs: Record<string, string> = {}
   for (const id of rankedIds) {
-    const meal = byId.get(id)?.meals[0]
+    const meal = byId.get(id)?.meals.find(photoAllowed)   // never a pork or drink photo (lib/dish-wall)
     if (meal) thumbs[id] = meal.thumb || thumbUrl(meal.src, 240)
   }
   const mosaic: StandingsPhotos['mosaic'] = []
   const take = (placeId: string, n: number) => {
     const p = byId.get(placeId)
     if (!p) return
-    for (const m of p.meals.slice(0, n)) {
+    for (const m of p.meals.filter(photoAllowed).slice(0, n)) {
       if (mosaic.length >= mosaicSize) return
       if (mosaic.some(x => x.id === m.id)) continue
       mosaic.push({ id: m.id, src: m.thumb || thumbUrl(m.src, 240), alt: m.caption ? `${m.caption}, ${p.name}` : p.name })

@@ -524,7 +524,7 @@ export function mountAgr(root, data) {
     const H = innerHeight, r = c4el.getBoundingClientRect()
     let rot = 0, off = 0
     // a ramp: slower than the scroll at first, then faster and faster until the rows blur; the list never reaches its end
-    const box = feed.parentNode.clientHeight, room = feed.scrollHeight - box, q = clamp(Math.max(0, -r.top) / ((c4el.offsetHeight - H) * 1.25), 0, 1)
+    const box = feed.parentNode.clientHeight, room = Math.max(0, feed.scrollHeight - box), q = clamp(Math.max(0, -r.top) / ((c4el.offsetHeight - H) * 1.25), 0, 1)
     const run = room * 0.96 * (reduce ? q : 0.05 * q + 0.95 * Math.pow(q, 3.4)), blur = reduce ? 0 : Math.pow(clamp((q - 0.42) / 0.5, 0, 1), 1.6) * 9
     feed.style.transform = 'translateY(' + (-run).toFixed(1) + 'px)'; feed.style.filter = blur > 0.25 ? 'blur(' + blur.toFixed(2) + 'px)' : ''
     // load the next rows' photos a little before they slide in (lazy images inside a clipped list load late)

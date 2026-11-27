@@ -13,6 +13,7 @@ import { getHiddenPlaceIds } from '@/lib/web-listing'
 import { dishAnswersShown, maitredCardDish } from '@/lib/dish-pages'
 import { getAllReviews } from '@/lib/reviews'
 import { thumbUrl } from '@/lib/thumb'
+import { photoAllowed, wallDish } from '@/lib/dish-wall'
 import { localizePath } from '@/i18n/paths'
 import PartnerForm from './PartnerForm'
 import FindRestaurant from './FindRestaurant'
@@ -57,19 +58,22 @@ export default async function PartnerPage({ params }: {params: Promise<{locale: 
     ?? [...standings.cities].sort((a, b) => b.rows.length - a.rows.length)[0] ?? null
   const byId = new Map(directory.map(p => [p.placeId, p]))
   // RM20616 dish pages U2: a venue taken down is never the featured card (its page is gone); the ranks stay real.
-  const cardRank = city ? city.rows.findIndex(r => !hidden.has(r.placeId) && (byId.get(r.placeId)?.meals.length ?? 0) >= 3) : -1
+  const cardRank = city ? city.rows.findIndex(r => !hidden.has(r.placeId) && (byId.get(r.placeId)?.meals.filter(photoAllowed).length ?? 0) >= 3) : -1
   const card = city && cardRank >= 0 ? byId.get(city.rows[cardRank].placeId) ?? null : null
   // Public web rule (Devon, RM20711): a Maître d’ is "A regular", never a name.
-  // The featured city's Maître d’ usual orders first, then others, three at most.
-  const inCity = (v: { where: { city: string } | null }) => Boolean(city && v.where?.city.toLowerCase() === city.city.toLowerCase())
+  // Maître d’ usual orders nearest the featured city first: that city, then the same country (Jakarta's are in
+  // Tangerang and Depok today), then the rest; three at most. Each card names its own city.
+  const near = (v: { where: { city: string; country: string } | null }) => !city || !v.where ? 2
+    : v.where.city.toLowerCase() === city.city.toLowerCase() ? 0 : v.where.country.toLowerCase() === city.country.toLowerCase() ? 1 : 2
   // RM20616 dish pages L6 (Devon, "Same rule everywhere"): while the place page's dish answers are shown, a usual order
   // is the app's answer when it is the Maître d's pick (the dish the venue's page names), never the free text; a venue
-  // with no such answer is not featured, as a holder with no usual is not today.
+  // with no such answer is not featured, as a holder with no usual is not today. Either way the dish follows the public
+  // rules (no pork, no drinks).
   const answersShown = dishAnswersShown()
   const usualOf = (v: { placeId: string; notes: { always: string } }) => answersShown ? maitredCardDish(byId.get(v.placeId)?.dishes?.answer) : v.notes.always
-  // RM20616 dish pages U2: nor is one of the featured usual orders.
-  const published = maitred.venues.filter(v => usualOf(v) && !hidden.has(v.placeId))
-  const usuals = [...published.filter(inCity), ...published.filter(v => !inCity(v))].slice(0, 3)
+  // RM20616 dish pages U2: nor is a taken-down venue one of the featured usual orders.
+  const featured = (v: { placeId: string; notes: { always: string } }) => { const dish = usualOf(v); return Boolean(dish && wallDish({ dish, caption: '' })) && !hidden.has(v.placeId) }
+  const usuals = maitred.venues.filter(featured).map((v, i) => ({ v, i })).sort((a, b) => near(a.v) - near(b.v) || a.i - b.i).map(({ v }) => v).slice(0, 3)
   const reviews = getAllReviews()
   const src = (m: { thumb: string; src: string }) => m.thumb || thumbUrl(m.src, 480)
   const whereOf = (w: { city: string; country: string } | null) => w ? [w.city, w.country].filter(Boolean).join(', ') : ''
@@ -96,7 +100,7 @@ export default async function PartnerPage({ params }: {params: Promise<{locale: 
       <div className="wrap pd-panel">
         <div><p className="band">{tools[1].eyebrow}</p><h2 className="big md">{tools[1].title}</h2><p>{tools[1].body}</p><ul>{tools[1].points.map(p => <li key={p}>{p}</li>)}</ul></div>
         <Link className="pd-shot" href={localizePath(locale, `/places/${card.slug}`)}>
-          <div className="pd-meals">{card.meals.slice(0, 3).map(m => <figure key={m.id}><img src={src(m)} alt={m.caption ? `${m.caption}, ${card.name}` : card.name} width={480} height={480} loading="lazy" decoding="async" /></figure>)}</div>
+          <div className="pd-meals">{card.meals.filter(photoAllowed).slice(0, 3).map(m => <figure key={m.id}><img src={src(m)} alt={m.caption ? `${m.caption}, ${card.name}` : card.name} width={480} height={480} loading="lazy" decoding="async" /></figure>)}</div>
           <div className="pd-venue"><div><b>{card.name}</b><span>{whereOf(card.where)}</span></div><div className="pd-rank">{places.rich('rankCityRich', { rank: cardRank + 1, city: city.city, em })}</div></div>
         </Link>
       </div>
@@ -148,7 +152,7 @@ export default async function PartnerPage({ params }: {params: Promise<{locale: 
       <div className="wrap">
         <div className="split faqwrap">
           <h2 className="big md" data-rise="">{t('faq_title')}</h2>
-          <div className="faq">{faqs.map(([q, a], i) => <details key={q} open={i === 0}><summary>{q}</summary><p>{a}</p></details>)}</div>
+          <div className="faq">{faqs.map(([q, a], i) => <details name="partner-faq" key={q} open={i === 0}><summary>{q}</summary><p>{a}</p></details>)}</div>
         </div>
         <h2 className="big xl" data-rise="" style={{ marginTop: '14vh' }}>{t.rich('offer_titleRich', { em })}</h2>
         <p className="lede" data-rise="" style={{ maxWidth: '44ch' }}>{t('offer_body')}</p>
