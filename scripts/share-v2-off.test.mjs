@@ -55,6 +55,10 @@ const SLOT_EDITS = {
   'app/api/thumb/route.ts': [
     ["import { THUMB_WIDTHS, thumbSource } from '@/lib/thumb'\n", "import { THUMB_WIDTHS, thumbSource } from '@/lib/thumb'\nimport { withImageSlot } from '@/lib/image-slots'\n"],
     ["    const upstream = await fetch(u, { cache: 'force-cache' })\n    if (!upstream.ok) return NextResponse.redirect(u, 302)\n    const input = Buffer.from(await upstream.arrayBuffer())\n    const sharp = (await import('sharp')).default\n    const out = await sharp(input).rotate().resize({ width: w, withoutEnlargement: true }).webp({ quality: 72 }).toBuffer()\n", "    const out = await withImageSlot(async () => {\n      const upstream = await fetch(u, { cache: 'force-cache' })\n      if (!upstream.ok) return null\n      const input = Buffer.from(await upstream.arrayBuffer())\n      const sharp = (await import('sharp')).default\n      return sharp(input).rotate().resize({ width: w, withoutEnlargement: true }).webp({ quality: 72 }).toBuffer()\n    }, { maxWaitMs: 10_000 })\n    if (!out) return NextResponse.redirect(u, 302)\n"],
+    // RM20773, 27 Nov 2026: the original photo is no longer kept in Next's fetch cache, and libvips' cache
+    // is off, so resizes stop filling the instance's memory (measured: flat 130-150 MB over 120 resizes).
+    ["      const upstream = await fetch(u, { cache: 'force-cache' })\n", "      // no-store: the resized result is CDN-cached for a year; keeping each 1-3 MB original in Next's\n      // fetch cache filled Cloud Run's in-memory disk and drove the instances out of memory (RM20773).\n      const upstream = await fetch(u, { cache: 'no-store' })\n"],
+    ["      const sharp = (await import('sharp')).default\n", "      const sharp = (await import('sharp')).default\n      sharp.cache(false)   // libvips' operation cache only holds memory between one-off resizes\n"],
   ],
   'app/[locale]/_social-image.tsx': [
     ["import { join } from \"node:path\"\n", "import { join } from \"node:path\"\nimport { renderImage } from \"@/lib/image-slots\"\n"],

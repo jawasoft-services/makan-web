@@ -32,10 +32,13 @@ export async function GET(request: Request) {
   if (rateLimited(request, 'thumb', LIMIT)) return NextResponse.redirect(u, 302)
   try {
     const out = await withImageSlot(async () => {
-      const upstream = await fetch(u, { cache: 'force-cache' })
+      // no-store: the resized result is CDN-cached for a year; keeping each 1-3 MB original in Next's
+      // fetch cache filled Cloud Run's in-memory disk and drove the instances out of memory (RM20773).
+      const upstream = await fetch(u, { cache: 'no-store' })
       if (!upstream.ok) return null
       const input = Buffer.from(await upstream.arrayBuffer())
       const sharp = (await import('sharp')).default
+      sharp.cache(false)   // libvips' operation cache only holds memory between one-off resizes
       return sharp(input).rotate().resize({ width: w, withoutEnlargement: true }).webp({ quality: 72 }).toBuffer()
     }, { maxWaitMs: 10_000 })
     if (!out) return NextResponse.redirect(u, 302)

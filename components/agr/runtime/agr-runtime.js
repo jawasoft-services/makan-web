@@ -69,6 +69,7 @@ export function mountAgr(root, data) {
   const OPEN = 0, USUAL = 0   // chapter 3: the dish on the table is the regular's usual; its back names it, then it comes to sit beside the card
   let scene, camera, twin = null, narrow = innerWidth < 820
   let cur = null, raf = 0, last = 0, introStart = 0, introDone = reduce
+  const appearAt = []   // per plate: when it starts growing in place (see frame)
   const disposables = []
   // the plates draw only once their shaders are compiled (in the background where the browser can), so the
   // first frame never blocks the page
@@ -428,7 +429,21 @@ export function mountAgr(root, data) {
       moving = true
     }
     if (!cur) cur = tg.map((p) => ({ p: p.p.slice(), r: p.r.slice(), s: p.s }))
+    // Devon, 27 Nov 2026: plates "appear from thin air", the reverse of how they shrink away where they
+    // stand. A hidden plate (shrunk to nothing, parked above the screen during the story) that becomes
+    // visible is moved straight to its new spot while still invisible, then grows there, one after another,
+    // instead of travelling down from where it was parked.
+    if (introDone && !reduce) {
+      let order = 0
+      for (let i = 0; i < N; i++) {
+        if (cur[i].s < 0.02 && tg[i].s > 0.02 && !appearAt[i]) {
+          appearAt[i] = now + 70 * order++
+          cur[i].p = tg[i].p.slice(); cur[i].r = tg[i].r.slice(); cur[i].s = 0.001
+        } else if (tg[i].s <= 0.02) appearAt[i] = 0
+      }
+    }
     for (let i = 0; i < N; i++) {
+      if (appearAt[i] && now < appearAt[i]) { cur[i].p = tg[i].p.slice(); cur[i].r = tg[i].r.slice(); holders[i].visible = false; moving = true; continue }
       for (let a = 0; a < 3; a++) { const dp = tg[i].p[a] - cur[i].p[a], dr = tg[i].r[a] - cur[i].r[a]; cur[i].p[a] += dp * k; cur[i].r[a] += dr * k; if (Math.abs(dp) > 1e-4 || Math.abs(dr) > 1e-4) moving = true }
       const ds = tg[i].s - cur[i].s; cur[i].s += ds * k; if (Math.abs(ds) > 1e-4) moving = true
       const h = holders[i]; h.position.set(cur[i].p[0], cur[i].p[1], cur[i].p[2]); h.scale.setScalar(Math.max(0.001, cur[i].s))
@@ -635,7 +650,7 @@ export function mountAgr(root, data) {
   // ---- magnetic stops: when the scroll comes to rest near an aha moment, it eases onto it and pauses there.
   // Same idea as GSAP ScrollTrigger snap { snapTo: 'labelsDirectional', delay }: only after scrolling stops,
   // only toward the next moment in the direction you were going, and never fighting a hand that is still scrolling.
-  const SNAP = { active: false, target: 0, dir: 1, lastY: scrollY, idle: 0, touching: false }
+  const SNAP = { active: false, target: 0, dir: 1, lastY: scrollY, idle: 0, touching: false, quietUntil: 0 }
   const secY = (el, p) => { if (!el) return null; const top = el.getBoundingClientRect().top + scrollY, run = el.offsetHeight - innerHeight; return top + p * Math.max(0, run) }
   // layout position, ignoring the reveal transforms that slide text in (a moving target would make the snap miss)
   const docTop = (e) => { let y = 0; while (e) { y += e.offsetTop; e = e.offsetParent } return y }
@@ -659,7 +674,7 @@ export function mountAgr(root, data) {
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
   const snapCancel = () => { SNAP.active = false }
   function snapCheck() {
-    if (reduce || SNAP.active || SNAP.touching || heldY() !== null) return
+    if (reduce || SNAP.active || SNAP.touching || heldY() !== null || performance.now() < SNAP.quietUntil) return
     const H = innerHeight, y = scrollY
     let ahead = null, ad = 1e9, back = null, bk = 1e9
     STOPS.forEach((f) => {
@@ -691,6 +706,8 @@ export function mountAgr(root, data) {
     unlater(SNAP.idle); SNAP.idle = later(snapCheck, 170)
   }, { passive: true })
   // a hand on the wheel, keys or screen always wins over a snap in progress
+  // a header link jumped straight to a section (components/site/SiteMotion): drop any snap or hold, stay quiet
+  on(window, 'makan:jump', () => { snapCancel(); PAGEHOLD = null; unlater(SNAP.idle); SNAP.quietUntil = performance.now() + 1200 })
   ;['wheel', 'touchstart', 'keydown', 'mousedown'].forEach((ev) => on(window, ev, () => { if (ev === 'touchstart') SNAP.touching = true; if (SNAP.active && heldY() === null) snapCancel() }, { passive: true }))
   on(window, 'touchend', () => { SNAP.touching = false; unlater(SNAP.idle); SNAP.idle = later(snapCheck, 220) }, { passive: true })
   on(window, 'wheel', stopEv, { passive: false }); on(window, 'touchmove', stopEv, { passive: false })
