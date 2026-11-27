@@ -107,11 +107,17 @@ export interface DishRun {
   stored: ReadonlyMap<string, PlaceDishes>
   /** The 03 UTC run re-reads the order of every place with an answer. */
   dailyPass: boolean
+  /** RM20616 dish pages U2: venues taken down (lib/web-listing.ts). No dishes, and no menu read. */
+  hidden?: ReadonlySet<string>
 }
 
-/** Every place with its `dishes`. Reads `venueMenus` (dishRatingOrder only) for the places that need it, 100 to a batch. */
+/**
+ * Every place with its `dishes`, except a venue taken down, which gets none. Reads `venueMenus` (dishRatingOrder only)
+ * for the places that need it, 100 to a batch.
+ */
 export async function withPlaceDishes(db: Firestore, directory: DirectoryPlace[], run: DishRun): Promise<DirectoryPlace[]> {
-  const answers = new Map(directory.map(place => [place.placeId, readAnswer(run.venues.get(place.placeId))]))
+  const hidden = run.hidden ?? new Set<string>()
+  const answers = new Map(directory.map(place => [place.placeId, hidden.has(place.placeId) ? null : readAnswer(run.venues.get(place.placeId))]))
   const due = directory.map(place => place.placeId)
     .filter(id => needsRatingOrder(answers.get(id) ?? null, run.stored.get(id) ?? null, run.dailyPass))
   const orders = new Map<string, unknown>()
@@ -119,6 +125,6 @@ export async function withPlaceDishes(db: Firestore, directory: DirectoryPlace[]
     const docs = await db.getAll(...due.slice(i, i + 100).map(id => db.collection('venueMenus').doc(id)), { fieldMask: RATING_ORDER_FIELDS })
     for (const doc of docs) orders.set(doc.id, doc.exists ? doc.data()?.dishRatingOrder ?? null : null)
   }
-  return directory.map(place => ({ ...place,
+  return directory.map(place => hidden.has(place.placeId) ? place : ({ ...place,
     dishes: buildPlaceDishes(answers.get(place.placeId) ?? null, orders.has(place.placeId) ? orders.get(place.placeId) : undefined, run.stored.get(place.placeId) ?? null) }))
 }

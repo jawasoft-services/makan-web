@@ -3,6 +3,7 @@ import Link from "next/link"
 import Reveal from "@/components/motion/Reveal"
 import { localizePath } from "@/i18n/paths"
 import { EVIDENCE_FLOOR, getEatStandings } from "@/lib/eat-standings"
+import { getHiddenPlaceIds } from "@/lib/web-listing"
 
 const PREVIEW_ROWS = 5
 
@@ -18,6 +19,9 @@ export default async function StandingsPreview() {
   const standings = await getEatStandings()
   if (!standings.rows.length) return null
   const rows = standings.rows.slice(0, PREVIEW_ROWS)
+  // RM20616 dish pages U2: a venue taken down keeps its row; its name is plain text, not a link.
+  const hidden = await getHiddenPlaceIds()
+  const nameClass = "block truncate text-[1.05rem] font-semibold leading-[1.3] text-brand-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
   const percent = new Intl.NumberFormat(locale === "id" ? "id-ID" : "en-GB", { style: "percent", maximumFractionDigits: 0 })
 
   return (
@@ -54,12 +58,12 @@ export default async function StandingsPreview() {
             <li key={row.placeId} className="flex items-center gap-4 px-5 py-4">
               <span className="w-6 shrink-0 text-[1.1rem] font-bold tabular-nums text-brand-muted">{i + 1}</span>
               <span className="min-w-0 flex-1">
-                <Link
+                {hidden.has(row.placeId) ? <span className={nameClass}>{row.name}</span> : <Link
                   href={localizePath(locale, `/places/${row.slug}`)}
-                  className="block truncate text-[1.05rem] font-semibold leading-[1.3] text-brand-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
+                  className={nameClass}
                 >
                   {row.name}
-                </Link>
+                </Link>}
                 {row.where ? (
                   <span className="block text-[0.9rem] leading-[1.3] text-brand-muted">
                     {row.where.city}, {row.where.country}

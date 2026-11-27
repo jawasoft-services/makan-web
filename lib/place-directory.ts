@@ -9,6 +9,7 @@ import { computePlaceDirectory, computePlaceDirectoryForPlace, indexOf } from '@
 import { getVerifiedMaitredSource } from '@/lib/aggregates/maitred'
 import { MAX_AGE_MS, readLastRun, readPlace, readPlaceIndex, readPlaces } from '@/lib/aggregates/store'
 import type { DirectoryPlace, PlaceIndexEntry } from '@/lib/aggregates/types'
+import { getHiddenPlaceIds } from '@/lib/web-listing'
 
 export { INDEX_MIN_MEALS } from '@/lib/aggregates/types'
 export type { DirectoryMeal, DirectoryPlace, PlaceIndexEntry } from '@/lib/aggregates/types'
@@ -94,7 +95,18 @@ function currentVenue(place: DirectoryPlace, venues: PublicVenue[]): DirectoryPl
     publicMealCount: venue.publicMealCount, lat: place.lat ?? venue.lat, lng: place.lng ?? venue.lng } : place
 }
 
+/**
+ * RM20616 dish pages U2: the index is the list of place pages, so a venue taken down (lib/web-listing.ts) is not in
+ * it: its page, its sitemap entry and its A–Z entry go. Its record stays (getDirectoryPlaceById, getPlaceDirectory),
+ * so the standings and the Maître d' listings keep it, its name as plain text.
+ */
 export async function getPlaceIndex(): Promise<PlaceIndexEntry[]> {
+  const hidden = await getHiddenPlaceIds()
+  const index = await completePlaceIndex(hidden)
+  return hidden.size ? index.filter(entry => !hidden.has(entry.placeId)) : index
+}
+
+async function completePlaceIndex(hidden: ReadonlySet<string>): Promise<PlaceIndexEntry[]> {
   if (WEBSITE_FIXTURES) return fixturePlaceIndex()
   let index: PlaceIndexEntry[] = []
   try {
@@ -105,7 +117,8 @@ export async function getPlaceIndex(): Promise<PlaceIndexEntry[]> {
       const venue = venues.find(v => v.placeId === entry.placeId)
       return venue ? { ...entry, name: venue.name, slug: placeSlug(venue.name, entry.placeId), meals: venue.publicMealCount } : entry
     })
-    return [...completed, ...indexOf((await getMissingPublicPlaces(index, venues)).map(place => currentVenue(place, venues)))]
+    // A hidden venue counts as present, so it is never recovered (and read) only to be dropped.
+    return [...completed, ...indexOf((await getMissingPublicPlaces([...index, ...[...hidden].map(placeId => ({ placeId }))], venues)).map(place => currentVenue(place, venues)))]
   } catch (err) {
     console.error('place-directory: failed to complete the index.', err)
     return index

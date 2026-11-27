@@ -26,6 +26,7 @@ export default function StandingsTable({
   photos = {},
   showWhere = true,
   variant = 'board',
+  unlinked = [],
 }: {
   rows: StandingRow[]
   locale: string
@@ -34,6 +35,8 @@ export default function StandingsTable({
   photos?: Record<string, string>
   showWhere?: boolean
   variant?: 'board' | 'leader'
+  /** RM20616 dish pages U2: venues taken down (lib/web-listing.ts). Their row stays as it is; the name is plain text, not a link. */
+  unlinked?: readonly string[]
 }) {
   const [query, setQuery] = useState('')
   const searchId = useId()
@@ -87,7 +90,7 @@ export default function StandingsTable({
       return <li key={row.placeId} className={first ? 'first' : undefined} hidden={!visible.has(row.placeId) || undefined} style={{ '--w': row.eatRate } as React.CSSProperties}>
         <span className="rk">{index + 1}</span>
         <span className="th" aria-hidden="true">{photos[row.placeId] ? <img src={photos[row.placeId]} alt="" loading="lazy" /> : row.name.charAt(0).toUpperCase()}</span>
-        <span className="nm"><b><Link href={localizePath(locale, `/places/${row.slug}`)} prefetch={false}>{row.name}</Link></b>{showWhere && where ? <small>{where}</small> : null}</span>
+        <span className="nm"><b>{unlinked.includes(row.placeId) ? row.name : <Link href={localizePath(locale, `/places/${row.slug}`)} prefetch={false}>{row.name}</Link>}</b>{showWhere && where ? <small>{where}</small> : null}</span>
         <span className="rt">
           <b className="pc" data-n={Math.round(row.eatRate * 100)} data-text={percent.format(row.eatRate)}>{percent.format(row.eatRate)}</b>
           <i className="bar" aria-hidden="true"><i /></i>

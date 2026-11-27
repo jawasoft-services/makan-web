@@ -10,6 +10,7 @@ import styles from "@/components/standings/public-pages.module.css"
 import Link from "next/link"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { getDirectoryPlaceById } from "@/lib/place-directory"
+import { getHiddenPlaceIds } from "@/lib/web-listing"
 import { localizePath } from "@/i18n/paths"
 import { isPublicMeal } from "@/lib/public-meal"
 
@@ -125,7 +126,8 @@ export default async function MealPage({ params }: PageProps) {
   // aggregate document, not the directory: this route is hit by every shared
   // meal link.
   const t = await getTranslations("Meal")
-  const place = meal.placeProviderId ? await getDirectoryPlaceById(meal.placeProviderId) : null
+  // RM20616 dish pages U2: a venue taken down has no page, so the line names it in plain text (the branch below).
+  const place = meal.placeProviderId && !(await getHiddenPlaceIds()).has(meal.placeProviderId) ? await getDirectoryPlaceById(meal.placeProviderId) : null
 
   return (
     <div className={styles.page}>

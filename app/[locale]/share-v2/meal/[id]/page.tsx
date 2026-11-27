@@ -12,6 +12,7 @@ import { getDirectoryPlaceById } from '@/lib/place-directory'
 import { shareCardFor } from '@/lib/share-card'
 import { SHARE_V2_NOT_SERVED, sharePageUrl, shareV2PageServed, smartAppBanner } from '@/lib/share-page'
 import { getSharedMeal } from '@/lib/shared-meal'
+import { getHiddenPlaceIds } from '@/lib/web-listing'
 
 /**
  * RM20616 A12 U3 — a shared meal for a friend without the app (board G3): the photo, "Meal by
@@ -56,7 +57,8 @@ export default async function SharedMealPage({ params }: Props) {
   if (!meal) return <GonePage title={t('unavailable')} body={t('mealGone')} getLabel={t('getApp')} appPage={appPage} />
 
   // The way on from a meal: the restaurant it was saved at. One aggregate document, as today's meal page reads.
-  const place = meal.placeId ? await getDirectoryPlaceById(meal.placeId) : null
+  // RM20616 dish pages U2: a venue taken down has no page, so the venue line is its name in plain text (below).
+  const place = meal.placeId && !(await getHiddenPlaceIds()).has(meal.placeId) ? await getDirectoryPlaceById(meal.placeId) : null
   const byline = meal.handle ? t('mealBy', { username: meal.handle }) : ''
   // One heading per page: the dish when the meal has one, else the byline, else the place.
   const Byline = meal.dish ? 'p' : 'h1'

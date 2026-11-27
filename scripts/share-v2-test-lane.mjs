@@ -122,7 +122,9 @@ export function lane({ env = { SHARE_V2_PAGES: '1', SHARE_STORAGE_BUCKETS: BUCKE
   const state = { place: place(), row: { placeId: PLACE, rank: 7, cityRank: 3, matchups: 12, eats: 9, yeets: 3 }, computedAt: '2026-11-20T00:00:00.000Z', maitred: { status: 'held', venue }, directory: { status: 'ready', venues: [venue] }, googlePhoto: null, failCrowns: false, review: null,
     // What the page sees of the request. `null` is a request proxy.ts rewrote: it carries the proxy's own mark
     // (lib/share-v2-mark.ts). Set it to an object to play a request that reached the page some other way.
-    headers: null, clock: Date.UTC(YEAR, 10, 24), serveStale: false }
+    headers: null, clock: Date.UTC(YEAR, 10, 24), serveStale: false,
+    // RM20616 dish pages U2: the place ids config/webListing takes down (lib/web-listing.ts), read here with no Firestore read.
+    hidden: [] }
   let requests = new Map()
   const db = fakeProvider(seed, reads, failures, masks)
   const cacheStore = {
@@ -186,6 +188,7 @@ export function lane({ env = { SHARE_V2_PAGES: '1', SHARE_STORAGE_BUCKETS: BUCKE
         getMaitredDirectory: async () => { if (state.failCrowns) throw new Error('unavailable'); return fixtures ? { status: 'ready', venues: load('lib/website-fixtures.ts').fixtureMaitred()?.venues ?? [] } : state.directory },
       }
       if (id === '@/lib/place-photo') return { getPlacePhoto: async () => state.googlePhoto }
+      if (id === '@/lib/web-listing') return { ...load('lib/web-listing.ts'), getHiddenPlaceIds: async () => new Set(fixtures ? load('lib/website-fixtures.ts').fixtureHiddenPlaceIds() : state.hidden) }
       if (id === '@/lib/rate-limit') return load('lib/rate-limit.ts')
       if (id === '@/i18n/routing') return { routing: { locales: ['en', 'id'], defaultLocale: 'en' } }
       if (id.startsWith('node:')) return { ...require(id), default: require(id) }

@@ -7,6 +7,7 @@ import { buildMaitredList, readMaitredPhotos, readMaitredSource } from '@/lib/ag
 import { readStoredPlaces, writeAggregates } from '@/lib/aggregates/store'
 import { withPlaceDishes, type DishVenue } from '@/lib/aggregates/dishes'
 import { dishPagesOn } from '@/lib/dish-pages'
+import { readHiddenPlaceIds } from '@/lib/web-listing'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -51,8 +52,11 @@ export async function GET(request: Request) {
     // (their hashes for the writer, their dishes for the dish step) and each place gets its `dishes`.
     const dishes = dishPagesOn()
     const storedWork = dishes ? readStoredPlaces(db) : null
+    // U2: a venue taken down gets no dishes. One read of config/webListing per run, with dish pages on only.
+    const hiddenWork = dishes ? readHiddenPlaceIds(db) : null
     // Awaited later; a failure still fails the run there, but is never an unhandled rejection meanwhile.
     storedWork?.catch(() => {})
+    hiddenWork?.catch(() => {})
     // Maître d' venues get a page even without public meals, so the
     // directory is built after the holders are read.
     const standingsWork = timed('standings', computeEatStandings(db))
@@ -62,9 +66,9 @@ export async function GET(request: Request) {
       const directory = await computePlaceDirectory(db, [...new Set([...source.holders.map(holder => holder.placeId), ...standings.all.map(row => row.placeId)])], dishVenues)
       const photos = await readMaitredPhotos(db, source, directory)
       const maitred = buildMaitredList(source, directory, photos)
-      if (!storedWork || !dishVenues) return { directory, maitred }
-      const stored = await storedWork
-      return { directory: await withPlaceDishes(db, directory, { venues: dishVenues, stored: stored.dishes, dailyPass: new Date().getUTCHours() === 3 }), maitred }
+      if (!storedWork || !hiddenWork || !dishVenues) return { directory, maitred }
+      const [stored, hidden] = await Promise.all([storedWork, hiddenWork])
+      return { directory: await withPlaceDishes(db, directory, { venues: dishVenues, stored: stored.dishes, dailyPass: new Date().getUTCHours() === 3, hidden }), maitred }
     }
     const [standings, { directory, maitred }, stats] = await Promise.all([
       standingsWork,

@@ -85,6 +85,21 @@ const LOGO_EDITS = {
     ["  const place = await getDirectoryPlace(slug)\n  if (!place) return createDecisionSocialImage(\"Makan\", t.somewhere, 108)\n", "  const place = await getDirectoryPlace(slug)\n  if (!place) return createDecisionSocialImage(\"Makan\", t.somewhere, 108, { logo: true })\n"],
   ],
 }
+// RM20616 dish pages U2 (Devon, 27 Nov 2026: a venue takedown, "Page only", then "Yes, plain-text name"): a venue in
+// config/webListing has no page. These two pinned files may also differ by exactly these edits: the index of pages
+// leaves it out (and never recovers it), and a meal page's venue line names it in plain text. With no takedown
+// document (lib/web-listing.ts) they serve what they served; scripts/takedown.test.mjs pins that.
+const TAKEDOWN_EDITS = {
+  "lib/place-directory.ts": [
+    ["import type { DirectoryPlace, PlaceIndexEntry } from '@/lib/aggregates/types'\n", "import type { DirectoryPlace, PlaceIndexEntry } from '@/lib/aggregates/types'\nimport { getHiddenPlaceIds } from '@/lib/web-listing'\n"],
+    ["export async function getPlaceIndex(): Promise<PlaceIndexEntry[]> {\n  if (WEBSITE_FIXTURES) return fixturePlaceIndex()\n", "/**\n * RM20616 dish pages U2: the index is the list of place pages, so a venue taken down (lib/web-listing.ts) is not in\n * it: its page, its sitemap entry and its A–Z entry go. Its record stays (getDirectoryPlaceById, getPlaceDirectory),\n * so the standings and the Maître d' listings keep it, its name as plain text.\n */\nexport async function getPlaceIndex(): Promise<PlaceIndexEntry[]> {\n  const hidden = await getHiddenPlaceIds()\n  const index = await completePlaceIndex(hidden)\n  return hidden.size ? index.filter(entry => !hidden.has(entry.placeId)) : index\n}\n\nasync function completePlaceIndex(hidden: ReadonlySet<string>): Promise<PlaceIndexEntry[]> {\n  if (WEBSITE_FIXTURES) return fixturePlaceIndex()\n"],
+    ["    return [...completed, ...indexOf((await getMissingPublicPlaces(index, venues)).map(place => currentVenue(place, venues)))]\n", "    // A hidden venue counts as present, so it is never recovered (and read) only to be dropped.\n    return [...completed, ...indexOf((await getMissingPublicPlaces([...index, ...[...hidden].map(placeId => ({ placeId }))], venues)).map(place => currentVenue(place, venues)))]\n"],
+  ],
+  "app/[locale]/meal/[id]/page.tsx": [
+    ["import { getDirectoryPlaceById } from \"@/lib/place-directory\"\n", "import { getDirectoryPlaceById } from \"@/lib/place-directory\"\nimport { getHiddenPlaceIds } from \"@/lib/web-listing\"\n"],
+    ["  const place = meal.placeProviderId ? await getDirectoryPlaceById(meal.placeProviderId) : null\n", "  // RM20616 dish pages U2: a venue taken down has no page, so the line names it in plain text (the branch below).\n  const place = meal.placeProviderId && !(await getHiddenPlaceIds()).has(meal.placeProviderId) ? await getDirectoryPlaceById(meal.placeProviderId) : null\n"],
+  ],
+}
 // The pinned routes now return what lib/image-slots.ts returns, so it is pinned too: any edit to it,
 // renderImage's status or headers included, must come back through this guard with a new hash.
 const IMAGE_SLOTS_SHA256 = '0e14ad3eeb2fbaa622fd4a57572b815a278cc88b8c1321acc46c69c17e8339ee'
@@ -102,9 +117,9 @@ function withEdits(path, base, edits) {
 test('switch off: every page, card and config a share link reaches today is byte-identical to main at 365a96e', { skip: !baseAvailable && 'commit 365a96e is not in this clone' }, () => {
   for (const path of UNTOUCHED) {
     const base = atBase(path)
-    const edits = [...(SLOT_EDITS[path] || []), ...(LOGO_EDITS[path] || [])]
+    const edits = [...(SLOT_EDITS[path] || []), ...(LOGO_EDITS[path] || []), ...(TAKEDOWN_EDITS[path] || [])]
     const expected = edits.length ? withEdits(path, base, edits) : base
-    assert.equal(readFileSync(path, 'utf8'), expected, `${path} differs from ${BASE.slice(0, 7)}${edits.length ? ' plus its image-slot and logo edits' : ''}`)
+    assert.equal(readFileSync(path, 'utf8'), expected, `${path} differs from ${BASE.slice(0, 7)}${edits.length ? ' plus its image-slot, logo and takedown edits' : ''}`)
   }
   assert.equal(createHash('sha256').update(readFileSync('lib/image-slots.ts')).digest('hex'), IMAGE_SLOTS_SHA256, 'lib/image-slots.ts changed: the pinned share routes return what it returns')
 })

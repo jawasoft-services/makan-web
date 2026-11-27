@@ -10,6 +10,7 @@ import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
 import { CITY_FLOOR, EVIDENCE_FLOOR, getEatStandingsSnapshot } from '@/lib/eat-standings'
 import { getPlaceIndex } from '@/lib/place-directory'
 import { safeJsonLd } from '@/lib/safe-json-ld'
+import { getHiddenPlaceIds, withoutPage } from '@/lib/web-listing'
 import { localizePath } from '@/i18n/paths'
 
 // Standings snapshot and its actual last-check time (lib/eat-standings.ts).
@@ -42,7 +43,10 @@ export default async function StandingsPage({
   const { locale } = await params
   setRequestLocale(locale)
   const [t, dir] = await Promise.all([getTranslations('Standings'), getTranslations('PlaceDirectory')])
-  const [{ standings, checkedAt }, index] = await Promise.all([getEatStandingsSnapshot(), getPlaceIndex()])
+  const [{ standings, checkedAt }, index, hidden] = await Promise.all([getEatStandingsSnapshot(), getPlaceIndex(), getHiddenPlaceIds()])
+  // RM20616 dish pages U2: a venue taken down keeps its row; its name is plain text and its address leaves the markup.
+  const unlinked = withoutPage(hidden, standings.rows.map(row => row.placeId))
+  const plain = unlinked.length ? { unlinked } : {}
   const photos = await getStandingsPhotos(standings.rows.map(r => r.placeId), index.slice(0, 12).map(p => p.placeId), MOSAIC)
   const dayMonthYear = new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
   const computedAt = standings.computedAt ? new Date(standings.computedAt) : new Date()
@@ -79,12 +83,12 @@ export default async function StandingsPage({
       itemListElement: standings.rows.map((row, i) => ({
         '@type': 'ListItem',
         position: i + 1,
-        url: `${SITE_URL}${locale === 'id' ? '/id' : ''}/places/${row.slug}`,
+        ...(unlinked.includes(row.placeId) ? {} : { url: `${SITE_URL}${locale === 'id' ? '/id' : ''}/places/${row.slug}` }),
         description: `${row.eats} Eats, ${row.yeets} Yeets, ${row.matchups} matchups`,
         item: {
           '@type': 'Restaurant',
           name: row.name,
-          url: `${SITE_URL}${locale === 'id' ? '/id' : ''}/places/${row.slug}`,
+          ...(unlinked.includes(row.placeId) ? {} : { url: `${SITE_URL}${locale === 'id' ? '/id' : ''}/places/${row.slug}` }),
           ...(row.where
             ? { address: { '@type': 'PostalAddress', addressLocality: row.where.city, addressCountry: row.where.country } }
             : {}),
@@ -122,7 +126,7 @@ export default async function StandingsPage({
           </div>
           {leader ? <div className="sum">
             <p data-rise="">{t('storySum')}<small>{t('storySumSub')}</small></p>
-            <StandingsTable variant="leader" rows={[leader]} locale={locale} labels={labels} caption={t('leader')} photos={photos.thumbs} />
+            <StandingsTable variant="leader" rows={[leader]} locale={locale} labels={labels} caption={t('leader')} photos={photos.thumbs} {...plain} />
           </div> : null}
         </div>
       </section>
@@ -134,7 +138,7 @@ export default async function StandingsPage({
             {standings.countries > 1 ? <> {countryWords ? <>{countries.slice(0, countryWords.index)}<b data-count={standings.countries} data-suffix={countryWords[2]}>{countryWords[0]}</b>{countries.slice((countryWords.index ?? 0) + countryWords[0].length)}</> : countries}</> : null}
           </p>
           {standings.rows.length ? <>
-            <StandingsTable rows={standings.rows} locale={locale} labels={labels} caption={t('title')} photos={photos.thumbs} />
+            <StandingsTable rows={standings.rows} locale={locale} labels={labels} caption={t('title')} photos={photos.thumbs} {...plain} />
             <p className="small fresh" data-rise="">
               {t('belowFloor', { count: standings.belowFloor, floor: EVIDENCE_FLOOR })}{' '}
               <time dateTime={computedAt.toISOString()}>{t('scoresChangedOn', { date: dayMonthYear.format(computedAt) })}</time>{' '}

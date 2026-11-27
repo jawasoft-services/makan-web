@@ -8,6 +8,7 @@ import { getPlacePhoto } from "@/lib/place-photo"
 import { getVerifiedMenuPrice } from "@/lib/verified-menu-price"
 import { thumbUrl } from "@/lib/thumb"
 import { localPhoto } from "@/lib/local-photo"
+import { getHiddenPlaceIds } from "@/lib/web-listing"
 
 // All eligible holders, without inferring vacancy from a missing or filtered entry.
 export default async function MaitredShowcase({ dedicated = false }: { dedicated?: boolean }) {
@@ -23,6 +24,9 @@ export default async function MaitredShowcase({ dedicated = false }: { dedicated
   const single = dedicated && picks.length === 1 && !others.length
   // The Google photo (month-cached, credited) only where no public meal has one.
   const googlePhotos = await Promise.all(picks.map((v) => (v.photo ? null : getPlacePhoto(v.placeId))))
+  // RM20616 dish pages U2: a venue taken down stays listed as it is; its name is plain text, not a link to its page.
+  const hidden = await getHiddenPlaceIds()
+  const othersRow = "flex min-h-[60px] items-center gap-3 py-2.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
 
   return (
     <section id="maitred" className="scroll-mt-[86px] w-full bg-brand-cream px-5 py-20 md:px-10 md:py-28">
@@ -44,7 +48,7 @@ export default async function MaitredShowcase({ dedicated = false }: { dedicated
         <ul data-beat style={{ "--beat": 3 } as React.CSSProperties} className={`mt-10 grid grid-cols-1 gap-3 sm:gap-4 ${single ? "" : "sm:grid-cols-2 lg:grid-cols-3"}`}>
           {picks.map((v, i) => (
             <li key={v.placeId} className="flex">
-              <PickCard venue={v} locale={locale} google={googlePhotos[i]} credit={(author) => tp("photoCredit", { author })} byline={t("byline", { name: v.holderName })} label={t("whatToOrder")} menuPriceLabel={(price) => tp("menuPriceLabel", { price })} wide={single} />
+              <PickCard venue={v} linked={!hidden.has(v.placeId)} locale={locale} google={googlePhotos[i]} credit={(author) => tp("photoCredit", { author })} byline={t("byline", { name: v.holderName })} label={t("whatToOrder")} menuPriceLabel={(price) => tp("menuPriceLabel", { price })} wide={single} />
             </li>
           ))}
           {others.length ? (
@@ -52,12 +56,8 @@ export default async function MaitredShowcase({ dedicated = false }: { dedicated
               <h3 className="text-[1.0625rem] font-bold leading-[1.3] text-brand-ink">{t("othersTitle")}</h3>
               <p className="mt-1 text-[0.9375rem] leading-[1.4] text-brand-muted">{t("othersSub")}</p>
               <ul className="mt-2">
-                {others.map((v) => (
-                  <li key={v.placeId} className="border-t border-brand-line">
-                    <Link
-                      href={localizePath(locale, `/places/${v.slug}`)}
-                      className="flex min-h-[60px] items-center gap-3 py-2.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
-                    >
+                {others.map((v) => {
+                  const row = <>
                       <Avatar venue={v} className="h-9 w-9" />
                       <span className="min-w-0">
                         <span className="block text-base font-semibold leading-[1.3] text-brand-ink">{v.name}</span>
@@ -66,9 +66,16 @@ export default async function MaitredShowcase({ dedicated = false }: { dedicated
                           {v.holderName}
                         </span>
                       </span>
-                    </Link>
+                  </>
+                  return <li key={v.placeId} className="border-t border-brand-line">
+                    {hidden.has(v.placeId) ? <div className={othersRow}>{row}</div> : <Link
+                      href={localizePath(locale, `/places/${v.slug}`)}
+                      className={othersRow}
+                    >
+                      {row}
+                    </Link>}
                   </li>
-                ))}
+                })}
               </ul>
             </li>
           ) : null}
@@ -87,6 +94,7 @@ export default async function MaitredShowcase({ dedicated = false }: { dedicated
 
 function PickCard({
   venue,
+  linked,
   locale,
   google,
   credit,
@@ -96,6 +104,8 @@ function PickCard({
   wide,
 }: {
   venue: MaitredVenue
+  /** False for a venue taken down (RM20616 dish pages U2): its name is plain text and the card is not a link. */
+  linked: boolean
   locale: string
   google: { uri: string; author: string } | null
   credit: (author: string) => string
@@ -123,9 +133,9 @@ function PickCard({
         ) : null}
       </span> : null}
       <span className={`flex min-w-0 flex-1 flex-col sm:px-5 sm:pb-6 sm:pt-[18px] ${wide ? "sm:justify-center sm:px-10 sm:py-10" : ""}`}>
-        <Link href={localizePath(locale, `/places/${venue.slug}`)} className="text-[1.1875rem] font-bold leading-[1.2] tracking-[-0.01em] text-brand-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink sm:text-[1.625rem] sm:leading-[1.15] sm:tracking-[-0.015em]">
+        {linked ? <Link href={localizePath(locale, `/places/${venue.slug}`)} className="text-[1.1875rem] font-bold leading-[1.2] tracking-[-0.01em] text-brand-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink sm:text-[1.625rem] sm:leading-[1.15] sm:tracking-[-0.015em]">
           {venue.name}<span aria-hidden="true" className="absolute inset-0 rounded-2xl" />
-        </Link>
+        </Link> : <span className="text-[1.1875rem] font-bold leading-[1.2] tracking-[-0.01em] text-brand-ink sm:text-[1.625rem] sm:leading-[1.15] sm:tracking-[-0.015em]">{venue.name}</span>}
         {venue.where ? (
           <span className="mt-0.5 text-[0.8125rem] leading-[1.3] text-brand-muted sm:mt-1 sm:text-sm">
             {venue.where.city}, {venue.where.country}

@@ -9,6 +9,7 @@ import { em } from '@/components/site/text'
 import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
 import { CITY_FLOOR, getCityStanding, getEatStandings, getEatStandingsSnapshot } from '@/lib/eat-standings'
 import { safeJsonLd } from '@/lib/safe-json-ld'
+import { getHiddenPlaceIds, withoutPage } from '@/lib/web-listing'
 import { localizePath } from '@/i18n/paths'
 
 // One city, the same rule, a smaller pool: ranked from CITY_FLOOR matchups.
@@ -51,6 +52,9 @@ export default async function CityStandingsPage({ params }: Props) {
   const computedAt = standings.computedAt ? new Date(standings.computedAt) : new Date()
   const prefix = locale === 'id' ? '/id' : ''
   const pageUrl = `${SITE_URL}${prefix}/standings/${city.slug}`
+  // RM20616 dish pages U2: a venue taken down keeps its row; its name is plain text and its address leaves the markup.
+  const unlinked = withoutPage(await getHiddenPlaceIds(), city.rows.map(row => row.placeId))
+  const plain = unlinked.length ? { unlinked } : {}
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
@@ -74,12 +78,12 @@ export default async function CityStandingsPage({ params }: Props) {
       itemListElement: city.rows.map((row, i) => ({
         '@type': 'ListItem',
         position: i + 1,
-        url: `${SITE_URL}${prefix}/places/${row.slug}`,
+        ...(unlinked.includes(row.placeId) ? {} : { url: `${SITE_URL}${prefix}/places/${row.slug}` }),
         description: `${row.eats} Eats, ${row.yeets} Yeets, ${row.matchups} matchups`,
         item: {
           '@type': 'Restaurant',
           name: row.name,
-          url: `${SITE_URL}${prefix}/places/${row.slug}`,
+          ...(unlinked.includes(row.placeId) ? {} : { url: `${SITE_URL}${prefix}/places/${row.slug}` }),
           address: { '@type': 'PostalAddress', addressLocality: city.city, addressCountry: city.country },
         },
       })),
@@ -117,7 +121,7 @@ export default async function CityStandingsPage({ params }: Props) {
 
       <section className="ch tight st-board" id="standings" aria-label={t('cityBoardLabel', { city: city.city })}>
         <div className="wrap">
-          <StandingsTable rows={city.rows} locale={locale} labels={labels} showWhere caption={t('cityTitle', { city: city.city })} photos={photos.thumbs} />
+          <StandingsTable rows={city.rows} locale={locale} labels={labels} showWhere caption={t('cityTitle', { city: city.city })} photos={photos.thumbs} {...plain} />
           <p className="small fresh" data-rise="">
             <time dateTime={computedAt.toISOString()}>{t('scoresChangedOn', { date: dayMonthYear.format(computedAt) })}</time>{' '}
             {checkedAt ? <time dateTime={checkedAt}>{t('checkedOn', { date: dayMonthYear.format(new Date(checkedAt)) })}</time> : t('checkUnavailable')}

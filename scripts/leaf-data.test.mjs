@@ -14,6 +14,8 @@ function lane() {
   const state = {
     meals: new Map(), invites: new Map(), links: new Map(), restaurants: new Map(), users: new Map(),
     index: [], failures: new Set(), reads: [], indexReads: 0,
+    // RM20616 dish pages U2: what getDirectoryPlaceById knows, and the venues config/webListing takes down.
+    places: new Map(), hidden: [],
   }
   const modules = new Map()
   const dataCache = new Map()
@@ -66,9 +68,10 @@ function lane() {
         if (id === '@/lib/api-validation') return { ALLOWED_ORIGINS: [], isAllowedOrigin: () => true, parseSafeJson: request => request.json() }
         if (id === '@/lib/place-directory') return {
           getPlaceIndex: async () => { state.indexReads++; return state.index },
-          getDirectoryPlaceById: async () => null,
+          getDirectoryPlaceById: async id => state.places.get(id) ?? null,
         }
         if (id === '@/lib/claim-search') return load('lib/claim-search.ts')
+        if (id === '@/lib/web-listing') return { getHiddenPlaceIds: async () => new Set(state.hidden) }
         if (id === '@/lib/public-meal') return load('lib/public-meal.ts')
         if (id === '@/i18n/paths') return { localizePath: (locale, path) => locale === 'id' ? `/id${path}` : path }
         if (id === 'react') return { cache: fn => (...args) => {
@@ -113,6 +116,19 @@ test('meal page and metadata share one current read; the next request hides a ne
   assert.equal(JSON.stringify(await route.generateMetadata(mealProps)), '{}')
   await assert.rejects(route.default(mealProps), /REDIRECT:\//)
   assert.equal(run.state.reads.filter(read => read.collection === 'meals').length, 2)
+})
+
+// RM20616 dish pages U2 (Devon, 27 Nov 2026): a venue taken down has no page, so today's meal page names it in plain text.
+test('a meal at a venue taken down: "Saved at" names it in plain text, with no link to its page', async () => {
+  const tagged = { ...publicMeal, placeProviderId: 'ChIJvenue', locationName: 'Warung Bu Sri' }
+  const place = { placeId: 'ChIJvenue', slug: 'warung-bu-sri-abc123', name: 'Warung Bu Sri' }
+  const text = node => JSON.stringify(node)
+  const shown = lane(); shown.state.meals.set('public-meal', tagged); shown.state.places.set('ChIJvenue', place)
+  assert.match(text(await shown.load(mealPath).default(mealProps)), /"href":"\/places\/warung-bu-sri-abc123"/)
+  const hidden = lane(); hidden.state.meals.set('public-meal', tagged); hidden.state.places.set('ChIJvenue', place); hidden.state.hidden = ['ChIJvenue']
+  const body = text(await hidden.load(mealPath).default(mealProps))
+  assert.doesNotMatch(body, /\/places\//)
+  assert.match(body, /"children":\["savedAt"," ","Warung Bu Sri"\]/)
 })
 
 test('deleted, moderated, draft and local meals never reach public metadata or page output', async () => {

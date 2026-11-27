@@ -9,6 +9,7 @@ import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
 import { getEatStandings } from '@/lib/eat-standings'
 import { getMaitredDirectory } from '@/lib/maitred'
 import { getPlaceDirectory } from '@/lib/place-directory'
+import { getHiddenPlaceIds } from '@/lib/web-listing'
 import { getAllReviews } from '@/lib/reviews'
 import { thumbUrl } from '@/lib/thumb'
 import { localizePath } from '@/i18n/paths'
@@ -39,9 +40,9 @@ const lastSentence = (s: string) => s.split(/(?<=\.)\s+/).pop() ?? s
 export default async function PartnerPage({ params }: {params: Promise<{locale: string}>}) {
   const {locale} = await params
   setRequestLocale(locale)
-  const [t, existing, widget, places, standingsT, footer, standings, directory, maitred] = await Promise.all([
+  const [t, existing, widget, places, standingsT, footer, standings, directory, maitred, hidden] = await Promise.all([
     getTranslations('PartnerRedesign'), getTranslations('Partner'), getTranslations('Redesign.widget'), getTranslations('Places'),
-    getTranslations('Standings'), getTranslations('Footer'), getEatStandings(), getPlaceDirectory(), getMaitredDirectory(),
+    getTranslations('Standings'), getTranslations('Footer'), getEatStandings(), getPlaceDirectory(), getMaitredDirectory(), getHiddenPlaceIds(),
   ])
   const faqs = t.raw('faqs') as [string,string][]
   const tools = t.raw('tools') as Tool[]
@@ -54,12 +55,14 @@ export default async function PartnerPage({ params }: {params: Promise<{locale: 
   const city = standings.cities.find(c => c.slug === home || c.city.toLowerCase() === home)
     ?? [...standings.cities].sort((a, b) => b.rows.length - a.rows.length)[0] ?? null
   const byId = new Map(directory.map(p => [p.placeId, p]))
-  const cardRank = city ? city.rows.findIndex(r => (byId.get(r.placeId)?.meals.length ?? 0) >= 3) : -1
+  // RM20616 dish pages U2: a venue taken down is never the featured card (its page is gone); the ranks stay real.
+  const cardRank = city ? city.rows.findIndex(r => !hidden.has(r.placeId) && (byId.get(r.placeId)?.meals.length ?? 0) >= 3) : -1
   const card = city && cardRank >= 0 ? byId.get(city.rows[cardRank].placeId) ?? null : null
   // Public web rule (Devon, RM20711): a Maître d’ is "A regular", never a name.
   // The featured city's Maître d’ usual orders first, then others, three at most.
   const inCity = (v: { where: { city: string } | null }) => Boolean(city && v.where?.city.toLowerCase() === city.city.toLowerCase())
-  const published = maitred.venues.filter(v => v.notes.always)
+  // RM20616 dish pages U2: nor is one of the featured usual orders.
+  const published = maitred.venues.filter(v => v.notes.always && !hidden.has(v.placeId))
   const usuals = [...published.filter(inCity), ...published.filter(v => !inCity(v))].slice(0, 3)
   const reviews = getAllReviews()
   const src = (m: { thumb: string; src: string }) => m.thumb || thumbUrl(m.src, 480)
@@ -118,7 +121,7 @@ export default async function PartnerPage({ params }: {params: Promise<{locale: 
       <div className="wrap split">
         <div>
           <h2 className="big" data-rise="">{standingsT.rich('cityTitleRich', { city: city.city, em })}</h2>
-          <ol className="pd-ranked">{city.rows.map((r, i) => <li key={r.placeId}><span className="pd-n">{i + 1}</span><Link href={localizePath(locale, `/places/${r.slug}`)}>{r.name}</Link></li>)}</ol>
+          <ol className="pd-ranked">{city.rows.map((r, i) => <li key={r.placeId}><span className="pd-n">{i + 1}</span>{hidden.has(r.placeId) ? r.name : <Link href={localizePath(locale, `/places/${r.slug}`)}>{r.name}</Link>}</li>)}</ol>
         </div>
         {reviews.length ? <div><h3 className="pd-h3">{footer('reviews')}</h3><ul className="pd-reviews">{reviews.map(r => <li key={r.slug}><Link href={localizePath(locale, `/blog/${r.slug}`)}>{r.title} →</Link></li>)}</ul></div> : null}
       </div>

@@ -23,7 +23,7 @@ const real = file => { const exports = {}; runInNewContext(ts.transpileModule(re
 const thumb = real('lib/thumb.ts')
 const localPhoto = real('lib/local-photo.ts')
 
-function load(file, locale, directory = { status: 'ready', venues: [] }) {
+function load(file, locale, directory = { status: 'ready', venues: [] }, hidden = []) {
   const messages = JSON.parse(readFileSync(`messages/${locale}.json`, 'utf8'))
   const exports = {}
   const translate = value => createTranslator({ locale, messages, namespace: typeof value === 'string' ? value : value.namespace, onError(error) { throw error } })
@@ -38,6 +38,8 @@ function load(file, locale, directory = { status: 'ready', venues: [] }) {
     if (id === '@/components/standings/public-pages.module.css') return { default: {} }
     if (id === '@/i18n/paths') return { localizePath: (_, path) => `${locale === 'id' ? '/id' : ''}${path}` }
     if (id === '@/lib/maitred') return { getMaitredDirectory: async () => directory }
+    // RM20616 dish pages U2: the venues config/webListing takes down.
+    if (id === '@/lib/web-listing') return { getHiddenPlaceIds: async () => new Set(hidden) }
     if (id === '@/lib/place-photo') return { getPlacePhoto: async () => null }
     if (id === '@/lib/verified-menu-price') return menuPrices
     if (id === '@/lib/thumb') return thumb

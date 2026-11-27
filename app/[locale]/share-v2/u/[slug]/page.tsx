@@ -13,6 +13,7 @@ import { shareCardFor } from '@/lib/share-card'
 import { SHARE_V2_NOT_SERVED, sharePageUrl, shareV2PageServed, smartAppBanner } from '@/lib/share-page'
 import { GONE_PROFILE_LINE } from '@/lib/share-page-choices'
 import { createPageMetadata } from '@/lib/site-metadata'
+import { getHiddenPlaceIds } from '@/lib/web-listing'
 
 /**
  * RM20616 A12 U3 — a person's public page, /u/<handle>-<key> (boards X1 and C6; resumed from
@@ -60,6 +61,8 @@ export default async function PublicProfilePage({ params }: Props) {
   const prefix = locale === 'id' ? '/id' : ''
   // A renamed handle keeps its key; send old links to the current address.
   if (slug !== profile.slug) permanentRedirect(`${prefix}/u/${profile.slug}`)
+  // RM20616 dish pages U2: a crown row for a venue taken down stays, its name in plain text, not a link to its page.
+  const hidden = profile.crowns.length ? await getHiddenPlaceIds() : new Set<string>()
   const initials = profile.name.split(/\s+/).filter(Boolean).slice(0, 2).map((word) => word[0]?.toUpperCase()).join('')
   // A photo is described by where the meal was saved, in the site's existing words. Never by its caption: a caption
   // is the diner's answer to "What was this?", not a description for strangers.
@@ -89,10 +92,13 @@ export default async function PublicProfilePage({ params }: Props) {
         {profile.crowns.length ? <section aria-labelledby="profile-maitred">
           <h2 id="profile-maitred" className={styles.label}>{t('maitred')}</h2>
           <ul className={styles.crowns}>{profile.crowns.map((venue) => <li key={venue.placeId}>
-            <Link href={localizePath(locale, `/places/${venue.slug}`)} prefetch={false} className={styles.crownRow}>
+            {hidden.has(venue.placeId) ? <span className={styles.crownRow}>
               <Image src="/redesign/maitred-crown.svg" alt="" width={26} height={20} className={styles.crown} />
               {venue.name}
-            </Link>
+            </span> : <Link href={localizePath(locale, `/places/${venue.slug}`)} prefetch={false} className={styles.crownRow}>
+              <Image src="/redesign/maitred-crown.svg" alt="" width={26} height={20} className={styles.crown} />
+              {venue.name}
+            </Link>}
           </li>)}</ul>
         </section> : null}
         {profile.recent.length ? <section aria-labelledby="profile-recent">

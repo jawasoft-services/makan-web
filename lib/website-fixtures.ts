@@ -48,6 +48,9 @@ export const FIXTURE_DISHES = process.env.MAKAN_WEBSITE_FIXTURE_DISHES ?? ''
 if (WEBSITE_FIXTURES && !['', 'answer', 'maitred', 'thin'].includes(FIXTURE_DISHES)) throw new Error('Unknown website fixture dish state.')
 if (WEBSITE_FIXTURES && FIXTURE_DISHES) base.dishes = FIXTURE_DISHES === 'thin' ? { answer: null, rated: [] }
   : { answer: { name: 'Harissa prawns', maitred: FIXTURE_DISHES === 'maitred' }, rated: ['Tiramisu', 'Carbonara', 'Mushroom risotto', 'Truffle fries'] }
+// RM20616 dish pages U2 — MAKAN_WEBSITE_FIXTURE_TAKEDOWN=1 plays config/webListing with the fixture restaurant
+// taken down (lib/web-listing.ts): its page goes; it stays in the standings and the Maître d' listings.
+export const fixtureHiddenPlaceIds = (): string[] => process.env.MAKAN_WEBSITE_FIXTURE_TAKEDOWN === '1' ? [FIXTURE_PLACE_ID] : []
 export const fixtureDirectory = (): DirectoryPlace[] => unavailable ? [] : places
 export const fixturePlaceIndex = () => fixtureDirectory().map(p => ({ placeId: p.placeId, slug: p.slug, hash: p.hash, name: p.name, city: p.where?.city ?? null, indexable: p.indexable, meals: p.meals.length }))
 
