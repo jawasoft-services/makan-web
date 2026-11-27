@@ -6,6 +6,7 @@ import { getEatStandings } from '@/lib/eat-standings'
 import { getMaitredDirectory } from '@/lib/maitred'
 import { getPlaceDirectory } from '@/lib/place-directory'
 import { getDishWall } from '@/lib/dish-wall-data'
+import { photoAllowed } from '@/lib/dish-wall'
 import { getPublicVenues } from '@/lib/public-venues'
 import { thumbUrl } from '@/lib/thumb'
 import en from '@/messages/en.json'
@@ -44,7 +45,7 @@ export async function getAgrHomeData(locale: string): Promise<AgrData> {
   // The app's own small copy when it made one (no resize on this server), else /api/thumb.
   const thumbs: Record<string, string> = {}
   for (const place of places) {
-    const meal = place.meals[0]
+    const meal = place.meals.find(photoAllowed)   // never a pork or drink photo (lib/dish-wall)
     if (meal) thumbs[place.placeId] = meal.thumb || thumbUrl(meal.src, 240)
   }
   const messages = (locale === 'id' ? id : en) as unknown as Record<string, unknown>
