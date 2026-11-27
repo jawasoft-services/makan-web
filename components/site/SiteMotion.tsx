@@ -202,8 +202,10 @@ export default function SiteMotion() {
       root.classList.toggle('hx-orange', orange)
       const foot = document.querySelector('.sitefoot')
       root.classList.toggle('hx-foot', Boolean(foot && foot.getBoundingClientRect().top < 110))
+      // Devon, 27 Nov 2026 ("(b) Fade"): once the page has scrolled, a fade under the header keeps text from running under it
+      root.classList.toggle('hx-scrolled', window.scrollY > 8)
     }
-    offs.push(() => { root.classList.toggle('hx-dark', false); root.classList.toggle('hx-orange', false); root.classList.toggle('hx-foot', false) })
+    offs.push(() => { root.classList.toggle('hx-dark', false); root.classList.toggle('hx-orange', false); root.classList.toggle('hx-foot', false); root.classList.toggle('hx-scrolled', false) })
 
     // magnetic stops, after GSAP's snapTo: 'labelsDirectional'
     const stops = $$('[data-stop]')
