@@ -481,7 +481,9 @@ html:has(.agr),html:has(.agr) body{overflow-x:clip}
 .agr .ftouch.on{opacity:1}
 .agr .ftouch.down{transform:scale(.78);background:rgba(17,24,28,.28)}
 .agr .end{height:100svh;min-height:640px;background:var(--cream);overflow:hidden}
-.agr .end .arch{top:80vh}
+.agr .end .arch{top:80vh;z-index:2}   /* above the canvas (z 1): the plates fall behind it (Devon, 27 Nov 2026) */
+/* the site footer follows the arch's bottom edge; on the home page it too sits above the canvas, so a falling plate stays hidden */
+body:has(.agr) .sitefoot{z-index:2}
 .agr .end .ask{position:absolute;left:0;right:0;top:15vh;text-align:center;z-index:2;display:flex;flex-direction:column;gap:14px;align-items:center}
 .agr .end .ask .big{font-size:clamp(36px,4.8vw,76px);text-transform:none}
 .agr .end .ask .echo{color:var(--deep)}
