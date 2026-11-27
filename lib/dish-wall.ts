@@ -2,7 +2,7 @@ import { isCleanCaption } from './captions'
 
 /**
  * The homepage dish wall: which public meals it may show, and in what order. Pure, so the rules are
- * tested without Firestore (lib/dish-wall.test.mjs); lib/makan-stats.ts does the reads and the gates
+ * tested without Firestore (lib/dish-wall.test.mjs); lib/dish-wall-data.ts does the reads and the gates
  * that need them (public meal, author standing, minimum age, deletion fence, dish binding).
  *
  * Devon, 24 Nov 2026: photo-only meal previews of dishes tagged at restaurants; pork never appears,
@@ -47,8 +47,8 @@ export const DELIVERY_VENUE = /\b(delivery|gofood|grabfood|shopeefood|deliveroo|
 
 // ponytail: keyword match on the dish line only. A plate whose name hides pork ("Full English")
 // still passes; upgrade to a dish-level flag if the matcher ever records ingredients.
-const PORK = /\b(pork|babi|bacon|ham|gammon|sausages?|chorizo|char ?siu|cha ?siu|siu ?yuk|lechon|guling|prosciutto|pancetta|salami|pepperoni|porchetta|tonkotsu|tonkatsu|katsudon|lardons?|carnitas|chicharr[oó]n|jam[oó]n|serrano|bak ?kut ?teh|crackling)\b/i
-const DRINK = /\b(coffees?|kopi|lattes?|cappuccinos?|espressos?|americanos?|flat whites?|teas?|teh|matcha|chai|boba|beers?|wines?|cocktails?|mocktails?|smoothies?|juices?|jus|lemonades?|sodas?|milkshakes?|frappes?|negronis?|margaritas?|spritz(es)?|sake|soju|whisk(e)?y|bourbon|gin|rum|vodka)\b/i
+const PORK = /\b(pork|babi|bacon|ham|gammon|sausages?|chorizo|char ?siu|cha ?siu|siu ?yuk|lechon|guling|prosciutto|pancetta|salami|pepperoni|porchetta|tonkotsu|tonkatsu|katsudon|lardons?|carnitas|chicharr[oó]n|jam[oó]n|serrano|bak ?kut ?teh|crackling|carbonara|guanciale|lap ?cheong|lap ?chiong)\b/i
+const DRINK = /\b(coffees?|kopi|lattes?|cappuccinos?|espressos?|americanos?|flat whites?|teas?|teh|matcha|chai|boba|beers?|wines?|cocktails?|mocktails?|smoothies?|juices?|jus|lemonades?|sodas?|milkshakes?|frappes?|negronis?|margaritas?|spritz(es)?|sake|soju|whisk(e)?y|bourbon|gin|rum|vodka|bir|wedang \w+|es jeruk|es susu|es kelapa|kelapa muda)\b/i
 
 const MEAL_TYPES = new Set(['breakfast', 'lunch', 'dinner', 'snack'])
 

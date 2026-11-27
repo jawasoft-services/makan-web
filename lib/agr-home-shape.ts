@@ -1,7 +1,7 @@
 import { PLATES } from '@/components/agr/plates'
 import type { AgrData, AgrFeedItem, AgrPin, AgrStanding, AgrSticker } from '@/components/agr/types'
 import type { StandingRow } from '@/lib/aggregates/types'
-import type { WallMeal } from '@/lib/dish-wall'
+import { wallDish, type WallMeal } from '@/lib/dish-wall'
 import type { PublicMeal } from '@/lib/makan-stats'
 import { thumbUrl } from '@/lib/thumb'
 
@@ -55,14 +55,22 @@ export function buildAgrData(input: {
   const photoByVenue = new Map<string, string>()
   for (const m of meals) if (m.locationName && !photoByVenue.has(key(m.locationName))) photoByVenue.set(key(m.locationName), m.src)
 
-  // A card always names its venue: never "At ." (the strip's line is "At {venue}.").
-  const feed: AgrFeedItem[] = meals.filter((m) => m.locationName.trim() && m.caption.trim()).map((m) => ({
-    d: m.caption,
-    v: m.locationName,
-    h: m.username ? `@${m.username}` : '',
-    s: thumbUrl(m.src, 240),
-    w: whereOf(rowByName.get(key(m.locationName))),
-  }))
+  // A card always names its venue: never "At ." (the strip's line is "At {venue}."). The first row
+  // is the usual (PLATES[0]), so the same dish at the same venue is not shown twice.
+  const usual = `${key(PLATES[0].name)}|${key(PLATES[0].venue)}`
+  const live: AgrFeedItem[] = meals
+    .filter((m) => m.locationName.trim() && m.caption.trim() && `${key(m.caption)}|${key(m.locationName)}` !== usual)
+    .map((m) => ({
+      d: m.caption,
+      v: m.locationName,
+      h: m.username ? `@${m.username}` : '',
+      s: thumbUrl(m.src, 240),
+      w: whereOf(rowByName.get(key(m.locationName))),
+    }))
+  // No live wall (fixtures, an outage, a thin week): the approved plates, through the same dish rules.
+  const feed: AgrFeedItem[] = live.length ? live : PLATES.slice(1)
+    .filter((p) => wallDish({ dish: p.name, caption: '' }))
+    .map((p) => ({ d: p.name, v: p.venue, h: p.handle, s: p.src.replace(/\.webp$/, '-256.webp'), w: '' }))
 
   const pins: AgrPin[] = venues
     .filter((v) => typeof v.lat === 'number' && typeof v.lng === 'number')
@@ -86,7 +94,8 @@ export function buildAgrData(input: {
   })
 
   const stickers: AgrSticker[] = maitred
-    .filter((v) => v.notes.always)
+    // A Maître d' pick follows the same public rules as every dish line: no pork, no drinks.
+    .filter((v) => v.notes.always && wallDish({ dish: v.notes.always, caption: '' }))
     .slice(0, STICKERS)
     .map((v) => ({ venue: v.name, dish: v.notes.always, holder: HOLDER, initial: HOLDER.slice(0, 1) }))
 
