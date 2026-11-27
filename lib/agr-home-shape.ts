@@ -26,9 +26,11 @@ export function buildAgrData(input: {
   standings: { rows: StandingRow[]; all: StandingRow[]; countries: number }
   venues: { placeId: string; name: string; lat: number | null; lng: number | null }[]
   maitred: { name: string; notes: { always: string } }[]
+  /** placeId → newest public meal thumbnail there, from the place directory. Feeds the board and the globe pins. */
+  thumbs?: Record<string, string>
   t: Record<string, string>
 }): AgrData {
-  const { meals, standings, venues, maitred, locale, t } = input
+  const { meals, standings, venues, maitred, locale, t, thumbs = {} } = input
   const rowByName = new Map(standings.all.map((r) => [key(r.name), r]))
   const photoByVenue = new Map<string, string>()
   for (const m of meals) if (m.locationName && !photoByVenue.has(key(m.locationName))) photoByVenue.set(key(m.locationName), m.src)
@@ -45,7 +47,7 @@ export function buildAgrData(input: {
     .filter((v) => typeof v.lat === 'number' && typeof v.lng === 'number')
     .map((v) => {
       const photo = photoByVenue.get(key(v.name))
-      return { lat: v.lat as number, lng: v.lng as number, s: photo ? thumbUrl(photo, 240) : '' }
+      return { lat: v.lat as number, lng: v.lng as number, s: thumbs[v.placeId] || (photo ? thumbUrl(photo, 240) : '') }
     })
 
   const board: AgrStanding[] = standings.rows.slice(0, BOARD_SIZE).map((r, i) => {
@@ -58,7 +60,7 @@ export function buildAgrData(input: {
       pct: Math.round(r.eatRate * 100),
       eats: r.eats,
       yeets: r.yeets,
-      img: photo ? thumbUrl(photo, 240) : '',
+      img: thumbs[r.placeId] || (photo ? thumbUrl(photo, 240) : ''),
     }
   })
 

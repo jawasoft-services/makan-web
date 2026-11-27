@@ -6,8 +6,10 @@ import type { AgrData } from '@/components/agr/types'
 import { buildAgrData } from '@/lib/agr-home-shape'
 import { getEatStandings } from '@/lib/eat-standings'
 import { getMaitredDirectory } from '@/lib/maitred'
+import { getPlaceDirectory } from '@/lib/place-directory'
 import { getRecentPublicMeals, type PublicMeal } from '@/lib/makan-stats'
 import { getPublicVenues } from '@/lib/public-venues'
+import { thumbUrl } from '@/lib/thumb'
 import en from '@/messages/en.json'
 import id from '@/messages/id.json'
 
@@ -18,6 +20,8 @@ import id from '@/messages/id.json'
  * - Standings, public venues: their own 1 h `unstable_cache` (lib/eat-standings, lib/public-venues).
  * - Maître d': its own 5 min module cache (lib/maitred), the reason the home stays dynamic.
  * - Feed: `getRecentPublicMeals` has no cache of its own, so it is wrapped here for 1 h.
+ * - Board and globe photos: each restaurant's newest public meal from the place directory, the
+ *   same 1 h cache lib/maitred already reads for this page, so it adds no Firestore reads.
  * No Google Places calls: a meal's city comes from the standings rows Makan already holds.
  */
 
@@ -58,20 +62,31 @@ function runtimeStrings(messages: Record<string, unknown>): Record<string, strin
 }
 
 export async function getAgrHomeData(locale: string): Promise<AgrData> {
-  const [meals, standings, venues, maitred] = await Promise.all([
+  const [meals, standings, venues, maitred, places] = await Promise.all([
     getFeed(),
     getEatStandings(),
     // Throws without a database (fixtures, outage): the globe then shows land and no pins.
     getPublicVenues().catch(() => []),
     getMaitredDirectory(),
+    getPlaceDirectory(),
   ])
+  const venueIds = new Set(venues.map((v) => v.placeId))
+  // The app's own small copy when it made one (no resize on this server), else /api/thumb.
+  const thumbs: Record<string, string> = {}
+  for (const place of places) {
+    const meal = place.meals[0]
+    if (meal) thumbs[place.placeId] = meal.thumb || thumbUrl(meal.src, 240)
+  }
   const messages = (locale === 'id' ? id : en) as unknown as Record<string, unknown>
   return buildAgrData({
     locale,
     meals,
     standings,
-    venues,
+    // Every public venue is a pin; places only the directory knows (or every place, when the
+    // venue read failed) still get one, so the globe never loses its photos.
+    venues: [...venues, ...places.filter((p) => !venueIds.has(p.placeId))],
     maitred: maitred.venues,
+    thumbs,
     t: runtimeStrings(messages),
   })
 }
