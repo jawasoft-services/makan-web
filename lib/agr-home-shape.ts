@@ -1,6 +1,7 @@
 import { PLATES } from '@/components/agr/plates'
 import type { AgrData, AgrFeedItem, AgrPin, AgrStanding, AgrSticker } from '@/components/agr/types'
 import type { StandingRow } from '@/lib/aggregates/types'
+import { wallDish, type WallMeal } from '@/lib/dish-wall'
 import type { PublicMeal } from '@/lib/makan-stats'
 import { thumbUrl } from '@/lib/thumb'
 
@@ -20,6 +21,25 @@ function whereOf(row: StandingRow | undefined): string {
   return row?.where ? [row.where.city, row.where.country].filter(Boolean).join(', ') : ''
 }
 
+/**
+ * The "Go beyond the menu" strip's meals come from the homepage dish wall (lib/dish-wall-data.ts),
+ * which already applies the public-material rules: tagged at a venue, the dish line bound to the
+ * meal's owner and venue, no pork, no drinks, two cards per diner at most (Devon, 17 and 24 Nov
+ * 2026). The raw recent-meals reader had none of these, so pork, a juice and venue-less "At ." cards
+ * reached the live page (27 Nov 2026).
+ */
+export function feedMealsFromWall(wall: { previews: WallMeal[]; wall: WallMeal[] } | null): PublicMeal[] {
+  if (!wall) return []
+  return [...wall.previews, ...wall.wall].map((m) => ({
+    src: m.src,
+    caption: m.dish,
+    locationName: m.venue,
+    mealType: m.mealType,
+    username: m.handle,
+    alt: '',
+  }))
+}
+
 export function buildAgrData(input: {
   locale: string
   meals: PublicMeal[]
@@ -35,13 +55,22 @@ export function buildAgrData(input: {
   const photoByVenue = new Map<string, string>()
   for (const m of meals) if (m.locationName && !photoByVenue.has(key(m.locationName))) photoByVenue.set(key(m.locationName), m.src)
 
-  const feed: AgrFeedItem[] = meals.map((m) => ({
-    d: m.caption,
-    v: m.locationName,
-    h: m.username ? `@${m.username}` : '',
-    s: thumbUrl(m.src, 240),
-    w: whereOf(rowByName.get(key(m.locationName))),
-  }))
+  // A card always names its venue: never "At ." (the strip's line is "At {venue}."). The first row
+  // is the usual (PLATES[0]), so the same dish at the same venue is not shown twice.
+  const usual = `${key(PLATES[0].name)}|${key(PLATES[0].venue)}`
+  const live: AgrFeedItem[] = meals
+    .filter((m) => m.locationName.trim() && m.caption.trim() && `${key(m.caption)}|${key(m.locationName)}` !== usual)
+    .map((m) => ({
+      d: m.caption,
+      v: m.locationName,
+      h: m.username ? `@${m.username}` : '',
+      s: thumbUrl(m.src, 240),
+      w: whereOf(rowByName.get(key(m.locationName))),
+    }))
+  // No live wall (fixtures, an outage, a thin week): the approved plates, through the same dish rules.
+  const feed: AgrFeedItem[] = live.length ? live : PLATES.slice(1)
+    .filter((p) => wallDish({ dish: p.name, caption: '' }))
+    .map((p) => ({ d: p.name, v: p.venue, h: p.handle, s: p.src.replace(/\.webp$/, '-256.webp'), w: '' }))
 
   const pins: AgrPin[] = venues
     .filter((v) => typeof v.lat === 'number' && typeof v.lng === 'number')
@@ -65,7 +94,8 @@ export function buildAgrData(input: {
   })
 
   const stickers: AgrSticker[] = maitred
-    .filter((v) => v.notes.always)
+    // A Maître d' pick follows the same public rules as every dish line: no pork, no drinks.
+    .filter((v) => v.notes.always && wallDish({ dish: v.notes.always, caption: '' }))
     .slice(0, STICKERS)
     .map((v) => ({ venue: v.name, dish: v.notes.always, holder: HOLDER, initial: HOLDER.slice(0, 1) }))
 

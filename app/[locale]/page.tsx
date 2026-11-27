@@ -42,7 +42,7 @@ export async function generateMetadata({
 
 // Rendered per request so Maître d' data respects its 5-minute expiry (lib/maitred).
 // Every reader behind the home is cached (lib/agr-home-data), so a visit costs no
-// Firestore read beyond the hourly refreshes.
+// Firestore read beyond each reader's cache refresh (hourly or daily).
 export const dynamic = 'force-dynamic'
 
 // The homepage answers the five questions a new visitor brings with them:
