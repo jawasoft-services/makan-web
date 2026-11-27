@@ -27,6 +27,9 @@ const PLACE = 'Warung Nasi Bu Komang'
 const EN = JSON.parse(readFileSync('messages/en.json', 'utf8')).SharePages.noticeLink
 const ID = JSON.parse(readFileSync('messages/id.json', 'utf8')).SharePages.noticeLink
 const words = locale => (locale === 'id' ? ID : EN)
+const MARK_HEADER = 'x-makan-notice-link'
+const PROD_HOST = 'https://us-central1-munchies-expo.cloudfunctions.net'
+const DEV_HOST = 'https://us-central1-makan-devel.cloudfunctions.net'
 const PROD_RESOLVE = 'https://us-central1-munchies-expo.cloudfunctions.net/resolveNoticeLink'
 const PROD_REPORT = 'https://us-central1-munchies-expo.cloudfunctions.net/reportNoticeLink'
 const DEV_RESOLVE = 'https://us-central1-makan-devel.cloudfunctions.net/resolveNoticeLink'
@@ -85,6 +88,8 @@ function ask(path, { env = ON, headers = {} } = {}, source = () => null) {
     cache: response.headers.get('cache-control'), referrer: response.headers.get('referrer-policy'), robots: response.headers.get('x-robots-tag'),
     // The expiry is a clock reading; two calls a second apart differ only there.
     cookie: response.headers.get('set-cookie')?.replace(/Expires=[^;]+/, 'Expires=…') ?? null,
+    csp: response.headers.get('content-security-policy'),
+    mark: response.headers.get(`x-middleware-request-${MARK_HEADER}`),
   }
 }
 const rewritten = answer => (answer.rewrite ? new URL(answer.rewrite).pathname : null)
@@ -171,7 +176,7 @@ test('switch off: the proxy sends every address exactly where main\'s proxy sent
 // ---------- a loader for the page, its cards and the client ----------
 
 /** Loads a repository module as the app would, with `env` as process.env, a fake fetch, and every console call recorded. */
-function moduleLane({ env = ON, answers = {} } = {}) {
+function moduleLane({ env = ON, answers = {}, react = realReact, source = () => null, requestHeaders = null } = {}) {
   const modules = new Map(), logs = [], calls = []
   const fetch = async (url, init) => {
     calls.push({ url, init, body: JSON.parse(init.body) })
@@ -184,10 +189,13 @@ function moduleLane({ env = ON, answers = {} } = {}) {
   function load(relative) {
     if (modules.has(relative)) return modules.get(relative)
     const exports = {}; modules.set(relative, exports)
-    const code = ts.transpileModule(readFileSync(resolve(relative), 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText
+    const code = ts.transpileModule(source(relative) ?? readFileSync(resolve(relative), 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText
     const importModule = id => {
       if (id === 'server-only') return {}
-      if (id === 'react') return realReact
+      if (id === 'react') return react
+      if (id.startsWith('node:')) return require(id)
+      // The request as the page sees it: by default one the proxy rewrote, which carries the proxy's mark.
+      if (id === 'next/headers') return { headers: async () => new Headers(requestHeaders ?? { [MARK_HEADER]: load('lib/share-v2-mark.ts').shareV2ProxyMark() }) }
       if (id === 'react/jsx-runtime') return require(id)
       if (id === 'next/navigation') return { notFound: () => { throw new Error('NOT_FOUND') }, redirect: url => { throw new Error(`REDIRECT:${url}`) } }
       if (id === 'next/server') return require(id)
@@ -474,27 +482,146 @@ test('the code is never written to a log, an error report or a URL query', () =>
   assert.doesNotMatch(readFileSync('proxy.ts', 'utf8'), /console\./)
 })
 
-test('the site\'s Content-Security-Policy lets only the /d/ page connect to the two callables (seen blocked in a browser, 27 Nov 2026)', async () => {
-  const config = moduleLane({ env: { NODE_ENV: 'production' } }).load('next.config.ts').default
-  const rules = await config.headers()
-  // Next applies every rule whose source matches, in order; for the same key the last one wins (next.config headers docs).
-  const csp = path => {
-    let value = null
-    for (const rule of rules) {
-      const pattern = new RegExp(`^${rule.source.replace(/:path\*/g, '.*').replace(/:\w+/g, '[^/]+')}$`)
-      if (!pattern.test(path)) continue
-      for (const header of rule.headers) if (header.key === 'Content-Security-Policy') value = header.value
+// ---------- review fixes (REVIEW_NOTICE_PAGE.md, 27 Nov 2026) ----------
+
+const sitePolicy = async () => {
+  const rules = await moduleLane({ env: { NODE_ENV: 'production' } }).load('next.config.ts').default.headers()
+  return rules.find(rule => rule.source === '/:path*').headers.find(header => header.key === 'Content-Security-Policy').value
+}
+const directive = (policy, name) => policy.split(';').map(part => part.trim()).find(part => part.startsWith(`${name} `)) ?? ''
+
+test('L2: the /d/ page\'s policy is sent only with the switch on, and names only the configured project\'s function host', async () => {
+  const site = await sitePolicy()
+  for (const [env, host, other] of [[{ ...ON, NODE_ENV: 'production' }, PROD_HOST, DEV_HOST], [{ ...ON, NODE_ENV: 'production', NOTICE_LINK_PROJECT: 'makan-devel' }, DEV_HOST, PROD_HOST]]) {
+    for (const path of [`/d/${CODE}`, `/en/d/${CODE}`, `/id/d/${CODE}`, '/d/abc']) {
+      const { csp } = ask(path, { env })
+      assert.ok(csp, path)
+      assert.equal(directive(csp, 'connect-src'), `${directive(site, 'connect-src')} ${host}`, path)
+      assert.ok(!csp.includes(other), `${path}: never the other project's host`)
+      // Every other directive is the site's own.
+      assert.equal(csp.replace(/connect-src[^;]*/, ''), site.replace(/connect-src[^;]*/, ''), path)
     }
-    return value
+    // The not-found answer for the internal address keeps the site's policy.
+    assert.equal(ask(`/notice-link/en/${CODE}`, { env }).csp, null)
   }
-  const connect = path => csp(path)?.split(';').map(part => part.trim()).find(part => part.startsWith('connect-src')) ?? ''
-  for (const path of [`/d/${CODE}`, `/en/d/${CODE}`, `/id/d/${CODE}`]) {
-    assert.match(connect(path), /https:\/\/us-central1-munchies-expo\.cloudfunctions\.net(\s|$)/, path)
-    assert.match(connect(path), /https:\/\/us-central1-makan-devel\.cloudfunctions\.net(\s|$)/, path)
-    // Everything else in the policy is the site's own.
-    assert.equal(csp(path).replace(/connect-src[^;]*/, ''), csp('/').replace(/connect-src[^;]*/, ''), path)
+  // Switch off: the proxy sets no policy, so /d/ gets the site's, exactly as main.
+  for (const env of [{}, { NOTICE_LINK_PAGE: '0' }]) assert.equal(ask(`/d/${CODE}`, { env }).csp, null)
+  // next.config.ts sends what main's did, rule for rule.
+  const ours = await moduleLane({ env: { NODE_ENV: 'production' } }).load('next.config.ts').default.headers()
+  const base = atBase('next.config.ts')
+  if (base) {
+    const mains = await moduleLane({ env: { NODE_ENV: 'production' }, source: file => (file === 'next.config.ts' ? base : null) }).load('next.config.ts').default.headers()
+    assert.deepEqual(ours, mains)
   }
-  for (const path of ['/', '/support', '/places/x', `/d/${CODE}/x`, `/notice-link/en/${CODE}`, `/auth/action`]) {
-    assert.doesNotMatch(connect(path), /cloudfunctions/, path)
+  assert.doesNotMatch(JSON.stringify(ours), /cloudfunctions/)
+})
+
+test('L7: only the proxy\'s own rewrite reaches the page; a request that skipped the proxy, or carries the mark itself, gets not-found', async () => {
+  const { shareV2ProxyMark } = moduleLane().load('lib/share-v2-mark.ts')
+  assert.equal(ask(`/d/${CODE}`).mark, shareV2ProxyMark())
+  for (const env of [ON, {}]) {
+    for (const value of ['x', shareV2ProxyMark()]) {
+      assert.equal(rewritten(ask(`/d/${CODE}`, { env, headers: { [MARK_HEADER]: value } })), '/en/notice-link-unknown', `${value} ${JSON.stringify(env)}`)
+    }
   }
+  for (const headers of [{}, { [MARK_HEADER]: 'guess' }, { [MARK_HEADER]: '' }]) {
+    const run = moduleLane({ requestHeaders: headers })
+    assert.equal((await renderPage(run, 'en', CODE)).thrown, 'NOT_FOUND', JSON.stringify(headers))
+    assert.equal((await renderPage(run, 'en', 'abc.def')).thrown, 'NOT_FOUND')
+  }
+  assert.equal((await renderPage(moduleLane(), 'en', CODE)).thrown, null)
+})
+
+test('L4: the note is sent with plain line breaks and never longer than the backend takes', async () => {
+  const sent = async note => {
+    const { run, lib } = flow({ answers: { reportNoticeLink: json({ result: { state: 'reported' } }) } })
+    assert.deepEqual(await lib.sendReport(run.fetch, PROD_REPORT, CODE, { reason: 'other', note }, PLACE), { view: 'reported' })
+    return run.calls[0].body.data.note
+  }
+  assert.equal(await sent('one\r\ntwo\rthree'), 'one\ntwo\nthree')
+  const long = await sent('ab\r\n'.repeat(200))
+  assert.ok(long.length <= 500 && !long.includes('\r'), String(long.length))
+  assert.equal((await sent('x'.repeat(600))).length, 500)
+  // A cut never splits a character in two.
+  assert.equal(await sent(`${'a'.repeat(499)}😀`), 'a'.repeat(499))
+  assert.equal(await sent(`  ${'a'.repeat(500)}  `), 'a'.repeat(500))
+})
+
+test('L6: the fetch refuses redirects', async () => {
+  const { run, lib } = flow({ answers: { resolveNoticeLink: json({ result: { state: 'invalid' } }), reportNoticeLink: json({ result: { state: 'reported' } }) } })
+  await lib.resolveNotice(run.fetch, PROD_RESOLVE, CODE)
+  await lib.sendReport(run.fetch, PROD_REPORT, CODE, { reason: 'owner', note: '' }, PLACE)
+  assert.deepEqual(run.calls.map(call => call.init.redirect), ['error', 'error'])
+})
+
+/**
+ * Runs NoticeFlow with a small hook runtime: state, refs and effects as React keeps them for one mounted component.
+ * `strict` mounts as React's StrictMode does in development: every effect runs, is cleaned up, and runs again.
+ */
+function mountFlow({ answers, strict = true }) {
+  const slots = [], refs = [], effects = []
+  let cursor = 0, refCursor = 0, effectCursor = 0, element = null, pendingEffects = []
+  const react = {
+    ...realReact,
+    useState: initial => {
+      const at = cursor++
+      if (!(at in slots)) slots[at] = typeof initial === 'function' ? initial() : initial
+      return [slots[at], next => { slots[at] = typeof next === 'function' ? next(slots[at]) : next; render() }]
+    },
+    useRef: initial => { const at = refCursor++; refs[at] ??= { current: initial }; return refs[at] },
+    useEffect: (fn, deps) => {
+      const at = effectCursor++
+      const before = effects[at]
+      if (!before || !deps || deps.some((dep, i) => dep !== before.deps[i])) pendingEffects.push({ at, fn, deps })
+    },
+  }
+  const run = moduleLane({ answers, react })
+  const NoticeFlow = run.load('app/notice-link/[locale]/NoticeFlow.tsx').default
+  const props = { code: CODE, urls: { resolve: PROD_RESOLVE, report: PROD_REPORT }, strings: EN, supportHref: '/support', appHref: '/app' }
+  function render() {
+    cursor = 0; refCursor = 0; effectCursor = 0
+    element = NoticeFlow(props)
+    const due = pendingEffects; pendingEffects = []
+    for (const { at, fn, deps } of due) {
+      effects[at]?.cleanup?.()
+      let cleanup = fn()
+      if (strict && !effects[at]) { cleanup?.(); cleanup = fn() }
+      effects[at] = { deps, cleanup }
+    }
+  }
+  render()
+  const settle = () => new Promise(done => setImmediate(done))
+  return { run, card: () => element.props, settle }
+}
+
+test('L6: NoticeFlow asks about the code once per page, even when React runs its effect twice', async () => {
+  const flowRun = mountFlow({ answers: { resolveNoticeLink: json({ result: { state: 'current', placeName: PLACE } }) } })
+  assert.deepEqual(flowRun.card().view, { view: 'loading' })
+  await flowRun.settle()
+  assert.equal(flowRun.run.calls.length, 1)
+  assert.deepEqual(flowRun.card().view, { view: 'current', placeName: PLACE })
+})
+
+test('L6: two quick presses of Send file one report, and the sent card follows', async () => {
+  let release
+  const flowRun = mountFlow({ answers: {
+    resolveNoticeLink: json({ result: { state: 'current', placeName: PLACE } }),
+    reportNoticeLink: () => new Promise(done => { release = () => done({ ok: true, status: 200, json: async () => ({ result: { state: 'reported' } }) }) }),
+  } })
+  await flowRun.settle()
+  flowRun.card().onTellUs()
+  assert.deepEqual(flowRun.card().view, { view: 'form', placeName: PLACE })
+  const { onSend } = flowRun.card()
+  onSend({ reason: 'owner', note: '' })
+  onSend({ reason: 'owner', note: '' })
+  assert.equal(flowRun.card().busy, true)
+  await flowRun.settle()
+  release()
+  await flowRun.settle()
+  assert.deepEqual(flowRun.run.calls.map(call => call.url), [PROD_RESOLVE, PROD_REPORT])
+  assert.deepEqual(flowRun.card().view, { view: 'reported' })
+  assert.equal(flowRun.card().busy, false)
+  flowRun.card().onSend({ reason: 'owner', note: '' })
+  await flowRun.settle()
+  assert.equal(flowRun.run.calls.length, 2)
 })
