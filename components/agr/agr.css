@@ -61,7 +61,7 @@ html:has(.agr),html:has(.agr) body{overflow-x:clip}
   .agr .s3-said{top: 16vh; white-space: normal; width: 90vw;}
 }
 .agr .s3.is-static{height: auto;}
-.agr .s3.is-static .s3-stage{position: relative; height: auto; padding: 14vh 0 12vh; background: #0b0806 center / cover no-repeat;}
+.agr .s3.is-static .s3-stage{position: relative; height: auto; padding: 14vh 0 12vh; background-color: #0b0806;}
 .agr .s3.is-static .s3-canvas,.agr .s3.is-static .s3-bar{display: none;}
 .agr .s3.is-static .s3-scrim{background: rgba(7, 5, 4, .72);}
 .agr .s3.is-static .s3-scrim::before,.agr .s3.is-static .s3-scrim::after{display: none;}
@@ -573,8 +573,11 @@ html:has(.agr),html:has(.agr) body{overflow-x:clip}
 .agr .cm #globe.live .gposter{opacity:0}
 /* the post-flow phone keeps its stacking order on the CSS3D stage */
 .agr .ch3stage > div{position:absolute;inset:0}
-/* the menu story's poster shows on the stage until the scene has drawn (set by the runtime as it nears) */
-.agr .s3-stage{background-position:center;background-size:cover;background-repeat:no-repeat}
+/* the menu story's poster shows on the stage until the scene has drawn, and in place of a scene that cannot run
+   (runtime/story-poster.js names both files as it nears). An upright screen gets the scene's own upright framing,
+   one page, as menu-story.js frames a stage narrower than 0.85 of its height; only the chosen file is downloaded. */
+.agr .s3-stage{background-position:center;background-size:cover;background-repeat:no-repeat;background-image:var(--s3-poster,none)}
+@media (max-aspect-ratio:17/20){.agr .s3-stage{background-image:var(--s3-poster-tall,var(--s3-poster,none))}}
 
 /* reduced motion: the story is every line as plain text from the first paint (the menu scene adds its still) */
 @media (prefers-reduced-motion:reduce){

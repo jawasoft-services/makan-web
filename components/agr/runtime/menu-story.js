@@ -4,6 +4,7 @@
 // shaders are unchanged. destroy() now also removes its listeners and observers and frees the WebGL context.
 // Everything is real-time and tiny: three page textures, no models. The lens pass (focus, blur, grain) is shared with the first version.
 import { AddEquation, BackSide, BoxGeometry, BufferAttribute, BufferGeometry, Camera, CanvasTexture, CustomBlending, DepthTexture, DoubleSide, DstColorFactor, FrontSide, Group, HalfFloatType, HemisphereLight, LinearFilter, LinearMipmapLinearFilter, LinearSRGBColorSpace, Mesh, MeshBasicMaterial, MeshStandardMaterial, PerspectiveCamera, PlaneGeometry, PointLight, Quaternion, RepeatWrapping, SRGBColorSpace, Scene, ShaderMaterial, SpotLight, TextureLoader, UnsignedByteType, UnsignedIntType, VSMShadowMap, Vector2, Vector3, WebGLRenderTarget, WebGLRenderer, ZeroFactor } from 'three';
+import { showStoryPoster } from './story-poster.js';
 
 const DEG = Math.PI / 180;
 const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
@@ -153,7 +154,7 @@ export async function mountMenuStory(section, opts = {}) {
   const lines = [...section.querySelectorAll('.s3-line')];
   const params = new URLSearchParams(location.search);
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches && !params.has('motion');
-  const goStatic = () => { section.classList.add('is-static'); stage.style.backgroundImage = `url(${A}poster.jpg${Q})`; };
+  const goStatic = () => { section.classList.add('is-static'); showStoryPoster(stage, A, Q); };
   if (reduce || params.has('static')) { goStatic(); return null; }
   let renderer;
   try {

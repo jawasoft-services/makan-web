@@ -12,6 +12,7 @@
 //   WebGL context (React strict mode mounts twice in development).
 import { ACESFilmicToneMapping, AmbientLight, BufferAttribute, BufferGeometry, CanvasTexture, Color, CylinderGeometry, DirectionalLight, DoubleSide, EquirectangularReflectionMapping, Group, LinearSRGBColorSpace, Mesh, MeshBasicMaterial, MeshPhysicalMaterial, NoColorSpace, PMREMGenerator, PerspectiveCamera, Raycaster, SRGBColorSpace, Scene, TextureLoader, TorusGeometry, Vector2, Vector3, WebGLRenderer } from 'three'
 import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js'
+import { showStoryPoster, hideStoryPoster } from './story-poster.js'
 
 const PI = Math.PI
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v))
@@ -840,10 +841,12 @@ export function mountAgr(root, data) {
   const storyIO = new IntersectionObserver((es) => {
     if (!es.some((e) => e.isIntersecting) || storyLoading) return
     storyLoading = true; storyIO.disconnect()
-    const stage = hsEl.querySelector('.s3-stage'), poster = data.assets.storyMenu + 'poster.jpg'
-    if (!reduce) stage.style.backgroundImage = 'url(' + poster + ')'   // the still, until the scene has drawn
+    const stage = hsEl.querySelector('.s3-stage')
+    // the still, until the scene has drawn (agr.css picks the phone or wide one); the same address the scene uses
+    // for it if it cannot run, so the still is never downloaded twice
+    if (!reduce) showStoryPoster(stage, data.assets.storyMenu, data.assets.version ? '?v=' + encodeURIComponent(data.assets.version) : '')
     import('./menu-story.js').then((m) => m.mountMenuStory(hsEl, { assets: data.assets.storyMenu, version: data.assets.version }))
-      .then((api) => { if (dead) { if (api) api.destroy(); return } story = api; if (api) stage.style.backgroundImage = ''; kick() })
+      .then((api) => { if (dead) { if (api) api.destroy(); return } story = api; if (api) hideStoryPoster(stage); kick() })
       .catch((err) => console.error('menu story failed to load', err))
   }, { rootMargin: '100% 0px' })
   storyIO.observe(hsEl)
