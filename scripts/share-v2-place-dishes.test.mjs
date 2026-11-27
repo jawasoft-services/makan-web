@@ -80,9 +80,12 @@ test('Q1, the app\'s answer only: a Maître d\' note that is not the answer is n
   assert.doesNotMatch(out.text, /FREE TEXT PICK|class="order"|class="dish"/)
 })
 
-test('a row photo comes only from a meal the page shows: a held, under-13, deleted or deleting author\'s photo never; the next one instead', async () => {
+test('a row photo comes only from a meal the page shows: a held, suspended, spam, under-13, deleted or deleting author\'s photo never; the next one instead', async () => {
   const hide = [
     ['held', run => run.seed.set(`users/${DINERS[0]}`, user({ accountStatus: 'held' }))],
+    ['suspended', run => run.seed.set(`users/${DINERS[0]}`, user({ accountStatus: 'suspended' }))],
+    ['spam', run => run.seed.set(`users/${DINERS[0]}`, user({ spamSuspected: true }))],
+    ['no account', run => run.seed.delete(`users/${DINERS[0]}`)],
     ['under 13', run => run.seed.set(`users/${DINERS[0]}/private/age`, { birthYear: 2015 })],
     ['under minimum', run => run.seed.set(`users/${DINERS[0]}/private/age`, { underMinimum: true })],
     ['deleted', run => run.seed.set(`users/${DINERS[0]}`, user({ isDeleted: true }))],
