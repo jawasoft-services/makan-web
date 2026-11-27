@@ -71,6 +71,11 @@ const SLOT_EDITS = {
     ["  return new ImageResponse(\n", "  return renderImage(() => new ImageResponse(\n"],
     ["  )\n", "  ))\n"],
   ],
+  // RM20773, 27 Nov 2026 (Devon: "Raise it to 1 GiB, merge and deploy"): the server's memory only, after one
+  // out-of-memory restart during a photo-resize burst. Every other line of the hosting config stays as it was.
+  'apphosting.yaml': [
+    ["  memoryMiB: 512\n", "  memoryMiB: 1024\n"],
+  ],
 }
 // Devon, 25 Nov 2026 ("always use our logo instead of the text makan if its an asset"; "Yes, on a website branch"):
 // the preview picture for an unknown place shows the logo file instead of the typed word. These two pinned files may
