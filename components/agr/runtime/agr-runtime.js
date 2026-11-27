@@ -69,6 +69,7 @@ export function mountAgr(root, data) {
   const OPEN = 0, USUAL = 0   // chapter 3: the dish on the table is the regular's usual; its back names it, then it comes to sit beside the card
   let scene, camera, twin = null, narrow = innerWidth < 820
   let cur = null, raf = 0, last = 0, introStart = 0, introDone = reduce
+  const appearAt = []   // per plate: when it starts growing in place (see frame)
   const disposables = []
   // the plates draw only once their shaders are compiled (in the background where the browser can), so the
   // first frame never blocks the page
@@ -428,7 +429,21 @@ export function mountAgr(root, data) {
       moving = true
     }
     if (!cur) cur = tg.map((p) => ({ p: p.p.slice(), r: p.r.slice(), s: p.s }))
+    // Devon, 27 Nov 2026: plates "appear from thin air", the reverse of how they shrink away where they
+    // stand. A hidden plate (shrunk to nothing, parked above the screen during the story) that becomes
+    // visible is moved straight to its new spot while still invisible, then grows there, one after another,
+    // instead of travelling down from where it was parked.
+    if (introDone && !reduce) {
+      let order = 0
+      for (let i = 0; i < N; i++) {
+        if (cur[i].s < 0.02 && tg[i].s > 0.02 && !appearAt[i]) {
+          appearAt[i] = now + 70 * order++
+          cur[i].p = tg[i].p.slice(); cur[i].r = tg[i].r.slice(); cur[i].s = 0.001
+        } else if (tg[i].s <= 0.02) appearAt[i] = 0
+      }
+    }
     for (let i = 0; i < N; i++) {
+      if (appearAt[i] && now < appearAt[i]) { cur[i].p = tg[i].p.slice(); cur[i].r = tg[i].r.slice(); holders[i].visible = false; moving = true; continue }
       for (let a = 0; a < 3; a++) { const dp = tg[i].p[a] - cur[i].p[a], dr = tg[i].r[a] - cur[i].r[a]; cur[i].p[a] += dp * k; cur[i].r[a] += dr * k; if (Math.abs(dp) > 1e-4 || Math.abs(dr) > 1e-4) moving = true }
       const ds = tg[i].s - cur[i].s; cur[i].s += ds * k; if (Math.abs(ds) > 1e-4) moving = true
       const h = holders[i]; h.position.set(cur[i].p[0], cur[i].p[1], cur[i].p[2]); h.scale.setScalar(Math.max(0.001, cur[i].s))

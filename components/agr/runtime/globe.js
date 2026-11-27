@@ -81,6 +81,7 @@ export function mountGlobe(cmEl, gEl, opts) {
   const PINS = opts.pins.map(([lat, lng, s]) => ({ lat, lng, s, dd: angDist({ lat, lng }, LONDON) })).sort((a, b) => a.dd - b.dd)
   const GH = GHOSTS.map(([lat, lng]) => ({ lat, lng, ghost: true })).filter((g) => !PINS.some((p) => angDist(p, g) < 0.012))
   const all = GH.concat(PINS)
+  all.forEach((p, k) => { p.k = k })   // a fixed tie-break for stacking
   for (const p of all) {
     const el = document.createElement('div')
     if (p.ghost) { el.className = 'gpin ghost'; el.innerHTML = '<span class="gp"><u></u><i></i><b></b></span>' }
@@ -160,7 +161,10 @@ export function mountGlobe(cmEl, gEl, opts) {
       if (!(Math.abs(x - p.x) <= 0.05 && Math.abs(y - p.y) <= 0.05)) {
         p.x = x; p.y = y
         p.el.style.transform = 'translate(-50%,-50%) translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)'
-        p.el.style.zIndex = String(Math.round(100000 - p.pos.distanceTo(c) * 10))
+        // Stack like map markers: the pin lower on screen sits in front. Ordering by camera distance
+        // flipped back and forth inside dense clusters as the globe turned (Devon, 27 Nov 2026: the
+        // images "glitch and swap between each other rapidly"); screen height with a fixed tie-break doesn't.
+        p.el.style.zIndex = String(Math.round(y) * 1000 + (p.k % 1000))
       }
       if (p.on !== p.shown) { p.shown = p.on; p.el.classList.toggle('on', p.on) }
     }
