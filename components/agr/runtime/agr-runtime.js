@@ -264,6 +264,10 @@ export function mountAgr(root, data) {
     cr: hidAll, c6: hidAll, ch: hidAll, cm: hidAll, c7: hidAll,
     c3b: () => SCENES.c4(),
     end: (sp) => { const L = LAYOUT.end, o = conveyor(N * 0.5 + sp * 3, L.cy, L.gap, L.s); o.plinth = 0; return o },
+    // Devon, 27 Nov 2026 ("make the plates fall behind the semi circle as well"): leaving the last chapter, the row
+    // drops and gathers toward the middle, so every plate falls into the orange arch, which sits above the canvas
+    // (agr.css: .end .arch) and hides it. Off screen at the end, then the site footer's hidden pose takes over.
+    drop: () => { const o = SCENES.end(1), d = innerHeight * 0.8 / ppuNow(); for (const q of o) { q.p = [q.p[0] * 0.3, q.p[1] - d, q.p[2] - 0.6]; q.s *= 0.85 } return o },
   }
   // after the last chapter: the site footer (or, without one, the screen below the ask) hides the plates
   const footProxy = siteFoot || { classList: { contains: () => false }, getBoundingClientRect: () => { const r = endEl.getBoundingClientRect(); return { top: r.bottom, bottom: r.bottom + innerHeight, height: innerHeight } } }
@@ -275,11 +279,13 @@ export function mountAgr(root, data) {
     const A = SECTIONS[cur], pa = A.fn(prog(A.el)), B = SECTIONS[cur + 1]
     if (B) {
       const top = B.el.getBoundingClientRect().top
-      const f = B.key === 'c3' ? sm(1 - top / (innerHeight * 0.45))
+      let f = B.key === 'c3' ? sm(1 - top / (innerHeight * 0.45))
         : B.key === 'c1' && A.el.classList.contains('hs') ? sm(1 - top / (innerHeight * 0.14))   /* after the story, the plates return only once chapter 1 has arrived, never across its headline */
           : B.key === 'c4' ? sm((innerHeight - top) / (innerHeight * 0.25)) : sm(1 - (top - mid) / (innerHeight * 0.5))
+      const falls = A.key === 'end' && B.el === footProxy   // the plates fall behind the arch: gravity, or a cut with Reduce Motion
+      if (falls) f = reduce ? (f > 0.5 ? 1 : 0) : f * f
       if (f > 0) {
-        const pb = B.fn(0), out = []
+        const pb = falls ? SCENES.drop() : B.fn(0), out = []
         for (let j = 0; j < N; j++) { const lp = lerpPose(pa[j], pb[j], f); lp.yaw = (pa[j].yaw || 0) + ((pb[j].yaw || 0) - (pa[j].yaw || 0)) * f; out.push(lp) }
         out.plinth = pa.plinth + (pb.plinth - pa.plinth) * f; out.front = pa.front; out.key = A.key; return out
       }
