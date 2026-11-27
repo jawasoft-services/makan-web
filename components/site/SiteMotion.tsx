@@ -39,6 +39,41 @@ export function jumpToSection(el: Element) {
 export default function SiteMotion() {
   const pathname = usePathname()
 
+  // Devon, 27 Nov 2026: FAQ answers open one at a time and animate. The <details name> groups already close the
+  // others without JavaScript; here each answer eases open and the open one eases shut (260 ms, ease-out). The
+  // group's `name` is lifted on first use so the browser doesn't snap the other answer shut mid-animation.
+  // Reduced motion keeps the browser's instant, one-at-a-time behaviour.
+  useEffect(() => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const running = new Map<HTMLDetailsElement, { anim: Animation; opening: boolean }>()
+    const closedHeight = (d: HTMLDetailsElement) => { const was = d.open; d.open = false; const h = d.getBoundingClientRect().height; d.open = was; return h }
+    const move = (d: HTMLDetailsElement, opening: boolean) => {
+      running.get(d)?.anim.cancel()
+      const from = d.getBoundingClientRect().height
+      d.open = true
+      const to = opening ? d.getBoundingClientRect().height : closedHeight(d)
+      d.style.overflow = 'hidden'
+      const anim = d.animate([{ height: `${from}px` }, { height: `${to}px` }], { duration: 260, easing: 'cubic-bezier(.2, .8, .2, 1)' })
+      running.set(d, { anim, opening })
+      anim.onfinish = () => { if (running.get(d)?.anim !== anim) return; running.delete(d); d.style.overflow = ''; if (!opening) d.open = false }
+      anim.oncancel = () => { if (running.get(d)?.anim === anim) { running.delete(d); d.style.overflow = '' } }
+    }
+    const click = (e: MouseEvent) => {
+      const summary = (e.target as Element | null)?.closest?.('.sx .faq summary')
+      const d = summary?.parentElement
+      if (!(d instanceof HTMLDetailsElement) || summary !== d.querySelector(':scope > summary')) return
+      e.preventDefault()
+      const group = d.closest('.faq')
+      group?.querySelectorAll<HTMLDetailsElement>('details[name]').forEach(x => { x.dataset.name = x.name; x.removeAttribute('name') })
+      const state = running.get(d)
+      const opening = state ? !state.opening : !d.open
+      if (opening) group?.querySelectorAll<HTMLDetailsElement>('details[open]').forEach(x => { if (x !== d && running.get(x)?.opening !== false) move(x, false) })
+      move(d, opening)
+    }
+    document.addEventListener('click', click)
+    return () => document.removeEventListener('click', click)
+  }, [])
+
   useEffect(() => {
     const click = (e: MouseEvent) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
