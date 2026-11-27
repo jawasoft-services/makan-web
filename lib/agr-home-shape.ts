@@ -1,6 +1,7 @@
 import { PLATES } from '@/components/agr/plates'
 import type { AgrData, AgrFeedItem, AgrPin, AgrStanding, AgrSticker } from '@/components/agr/types'
 import type { StandingRow } from '@/lib/aggregates/types'
+import type { WallMeal } from '@/lib/dish-wall'
 import type { PublicMeal } from '@/lib/makan-stats'
 import { thumbUrl } from '@/lib/thumb'
 
@@ -20,6 +21,25 @@ function whereOf(row: StandingRow | undefined): string {
   return row?.where ? [row.where.city, row.where.country].filter(Boolean).join(', ') : ''
 }
 
+/**
+ * The "Go beyond the menu" strip's meals come from the homepage dish wall (lib/dish-wall-data.ts),
+ * which already applies the public-material rules: tagged at a venue, the dish line bound to the
+ * meal's owner and venue, no pork, no drinks, two cards per diner at most (Devon, 17 and 24 Nov
+ * 2026). The raw recent-meals reader had none of these, so pork, a juice and venue-less "At ." cards
+ * reached the live page (27 Nov 2026).
+ */
+export function feedMealsFromWall(wall: { previews: WallMeal[]; wall: WallMeal[] } | null): PublicMeal[] {
+  if (!wall) return []
+  return [...wall.previews, ...wall.wall].map((m) => ({
+    src: m.src,
+    caption: m.dish,
+    locationName: m.venue,
+    mealType: m.mealType,
+    username: m.handle,
+    alt: '',
+  }))
+}
+
 export function buildAgrData(input: {
   locale: string
   meals: PublicMeal[]
@@ -35,7 +55,8 @@ export function buildAgrData(input: {
   const photoByVenue = new Map<string, string>()
   for (const m of meals) if (m.locationName && !photoByVenue.has(key(m.locationName))) photoByVenue.set(key(m.locationName), m.src)
 
-  const feed: AgrFeedItem[] = meals.map((m) => ({
+  // A card always names its venue: never "At ." (the strip's line is "At {venue}.").
+  const feed: AgrFeedItem[] = meals.filter((m) => m.locationName.trim() && m.caption.trim()).map((m) => ({
     d: m.caption,
     v: m.locationName,
     h: m.username ? `@${m.username}` : '',
