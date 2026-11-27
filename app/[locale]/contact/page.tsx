@@ -1,8 +1,6 @@
 import { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
-import Footer from '@/components/Footer'
 import ContactForm from './ContactForm'
-import styles from '@/components/utility.module.css'
 import { createPageMetadata } from '@/lib/site-metadata'
 
 export async function generateMetadata({
@@ -22,11 +20,8 @@ export async function generateMetadata({
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-brand-cream">
-      <main id="main-content" className={`${styles.page} ${styles.contactPage}`}>
-        <ContactForm />
-      </main>
-      <Footer />
-    </div>
+    <main id="main-content" className="sx">
+      <ContactForm />
+    </main>
   )
 }

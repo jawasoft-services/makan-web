@@ -32,7 +32,8 @@ function lane(locale = 'en') {
       if (id === 'next/navigation') return { notFound() { throw Error('NOT_FOUND') }, permanentRedirect(url) { throw Error('REDIRECT:' + url) } }
       if (id === 'next/link') return { default: ({ children, ...props }) => { delete props.prefetch; return createElement('a', props, children) } }
       if (id === 'next/image') return { default: ({ ...props }) => { delete props.fill; delete props.priority; return createElement('img', props) } }
-      if (id === '@/components/PlaceMaitred') return { default: ({ state }) => createElement('section', { 'data-maitred': state.status }, state.status === 'held' ? state.venue.notes.always : state.status) }
+      // RM20773: the place page draws its Maître d’ with components/places/PlaceSeat (a usual card, or the seat chapter).
+      if (id === '@/components/places/PlaceSeat') return { default: ({ state }) => createElement('section', { 'data-maitred': state.status }, state.status === 'held' ? state.venue.notes.always : state.status) }
       if (id.startsWith('@/components/')) return id.endsWith('.module.css') ? { default: new Proxy({}, { get: (_, key) => key }) } : { default: () => null }
       if (id === '@/lib/place-directory') return { getDirectoryPlace: async () => { state.reads++; return state.place }, getPlaceIndex: async () => [] }
       if (id === '@/lib/eat-standings') return { EVIDENCE_FLOOR: 10, CITY_FLOOR: 5, getEatStandings: async () => { state.standingsReads++; return { all: state.row ? [state.row] : [], cities: [], computedAt: state.computedAt } } }
@@ -147,7 +148,7 @@ test('ranked and below-floor body states retain their standings after the galler
   const run = lane(); run.state.place = place('other-venue-abcdef'); const route = run.load('app/[locale]/places/[slug]/page.tsx')
   for (const row of [{ placeId: 'public-venue', rank: 2, cityRank: null, eats: 11, yeets: 4, matchups: 15, eatRate: 11 / 15 }, { placeId: 'public-venue', rank: null, cityRank: null, eats: 1, yeets: 1, matchups: 2, eatRate: .5 }]) {
     run.state.row = row; run.nextRequest(); const html = renderToStaticMarkup(await route.default(props('en', run.state.place.slug)))
-    assert(html.indexOf('id="meals"') < html.indexOf('class="standing"'))
+    assert(html.indexOf('id="meals"') < html.indexOf('class="ch pk-stand"'))
     assert.match(html, row.rank ? /#2 in the Eat or Yeet standings/ : /2\/10/)
   }
 })

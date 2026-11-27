@@ -1,5 +1,5 @@
 [
-  { "file": "components/Navbar.tsx", "required": ["button orange text-white", "redesign-menu inverse-ground"] },
+  { "file": "components/site/site.css", "required": [".btn.or{background:var(--orange);color:#fff}"] },
   { "file": "components/B2BTeaser.tsx", "required": ["text-white", "bg-white"] },
   { "file": "components/LatestOnMakan.tsx", "required": ["bg-brand-orange text-white"] },
   { "file": "components/FinalCTA.tsx", "required": ["text-white", "bg-white"] }

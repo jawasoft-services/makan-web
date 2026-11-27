@@ -1,20 +1,17 @@
-import PlayfulArrow from '@/components/PlayfulArrow'
 import type { Metadata } from 'next'
 import { cache } from 'react'
 import { notFound, permanentRedirect } from 'next/navigation'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
 import Link from 'next/link'
-import Footer from '@/components/Footer'
-import styles from '@/components/standings/public-pages.module.css'
-import PlaceMaitred from '@/components/PlaceMaitred'
 import SiteSchema from '@/components/SiteSchema'
-import StoreLink from '@/components/home/StoreLink'
-import PlacesMapLoader from '@/components/map/PlacesMapLoader'
+import PlaceSeat from '@/components/places/PlaceSeat'
+import StoreButtons from '@/components/site/StoreButtons'
 import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
 import { CITY_FLOOR, EVIDENCE_FLOOR, getEatStandings, type EatStandings, type StandingRow } from '@/lib/eat-standings'
 import { getDirectoryPlace, getPlaceIndex, type DirectoryPlace } from '@/lib/place-directory'
 import { getMaitredStateAt } from '@/lib/maitred'
+import { localPhoto } from '@/lib/local-photo'
 import { getPlacePhoto } from '@/lib/place-photo'
 import { localizePath } from '@/i18n/paths'
 import { thumbUrl } from '@/lib/thumb'
@@ -23,6 +20,8 @@ import { getReviewForPlace } from '@/lib/reviews'
 
 /** A public restaurant: original meal photos, Maître d’ notes, standings and directions.
  * The web publishes a separate, filtered projection; app-only progress is never included.
+ * RM20773: drawn as the approved prototype's place page (strategy/website-direction-2026-11-25/site/
+ * place-kendal-street-kitchen.html), from this place's own data; a part shows only when its data exists.
  */
 // Holder identity is revalidated by the shared strict-expiry data cache.
 export const dynamic = 'force-dynamic'
@@ -102,8 +101,7 @@ export default async function PlacePage({ params }: Props) {
   const [googlePhoto, maitred] = await Promise.all([getPlacePhoto(place.placeId), getMaitredStateAt(place.placeId)])
   const heroMeal = place.meals[0]
   const review = getReviewForPlace(place.slug)
-  const hasUsual = maitred.status === 'held' && Boolean(maitred.venue.notes.always)
-  const hero = heroMeal ? { src: heroMeal.src, alt: heroMeal.caption ? `${heroMeal.caption}, ${place.name}` : t('mealAlt', { name: place.name }) } : googlePhoto ? { src: googlePhoto.uri, alt: place.name } : null
+  const hero = heroMeal ? { src: thumbUrl(heroMeal.src, 960), alt: heroMeal.caption ? `${heroMeal.caption}, ${place.name}` : t('mealAlt', { name: place.name }) } : googlePhoto ? { src: googlePhoto.uri, alt: place.name } : null
 
   const schema = {
     '@context': 'https://schema.org',
@@ -136,104 +134,119 @@ export default async function PlacePage({ params }: Props) {
     },
   }
 
-  const stats = ranked && row
-    ? [
-        { value: percent.format(row.eatRate), label: t('eatRate') },
-        { value: String(row.eats), label: t('eats') },
-        { value: String(row.yeets), label: t('yeets') },
-        { value: String(row.matchups), label: t('matchups') },
-      ]
-    : row && row.matchups > 0
-      ? [{ value: `${row.matchups}/${EVIDENCE_FLOOR}`, label: t('matchupsToward') }]
-      : []
-
   // Meta row: cuisine · meals · since, leaving out what this place lacks.
   const meta = [
     place.cuisine.join(', '),
     publicMealCount ? t('mealsShort', { count: publicMealCount }) : '',
     place.since ? t('since', { date: monthYear.format(new Date(place.since)) }) : '',
   ].filter(Boolean)
+  // The big name: its last word in orange, as the prototype sets it.
+  const words = place.name.trim().split(/\s+/)
+  const name = words.length > 1 ? <>{words.slice(0, -1).join(' ')} <em>{words.at(-1)}</em></> : place.name
+  // The Maître d’ (components/places/PlaceSeat): a published usual sits in "What to order"; every other state is its own chapter after the meals.
+  const usual = maitred.status === 'held' && Boolean(maitred.venue.notes.always)
+  const reviewPhotos = review ? review.meals.filter(m => m.photo) : []
+  const orderPhotos = reviewPhotos.length >= 3 ? reviewPhotos.slice(1, 3) : reviewPhotos.slice(0, 2)
+  const standing = Boolean(row && (ranked || row.cityRank !== null || row.matchups > 0))
+  const em = (chunks: React.ReactNode) => <em>{chunks}</em>
 
   return (
-    <div className={styles.page}>
+    <main id="main-content" className="sx">
       <SiteSchema locale={locale} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(schema) }} />
-      <main id="main-content" className={`${styles.wrap} ${styles.placeMain}`}>
-        <header className={styles.placeTitle}>
-          <p className={styles.kicker}>
-            <Link href={localizePath(locale, '/standings')}>{t('standings')}</Link>
-            {city ? <><span aria-hidden> · </span><Link href={localizePath(locale, `/standings/${city.slug}`)}>{city.city}</Link></> : place.where ? <><span aria-hidden> · </span>{place.where.city}</> : null}
-          </p>
-          <h1>{place.name}</h1>
-          {meta.length ? <p className={styles.placeMeta}>{meta.map((part, i) => <span key={part} className="contents">{i ? <span aria-hidden>·</span> : null}<span>{part}</span></span>)}</p> : null}
-        </header>
 
-        {hero ? <figure className={styles.placeCover}>
-          <Image src={hero.src} alt={hero.alt} fill sizes="(min-width: 1352px) 1240px, (max-width: 700px) calc(100vw - 40px), calc(100vw - 64px)" priority />
-          {heroMeal?.username ? <figcaption className={styles.photoCredit}>@{heroMeal.username} · {place.name}</figcaption> : !heroMeal && googlePhoto ? <figcaption className={styles.photoCredit}>
-            {googlePhoto.authorUri ? <a href={googlePhoto.authorUri} rel="noopener" target="_blank">{t('photoCredit', { author: googlePhoto.author || 'Google Maps' })}</a> : t('photoCredit', { author: googlePhoto.author || 'Google Maps' })}
-          </figcaption> : null}
-        </figure> : null}
-
-        {hasUsual || review ? <section className={styles.orderAdvice} aria-labelledby="what-to-order">
-          <h2 id="what-to-order">{t('whatToOrder', { name: place.name })}</h2>
-          {hasUsual ? <PlaceMaitred locale={locale} placeName={place.name} state={maitred} faqHref={localizePath(locale, '/maitre-d#how-it-is-earned')} /> : null}
-          {review ? <article className={styles.firsthand}>
-            <p className={styles.kicker}>{t('firsthandVisit', { author: review.author.name })} · <time dateTime={review.visitDate}>{dayMonthYear.format(new Date(review.visitDate))}</time></p>
-            <p lang="en" className={styles.orderSummary}>{review.orderSummary}</p>
-            <p className={styles.visitBill}>{t('visitBill', { total: review.bill.total, covers: review.bill.covers })}</p>
-            <Link href={`/blog/${review.slug}`} prefetch={false} className={styles.secondary}>{t('fullReview')} <PlayfulArrow /></Link>
-          </article> : null}
-        </section> : null}
-
-        <section id="meals" className={styles.meals}>
-          <div className={styles.sectionHeading}><h2>{t('mealsAt', { name: place.name })}</h2><span>{t('savedCount', { count: publicMealCount })}</span></div>
-          <ul className={styles.mealGrid}>
-            {place.meals.map((m) => <li key={m.id}>
-              <Link href={`/meal/${m.id}`} className={styles.mealCard}>
-                <Image src={m.thumb || thumbUrl(m.src, 480)} alt={m.caption ? `${m.caption}, ${place.name}` : t('mealAlt', { name: place.name })} width={480} height={480} sizes="(min-width: 1352px) 398px, (min-width: 701px) 31vw, calc(100vw - 40px)" loading="lazy" />
-                <span><span>{m.caption || m.mealType || t('mealFallback')}</span><span>{m.username ? `@${m.username} · ` : ''}<time dateTime={m.at}>{dayMonthYear.format(new Date(m.at))}</time></span></span>
-              </Link>
-            </li>)}
-          </ul>
-        </section>
-
-
-        <div className={styles.placeDetails}>
+      <section className="ch pk-hero" aria-label={place.name}>
+        <div className="wrap split mid">
           <div>
-            {!hasUsual ? <PlaceMaitred locale={locale} placeName={place.name} state={maitred} faqHref={localizePath(locale, '/maitre-d#how-it-is-earned')} /> : null}
-            {row && (ranked || row.cityRank !== null || row.matchups > 0) ? <section className={styles.standing}>
-              <p className={styles.kicker}>{t('standingBand')}</p>
-              {ranked || row.cityRank !== null ? <p className={styles.rank}>
-                {row.cityRank !== null && city ? t('rankCity', { rank: row.cityRank, city: city.city }) : t('rankGlobal', { rank: row.rank ?? 0 })}
-                {row.cityRank !== null && city && ranked ? <span>{t('rankGlobal', { rank: row.rank ?? 0 })}</span> : null}
-              </p> : <p className="text-base leading-relaxed">{t('underFloor', { matchups: row.matchups, floor: EVIDENCE_FLOOR, cityFloor: CITY_FLOOR })}</p>}
-              {stats.length ? <dl>{stats.map((s) => <div key={s.label}><dt>{s.value}</dt><dd>{s.label}</dd></div>)}</dl> : null}
-            </section> : null}
+            <p className="pk-crumb" data-rise="">
+              <Link href={localizePath(locale, '/standings')}>{t('standings')}</Link>
+              {city ? <> · <Link href={localizePath(locale, `/standings/${city.slug}`)}>{city.city}</Link></> : place.where ? <> · {place.where.city}</> : null}
+            </p>
+            <h1 className="big xl" data-rise="" style={{ '--d': '.08s' } as React.CSSProperties}>{name}</h1>
+            {meta.length ? <p className="pk-meta" data-rise="" style={{ '--d': '.16s' } as React.CSSProperties}>{meta.join(' · ')}</p> : null}
           </div>
-          <aside>
-            {place.address ? <p className={styles.address}>
-              {directionsUrl ? <a href={directionsUrl} rel="noopener" target="_blank">{place.address}<span>{t('directions')} <PlayfulArrow /></span></a> : <span>{place.address}</span>}
-            </p> : null}
-            {place.claimed ? null : <Link href={localizePath(locale, `/claim/${place.slug}`)} className={styles.textLink}>{t('claimRow')}</Link>}
-            {hasGeo ? <PlacesMapLoader className={styles.placeMap} label={t('mapLabel', { name: place.name })} zoom={16} markers={[{ slug: place.slug, name: place.name, lat: place.lat as number, lng: place.lng as number, href: pageUrl }]} /> : null}
-          </aside>
+          {hero ? <figure className="meal" data-pop="" style={{ '--d': '.2s' } as React.CSSProperties}>
+            <Image className="ph" src={hero.src} alt={hero.alt} width={960} height={960} sizes="(max-width: 820px) 320px, 440px" priority />
+            {heroMeal?.username ? <figcaption>@{heroMeal.username} · {place.name}</figcaption> : !heroMeal && googlePhoto ? <figcaption>
+              {googlePhoto.authorUri ? <a href={googlePhoto.authorUri} rel="noopener" target="_blank">{t('photoCredit', { author: googlePhoto.author || 'Google Maps' })}</a> : t('photoCredit', { author: googlePhoto.author || 'Google Maps' })}
+            </figcaption> : null}
+          </figure> : null}
         </div>
+      </section>
 
-
-        <section className={styles.method}>
-          <h2>{t('howTitle')}</h2>
-          <ul>{(['how1', 'how2', 'how3'] as const).map((k) => <li key={k}>{t(k, { floor: EVIDENCE_FLOOR })}</li>)}</ul>
-        </section>
-        <section className={styles.owner}>
-          <h2>{t('ownerTitle')}</h2><p>{t('ownerBody')}</p>
-          <Link href={localizePath(locale, '/partner')} className={styles.secondary}>{t('ownerCta')}</Link>
-        </section>
-        <div className={styles.postMeal}>
-          <StoreLink location="place" className={styles.primary}><span aria-hidden className="text-xl leading-none">+</span>{t('postMeal', { name: place.name })}</StoreLink>
+      {usual || review ? <section className="ch white pk-order" aria-labelledby="what-to-order">
+        <div className="wrap split">
+          <div className="sticky">
+            <h2 className="big md" id="what-to-order" data-rise="">{t('whatToOrder', { name: place.name })}</h2>
+            {review ? <p className="small" data-rise="" style={{ '--d': '.1s' } as React.CSSProperties}>{t('firsthandVisit', { author: review.author.name })} · <time dateTime={review.visitDate}>{dayMonthYear.format(new Date(review.visitDate))}</time></p> : null}
+          </div>
+          <div>
+            {usual ? <PlaceSeat locale={locale} placeName={place.name} state={maitred} variant="usual" /> : null}
+            {review ? <>
+              <p lang="en" className="pk-say" data-rise="" data-stop="">{review.orderSummary}</p>
+              <p className="pk-bill" data-rise="">{t('visitBill', { total: review.bill.total, covers: review.bill.covers })}</p>
+              <div className="btns" data-rise=""><Link className="btn line" href={`/blog/${review.slug}`} prefetch={false}>{t('fullReview')} →</Link></div>
+              {orderPhotos.length ? <div className="grid2">{orderPhotos.map((m, i) => <Image key={m.photo} className="ph" data-pop="" style={{ '--d': `${i * 0.12}s` } as React.CSSProperties} src={localPhoto(m.photo as string, 300)} alt={m.alt} width={1280} height={1280} loading="lazy" />)}</div> : null}
+            </> : null}
+          </div>
         </div>
-      </main>
-      <Footer />
-    </div>
+      </section> : null}
+
+      {place.meals.length ? <section className="ch pk-meals" id="meals" aria-labelledby="meals-at">
+        <div className="wrap">
+          <h2 className="big md" id="meals-at" data-rise="">{t('mealsAt', { name: place.name })}</h2>
+          <ul className="rows" data-rise="" style={{ '--d': '.1s' } as React.CSSProperties}>
+            {place.meals.map(m => <li key={m.id}><Link href={`/meal/${m.id}`} prefetch={false}><b>{m.caption || m.mealType || t('mealFallback')}</b><span>{m.username ? `@${m.username} · ` : ''}<time dateTime={m.at}>{dayMonthYear.format(new Date(m.at))}</time></span></Link></li>)}
+          </ul>
+        </div>
+      </section> : null}
+
+      {usual ? null : <PlaceSeat locale={locale} placeName={place.name} state={maitred} variant="seat" />}
+
+      {standing || place.address || !place.claimed ? <section className="ch pk-stand" aria-label={standing ? t('standingBand') : t('directions')}>
+        <div className="wrap">
+          {standing && row ? <>
+            <p className="cap" data-rise="">{t('standingBand')}</p>
+            {ranked || row.cityRank !== null ? <>
+              <h2 className="big" data-rise="" style={{ '--d': '.06s' } as React.CSSProperties}>{row.cityRank !== null && city ? t.rich('rankCityRich', { rank: row.cityRank, city: city.city, em }) : t('rankGlobal', { rank: row.rank ?? 0 })}</h2>
+              {row.cityRank !== null && city && ranked ? <p className="lede pk-rank" data-rise="" style={{ '--d': '.12s' } as React.CSSProperties}>{t('rankGlobal', { rank: row.rank ?? 0 })}</p> : null}
+            </> : <p className="lede pk-rank" data-rise="">{t('underFloor', { matchups: row.matchups, floor: EVIDENCE_FLOOR, cityFloor: CITY_FLOOR })}</p>}
+            {ranked ? <dl className="nums" data-stop="">
+              <div><dt className="num or" data-count={Math.round(row.eatRate * 100)} data-suffix="%">{percent.format(row.eatRate)}</dt><dd><small>{t('eatRate')}</small></dd></div>
+              <div><dt className="num" data-count={row.eats}>{row.eats}</dt><dd><small>{t('eats')}</small></dd></div>
+              <div><dt className="num" data-count={row.yeets}>{row.yeets}</dt><dd><small>{t('yeets')}</small></dd></div>
+              <div><dt className="num" data-count={row.matchups}>{row.matchups}</dt><dd><small>{t('matchups')}</small></dd></div>
+            </dl> : row.matchups > 0 ? <dl className="nums"><div><dt className="num">{row.matchups}/{EVIDENCE_FLOOR}</dt><dd><small>{t('matchupsToward')}</small></dd></div></dl> : null}
+          </> : null}
+          {place.address || !place.claimed ? <div className="pk-where" data-rise="">
+            {place.address ? <p>{directionsUrl ? <a href={directionsUrl} target="_blank" rel="noopener">{place.address}<span className="dir">{t('directions')} →</span></a> : place.address}</p> : <span />}
+            {place.claimed ? null : <Link className="tlink" href={localizePath(locale, `/claim/${place.slug}`)}>{t('claimRow')}</Link>}
+          </div> : null}
+        </div>
+      </section> : null}
+
+      <section className="ch peach pk-how" aria-labelledby="how-eat">
+        <div className="wrap split">
+          <h2 className="big" id="how-eat" data-rise="">{t('howTitle')}</h2>
+          <ul className="steps">{(['how1', 'how2', 'how3'] as const).map(k => <li key={k} data-read="">{t(k, { floor: EVIDENCE_FLOOR })}</li>)}</ul>
+        </div>
+      </section>
+
+      <section className="ch pk-owner" aria-labelledby="owner">
+        <div className="wrap split mid">
+          <h2 className="big" id="owner" data-rise="">{t('ownerTitle')}</h2>
+          <div>
+            <p className="lede" data-rise="" style={{ marginTop: 0 }}>{t('ownerBody')}</p>
+            <div className="btns" data-rise="" style={{ '--d': '.1s' } as React.CSSProperties}><Link className="btn ink" href={localizePath(locale, '/partner')}>{t('ownerCta')}</Link></div>
+          </div>
+        </div>
+      </section>
+
+      <section className="ch tight peach pk-post" aria-label={t('postMeal', { name: place.name })}>
+        <div className="wrap">
+          <div className="btns" data-rise="" style={{ marginTop: 0 }}><StoreButtons location="place">+ {t('postMeal', { name: place.name })}</StoreButtons></div>
+        </div>
+      </section>
+    </main>
   )
 }

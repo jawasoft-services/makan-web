@@ -35,17 +35,18 @@ function addedLines(base, now) {
 }
 
 // Every page, card and setting a share link can reach today, and the config this unit must not touch.
+// RM20773 (26 Nov 2026) rebuilds these on purpose; the site checks and page tests for RM20773 cover them.
 const UNTOUCHED = [
-  'app/[locale]/places/[slug]/page.tsx', 'app/[locale]/places/[slug]/opengraph-image.tsx', 'app/[locale]/places/page.tsx',
+  'app/[locale]/places/[slug]/opengraph-image.tsx',
   'app/[locale]/meal/[id]/page.tsx', 'app/[locale]/_social-image.tsx', 'app/[locale]/opengraph-image.tsx', 'app/[locale]/twitter-image.tsx',
   'app/[locale]/p/[placeId]/page.tsx', 'app/[locale]/p/[placeId]/[dishId]/page.tsx', 'app/[locale]/p/[placeId]/PlaceLinkPage.tsx', 'app/[locale]/p/[placeId]/PlaceLinkActions.tsx',
   'app/[locale]/taste/[publicId]/[secret]/page.tsx', 'app/[locale]/invite/[publicId]/page.tsx', 'app/[locale]/invite/[publicId]/InviteLanding.tsx',
   'app/api/table-invite/preview/route.ts', 'app/api/thumb/route.ts', 'app/.well-known/assetlinks.json/route.ts',
-  'app/not-found.tsx', 'app/global-not-found.tsx', 'app/sitemap.ts', 'app/robots.ts', 'app/globals.css', 'app/redesign.css',
-  'components/PlaceMaitred.tsx', 'components/Navbar.tsx', 'components/Footer.tsx', 'components/home/StoreLink.tsx', 'components/standings/public-pages.module.css',
+  'app/not-found.tsx', 'app/global-not-found.tsx', 'app/robots.ts', 'app/globals.css', 'app/redesign.css',
+  'components/PlaceMaitred.tsx', 'components/home/StoreLink.tsx', 'components/standings/public-pages.module.css',
   'lib/public-meal.ts', 'lib/taste-invite.ts', 'lib/place-link.ts', 'lib/place-directory.ts', 'lib/place-photo.ts', 'lib/maitred.ts', 'lib/eat-standings.ts', 'lib/firebase-admin.ts', 'lib/site-metadata.ts', 'lib/carry-link.ts', 'lib/links.ts', 'lib/rate-limit.ts',
   'i18n/availability.ts', 'i18n/paths.ts', 'i18n/request.ts', 'i18n/routing.ts',
-  'next.config.ts', 'apphosting.yaml', 'firebase.json', '.firebaserc',
+  'apphosting.yaml', 'firebase.json', '.firebaserc',
 ]
 
 // Devon, 24 Nov 2026: image work runs in a few slots per instance (lib/image-slots.ts) so bursts no
@@ -105,12 +106,19 @@ test('switch off: every page, card and config a share link reaches today is byte
 })
 
 test('switch off: the only edits to existing files are additive and inert', { skip: !baseAvailable && 'commit 365a96e is not in this clone' }, () => {
-  // Messages: every string main had is unchanged; the unit adds one namespace and nothing else.
+  // Messages: every string main had is unchanged. RM20773 (26 Nov 2026) adds the site shell's and the rebuilt
+  // pages' strings, so new keys may join; none of main's may change or go.
+  const keepsStrings = (now, base, label) => {
+    for (const [key, value] of Object.entries(base)) {
+      if (value && typeof value === 'object' && !Array.isArray(value)) keepsStrings(now?.[key], value, `${label}.${key}`)
+      else assert.deepEqual(now?.[key], value, `${label}.${key} was changed or removed`)
+    }
+  }
   for (const locale of ['en', 'id']) {
     const now = JSON.parse(readFileSync(`messages/${locale}.json`, 'utf8'))
     const { SharePages, ...rest } = now
     assert.ok(SharePages && Object.keys(SharePages).length > 0)
-    assert.deepEqual(rest, JSON.parse(atBase(`messages/${locale}.json`)), locale)
+    keepsStrings(rest, JSON.parse(atBase(`messages/${locale}.json`)), locale)
   }
   // Layout: the one change keeps that namespace out of the client payload, so pages carry what they carried.
   const layout = readFileSync('app/[locale]/layout.tsx', 'utf8')
@@ -120,7 +128,8 @@ test('switch off: the only edits to existing files are additive and inert', { sk
   const messages = JSON.parse(readFileSync('messages/en.json', 'utf8'))
   const client = Object.fromEntries(Object.entries(messages).filter(keep))
   const before = Object.fromEntries(Object.entries(JSON.parse(atBase('messages/en.json'))).filter(([namespace]) => namespace !== 'Decision'))
-  assert.equal(JSON.stringify(client), JSON.stringify(before), 'the client message payload is byte-identical to main')
+  keepsStrings(client, before, 'client payload')
+  assert.ok(!('SharePages' in client) && !('Decision' in client), 'the share and decision copy stays out of the client payload')
   // package.json: the one change puts the two link-file goldens into `npm test` (U3 review, Low 7). No dependency the
   // share pages ran on moves: every one main had keeps its exact range. Devon, 24 Nov 2026 (PR #68): later work may add
   // a dependency; changing or removing an existing one still fails here.

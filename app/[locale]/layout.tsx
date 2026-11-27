@@ -4,12 +4,14 @@ import { NextIntlClientProvider, hasLocale } from "next-intl"
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server"
 import { notFound } from "next/navigation"
 import SafeAnalytics from "@/components/SafeAnalytics"
-import Navbar from "@/components/Navbar"
-import SmoothScroll from "@/components/motion/SmoothScroll"
+import SiteHeader from "@/components/site/SiteHeader"
+import SiteFooter from "@/components/site/SiteFooter"
+import SiteMotion from "@/components/site/SiteMotion"
+import { fraunces } from "@/components/site/fonts"
 import { routing } from "@/i18n/routing"
-import "lenis/dist/lenis.css"
 import "../globals.css"
 import "../redesign.css"
+import "@/components/site/site.css"
 
 const jakarta = localFont({
   src: [
@@ -76,12 +78,13 @@ export default async function RootLayout({
   // getTranslations, which does not need the client provider.
   // RM20616 A12 U3 — the Share v2 pages read SharePages on the server only, so their copy stays out of
   // every page's client payload too (with the switch off, live pages carry exactly what they carried).
+  // RM20773: the home page renders Agr on the server and hands its runtime only Agr.runtime (data.t).
   const clientMessages = Object.fromEntries(
-    Object.entries(messages).filter(([namespace]) => namespace !== "Decision" && namespace !== "SharePages"),
+    Object.entries(messages).filter(([namespace]) => namespace !== "Decision" && namespace !== "SharePages" && namespace !== "Agr"),
   )
 
   return (
-      <html lang={locale} className={jakarta.variable} data-scroll-behavior="smooth">
+      <html lang={locale} className={`${jakarta.variable} ${fraunces.variable}`} data-scroll-behavior="smooth">
         <body className="redesign-site font-sans antialiased">
           <NextIntlClientProvider messages={clientMessages}>
             <a
@@ -90,9 +93,12 @@ export default async function RootLayout({
             >
               {t("skipToContent")}
             </a>
-            <Navbar />
+            {/* RM20773: the approved site shell on every page (components/site). It runs on native scroll:
+                the magnetic scroll stops would fight a smooth-scroll library. */}
+            <SiteHeader />
             {children}
-            <SmoothScroll />
+            <SiteFooter />
+            <SiteMotion />
             <SafeAnalytics />
           </NextIntlClientProvider>
         </body>

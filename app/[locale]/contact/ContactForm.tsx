@@ -1,19 +1,17 @@
 'use client'
 
-import PlayfulArrow from '@/components/PlayfulArrow'
 import { useEffect, useRef, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import Link from 'next/link'
-import Image from 'next/image'
 import { localizePath } from '@/i18n/paths'
 import Turnstile, { TURNSTILE_SITE_KEY, resetTurnstile } from '@/components/Turnstile'
-import styles from '@/components/utility.module.css'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export default function ContactForm() {
   const t = useTranslations('Contact')
   const support = useTranslations('Support')
+  const site = useTranslations('Site')
   const locale = useLocale()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -75,36 +73,42 @@ export default function ContactForm() {
     }
   }
 
-  return <div className={styles.contactLayout}>
-    <div>
-      <header className={styles.heading}><Image className="brand-wordmark" src="/redesign/logo-orange.svg" alt="Makan" width={132} height={31} /><h1>{t('title')}</h1><p className={styles.intro}>{t('body')}</p></header>
-      <Image className={styles.contactArt} src="/redesign/food-plate.svg" width={170} height={155} alt="" aria-hidden />
-      <div className={styles.contactHelp}><h2>{support('title')}</h2><Link href={localizePath(locale, '/support')}>{support('eyebrow')} <PlayfulArrow /></Link></div>
-    </div>
-    <div className={styles.formWrap}>
-      {status === 'success' ? <div className={styles.success} ref={feedbackRef} tabIndex={-1} role="status">
-        <svg viewBox="0 0 24 24" aria-hidden><path d="m5 12 4 4 10-10" /></svg>
-        <h2>{t('successTitle')}</h2><p>{t('successBody')}</p><Link href={localizePath(locale, '/')}>{t('back')} <PlayfulArrow /></Link>
-      </div> : <>
-        {/* JSON submission requires the handler; a native fallback must not put personal fields in a URL. */}
-        <form onSubmit={handleSubmit} method="dialog" noValidate aria-busy={status === 'loading'}>
-          <div className={styles.field}><label htmlFor="contact-name">{t('name')}</label>
-            <input ref={nameRef} id="contact-name" name="name" type="text" autoComplete="name" required maxLength={100} value={name}
-              onChange={e => { setName(e.target.value); clearError() }}
-              aria-invalid={invalidField === 'name' || undefined} aria-describedby={invalidField === 'name' ? 'contact-feedback' : undefined} />
-          </div>
-          <div className={styles.field}><label htmlFor="contact-email">{t('email')}</label>
-            <input ref={emailRef} id="contact-email" name="email" type="email" autoComplete="email" required maxLength={254} value={email}
-              onChange={e => { setEmail(e.target.value); clearError() }}
-              aria-invalid={invalidField === 'email' || undefined} aria-describedby={invalidField === 'email' ? 'contact-feedback' : undefined} />
-          </div>
-          <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className={styles.honeypot} />
-          <Turnstile onToken={setTurnstileToken} />
-          <button type="submit" disabled={status === 'loading'} className={`${styles.primary} ${styles.submit}`}>{status === 'loading' ? t('sending') : t('send')}</button>
-          {errorMsg ? <div id="contact-feedback" ref={feedbackRef} tabIndex={-1} role="alert" className={styles.formError}>{errorMsg}</div> : null}
-        </form>
-        <p className={styles.formLegal}>{t('agreement')} <Link href="/tos">{t('terms')}</Link> {t('and')} <Link href={localizePath(locale, '/privacy-policy')}>{t('privacy')}</Link>.</p>
-      </>}
-    </div>
-  </div>
+  // RM20773: the approved prototype's contact page (strategy/website-direction-2026-11-25/site/contact.html).
+  return <>
+    <section className="ch tight doc-hero" aria-label={t('title')}>
+      <div className="wrap">
+        <h1 className="big md" data-rise="">{t('title')}</h1>
+        <p className="lede" data-rise="" style={{ '--d': '.12s' } as React.CSSProperties}>{t('body')}</p>
+      </div>
+    </section>
+    <section className="ch doc-ch" aria-label={site('inFull', { title: t('title') })}>
+      <div className="doc">
+        <div className="doc-side"><h2 className="ct-help">{support('title')}</h2><Link className="tlink" href={localizePath(locale, '/support')}>{support('eyebrow')} →</Link></div>
+        <div className="doc-body">
+          {status === 'success' ? <div className="ct-done" ref={feedbackRef} tabIndex={-1} role="status">
+            <h2>{t('successTitle')}</h2><p>{t('successBody')}</p><Link className="tlink" href={localizePath(locale, '/')}>{t('back')} →</Link>
+          </div> : <>
+            {/* JSON submission requires the handler; a native fallback must not put personal fields in a URL. */}
+            <form className="ct-form" onSubmit={handleSubmit} method="dialog" noValidate aria-busy={status === 'loading'} aria-label={t('title')}>
+              <div className="field"><label htmlFor="contact-name">{t('name')}</label>
+                <input ref={nameRef} id="contact-name" name="name" type="text" autoComplete="name" required maxLength={100} value={name} placeholder={t('namePlaceholder')}
+                  onChange={e => { setName(e.target.value); clearError() }}
+                  aria-invalid={invalidField === 'name' || undefined} aria-describedby={invalidField === 'name' ? 'contact-feedback' : undefined} />
+              </div>
+              <div className="field"><label htmlFor="contact-email">{t('email')}</label>
+                <input ref={emailRef} id="contact-email" name="email" type="email" autoComplete="email" required maxLength={254} value={email}
+                  onChange={e => { setEmail(e.target.value); clearError() }}
+                  aria-invalid={invalidField === 'email' || undefined} aria-describedby={invalidField === 'email' ? 'contact-feedback' : undefined} />
+              </div>
+              <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className="honeypot" />
+              <Turnstile onToken={setTurnstileToken} />
+              <button type="submit" disabled={status === 'loading'} className="btn or">{status === 'loading' ? t('sending') : t('send')}</button>
+              {errorMsg ? <div id="contact-feedback" ref={feedbackRef} tabIndex={-1} role="alert" className="form-error">{errorMsg}</div> : null}
+            </form>
+            <p className="small ct-legal">{t('agreement')} <Link href="/tos">{t('terms')}</Link> {t('and')} <Link href={localizePath(locale, '/privacy-policy')}>{t('privacy')}</Link>.</p>
+          </>}
+        </div>
+      </div>
+    </section>
+  </>
 }

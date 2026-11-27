@@ -1,16 +1,14 @@
-import PlayfulArrow from '@/components/PlayfulArrow'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-import Link from 'next/link'
 import Image from 'next/image'
-import styles from '@/components/standings/public-pages.module.css'
-import Footer from '@/components/Footer'
+import Link from 'next/link'
 import SiteSchema from '@/components/SiteSchema'
 import StandingsTable from '@/components/standings/StandingsTable'
-import GuideStory from '@/components/standings/GuideStory'
-import PlacesMapLoader from '@/components/map/PlacesMapLoader'
+import { getStandingsPhotos } from '@/components/standings/standings-photos'
+import { em, SLOT, withSlot } from '@/components/site/text'
 import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
 import { CITY_FLOOR, EVIDENCE_FLOOR, getEatStandingsSnapshot } from '@/lib/eat-standings'
+import { getPlaceIndex } from '@/lib/place-directory'
 import { safeJsonLd } from '@/lib/safe-json-ld'
 import { localizePath } from '@/i18n/paths'
 
@@ -33,6 +31,9 @@ export async function generateMetadata({
   })
 }
 
+const MOSAIC = 6
+
+/** RM20773: the approved prototype's standings page (strategy/website-direction-2026-11-25/site/standings.html), drawn from the live standings. */
 export default async function StandingsPage({
   params,
 }: {
@@ -40,20 +41,24 @@ export default async function StandingsPage({
 }) {
   const { locale } = await params
   setRequestLocale(locale)
-  const t = await getTranslations('Standings')
-  const { standings, checkedAt } = await getEatStandingsSnapshot()
-  const percent = new Intl.NumberFormat(locale === 'id' ? 'id-ID' : 'en-GB', { style: 'percent', maximumFractionDigits: 0 })
+  const [t, dir] = await Promise.all([getTranslations('Standings'), getTranslations('PlaceDirectory')])
+  const [{ standings, checkedAt }, index] = await Promise.all([getEatStandingsSnapshot(), getPlaceIndex()])
+  const photos = await getStandingsPhotos(standings.rows.map(r => r.placeId), index.slice(0, 12).map(p => p.placeId), MOSAIC)
   const dayMonthYear = new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
   const computedAt = standings.computedAt ? new Date(standings.computedAt) : new Date()
   const pageUrl = `${SITE_URL}${locale === 'id' ? '/id' : ''}/standings`
   const labels = {
-    rank: t('colRank'),
+    find: t('find'),
+    shownOne: dir('results', { count: 1 }),
+    shownOther: dir('results', { count: 2 }),
+    colRank: t('colRank'),
     restaurant: t('colRestaurant'),
-    where: t('colWhere'),
-    eats: t('colEats'),
-    yeets: t('colYeets'),
     rate: t('colRate'),
     since: t('colSince'),
+    eats: t('colEats'),
+    yeets: t('colYeets'),
+    none: dir('empty'),
+    clear: dir('clear'),
   }
   // The list as a machine reads it: ranked restaurants with where they are.
   // Eats are given as the ListItem description rather than an invented
@@ -87,108 +92,83 @@ export default async function StandingsPage({
       })),
     },
   }
+  const leader = standings.rows[0]
+  const countries = t('countries', { count: standings.countries })
+  const countryWords = countries.match(/(\d[\d.,]*)(\s+[^\s.]+)/u)
 
   return (
-    <div className={styles.page}>
+    <main id="main-content" className="sx">
       <SiteSchema locale={locale} />
       {checkedAt ? <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(schema) }} /> : null}
-      <main id="main-content" className={styles.wrap}>
-        <header className={styles.heading}>
-        <p className={styles.kicker}>{t('eyebrow')}</p>
-        <h1 >
-          {t('title')}
-        </h1>
-        <Image src="/redesign/food-plate.svg" alt="" width={120} height={120} className={styles.headingArt} />
-        </header>
-        <details className={styles.guide}>
-          <summary className="playful-disclosure">{t('guideLine')}<PlayfulArrow direction="down" /></summary>
-          <div><GuideStory locale={locale} /></div>
-        </details>
-        <p className={styles.guideIntro}>
-          {t('intro', { floor: EVIDENCE_FLOOR })}
-          {standings.countries > 1 ? ' ' + t('countries', { count: standings.countries }) : ''}
-        </p>
 
-        {standings.rows.length ? (
-          <>
-            <StandingsTable rows={standings.rows} locale={locale} labels={labels} caption={t('title')} hasMap={standings.rows.some((r) => r.lat !== null && r.lng !== null)} />
-            <p className={styles.freshness}>
+      <section className="ch st-hero" aria-label={t('title')}>
+        <div className="wrap">
+          <h1 className="big xl" data-rise="">{t.rich('titleRich', { em })}</h1>
+          <p className="lede" data-rise="" style={{ '--d': '.12s' } as React.CSSProperties}>{t('guideLine')}</p>
+        </div>
+      </section>
+
+      <section className="ch dark st-guide tight" aria-label={t('storySumSub')}>
+        <div className="wrap">
+          <div className="vs" data-stop="">
+            <p className="one" data-rise="">{t('storyOne')}<small>{t('storyOneSub')}</small></p>
+            <span className="vsb" data-pop="" style={{ '--d': '.2s' } as React.CSSProperties} aria-hidden="true">{t('storyVs')}</span>
+            <figure style={{ margin: 0 }}>
+              {photos.mosaic.length ? <div className="mosaic" aria-hidden="true">
+                {photos.mosaic.map((m, i) => <Image key={m.id} className="ph" data-pop="" style={{ '--d': `${(0.3 + i * 0.08).toFixed(2)}s` } as React.CSSProperties} src={m.src} alt="" width={240} height={240} loading="lazy" />)}
+              </div> : null}
+              <figcaption className="all">{t('storyAll')}<small>{t('storyAllSub')}</small></figcaption>
+            </figure>
+          </div>
+          {leader ? <div className="sum">
+            <p data-rise="">{t('storySum')}<small>{t('storySumSub')}</small></p>
+            <StandingsTable variant="leader" rows={[leader]} locale={locale} labels={labels} caption={t('leader')} photos={photos.thumbs} />
+          </div> : null}
+        </div>
+      </section>
+
+      <section className="ch st-board" id="standings" aria-label={t('boardLabel')}>
+        <div className="wrap">
+          <p className="lede" data-rise="" style={{ maxWidth: '52ch', marginTop: 0 }}>
+            {withSlot(t('intro', { floor: SLOT }), <b data-count={EVIDENCE_FLOOR}>{EVIDENCE_FLOOR}</b>)}
+            {standings.countries > 1 ? <> {countryWords ? <>{countries.slice(0, countryWords.index)}<b data-count={standings.countries} data-suffix={countryWords[2]}>{countryWords[0]}</b>{countries.slice((countryWords.index ?? 0) + countryWords[0].length)}</> : countries}</> : null}
+          </p>
+          {standings.rows.length ? <>
+            <StandingsTable rows={standings.rows} locale={locale} labels={labels} caption={t('title')} photos={photos.thumbs} />
+            <p className="small fresh" data-rise="">
               {t('belowFloor', { count: standings.belowFloor, floor: EVIDENCE_FLOOR })}{' '}
               <time dateTime={computedAt.toISOString()}>{t('scoresChangedOn', { date: dayMonthYear.format(computedAt) })}</time>{' '}
               {checkedAt ? <time dateTime={checkedAt}>{t('checkedOn', { date: dayMonthYear.format(new Date(checkedAt)) })}</time> : t('checkUnavailable')}
             </p>
-          </>
-        ) : (
-          <p className={styles.empty}>
-            {checkedAt ? t('empty', { floor: EVIDENCE_FLOOR }) : t('checkUnavailable')}
-          </p>
-        )}
+          </> : <p className="small fresh">{checkedAt ? t('empty', { floor: EVIDENCE_FLOOR }) : t('checkUnavailable')}</p>}
+        </div>
+      </section>
 
-        {standings.rows.some((r) => r.lat !== null && r.lng !== null) ? (
-          <section id="map" className={styles.section}>
-            <h2 className="text-xl font-bold text-brand-ink sm:text-2xl">{t('mapTitle')}</h2>
-            <p className="mt-3 max-w-[60ch] text-base leading-[1.7] text-brand-muted">{t('mapBody')}</p>
-            <PlacesMapLoader
-              className="mt-6 h-[22rem] sm:h-[26rem]"
-              label={t('mapLabel')}
-              markers={standings.rows
-                .filter((r) => r.lat !== null && r.lng !== null)
-                .map((r, i) => ({
-                  slug: r.slug,
-                  name: r.name,
-                  lat: r.lat as number,
-                  lng: r.lng as number,
-                  line: `#${r.rank ?? i + 1} · ${percent.format(r.eatRate)} ${t('colRate')}`,
-                  href: localizePath(locale, `/places/${r.slug}`),
-                }))}
-            />
-          </section>
-        ) : null}
-
-        {standings.cities.length ? (
-          <section className={styles.section}>
-            <h2 className="text-xl font-bold text-brand-ink sm:text-2xl">{t('byCityTitle')}</h2>
-            <p className="mt-3 max-w-[60ch] text-base leading-[1.7] text-brand-muted">{t('byCityBody', { floor: CITY_FLOOR })}</p>
-            <ul className={styles.cities}>
-              {standings.cities.map((c) => (
-                <li key={c.slug}>
-                  <Link
-                    href={localizePath(locale, `/standings/${c.slug}`)}
-
-                  >
-                    <span className="min-w-0">
-                      <span className="block truncate font-semibold">{c.city}</span>
-                      <span className="block text-sm text-brand-muted">{c.country}</span>
-                    </span>
-                    <span className="shrink-0 text-sm font-semibold tabular-nums text-brand-muted">
-                      {t('cityRows', { count: c.rows.length })}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-
-        <section className={styles.method}>
-          <h2>{t('howTitle')}</h2>
-          <ul className="mt-4 space-y-3">
-            {(['how1', 'how2', 'how3', 'how4'] as const).map((k) => (
-              <li key={k} className="flex items-baseline gap-3 text-base leading-[1.7] text-brand-ink">
-                <span aria-hidden className="text-[0.55rem] text-brand-orange">●</span>
-                <span>{t(k, { floor: EVIDENCE_FLOOR })}</span>
-              </li>
-            ))}
+      {standings.cities.length ? <section className="ch white st-cities" aria-label={t('byCityTitle')}>
+        <div className="wrap split">
+          <div>
+            <h2 className="big" data-rise="">{t('byCityTitle')}</h2>
+            <p className="lede" data-rise="" style={{ '--d': '.12s' } as React.CSSProperties}>{t('byCityBody', { floor: CITY_FLOOR })}</p>
+          </div>
+          <ul className="rows" aria-label={t('byCityTitle')}>
+            {standings.cities.map((c, i) => <li key={c.slug} className="link" data-rise="" style={{ '--d': `${Math.min(i, 9) * 0.05}s` } as React.CSSProperties} {...(i === 0 ? { 'data-stop': '' } : {})}>
+              <Link href={localizePath(locale, `/standings/${c.slug}`)}><span><b>{c.city}</b><small>{c.country}</small></span><span className="n">{t('cityRows', { count: c.rows.length })}</span></Link>
+            </li>)}
           </ul>
-          <Link
-            href={localizePath(locale, '/partner')}
-            className="mt-8 inline-flex min-h-12 items-center rounded-full border-2 border-brand-ink px-7 text-base font-bold text-brand-ink transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink active:translate-y-0"
-          >
-            {t('partnerCta')}
-          </Link>
-        </section>
-      </main>
-      <Footer />
-    </div>
+        </div>
+      </section> : null}
+
+      <section className="ch peach st-how" aria-label={t('howTitle')}>
+        <div className="wrap split">
+          <h2 className="big" data-rise="">{t('howTitle')}</h2>
+          <div>
+            <ul className="steps">
+              {(['how1', 'how2', 'how3', 'how4'] as const).map(k => <li key={k} data-read="">{t(k, { floor: EVIDENCE_FLOOR })}</li>)}
+            </ul>
+            <div className="btns"><Link className="btn line" href={localizePath(locale, '/partner')}>{t('partnerCta')}</Link></div>
+          </div>
+        </div>
+      </section>
+    </main>
   )
 }

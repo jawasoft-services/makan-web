@@ -1,10 +1,7 @@
-import PlayfulArrow from '@/components/PlayfulArrow'
 import type { Metadata } from "next"
-import Image from "next/image"
-import styles from "@/components/utility.module.css"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import Link from "next/link"
-import Footer from "@/components/Footer"
+import DocPage, { slugId } from "@/components/site/DocPage"
 import FaqSchema from "@/components/FaqSchema"
 import { SUPPORT_EMAIL, SUPPORT_FAQS, SUPPORT_FAQS_ID } from "@/lib/support"
 import { COMPANY } from "@/lib/press"
@@ -37,6 +34,8 @@ export async function generateMetadata({
   })
 }
 
+// RM20773: the approved prototype's document page (strategy/website-direction-2026-11-25/site/support.html).
+// Still a server component: the address and company block carry no reveal, so they show with or without script.
 export default async function SupportPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   setRequestLocale(locale)
@@ -44,41 +43,29 @@ export default async function SupportPage({ params }: { params: Promise<{ locale
     getTranslations("Support"), getTranslations("AccountDeletion"), getTranslations("DataDeletion"),
   ])
   const faqs = locale === "id" ? SUPPORT_FAQS_ID : SUPPORT_FAQS
+  const heads = [t("emailUs"), t("questions"), t("dataTitle"), t("who")]
+  const toc = heads.map(label => ({ id: slugId(label), label }))
   return (
-    <div className="min-h-screen bg-brand-cream">
+    <main id="main-content" className="sx">
       <FaqSchema items={faqs} />
-      <main id="main-content" className={styles.page}>
-        <header className={styles.heading}>
-          <p className={styles.eyebrow}>{t("eyebrow")}</p>
-          <h1>{t("title")}</h1><p className={styles.intro}>{t("intro")}</p>
-        </header>
-        <div className={styles.supportLayout}>
-          <aside className={styles.contactCard}>
-            <Image className={styles.bowl} src="/redesign/food-noodles.svg" width={142} height={114} alt="" aria-hidden />
-            <h2>{t("emailUs")}</h2><a className={styles.email} href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>
-            <p>{t("reply")}</p><p>{t("details")}</p>
-            <p>{t("press")} <Link href={localizePath(locale, "/contact")}>{t("contact")}</Link>.</p>
-          </aside>
-          <section className={styles.questions} aria-labelledby="support-questions">
-            <h2 id="support-questions">{t("questions")}</h2>
-            {faqs.map(f => <details name="support-faq" key={f.q} className={styles.faq}>
-              <summary>{f.q}<span aria-hidden>+</span></summary><p>{f.a}</p>
-            </details>)}
-          </section>
-        </div>
-        <div className={styles.bottomGrid}>
-          <section><h2>{t("dataTitle")}</h2><p>{t("dataBody")} <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.</p>
-            <div className={styles.linkRow}><Link href={localizePath(locale, "/privacy-policy")}>{t("privacy")}</Link><Link href="/tos">{t("terms")}</Link></div>
-          </section>
-          <nav className={styles.linkStack} aria-label={account("relatedLinksLabel")}>
-            <Link href={localizePath(locale, "/account-deletion")}>{account("title")} <PlayfulArrow /></Link>
-            <Link href={localizePath(locale, "/data-deletion")}>{data("title")} <PlayfulArrow /></Link>
-          </nav>
-        </div>
-        <section className={styles.company}><h2>{t("who")}</h2>
-          <p lang="en">{COMPANY.legalName} is a company registered in England and Wales, company no. {COMPANY.registration}. Registered office: 86–90 Paul Street, London EC2A 4NE, United Kingdom.</p>
-        </section>
-      </main><Footer />
-    </div>
+      <DocPage title={t("title")} lede={t("intro")} toc={toc}>
+        <h2 id={toc[0].id}>{t("emailUs")}</h2>
+        <a className="mail" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>
+        <p>{t("reply")}</p>
+        <p>{t("details")}</p>
+        <p>{t("press")} <Link href={localizePath(locale, "/contact")}>{t("contact")}</Link>.</p>
+        <h2 id={toc[1].id}>{t("questions")}</h2>
+        <div className="faq">{faqs.map(f => <details name="support-faq" key={f.q}><summary>{f.q}</summary><p>{f.a}</p></details>)}</div>
+        <h2 id={toc[2].id}>{t("dataTitle")}</h2>
+        <p>{t("dataBody")} <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.</p>
+        <p className="doc-pair"><Link href={localizePath(locale, "/privacy-policy")}>{t("privacy")}</Link><Link href="/tos">{t("terms")}</Link></p>
+        <ul className="doc-links" aria-label={account("relatedLinksLabel")}>
+          <li><Link href={localizePath(locale, "/account-deletion")}>{account("title")}</Link></li>
+          <li><Link href={localizePath(locale, "/data-deletion")}>{data("title")}</Link></li>
+        </ul>
+        <h2 id={toc[3].id}>{t("who")}</h2>
+        <p lang="en">{COMPANY.legalName} is a company registered in England and Wales, company no. {COMPANY.registration}. Registered office: 86–90 Paul Street, London EC2A 4NE, United Kingdom.</p>
+      </DocPage>
+    </main>
   )
 }

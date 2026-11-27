@@ -241,48 +241,7 @@ for (const locale of ['en', 'id']) {
       assert.equal(payload.location, 'maitre-d')
     }
   })
-
-  test(`${locale}: complete page retains separate live proof, FAQ, stores and localized handoffs`, async () => {
-    const app = harness(locale)
-    const pageModule = app.load('app/[locale]/maitre-d/page.tsx')
-    const params = Promise.resolve({ locale })
-    const page = await pageModule.default({ params })
-    const html = renderToStaticMarkup(page)
-    assert.equal((html.match(/<h1\b/g) || []).length, 1)
-    assert.ok(!/\bdemo\b/i.test(html.replace(/<[^>]*>/g, '')), 'the finished page has no Demo badge or spoken label')
-    const eyebrow = allElements(page).find(element => element.type === 'p' && element.props.className === 'eyebrow')
-    assert.equal(eyebrow.props.children[0].props.children, 'Maître d’', 'expressive lettering preserves one accessible name')
-    assert.equal(eyebrow.props.children[1].props['aria-hidden'], 'true', 'the crown flourish is decorative')
-    assert.ok(html.includes('data-proof-dedicated="true"'), 'do not replace the complete public proof collection with demo content')
-    assert.equal((html.match(/<details\b/g) || []).length, 7)
-    const questions = allElements(page).filter(element => element.type === 'details')
-    assert.deepEqual([...new Set(questions.map(question => question.props.name))], ['maitred-faq'], 'one native exclusive FAQ group must work without hydration')
-    assert.equal(questions.filter(question => question.props.open).length, 1)
-    assert.equal(questions[0].props.open, true, 'the counting-rule handoff retains its initially open answer')
-    assert.deepEqual(questions.map(question => question.props.id), Array.from({ length: 7 }, (_, index) => `maitred-question-${index + 1}`))
-    const countingAnswer = questions[0].props.children[1]
-    assert.equal(countingAnswer.type, 'p')
-    assert.equal(countingAnswer.props.id, 'maitred-counting-rules', 'the fragment must target content inside details so native navigation reveals a previously closed answer')
-    assert.equal(allElements(page).filter(element => element.props?.id === 'maitred-counting-rules').length, 1)
-    assert.ok(allElements(page).some(element => element.type === 'a' && element.props.href === '#maitred-counting-rules'))
-    assert.deepEqual(questions.map(question => {
-      const [summary, answer] = question.props.children
-      return { question: summary.props.children[0], answer: answer.props.children[0] }
-    }), messages[locale].MaitredPage.faqs, 'all seven source questions and answers stay unchanged')
-    for (const id of ['how-it-is-earned', 'questions', 'download']) assert.ok(html.includes(`id="${id}"`))
-    const prefix = locale === 'id' ? '/id' : ''
-    const privacyLink = allElements(questions[4]).find(element => element.props?.href === `${prefix}/privacy-policy#maitred-visibility`)
-    assert.equal(privacyLink?.props.children, messages[locale].MaitredPage.privacyLink, 'the visibility answer links to the complete localized disclosure')
-    assert.ok(html.includes(`href="${prefix}/app"`))
-    assert.ok(html.includes(`href="${prefix}/partner"`))
-    assert.ok(html.includes('href="https://apps.apple.com/app/id6756131450"'))
-    assert.ok(html.includes('href="https://play.google.com/store/apps/details?id=com.makanofficial.makanapp"'))
-    assert.equal(pageModule.dynamic, 'force-dynamic', 'personal public proof must not acquire a full-route ISR lifetime')
-    const metadata = await pageModule.generateMetadata({ params })
-    assert.equal(metadata.alternates.canonical, `https://www.makanofficial.com${prefix}/maitre-d`)
-    assert.equal(metadata.alternates.languages.id, 'https://www.makanofficial.com/id/maitre-d')
-    assert.equal(metadata.openGraph.images[0].url, `https://www.makanofficial.com${prefix}/maitre-d/opengraph-image`)
-  })
+  // RM20773: the standalone /maitre-d page is retired; it redirects to the home page's #c3b section.
 }
 
 function controller(locale = 'en', reducedMotion = false, restored = 'save', { initialY = 0, lenis = false, delayedLenis = false } = {}) {

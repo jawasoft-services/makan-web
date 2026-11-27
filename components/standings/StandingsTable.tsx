@@ -1,102 +1,112 @@
 'use client'
 
-import { useId, useState } from 'react'
+/* eslint-disable @next/next/no-img-element */
+import { useEffect, useId, useRef, useState } from 'react'
 import Link from 'next/link'
 import { localizePath } from '@/i18n/paths'
 import type { StandingRow } from '@/lib/eat-standings'
 import { filterStandings } from './filter-standings'
-import styles from './public-pages.module.css'
+
+type Labels = { find?: string; shownOne?: string; shownOther?: string; colRank?: string; restaurant?: string; rate?: string; since?: string; eats?: string; yeets?: string; none?: string; clear?: string }
+
+const SPARKS = [-150, -110, -70, -30, 10, 50, 110, 160]
 
 /**
- * The standings as a table: rank, restaurant (linked to its page), where,
- * Eat rate (the ranking column), Eats, Yeets, on Makan since. Wide, so it scrolls inside its own
- * box; the page never scrolls sideways. `showWhere` is off on a city page,
- * where every row is in the same place.
+ * The Eat or Yeet board, 1:1 with the approved prototype's standings board (RM20773): rank, a round meal
+ * photo (or the name's first letter), the restaurant linked to its page with where it is, the Eat rate as
+ * a number and an orange bar, Eats and Yeets, and when it joined Makan. Rows land as they come into view,
+ * the Eat rate counts up, and #1 slams in with sparks. "Find a restaurant" filters the rows already on the
+ * page; nothing is sent anywhere. `variant="leader"` draws just the rows (the current leader on its own).
  */
 export default function StandingsTable({
   rows,
   locale,
   labels,
-  showWhere = true,
   caption,
-  hasMap = false,
+  photos = {},
+  showWhere = true,
+  variant = 'board',
 }: {
   rows: StandingRow[]
   locale: string
-  labels: { rank: string; restaurant: string; where: string; eats: string; yeets: string; rate: string; since: string }
-  showWhere?: boolean
+  labels: Labels
   caption: string
-  hasMap?: boolean
+  photos?: Record<string, string>
+  showWhere?: boolean
+  variant?: 'board' | 'leader'
 }) {
   const [query, setQuery] = useState('')
   const searchId = useId()
-  const filtered = filterStandings(rows, query)
-  const id = locale === 'id'
+  const list = useRef<HTMLOListElement>(null)
   // Safari uses Sep where Node uses Sept; keep hydration and month boundaries stable.
   const monthYear = new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' })
   const percent = new Intl.NumberFormat(locale === 'id' ? 'id-ID' : 'en-GB', { style: 'percent', maximumFractionDigits: 0 })
-  const th = ''
-  return (
-    <div>
-      <div className={styles.tableToolbar}>
-        <label htmlFor={searchId}>{id ? 'Cari restoran' : 'Find a restaurant'}</label>
-        <input id={searchId} type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={id ? 'Nama atau kota' : 'Name or city'} />
-        {hasMap ? <a href="#map" className={styles.textLink}>{id ? 'Lihat peta' : 'View map'}</a> : null}
-      </div>
-      <p className="sr-only" role="status" aria-live="polite">{id ? `${filtered.length} restoran ditampilkan` : `${filtered.length} ${filtered.length === 1 ? 'restaurant' : 'restaurants'} shown`}</p>
-      <div className={styles.tableScroll} tabIndex={0} role="region" aria-label={caption}>
-      <table className={styles.table}>
-        <caption className="sr-only">{caption}</caption>
-        <thead>
-          <tr className="border-b border-brand-line text-xs font-semibold uppercase tracking-[0.14em] text-brand-muted">
-            <th scope="col" className={th}>{labels.rank}</th>
-            <th scope="col" className={th}>{labels.restaurant}</th>
-            {showWhere ? <th scope="col" className={th}>{labels.where}</th> : null}
-            <th scope="col" className={`${th} text-right`}>{labels.rate}</th>
-            <th scope="col" className={`${th} text-right`}>{labels.eats}</th>
-            <th scope="col" className={`${th} text-right`}>{labels.yeets}</th>
-            <th scope="col" className={`${th} text-right`}>{labels.since}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filtered.map(({ row, rank }) => (
-            <tr key={row.placeId} className="border-b border-brand-line last:border-b-0">
-              <td className="tabular-nums">{rank}</td>
-              <th scope="row" className="px-4 py-4 text-base font-semibold text-brand-ink sm:px-5">
-                <Link
-                  href={localizePath(locale, `/places/${row.slug}`)}
-                  className="focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink font-semibold"
-                >
-                  {row.name}
-                </Link>
-              </th>
-              {showWhere ? (
-                <td className="px-4 py-4 text-base leading-[1.35] text-brand-ink sm:px-5">
-                  {row.where ? (
-                    <>
-                      <span className="block">{row.where.city}</span>
-                      <span className="block text-sm text-brand-muted">{row.where.country}</span>
-                    </>
-                  ) : (
-                    <span className="text-brand-muted">—</span>
-                  )}
-                </td>
-              ) : null}
-              <td className={`${styles.number} ${styles.rate}`}>{percent.format(row.eatRate)}</td>
-              <td className="px-4 py-4 text-right text-base tabular-nums text-brand-ink sm:px-5">{row.eats}</td>
-              <td className="px-4 py-4 text-right text-base tabular-nums text-brand-muted sm:px-5">{row.yeets}</td>
-              <td className="px-4 py-4 text-right text-base tabular-nums text-brand-muted sm:px-5">
-                {row.since ? monthYear.format(new Date(row.since)).replace(/\bSept\b/, 'Sep') : '—'}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      </div>
-      {filtered.length === 0 ? <div className={styles.tableNoResults}>
-        <p>{id ? 'Tidak ada restoran yang cocok.' : 'No restaurants match that search.'}</p>
-        <button type="button" className={styles.textLink} onClick={() => setQuery('')}>{id ? 'Hapus pencarian' : 'Clear search'}</button>
-      </div> : null}
-    </div>
-  )
+  const filtered = filterStandings(rows, query)
+  const visible = new Set(filtered.map(({ row }) => row.placeId))
+  const shown = (filtered.length === 1 ? labels.shownOne : labels.shownOther)?.replace(/\d[\d.,]*/, String(filtered.length)) ?? String(filtered.length)
+
+  // Rows land with their bar as they come into view; the Eat rate counts up from 0.
+  useEffect(() => {
+    const items = [...(list.current?.querySelectorAll<HTMLLIElement>('li') ?? [])]
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
+    const count = (el: HTMLElement | null) => {
+      if (!el) return
+      const n = Number(el.dataset.n), final = el.dataset.text ?? `${n}%`
+      if (reduce) { el.textContent = final; return }
+      const t0 = performance.now()
+      const f = () => { const k = Math.min(1, (performance.now() - t0) / 750); el.textContent = k < 1 ? `${Math.round(n * (1 - Math.pow(1 - k, 3)))}%` : final; if (k < 1) requestAnimationFrame(f) }
+      f()
+    }
+    const land = (li: HTMLLIElement, d: number) => {
+      if (li.classList.contains('on')) return
+      li.style.setProperty('--d', `${d}s`)
+      li.classList.add('on')
+      const pc = li.querySelector<HTMLElement>('.pc')
+      if (pc && !reduce) pc.textContent = '0%'
+      window.setTimeout(() => count(pc), d * 1000)
+    }
+    if (reduce || !('IntersectionObserver' in window)) { items.forEach(li => land(li, 0)); return }
+    const io = new IntersectionObserver(es => {
+      let n = 0
+      es.forEach(e => { if (e.isIntersecting) { land(e.target as HTMLLIElement, Math.min(n++, 8) * 0.07); io.unobserve(e.target) } })
+    }, { rootMargin: '0px 0px -10% 0px' })
+    items.forEach(li => io.observe(li))
+    return () => io.disconnect()
+  }, [])
+  // A row a search brings back lands at once.
+  useEffect(() => {
+    if (!query) return
+    list.current?.querySelectorAll<HTMLLIElement>('li:not([hidden]):not(.on)').forEach(li => { li.style.setProperty('--d', '0s'); li.classList.add('on') })
+  }, [query])
+
+  const board = <ol className="board" ref={list} aria-label={caption}>
+    {rows.map((row, index) => {
+      // Rows arrive in rank order, so the position is the rank on this board (a city page ranks its own pool).
+      const first = index === 0
+      const where = row.where ? [row.where.city, row.where.country].filter(Boolean).join(' · ') : ''
+      return <li key={row.placeId} className={first ? 'first' : undefined} hidden={!visible.has(row.placeId) || undefined} style={{ '--w': row.eatRate } as React.CSSProperties}>
+        <span className="rk">{index + 1}</span>
+        <span className="th" aria-hidden="true">{photos[row.placeId] ? <img src={photos[row.placeId]} alt="" loading="lazy" /> : row.name.charAt(0).toUpperCase()}</span>
+        <span className="nm"><b><Link href={localizePath(locale, `/places/${row.slug}`)} prefetch={false}>{row.name}</Link></b>{showWhere && where ? <small>{where}</small> : null}</span>
+        <span className="rt">
+          <b className="pc" data-n={Math.round(row.eatRate * 100)} data-text={percent.format(row.eatRate)}>{percent.format(row.eatRate)}</b>
+          <i className="bar" aria-hidden="true"><i /></i>
+          <small>{row.eats} {labels.eats} · {row.yeets} {labels.yeets}</small>
+        </span>
+        <span className="since">{row.since ? monthYear.format(new Date(row.since)).replace(/\bSept\b/, 'Sep') : '—'}</span>
+        {first ? <span className="bsparks" aria-hidden="true">{SPARKS.map((a, i) => <i key={a} style={{ '--a': `${a}deg`, '--sd': `${60 + (i % 3) * 14}px` } as React.CSSProperties} />)}</span> : null}
+      </li>
+    })}
+  </ol>
+
+  if (variant === 'leader') return board
+  return <>
+    <form className="find" role="search" onSubmit={event => event.preventDefault()} data-rise="" style={{ '--d': '.1s' } as React.CSSProperties}>
+      <div className="field"><label htmlFor={searchId}>{labels.find}</label><input id={searchId} type="search" autoComplete="off" maxLength={120} value={query} onChange={event => setQuery(event.target.value)} /></div>
+      <p className="shown" aria-live="polite">{shown}</p>
+    </form>
+    <div className="band colhead" aria-hidden="true" data-stop="top"><span>{labels.colRank}</span><span></span><span>{labels.restaurant}</span><span>{labels.rate}</span><span>{labels.since}</span></div>
+    {board}
+    {filtered.length === 0 ? <div className="none"><p>{labels.none}</p><button type="button" className="btn line" onClick={() => setQuery('')}>{labels.clear}</button></div> : null}
+  </>
 }

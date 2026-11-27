@@ -7,9 +7,7 @@
 // Website analytics: enable only after Google automatic collection is off and the revised basis is reviewed.
 // Maître d’ web visibility: 6 Nov product rule; notify existing diners and review its stated basis before publication.
 import PlayfulArrow from '@/components/PlayfulArrow'
-import styles from '@/components/utility.module.css'
 import { Metadata } from 'next'
-import Footer from '@/components/Footer'
 import Link from 'next/link'
 import PrivacyPolicyId from '@/components/legal/PrivacyPolicyId'
 import MaitredPrivacyDisclosure from '@/components/legal/MaitredPrivacyDisclosure'
@@ -57,23 +55,18 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
   const { locale } = await params
   if (locale === 'id') return <PrivacyPolicyId />
   return (
-    <div className="min-h-screen bg-brand-cream">
-      <main id="main-content" className={styles.legalPage}>
-        <header className={styles.legalHeading}>
-
-        {/* Eyebrow */}
-        <p>
-          Legal
-        </p>
-
-        {/* Title */}
-        <h1>Privacy Policy</h1>
-        <p>Last updated: 7 November 2026</p>
-
-        </header>
-        <div className={styles.legalLayout}>
-          <aside className={styles.contents}><details><summary>On this page</summary><nav aria-label="On this page">{sections.map((title, index) => <a key={title} href={`#legal-section-${index + 1}`}>{title}</a>)}</nav></details></aside>
-          <article className={styles.legalProse} data-policy-copy>
+    // RM20773: the approved prototype's document page (privacy-policy.html); the policy text is unchanged.
+    <main id="main-content" className="sx">
+      <section className="ch tight doc-hero" aria-label="Privacy Policy">
+        <div className="wrap">
+          <h1 className="big md" data-rise="">Privacy Policy</h1>
+          <p className="lede" data-rise="" style={{ '--d': '.12s' } as React.CSSProperties}>Last updated: 7 November 2026</p>
+        </div>
+      </section>
+      <section className="ch doc-ch" aria-label="Privacy Policy, in full">
+        <div className="doc">
+          <nav className="doc-toc" aria-label="On this page"><ol>{sections.map((title, index) => <li key={title}><a href={`#legal-section-${index + 1}`}>{title}</a></li>)}</ol></nav>
+          <article className="doc-body" data-policy-copy>
 
 
           <p>
@@ -754,8 +747,7 @@ export default async function PrivacyPolicy({ params }: { params: Promise<{ loca
 
           </article>
         </div>
-      </main>
-      <Footer />
-    </div>
+      </section>
+    </main>
   )
 }
