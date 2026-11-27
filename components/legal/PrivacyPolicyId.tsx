@@ -4,10 +4,8 @@
 // accepted by Devon without one, 4 Nov 2026). Recheck the "Terakhir diperbarui" date at publication.
 // Visibilitas web Maître d’: aturan produk 6 Nov; beri tahu pengguna lama dan tinjau dasar hukumnya sebelum publikasi.
 import PlayfulArrow from '@/components/PlayfulArrow'
-import styles from '@/components/utility.module.css'
 import type { ReactNode } from 'react'
 import Link from 'next/link'
-import Footer from '@/components/Footer'
 import MaitredPrivacyDisclosure from '@/components/legal/MaitredPrivacyDisclosure'
 
 const strong = 'font-semibold text-brand-ink'
@@ -52,17 +50,18 @@ const sections = [
 
 export default function PrivacyPolicyId() {
   return (
-    <div className="min-h-screen bg-brand-cream">
-      <main id="main-content" className={styles.legalPage}>
-        <header className={styles.legalHeading}>
-        <p>Hukum</p>
-        <h1>Kebijakan Privasi</h1>
-        <p>Terakhir diperbarui: 7 November 2026</p>
-
-        </header>
-        <div className={styles.legalLayout}>
-          <aside className={styles.contents}><details><summary>Di halaman ini</summary><nav aria-label="Di halaman ini">{sections.map((title, index) => <a key={title} href={`#legal-section-${index + 1}`}>{title}</a>)}</nav></details></aside>
-          <article className={styles.legalProse} data-policy-copy>
+    // RM20773: the approved prototype's document page (privacy-policy.html); the policy text is unchanged.
+    <main id="main-content" className="sx">
+      <section className="ch tight doc-hero" aria-label="Kebijakan Privasi">
+        <div className="wrap">
+          <h1 className="big md" data-rise="">Kebijakan Privasi</h1>
+          <p className="lede" data-rise="" style={{ '--d': '.12s' } as React.CSSProperties}>Terakhir diperbarui: 7 November 2026</p>
+        </div>
+      </section>
+      <section className="ch doc-ch" aria-label="Kebijakan Privasi, selengkapnya">
+        <div className="doc">
+          <nav className="doc-toc" aria-label="Di halaman ini"><ol>{sections.map((title, index) => <li key={title}><a href={`#legal-section-${index + 1}`}>{title}</a></li>)}</ol></nav>
+          <article className="doc-body" data-policy-copy>
 
           <p>
             MAKAN APP LTD (&ldquo;kami&rdquo;) mengoperasikan aplikasi seluler Makan (&ldquo;Aplikasi&rdquo;)
@@ -654,8 +653,7 @@ export default function PrivacyPolicyId() {
 
           </article>
         </div>
-      </main>
-      <Footer />
-    </div>
+      </section>
+    </main>
   )
 }

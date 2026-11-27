@@ -52,7 +52,11 @@ const nextConfig: NextConfig = {
   experimental: { globalNotFound: true },
   env: { NEXT_PUBLIC_MAKAN_WEBSITE_FIXTURES: process.env.MAKAN_WEBSITE_FIXTURES === "1" ? "1" : "0" },
   // Fixture caches and HTML must never become production output.
-  distDir: process.env.MAKAN_WEBSITE_FIXTURES === "1" ? ".next-fixtures" : ".next",
+  // MAKAN_FIXTURES_DIST_SUFFIX (letters/digits only) lets a second local fixtures server or build
+  // run beside the first; it can only ever name a .next-fixtures* folder.
+  distDir: process.env.MAKAN_WEBSITE_FIXTURES === "1"
+    ? `.next-fixtures${/^[a-z0-9]{1,12}$/i.test(process.env.MAKAN_FIXTURES_DIST_SUFFIX ?? "") ? `-${process.env.MAKAN_FIXTURES_DIST_SUFFIX}` : ""}`
+    : ".next",
   // This repository lives below a user-level lockfile; pin tracing to the
   // actual app so Next does not infer the home directory as the build root.
   outputFileTracingRoot: process.cwd(),
@@ -149,7 +153,14 @@ const nextConfig: NextConfig = {
       { source: "/tou", destination: "/tos", permanent: true },
       { source: "/success", destination: "/", permanent: true },
       { source: "/privacy", destination: "/privacy-policy", permanent: true },
-      { source: "/about", destination: "/story", permanent: true },
+      { source: "/about", destination: "/#story", permanent: true },
+      // RM20773: these pages are now sections of the home page (Devon approved, 26 Nov 2026).
+      { source: "/maitre-d", destination: "/#c3b", permanent: true },
+      { source: "/app", destination: "/#get", permanent: true },
+      { source: "/story", destination: "/#story", permanent: true },
+      { source: "/id/maitre-d", destination: "/id#c3b", permanent: true },
+      { source: "/id/app", destination: "/id#get", permanent: true },
+      { source: "/id/story", destination: "/id#story", permanent: true },
       // /press used to redirect to /story; it is now its own page (RM20514).
     ];
   },

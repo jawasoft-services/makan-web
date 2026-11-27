@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import Footer from "@/components/Footer"
 import { ReviewArticle } from "@/components/blog/ReviewArticle"
 import { ReviewSchema } from "@/components/blog/ReviewSchema"
 import { getAllReviews, getReview } from "@/lib/reviews"
@@ -50,10 +49,10 @@ export default async function BlogPostPage({ params }: PageProps) {
   if (!review) notFound()
 
   return (
-    <div className="min-h-screen bg-brand-cream">
+    // RM20773: posts keep their layout and take the site's typography (Fraunces headings) from sx-type.
+    <div className="min-h-screen bg-brand-cream sx-type">
       <ReviewSchema review={review} />
       <ReviewArticle review={review} />
-      <Footer />
     </div>
   )
 }

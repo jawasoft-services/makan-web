@@ -2,12 +2,10 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Link from 'next/link'
-import Image from 'next/image'
-import styles from '@/components/standings/public-pages.module.css'
-import Footer from '@/components/Footer'
 import SiteSchema from '@/components/SiteSchema'
 import StandingsTable from '@/components/standings/StandingsTable'
-import PlacesMapLoader from '@/components/map/PlacesMapLoader'
+import { getStandingsPhotos } from '@/components/standings/standings-photos'
+import { em } from '@/components/site/text'
 import { createPageMetadata, SITE_URL } from '@/lib/site-metadata'
 import { CITY_FLOOR, getCityStanding, getEatStandings, getEatStandingsSnapshot } from '@/lib/eat-standings'
 import { safeJsonLd } from '@/lib/safe-json-ld'
@@ -53,15 +51,6 @@ export default async function CityStandingsPage({ params }: Props) {
   const computedAt = standings.computedAt ? new Date(standings.computedAt) : new Date()
   const prefix = locale === 'id' ? '/id' : ''
   const pageUrl = `${SITE_URL}${prefix}/standings/${city.slug}`
-  const labels = {
-    rank: t('colRank'),
-    restaurant: t('colRestaurant'),
-    where: t('colWhere'),
-    eats: t('colEats'),
-    yeets: t('colYeets'),
-    rate: t('colRate'),
-    since: t('colSince'),
-  }
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
@@ -97,82 +86,59 @@ export default async function CityStandingsPage({ params }: Props) {
     },
   }
 
+  const dir = await getTranslations('PlaceDirectory')
+  const photos = await getStandingsPhotos(city.rows.map(r => r.placeId))
+  const labels = {
+    find: t('find'),
+    shownOne: dir('results', { count: 1 }),
+    shownOther: dir('results', { count: 2 }),
+    colRank: t('colRank'),
+    restaurant: t('colRestaurant'),
+    rate: t('colRate'),
+    since: t('colSince'),
+    eats: t('colEats'),
+    yeets: t('colYeets'),
+    none: dir('empty'),
+    clear: dir('clear'),
+  }
+
+  // RM20773: the approved prototype's city page (strategy/website-direction-2026-11-25/site/standings-london.html).
   return (
-    <div className={styles.page}>
+    <main id="main-content" className="sx">
       <SiteSchema locale={locale} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(schema) }} />
-      <main id="main-content" className={styles.wrap}>
-        <header className={styles.heading}>
-        <p className={styles.kicker}>
-          <Link href={localizePath(locale, '/standings')} className="font-semibold">
-            {t('eyebrow')}
-          </Link>
-          <span aria-hidden> · </span>
-          {city.country}
-        </p>
-        <h1 >
-          {t('cityTitle', { city: city.city })}
-        </h1>
-        <p className={styles.intro}>
-          {t('cityIntro', { city: city.city, floor: CITY_FLOOR })}
-        </p>
-        <Image src="/redesign/food-plate.svg" alt="" width={120} height={120} className={styles.headingArt} />
-        </header>
 
-        <StandingsTable rows={city.rows} locale={locale} labels={labels} showWhere={false} caption={t('cityTitle', { city: city.city })} hasMap={city.rows.some((r) => r.lat !== null && r.lng !== null)} />
-        <p className={styles.freshness}>
-          <time dateTime={computedAt.toISOString()}>{t('scoresChangedOn', { date: dayMonthYear.format(computedAt) })}</time>{' '}
-          {checkedAt ? <time dateTime={checkedAt}>{t('checkedOn', { date: dayMonthYear.format(new Date(checkedAt)) })}</time> : t('checkUnavailable')}
-        </p>
+      <section className="ch st-hero" aria-label={t('cityTitle', { city: city.city })}>
+        <div className="wrap">
+          <h1 className="big xl" data-rise="">{t.rich('cityTitleRich', { city: city.city, em })}</h1>
+          <p className="lede" data-rise="" style={{ '--d': '.12s', maxWidth: '46ch' } as React.CSSProperties}>{t('cityIntro', { city: city.city, floor: CITY_FLOOR })}</p>
+        </div>
+      </section>
 
-        {city.rows.some((r) => r.lat !== null && r.lng !== null) ? (
-          <section id="map" className={styles.section}>
-            <h2 className="text-xl font-bold text-brand-ink sm:text-2xl">{t('mapTitle')}</h2>
-            <p className="mt-3 max-w-[60ch] text-base leading-[1.7] text-brand-muted">{t('mapBody')}</p>
-            <PlacesMapLoader
-              className="mt-6 h-[22rem] sm:h-[26rem]"
-              label={t('mapLabel')}
-              markers={city.rows
-                .filter((r) => r.lat !== null && r.lng !== null)
-                .map((r, i) => ({
-                  slug: r.slug,
-                  name: r.name,
-                  lat: r.lat as number,
-                  lng: r.lng as number,
-                  line: `#${i + 1} · ${r.eats} ${t('colEats')}`,
-                  href: localizePath(locale, `/places/${r.slug}`),
-                }))}
-            />
-          </section>
-        ) : null}
+      <section className="ch tight st-board" id="standings" aria-label={t('cityBoardLabel', { city: city.city })}>
+        <div className="wrap">
+          <StandingsTable rows={city.rows} locale={locale} labels={labels} showWhere caption={t('cityTitle', { city: city.city })} photos={photos.thumbs} />
+          <p className="small fresh" data-rise="">
+            <time dateTime={computedAt.toISOString()}>{t('scoresChangedOn', { date: dayMonthYear.format(computedAt) })}</time>{' '}
+            {checkedAt ? <time dateTime={checkedAt}>{t('checkedOn', { date: dayMonthYear.format(new Date(checkedAt)) })}</time> : t('checkUnavailable')}
+          </p>
+        </div>
+      </section>
 
-        <section className={styles.method}>
-          <h2>{t('howTitle')}</h2>
-          <ul className="mt-4 space-y-3">
-            {(['how1', 'how2', 'cityHow', 'how4'] as const).map((k) => (
-              <li key={k} className="flex items-baseline gap-3 text-base leading-[1.7] text-brand-ink">
-                <span aria-hidden className="text-[0.55rem] text-brand-orange">●</span>
-                <span>{t(k, { floor: CITY_FLOOR, city: city.city })}</span>
-              </li>
-            ))}
-          </ul>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              href={localizePath(locale, '/standings')}
-              className="inline-flex min-h-12 items-center rounded-full border-2 border-brand-ink px-7 text-base font-bold text-brand-ink transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink active:translate-y-0"
-            >
-              {t('allStandings')}
-            </Link>
-            <Link
-              href={localizePath(locale, '/partner')}
-              className="inline-flex min-h-12 items-center px-2 text-base font-bold text-brand-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink"
-            >
-              {t('partnerCta')}
-            </Link>
+      <section className="ch peach st-how" aria-label={t('howTitle')}>
+        <div className="wrap split">
+          <h2 className="big" data-rise="">{t('howTitle')}</h2>
+          <div>
+            <ul className="steps">
+              {(['how1', 'how2', 'cityHow', 'how4'] as const).map(k => <li key={k} data-read="" {...(k === 'cityHow' ? { 'data-stop': '' } : {})}>{t(k, { floor: CITY_FLOOR, city: city.city })}</li>)}
+            </ul>
+            <div className="btns">
+              <Link className="btn ink" href={localizePath(locale, '/standings')}>{t('allStandings')}</Link>
+              <Link className="btn line" href={localizePath(locale, '/partner')}>{t('partnerCta')}</Link>
+            </div>
           </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
+        </div>
+      </section>
+    </main>
   )
 }

@@ -1,4 +1,18 @@
 {
+  "Site": {
+    "home": "Makan home",
+    "sections": "Sections",
+    "footer": "Footer",
+    "social": "Social",
+    "madeWithLove": "Made with love",
+    "inJakarta": "in Jakarta",
+    "indonesia": "Indonesia",
+    "languages": " (English and Bahasa Indonesia)",
+    "viaLondon": ", via London",
+    "freeOnPhones": ": free on iPhone and Android",
+    "onThisPage": "On this page",
+    "inFull": "{title}, in full"
+  },
   "Global": {
     "skipToContent": "Skip to content",
     "language": "Language",
@@ -591,6 +605,12 @@
     }
   },
   "Standings": {
+    "titleRich": "The restaurants diners <em>keep picking.</em>",
+    "cityTitleRich": "The restaurants diners keep picking in <em>{city}.</em>",
+    "find": "Find a restaurant",
+    "leader": "The current leader",
+    "boardLabel": "Eat or Yeet standings",
+    "cityBoardLabel": "{city} standings",
     "metaTitle": "Eat or Yeet standings — Makan",
     "metaDescription": "Restaurants ranked by Eats: every time a diner picks a meal from one place over a meal from another in Eat or Yeet, the winner gets an Eat.",
     "eyebrow": "Standings",
@@ -642,6 +662,8 @@
     "eats": "Eats · {rate}"
   },
   "Places": {
+    "maitredRegular": "A regular",
+    "rankCityRich": "#{rank} in {city} <em>on Makan</em>",
     "metaTitle": "{name} | Makan",
     "metaDescription": "{name} in {where}, on Makan. {matchups} Eat or Yeet matchups so far, from diners who ate there.",
     "metaDescriptionRanked": "{place}. {count, plural, one {# public meal photo} other {# public meal photos}}; #{rank} in Makan's Eat or Yeet standings with {eats} Eats.",
@@ -851,6 +873,12 @@
     "places": "Explore restaurants"
   },
   "PartnerRedesign": {
+    "heroRich": "Let your regulars guide <em>the next guest.</em>",
+    "tools_titleRich": "Your food. <em>In the picture.</em>",
+    "proof_titleRich": "Your regulars <em>know your menu.</em>",
+    "story_titleRich": "A real meal. <em>A place to remember.</em>",
+    "getting_started_titleRich": "Make it <em>your place.</em>",
+    "offer_titleRich": "Let’s talk about <em>your restaurant.</em>",
     "hero": "Let your regulars guide the next guest.",
     "intro": "Help new guests find your food, see what your regulars order and remember your place for next time.",
     "enquire": "Talk to Devon",
@@ -1082,6 +1110,8 @@
     "proofDisabled": "Maître d’ is currently paused."
   },
   "PlaceDirectory": {
+    "titleRich": "Find your <em>next meal.</em>",
+    "featuredAlt": "Harissa prawns at {name}",
     "metaTitle": "Restaurants on Makan — real meals and what to order",
     "metaDescription": "Explore restaurants with meals shared on Makan. Find a place, see what diners ordered and use their real meal photos to choose what to try.",
     "title": "Find your next meal.",
@@ -1145,6 +1175,183 @@
       "emailChangeUndone": "Email change undone",
       "emailIsAgain": "Your email is {email} again.",
       "changeEmailAgain": "Change your email again in Makan."
+    }
+  },
+  "Agr": {
+    "hero": {
+      "label": "Know what's worth ordering",
+      "title": "Know what’s worth ordering.",
+      "ring": "KNOW WHAT’S WORTH ORDERING · REAL MEALS · REAL TABLES · ",
+      "discover": "Scroll to discover",
+      "legal": "Privacy & terms"
+    },
+    "story": {
+      "label": "Chicken, please.",
+      "cue": "You sit down. You open the menu. And it starts.",
+      "t1": "Chicken's safe. Chicken's always safe.",
+      "t2": "But if I'm having chicken, why did I come here.",
+      "t3": "Everyone else is looking at the fish. Is the fish a lot? That's a lot.",
+      "t5": "Is that what this place is famous for, or is that just what they've got too much of.",
+      "t6": "Fourteen things on here.",
+      "t7": "Fifteen if you count the one with the little chilli next to it, and I don't know how hot their chilli means.",
+      "t8": "I had noodles yesterday. Do I want noodles two days running.",
+      "t9": "He's coming back over. He's coming back over.",
+      "said": "“Chicken, please.”",
+      "after": "Nobody talks about that minute, but everybody has it. And it never gets solved. It just gets ended, by the waiter arriving.",
+      "gap": "That's the gap. There is an entire internet for working out where to eat, and almost nothing for the decision you actually make when you get there."
+    },
+    "c1": {
+      "label": "The problem",
+      "title": "You still don’t know what to order.",
+      "sub": "Makan shows what people actually ordered, because the best tip comes from someone who’s eaten there.",
+      "travel": "Everything sounds good."
+    },
+    "c2": {
+      "label": "What most people do",
+      "head1": "Most of us check the stars.",
+      "head2": "Stars rate the restaurant.",
+      "sideL": "4.3 stars from 1,240 ratings. For the whole restaurant.",
+      "sideR": "Great room. Good service. Nothing about the plate."
+    },
+    "c3": {
+      "label": "Start with a regular’s usual",
+      "body": "Where a regular shares their usual, you get the dish, <em>which means</em> you skip the guesswork, <em>which means</em> you order like you’ve been before.",
+      "title": "Start with a regular’s usual."
+    },
+    "c3b": {
+      "label": "How the Maître d’ title is earned",
+      "whatToOrder": "What to order here",
+      "you": "You",
+      "youInitial": "Y",
+      "maitred": "Maître d’",
+      "regulars": "Regulars",
+      "rival1": "Jamie Morgan",
+      "rival2": "Sam Rivera",
+      "rival3": "Maya Patel",
+      "title": "How the Maître d’ title is earned",
+      "step1": "<b>Save a meal.</b> Tag the restaurant when you save what you ate.",
+      "step2": "<b>Come back another day.</b> Two eligible days in 60 days get you into the running. It doesn’t guarantee the title.",
+      "step3": "<b>Take a clear lead.</b> The title changes when one qualifying regular moves ahead. A qualifying holder keeps a tie.",
+      "step4": "<b>Your usual shows.</b> The dish you rank highest there in Eat or Yeet becomes what a new guest sees first."
+    },
+    "c4": {
+      "label": "Go beyond the menu",
+      "head1": "Go beyond",
+      "head2": "the menu.",
+      "lede": "See what people ordered, where they ate and who shared it, <em>which means</em> you see the dish before you order it, <em>which means</em> fewer menu gambles.",
+      "feedLabel": "Meals people saved",
+      "savedOn": "Saved on Makan",
+      "at": "At {venue}.",
+      "savedBy": "Saved by {handle}.",
+      "alt": "{dish} at {venue}",
+      "firstWhere": "London, UK"
+    },
+    "c5": {
+      "label": "Eat or Yeet",
+      "title": "Which would you eat again?",
+      "body": "Pick which of two saved meals you’d eat again, <em>which means</em> each pick counts for a restaurant, <em>which means</em> the standings come from diners’ choices.",
+      "eat": "Eat",
+      "yeet": "Yeet"
+    },
+    "cr": {
+      "label": "The restaurants diners keep picking",
+      "title": "The restaurants diners keep picking.",
+      "step1": "Choose between two meals you’ve eaten at different restaurants.",
+      "step2": "The winner gets an <em>Eat</em>. The other restaurant gets a <em>Yeet</em>. Too close to call gives both a tie.",
+      "example": "Example",
+      "eats": "Eats",
+      "yeets": "Yeets",
+      "ties": "Ties",
+      "formula": "Eat% = Eats ÷ counted matchups.",
+      "pctNote": "12 ÷ 15 counted matchups",
+      "minimum": "Restaurants need at least 10 counted matchups to appear in the global standings.",
+      "own": "Eat or Yeet only ever compares a person’s own saved meals. Nobody votes on a restaurant they didn’t eat at.",
+      "final": "Nothing to pay and no way to buy an Eat. The standings are diners’ picks, added up."
+    },
+    "cs": {
+      "label": "Counted, not awarded",
+      "title": "Counted, not awarded.",
+      "lede": "Right now that’s {countries, plural, one {# country} other {# countries}}.",
+      "tally": "{eats} Eats · {yeets} Yeets"
+    },
+    "c6": {
+      "label": "Remember what you’d order again",
+      "title": "Remember what you’d order again.",
+      "body": "Your meals, photos and places live in one diary, <em>which means</em> you keep the good ones, <em>which means</em> your next visit starts with the dish you loved."
+    },
+    "cm": {
+      "label": "Every city has a dish worth the trip.",
+      "title": "Every city has a dish worth the trip.",
+      "body": "Every meal shared on Makan pins a tip to the map, because the best guide to a place is the people eating in it, <em>which means</em> every trip can start with the dish worth ordering."
+    },
+    "ch": {
+      "label": "Save what you ate",
+      "title": "Save what you ate.",
+      "cap1": "Take the photo.",
+      "cap2": "Tag the restaurant when you save what you ate.",
+      "cap3": "Say what it was.",
+      "newMeal": "New meal",
+      "recent": "Recent",
+      "continue": "Continue",
+      "addPlace": "Add restaurant or place",
+      "venue": "Kendal Street Kitchen",
+      "venueDistance": "40 m",
+      "capPlaceholder": "Name it or add a memory…",
+      "save": "Save meal",
+      "chip1": "Harissa prawns",
+      "chip2": "Tiramisu",
+      "chip3": "Carbonara & mushroom risotto",
+      "sheetTitle": "Add a place",
+      "search": "Search a restaurant or place",
+      "likely": "Likely here",
+      "recentPlaces": "Your recent places",
+      "place2": "Wong Kei",
+      "place2Distance": "1.4 km",
+      "place3": "Plaza Khao Gaeng",
+      "place3Distance": "2.2 km",
+      "nearby": "Nearby",
+      "place4": "The Hart | Marylebone",
+      "place4Distance": "650 m",
+      "saved": "Saved to your diary",
+      "savedMeal": "Harissa prawns · Kendal Street Kitchen",
+      "eoy": "Eat or Yeet it?",
+      "viewDiary": "View in diary",
+      "done": "Done"
+    },
+    "c7": {
+      "label": "For restaurants",
+      "cap": "Run a restaurant?",
+      "title": "Let your regulars guide the next guest.",
+      "body": "Your regulars already know your best dish. With Maître d’, their usual shows on your page, <b>which means</b> a first-time guest starts with what your regulars love.",
+      "fact": "Earned at your restaurant. It can’t be bought.",
+      "offer": "Free to appear today. No commission on meals.",
+      "cta": "For restaurants",
+      "whatToOrder": "What to order here",
+      "maitred": "Maître d’"
+    },
+    "end": {
+      "label": "Get Makan",
+      "echo": "Now you know what to order.",
+      "title": "Make the next order a good one.",
+      "sub": "Free on iPhone and Android, because a good tip should cost nothing.",
+      "appStore": "Download on the App Store",
+      "googlePlay": "Get it on Google Play",
+      "qrLabel": "Makan app download QR code",
+      "qrScan": "Scan with your phone",
+      "ring": "MAKE THE NEXT ORDER A GOOD ONE · MAKAN · MAKE THE NEXT ORDER A GOOD ONE · MAKAN · "
+    },
+    "runtime": {
+      "caption": "{name}, {venue}",
+      "day": "{n} dining day",
+      "days": "{n} dining days",
+      "pct": "{n}%",
+      "save": "Save meal",
+      "saving": "Saving meal…",
+      "query": "Kend",
+      "capMark": "Harissa prawns",
+      "capRest": " with extra bread",
+      "recCap": "MAÎTRE D’ AT",
+      "recUsual": "THEIR USUAL"
     }
   }
 }

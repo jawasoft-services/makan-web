@@ -29,9 +29,10 @@ for (const locale of ['en', 'id']) test(`${locale}: standings dates hydrate iden
     } })
     const row = { placeId: 'one', slug: 'one', name: 'One', eatRate: .8, eats: 8, yeets: 2, where: null, since: '2026-09-30T23:30:00.000Z' }
     const html = renderToStaticMarkup(createElement(exports.default, { rows: [row, { ...row, placeId: 'two', since: null }], locale, labels: {}, caption: 'Places' }))
-    assert.match(html, />Sep 2026<\/td>/)
+    // RM20773: the board draws each row as a list item, the date in its "since" column.
+    assert.match(html, /<span class="since">Sep 2026<\/span>/)
     assert.doesNotMatch(html, /Sept 2026/)
-    assert.match(html, />—<\/td>/)
+    assert.match(html, /<span class="since">—<\/span>/)
     assert.equal(options[0].timeZone, 'UTC', 'client timezone must not move a month-boundary timestamp')
   }
 })

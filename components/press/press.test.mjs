@@ -66,7 +66,8 @@ test('/press is not redirected away to /story any more', () => {
 test('the route is reachable in both languages and is listed in the sitemap, footer and llms.txt', () => {
   assert.match(read('../../i18n/availability.ts'), /"\/press"/)
   assert.match(read('../../app/sitemap.ts'), /localized\("\/press"/)
-  assert.match(read('../../components/Footer.tsx'), /\['press', 'press'\]/)
+  // RM20773: the footer is the site shell's (components/site/SiteFooter.tsx); Press keeps its live page.
+  assert.match(read('../../components/site/SiteFooter.tsx'), /\[t\('press'\), '\/press'\]/)
   assert.match(read('../../app/llms.txt/route.ts'), /\/press\)/)
   for (const file of ['en', 'id']) assert.match(read(`../../messages/${file}.json`), /"press": "(Press|Media)"/)
 })

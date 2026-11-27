@@ -1,4 +1,18 @@
 {
+  "Site": {
+    "home": "Beranda Makan",
+    "sections": "Bagian",
+    "footer": "Kaki halaman",
+    "social": "Media sosial",
+    "madeWithLove": "Dibuat dengan cinta",
+    "inJakarta": "di Jakarta",
+    "indonesia": "Indonesia",
+    "languages": " (Bahasa Inggris dan Bahasa Indonesia)",
+    "viaLondon": ", lewat London",
+    "freeOnPhones": ": gratis di iPhone dan Android",
+    "onThisPage": "Di halaman ini",
+    "inFull": "{title}, selengkapnya"
+  },
   "Global": {
     "skipToContent": "Langsung ke konten",
     "language": "Bahasa",
@@ -591,6 +605,12 @@
     }
   },
   "Standings": {
+    "titleRich": "Restoran yang <em>terus dipilih tamu.</em>",
+    "cityTitleRich": "Restoran yang terus dipilih tamu di <em>{city}.</em>",
+    "find": "Cari restoran",
+    "leader": "Pemimpin saat ini",
+    "boardLabel": "Peringkat Eat or Yeet",
+    "cityBoardLabel": "Peringkat {city}",
     "metaTitle": "Peringkat Eat or Yeet — Makan",
     "metaDescription": "Restoran diurutkan berdasarkan Eat: setiap kali tamu memilih makanan dari satu tempat daripada makanan dari tempat lain di Eat or Yeet, pemenangnya dapat satu Eat.",
     "eyebrow": "Peringkat",
@@ -642,6 +662,8 @@
     "eats": "Eat · {rate}"
   },
   "Places": {
+    "maitredRegular": "Pelanggan tetap",
+    "rankCityRich": "Peringkat #{rank} di {city} <em>di Makan</em>",
     "metaTitle": "{name} | Makan",
     "metaDescription": "{name} di {where}, di Makan. {matchups} pertandingan Eat or Yeet sejauh ini, dari tamu yang makan di sana.",
     "metaDescriptionRanked": "{place}. Foto dari {count} makanan publik; peringkat #{rank} di Eat or Yeet Makan dengan {eats} Eat.",
@@ -851,6 +873,12 @@
     "places": "Jelajahi restoran"
   },
   "PartnerRedesign": {
+    "heroRich": "Biar langgananmu memandu <em>tamu baru.</em>",
+    "tools_titleRich": "Hidanganmu <em>jadi sorotan.</em>",
+    "proof_titleRich": "Langgananmu <em>tahu menumu.</em>",
+    "story_titleRich": "Makanan nyata. <em>Tempat untuk diingat.</em>",
+    "getting_started_titleRich": "Mulai dari <em>tempatmu.</em>",
+    "offer_titleRich": "Mari bahas <em>restoranmu.</em>",
     "hero": "Biar langgananmu memandu tamu baru.",
     "intro": "Bantu tamu baru menemukan hidanganmu, melihat pesanan langgananmu, dan mengingat tempatmu untuk kunjungan berikutnya.",
     "enquire": "Ngobrol dengan Devon",
@@ -1082,6 +1110,8 @@
     "proofDisabled": "Maître d’ sedang dijeda."
   },
   "PlaceDirectory": {
+    "titleRich": "Temukan <em>makan berikutnya.</em>",
+    "featuredAlt": "Harissa prawns di {name}",
     "metaTitle": "Restoran di Makan — makanan asli dan pilihan pesanan",
     "metaDescription": "Jelajahi restoran dari makanan yang dibagikan di Makan. Temukan tempat, lihat pesanan pengunjung, dan pilih hidangan lewat foto makanan mereka.",
     "title": "Temukan makan berikutnya.",
@@ -1145,6 +1175,183 @@
       "emailChangeUndone": "Perubahan email dibatalkan",
       "emailIsAgain": "Emailmu kembali {email}.",
       "changeEmailAgain": "Ubah emailmu lagi di Makan."
+    }
+  },
+  "Agr": {
+    "hero": {
+      "label": "Tahu apa yang layak dipesan.",
+      "title": "Tahu apa yang layak dipesan.",
+      "ring": "TAHU APA YANG LAYAK DIPESAN · MAKANAN NYATA · MEJA NYATA · ",
+      "discover": "Gulir untuk menjelajah",
+      "legal": "Privasi & ketentuan"
+    },
+    "story": {
+      "label": "Ayam, ya.",
+      "cue": "Kamu duduk. Kamu buka menunya. Dan mulailah.",
+      "t1": "Ayam aman. Ayam selalu aman.",
+      "t2": "Tapi kalau aku pesan ayam, buat apa aku ke sini.",
+      "t3": "Semua orang lihat ikannya. Ikannya kebanyakan nggak? Kebanyakan.",
+      "t5": "Itu yang bikin tempat ini terkenal, atau cuma yang stoknya kebanyakan.",
+      "t6": "Ada empat belas pilihan di sini.",
+      "t7": "Lima belas kalau dihitung yang ada gambar cabai kecilnya, dan aku nggak tahu pedas versi mereka itu seberapa.",
+      "t8": "Kemarin aku sudah makan mi. Masa mi dua hari berturut-turut.",
+      "t9": "Dia balik lagi ke sini. Dia balik lagi ke sini.",
+      "said": "“Ayam, ya.”",
+      "after": "Tidak ada yang membicarakan semenit itu, padahal semua orang mengalaminya. Dan itu tidak pernah terpecahkan. Hanya berakhir, karena pelayannya datang.",
+      "gap": "Itulah celahnya. Ada satu internet penuh untuk mencari tempat makan, dan hampir tidak ada apa-apa untuk keputusan yang benar-benar kamu ambil saat sudah sampai."
+    },
+    "c1": {
+      "label": "Masalahnya",
+      "title": "Kamu masih belum tahu mau pesan apa.",
+      "sub": "Makan menunjukkan apa yang benar-benar dipesan orang, karena tips terbaik datang dari orang yang sudah makan di sana.",
+      "travel": "Semua kelihatan enak."
+    },
+    "c2": {
+      "label": "Yang biasanya dilakukan orang",
+      "head1": "Kebanyakan dari kita melihat bintang.",
+      "head2": "Bintang menilai restorannya.",
+      "sideL": "4,3 bintang dari 1.240 penilaian. Untuk seluruh restoran.",
+      "sideR": "Ruangannya bagus. Pelayanannya baik. Tidak ada soal hidangannya."
+    },
+    "c3": {
+      "label": "Mulai dari pesanan langganan.",
+      "body": "Saat seorang langganan membagikan pesanan andalannya, kamu dapat hidangannya, <em>artinya</em> kamu tidak perlu menebak, <em>artinya</em> kamu memesan seperti sudah pernah ke sana.",
+      "title": "Mulai dari pesanan langganan."
+    },
+    "c3b": {
+      "label": "Cara meraih gelar Maître d’",
+      "whatToOrder": "Pesanan andalan di sini",
+      "you": "Kamu",
+      "youInitial": "K",
+      "maitred": "Maître d’",
+      "regulars": "Langganan",
+      "rival1": "Jamie Morgan",
+      "rival2": "Sam Rivera",
+      "rival3": "Maya Patel",
+      "title": "Cara meraih gelar Maître d’",
+      "step1": "<b>Simpan makanan.</b> Tandai restorannya saat menyimpan apa yang kamu makan.",
+      "step2": "<b>Datang lagi di hari lain.</b> Dua hari yang memenuhi syarat dalam 60 hari membuatmu bisa bersaing. Gelar belum otomatis didapat.",
+      "step3": "<b>Unggul dengan jelas.</b> Gelar berpindah saat satu pelanggan tetap yang memenuhi syarat unggul. Saat seri, pemegang yang masih memenuhi syarat tetap memegang gelar.",
+      "step4": "<b>Pesanan andalanmu tampil.</b> Hidangan yang paling tinggi kamu nilai di sana lewat Eat or Yeet jadi yang pertama dilihat tamu baru."
+    },
+    "c4": {
+      "label": "Lebih dari sekadar menu.",
+      "head1": "Lebih dari",
+      "head2": "sekadar menu.",
+      "lede": "Lihat apa yang dipesan orang, di mana mereka makan, dan siapa yang membagikannya, <em>artinya</em> kamu melihat hidangannya sebelum memesan, <em>artinya</em> lebih sedikit untung-untungan di depan menu.",
+      "feedLabel": "Makanan yang disimpan orang",
+      "savedOn": "Disimpan di Makan",
+      "at": "Di {venue}.",
+      "savedBy": "Disimpan oleh {handle}.",
+      "alt": "{dish} di {venue}",
+      "firstWhere": "London, Inggris"
+    },
+    "c5": {
+      "label": "Eat or Yeet",
+      "title": "Mana yang ingin kamu makan lagi?",
+      "body": "Pilih mana dari dua makanan tersimpan yang ingin kamu makan lagi, <em>artinya</em> setiap pilihan dihitung untuk sebuah restoran, <em>artinya</em> peringkatnya berasal dari pilihan para tamu.",
+      "eat": "Eat",
+      "yeet": "Yeet"
+    },
+    "cr": {
+      "label": "Restoran yang terus dipilih tamu.",
+      "title": "Restoran yang terus dipilih tamu.",
+      "step1": "Pilih di antara dua makanan yang pernah kamu makan di restoran yang berbeda.",
+      "step2": "Pemenangnya dapat <em>Eat</em>. Restoran lainnya dapat <em>Yeet</em>. Kalau terlalu tipis untuk dipilih, keduanya seri.",
+      "example": "Contoh",
+      "eats": "Eat",
+      "yeets": "Yeet",
+      "ties": "Seri",
+      "formula": "Eat% = Eats ÷ jumlah perbandingan yang dihitung.",
+      "pctNote": "12 ÷ 15 perbandingan yang dihitung",
+      "minimum": "Restoran perlu setidaknya 10 perbandingan yang dihitung untuk tampil di peringkat global.",
+      "own": "Eat or Yeet hanya membandingkan makanan tersimpan milik orang itu sendiri. Tidak ada yang menilai restoran yang tidak pernah mereka datangi.",
+      "final": "Tidak ada biaya dan Eat tidak bisa dibeli. Peringkat ini adalah pilihan tamu, dijumlahkan."
+    },
+    "cs": {
+      "label": "Dihitung, bukan diberikan.",
+      "title": "Dihitung, bukan diberikan.",
+      "lede": "Saat ini ada di {countries, plural, other {# negara}}.",
+      "tally": "{eats} Eat · {yeets} Yeet"
+    },
+    "c6": {
+      "label": "Ingat apa yang ingin kamu pesan lagi.",
+      "title": "Ingat apa yang ingin kamu pesan lagi.",
+      "body": "Makanan, foto, dan tempatmu tersimpan dalam satu jurnal, <em>artinya</em> yang enak tidak terlupa, <em>artinya</em> kunjungan berikutnya dimulai dengan hidangan yang kamu suka."
+    },
+    "cm": {
+      "label": "Setiap kota punya hidangan yang layak dikejar.",
+      "title": "Setiap kota punya hidangan yang layak dikejar.",
+      "body": "Setiap makanan yang dibagikan di Makan menandai satu tips di peta, karena panduan terbaik untuk sebuah tempat adalah orang-orang yang makan di sana, <em>artinya</em> setiap perjalanan bisa dimulai dengan hidangan yang layak dipesan."
+    },
+    "ch": {
+      "label": "Simpan apa yang kamu makan",
+      "title": "Simpan apa yang kamu makan.",
+      "cap1": "Ambil fotonya.",
+      "cap2": "Tandai restorannya saat menyimpan apa yang kamu makan.",
+      "cap3": "Tulis apa itu.",
+      "newMeal": "Makanan baru",
+      "recent": "Terbaru",
+      "continue": "Lanjut",
+      "addPlace": "Tambah restoran atau tempat",
+      "venue": "Kendal Street Kitchen",
+      "venueDistance": "40 m",
+      "capPlaceholder": "Beri nama atau tambahkan kenangan…",
+      "save": "Simpan makanan",
+      "chip1": "Harissa prawns",
+      "chip2": "Tiramisu",
+      "chip3": "Carbonara & mushroom risotto",
+      "sheetTitle": "Tambah tempat",
+      "search": "Cari restoran atau tempat",
+      "likely": "Kemungkinan di sini",
+      "recentPlaces": "Tempat terakhirmu",
+      "place2": "Wong Kei",
+      "place2Distance": "1,4 km",
+      "place3": "Plaza Khao Gaeng",
+      "place3Distance": "2,2 km",
+      "nearby": "Di sekitar",
+      "place4": "The Hart | Marylebone",
+      "place4Distance": "650 m",
+      "saved": "Tersimpan di jurnalmu",
+      "savedMeal": "Harissa prawns · Kendal Street Kitchen",
+      "eoy": "Eat or Yeet?",
+      "viewDiary": "Lihat di jurnal",
+      "done": "Selesai"
+    },
+    "c7": {
+      "label": "Untuk restoran",
+      "cap": "Punya restoran?",
+      "title": "Biar langgananmu memandu tamu baru.",
+      "body": "Langgananmu sudah tahu hidangan terbaikmu. Dengan Maître d’, pesanan andalan mereka tampil di halamanmu, <b>artinya</b> tamu yang baru pertama datang mulai dari yang disukai langgananmu.",
+      "fact": "Diraih di restoranmu. Tidak bisa dibeli.",
+      "offer": "Saat ini gratis untuk tampil. Tanpa komisi dari makanan.",
+      "cta": "Untuk restoran",
+      "whatToOrder": "Pesanan andalan di sini",
+      "maitred": "Maître d’"
+    },
+    "end": {
+      "label": "Unduh Makan",
+      "echo": "Sekarang kamu tahu mau pesan apa.",
+      "title": "Buat pesanan berikutnya lebih berkesan.",
+      "sub": "Gratis di iPhone dan Android, karena tips yang bagus seharusnya tidak berbayar.",
+      "appStore": "Unduh di App Store",
+      "googlePlay": "Dapatkan di Google Play",
+      "qrLabel": "Kode QR untuk mengunduh aplikasi Makan",
+      "qrScan": "Pindai dengan ponselmu",
+      "ring": "BUAT PESANAN BERIKUTNYA LEBIH BERKESAN · MAKAN · BUAT PESANAN BERIKUTNYA LEBIH BERKESAN · MAKAN · "
+    },
+    "runtime": {
+      "caption": "{name}, {venue}",
+      "day": "{n} hari makan",
+      "days": "{n} hari makan",
+      "pct": "{n}%",
+      "save": "Simpan makanan",
+      "saving": "Menyimpan makanan…",
+      "query": "Kend",
+      "capMark": "Harissa prawns",
+      "capRest": " with extra bread",
+      "recCap": "MAÎTRE D’ DI",
+      "recUsual": "PESANAN ANDALANNYA"
     }
   }
 }

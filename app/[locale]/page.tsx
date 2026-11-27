@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import DecisionHome from "@/components/home/DecisionHome"
+import AgrHome from "@/components/agr/AgrHome"
+import { getAgrHomeData } from "@/lib/agr-home-data"
 import Hero from "@/components/Hero"
 import MemoryThesis from "@/components/MemoryThesis"
 import HowItWorks from "@/components/HowItWorks"
@@ -39,10 +40,9 @@ export async function generateMetadata({
   })
 }
 
-// Regenerate the static homepage once per hour — keeps the live meal count
-// fresh enough to feel "alive" between visits, with trivial Firestore cost
-// (~24 aggregation reads/day regardless of traffic).
-// Holder identity is revalidated by the shared strict-expiry data cache.
+// Rendered per request so Maître d' data respects its 5-minute expiry (lib/maitred).
+// Every reader behind the home is cached (lib/agr-home-data), so a visit costs no
+// Firestore read beyond the hourly refreshes.
 export const dynamic = 'force-dynamic'
 
 // The homepage answers the five questions a new visitor brings with them:
@@ -54,7 +54,16 @@ export default async function Home({
 }) {
   const { locale } = await params
   setRequestLocale(locale)
-  if (DECISION_HOME) return <DecisionHome locale={locale} />
+  if (DECISION_HOME) {
+    return (
+      <>
+        <SiteSchema locale={locale} />
+        <HomepageAnalytics />
+        <HashScroll />
+        <AgrHome data={await getAgrHomeData(locale)} />
+      </>
+    )
+  }
   const faqs = getFaqs(locale)
   // Fetch each live homepage data source once, then share it between proof and
   // conversion sections. Firestore failures still fall back independently.

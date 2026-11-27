@@ -33,44 +33,40 @@ export default function FindRestaurant() {
     return () => clearTimeout(timer)
   }, [query])
 
+  // RM20773: the approved prototype's search (partner.html #find): one field, unboxed results.
   return (
-    <div>
-      <label htmlFor="find-restaurant" className="block text-sm font-bold text-brand-ink">{t('findLabel')}</label>
-      <input
-        id="find-restaurant"
-        type="search"
-        value={query}
-        onChange={(event) => {
-          const value = event.target.value
-          latest.current += 1
-          setQuery(value)
-          if (value.trim().length < 2) { setResults(null); setFailed(false) }
-        }}
-        placeholder={t('findPlaceholder')}
-        autoComplete="off"
-        maxLength={60}
-        className="mt-2 min-h-12 w-full rounded-xl border border-brand-line bg-white px-4 text-base text-brand-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-ink"
-      />
-      <div aria-live="polite" className="mt-3">
-        {failed ? <p className="text-sm text-brand-muted">{t('findError')}</p> : null}
-        {results && results.length === 0 ? <p className="text-sm text-brand-muted">{t('findNone')}</p> : null}
+    <form role="search" onSubmit={event => event.preventDefault()}>
+      <div className="field">
+        <label htmlFor="find-restaurant">{t('findLabel')}</label>
+        <input
+          id="find-restaurant"
+          type="search"
+          value={query}
+          onChange={(event) => {
+            const value = event.target.value
+            latest.current += 1
+            setQuery(value)
+            if (value.trim().length < 2) { setResults(null); setFailed(false) }
+          }}
+          placeholder={t('findPlaceholder')}
+          autoComplete="off"
+          maxLength={60}
+        />
+      </div>
+      <div aria-live="polite">
+        {failed ? <p className="small">{t('findError')}</p> : null}
+        {results && results.length === 0 ? <p className="small">{t('findNone')}</p> : null}
         {results && results.length > 0 ? (
-          <ul className="divide-y divide-brand-line overflow-hidden rounded-xl border border-brand-line bg-white">
+          <ul className="pt-find-results">
             {results.map((result) => (
               <li key={result.path}>
-                <Link href={localizePath(locale, result.path)} className="flex min-h-14 flex-col justify-center px-4 py-2 hover:bg-brand-card focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-brand-ink">
-                  <span className="text-base font-bold text-brand-ink">{result.name}</span>
-                  {result.area ? <span className="text-sm text-brand-muted">{result.area}</span> : null}
-                </Link>
+                <Link href={localizePath(locale, result.path)}><b>{result.name}</b>{result.area ? <span>{result.area}</span> : null}</Link>
               </li>
             ))}
           </ul>
         ) : null}
       </div>
-      <p className="mt-4 text-sm text-brand-muted">
-        {t('findCant')}{' '}
-        <a href="#enquire" className="inline-flex min-h-11 items-center font-semibold text-brand-ink">{t('findCantCta')}</a>
-      </p>
-    </div>
+      <p className="cant">{t('findCant')} <a href="#enquire">{t('findCantCta')}</a></p>
+    </form>
   )
 }

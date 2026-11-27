@@ -40,9 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly" as const,
       priority: 0.7,
     })),
-    ...localized("/story", "monthly", 0.9),
     ...localized("/press", "monthly", 0.6),
-    ...localized("/maitre-d", "weekly", 0.8),
     ...localized("/partner", "monthly", 0.8),
     ...localized("/places", "weekly", 0.8),
     ...localized("/standings", "weekly", 0.8),
@@ -52,7 +50,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...localized("/contact", "monthly", 0.8),
     ...localized("/support", "monthly", 0.7),
     ...localized("/manifesto", "monthly", 0.6),
-    ...localized("/app", "monthly", 0.8),
     ...localized("/privacy-policy", "yearly", 0.3),
     { url: `${base}/tos`, changeFrequency: "yearly", priority: 0.3 },
   ]

@@ -1,13 +1,11 @@
 import type { Metadata } from 'next'
-import Image from 'next/image'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-import Footer from '@/components/Footer'
 import SiteSchema from '@/components/SiteSchema'
+import PlacesHero from '@/components/places/PlacesHero'
 import RestaurantDirectory from '@/components/places/RestaurantDirectory'
 import { getPlaceIndex } from '@/lib/place-directory'
 import { getEatStandings } from '@/lib/eat-standings'
 import { createPageMetadata } from '@/lib/site-metadata'
-import styles from '@/components/standings/public-pages.module.css'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -15,6 +13,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return createPageMetadata({ title: t('metaTitle'), description: t('metaDescription'), path: locale === 'id' ? '/id/places' : '/places', locale })
 }
 
+/** The place behind the hero photo (Devon's visit to Kendal Street Kitchen), found by its slug hash in the live index. */
+const FEATURED_HASH = 'f7d46b'
+
+/** RM20773: the approved prototype's directory page (strategy/website-direction-2026-11-25/site/places.html). */
 export default async function PlacesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   setRequestLocale(locale)
@@ -25,10 +27,14 @@ export default async function PlacesPage({ params }: { params: Promise<{ locale:
   const entries = places.filter(place => place.indexable || matchupIds.has(place.placeId))
     .map(({ placeId, slug, name, city }) => ({ placeId, slug, name, city }))
     .sort((a, b) => a.name.localeCompare(b.name, locale === 'id' ? 'id-ID' : 'en-GB'))
-  return <><main id="main-content" className={`redesign-page ${styles.page}`}><SiteSchema locale={locale} />
-    <div className={styles.wrap}>
-      <header className={`${styles.heading} ${styles.directoryHeading}`}><h1>{t('title')}</h1><p className={styles.intro}>{t('intro')}</p><Image className={styles.headingArt} src="/redesign/food-noodles.svg" alt="" width={120} height={140} /></header>
-      {entries.length ? <RestaurantDirectory entries={entries} locale={locale} /> : <p className={styles.empty}>{t('unavailable')}</p>}
-    </div>
-  </main><Footer /></>
+  const found = places.find(place => place.hash === FEATURED_HASH) ?? places.find(place => /^kendal street kitchen$/i.test(place.name))
+  const featured = found ? { slug: found.slug, name: found.name, city: found.city } : null
+  return <main id="main-content" className="sx"><SiteSchema locale={locale} />
+    <PlacesHero locale={locale} featured={featured} />
+    <section className="ch tight pl-dir" aria-label={t('search')}>
+      <div className="wrap">
+        {entries.length ? <RestaurantDirectory entries={entries} locale={locale} /> : <p className="lede">{t('unavailable')}</p>}
+      </div>
+    </section>
+  </main>
 }

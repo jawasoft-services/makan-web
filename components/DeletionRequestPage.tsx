@@ -1,35 +1,47 @@
-import PlayfulArrow from '@/components/PlayfulArrow'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
-import Footer from '@/components/Footer'
+import DocPage, { slugId } from '@/components/site/DocPage'
 import { localizePath } from '@/i18n/paths'
 import { SUPPORT_EMAIL } from '@/lib/support'
-import styles from './utility.module.css'
 
 type DeletionNamespace = 'AccountDeletion' | 'DataDeletion'
 interface DeletionRequestPageProps { locale: string; namespace: DeletionNamespace; otherPath: '/account-deletion' | '/data-deletion' }
 
+/** The support address inside a sentence becomes a link to it, as the prototype draws it; the words are unchanged. */
+function withEmail(text: string) {
+  const at = text.indexOf(SUPPORT_EMAIL)
+  return at < 0 ? text : <>{text.slice(0, at)}<a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>{text.slice(at + SUPPORT_EMAIL.length)}</>
+}
+
+/** RM20773: the approved prototype's deletion pages (account-deletion.html, data-deletion.html); the wording is unchanged. */
 export default async function DeletionRequestPage({ locale, namespace, otherPath }: DeletionRequestPageProps) {
   const t = await getTranslations({ locale, namespace })
   const requestHref = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(t('emailSubject'))}`
-  return <div className="min-h-screen bg-brand-cream">
-    <main id="main-content" className={`${styles.page} ${styles.deletionPage}`}>
-      <header className={styles.heading}><p className={styles.eyebrow}>{t('eyebrow')}</p><h1>{t('title')}</h1><p className={styles.intro}>{t('intro')}</p></header>
-      <section className={styles.request} aria-labelledby="request-heading">
-        <h2 id="request-heading">{t('requestTitle')}</h2><p>{t('requestBody')}</p>
-        <a href={requestHref} className={styles.primary}>{t('cta')}</a><p className={styles.noSecrets}>{t('noSecrets')}</p>
-      </section>
-      <section className={styles.steps}><h2>{t('stepsTitle')}</h2><ol>
-        {([1,2,3,4] as const).map(step => <li key={step}><span className={styles.stepNumber} aria-hidden>{step}</span><div><h3>{t(`step${step}Title`)}</h3><p>{t(`step${step}Body`)}</p></div></li>)}
-      </ol></section>
-      <div className={styles.deletionLists}>
-        <section><h2>{t('deletedTitle')}</h2><ul>{([1,2,3,4,5] as const).map(item => <li key={item}>{t(`deletedItem${item}`)}</li>)}</ul></section>
-        <section><h2>{t('retainedTitle')}</h2><ul>{([1,2,3,4] as const).map(item => <li key={item}>{t(`retainedItem${item}`)}</li>)}</ul></section>
-      </div>
-      <section className={styles.retention}><h2>{t('retentionTitle')}</h2><p>{t('retentionBody')}</p></section>
-      <section className={styles.optional}><h2>{t('optionalTitle')}</h2><p>{t('optionalBody')}</p></section>
-      <aside className={styles.other}><h2>{t('otherTitle')}</h2><p>{t('otherBody')}</p><Link href={localizePath(locale, otherPath)}>{t('otherLink')} <PlayfulArrow /></Link></aside>
-      <nav className={styles.linkRow} aria-label={t('relatedLinksLabel')}><Link href={localizePath(locale, '/privacy-policy')}>{t('privacyLink')}</Link><Link href={localizePath(locale, '/')}>{t('backHome')}</Link></nav>
-    </main><Footer />
-  </div>
+  const heads = (['requestTitle', 'stepsTitle', 'deletedTitle', 'retainedTitle', 'retentionTitle', 'optionalTitle', 'otherTitle'] as const).map(key => t(key))
+  const toc = heads.map(label => ({ id: slugId(label), label }))
+  return <main id="main-content" className="sx">
+    <DocPage title={t('title')} lede={t('intro')} toc={toc}>
+      <h2 id={toc[0].id}>{t('requestTitle')}</h2>
+      <p>{t('requestBody')}</p>
+      <a className="btn or" href={requestHref}>{t('cta')}</a>
+      <p className="note">{t('noSecrets')}</p>
+      <h2 id={toc[1].id}>{t('stepsTitle')}</h2>
+      <ol className="doc-steps">{([1, 2, 3, 4] as const).map(step => <li key={step}><b>{t(`step${step}Title`)}</b>{withEmail(t(`step${step}Body`))}</li>)}</ol>
+      <h2 id={toc[2].id}>{t('deletedTitle')}</h2>
+      <ul>{([1, 2, 3, 4, 5] as const).map(item => <li key={item}>{t(`deletedItem${item}`)}</li>)}</ul>
+      <h2 id={toc[3].id}>{t('retainedTitle')}</h2>
+      <ul>{([1, 2, 3, 4] as const).map(item => <li key={item}>{t(`retainedItem${item}`)}</li>)}</ul>
+      <h2 id={toc[4].id}>{t('retentionTitle')}</h2>
+      <p>{t('retentionBody')}</p>
+      <h2 id={toc[5].id}>{t('optionalTitle')}</h2>
+      <p>{t('optionalBody')}</p>
+      <h2 id={toc[6].id}>{t('otherTitle')}</h2>
+      <p>{t('otherBody')}</p>
+      <Link className="tlink" href={localizePath(locale, otherPath)}>{t('otherLink')} →</Link>
+      <ul className="doc-links" aria-label={t('relatedLinksLabel')}>
+        <li><Link href={localizePath(locale, '/privacy-policy')}>{t('privacyLink')}</Link></li>
+        <li><Link href={localizePath(locale, '/')}>{t('backHome')}</Link></li>
+      </ul>
+    </DocPage>
+  </main>
 }

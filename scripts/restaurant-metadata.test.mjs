@@ -12,6 +12,8 @@ const unusedImports = new Set([
   '@/components/home/StoreLink', '@/components/map/PlacesMapLoader',
   '@/lib/place-photo', '@/lib/maitred', '@/i18n/paths', '@/lib/thumb', '@/lib/safe-json-ld',
   '@/components/standings/public-pages.module.css',
+  // RM20773: the rebuilt place page's own parts.
+  '@/components/places/PlaceSeat', '@/components/site/StoreButtons', '@/lib/local-photo',
 ])
 
 // Execute the real metadata exports with fixture readers; no database or paid provider imports.

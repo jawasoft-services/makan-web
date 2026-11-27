@@ -92,9 +92,13 @@ test('/id/privacy-policy is a declared Indonesian route, not an English-only one
 test('every privacy link and the sitemap follow the language', () => {
   const localizedPolicyHref = /href=\{[^}]*localizePath\(locale, (['"])\/privacy-policy\1\)[^}]*\}/
   for (const path of [
-    '../Footer.tsx', '../DeletionRequestPage.tsx',
+    '../DeletionRequestPage.tsx',
     '../../app/[locale]/contact/ContactForm.tsx', '../../app/[locale]/support/page.tsx',
   ]) assert.match(read(path), localizedPolicyHref, path)
+  // RM20773: the site footer builds every link with siteHref, which localizes through localizePath.
+  assert.match(read('../site/SiteFooter.tsx'), /\[t\('privacy'\), '\/privacy-policy'\]/)
+  assert.match(read('../site/SiteFooter.tsx'), /href=\{siteHref\(locale, path\)\}/)
+  assert.match(read('../site/routes.ts'), /: localizePath\(locale, path\)/)
   assert.match(read('../../app/sitemap.ts'), /localized\("\/privacy-policy"/)
   assert.doesNotMatch(read('../../scripts/check-site-navigation.mjs'), /\['\/blog', '\/privacy-policy'/)
 })

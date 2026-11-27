@@ -13,6 +13,7 @@ type Field = typeof fields[number]
 
 export default function PartnerForm() {
   const t = useTranslations('Partner')
+  const redesign = useTranslations('PartnerRedesign')
   const locale = useLocale()
   const [values, setValues] = useState({ name: '', email: '', restaurant: '', city: '', message: '' })
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
@@ -77,50 +78,46 @@ export default function PartnerForm() {
     }
   }
 
+  // RM20773: the approved prototype's enquiry form (partner.html #enquire): unboxed fields, one orange button.
   if (status === 'success') return (
-    <div role="status" className="py-6">
-      <svg aria-hidden="true" className="h-10 w-10 text-brand-ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 4 4L19 6" /></svg>
-      <h3 ref={successRef} tabIndex={-1} className="mt-5 text-2xl font-bold text-brand-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink">{t('successTitle')}</h3>
-      <p className="mt-3 text-base leading-relaxed text-brand-muted">{t('successBody')}</p>
-      <Link href={localizePath(locale, '/')} className="mt-6 inline-flex min-h-11 items-center font-semibold text-brand-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink">{t('back')}</Link>
+    <div role="status" className="pt-sent">
+      <h4 ref={successRef} tabIndex={-1}>{t('successTitle')}</h4>
+      <p>{t('successBody')}</p>
+      <Link className="tlink" href={localizePath(locale, '/')}>{t('back')} →</Link>
     </div>
   )
 
   return (
-    <div className="w-full">
-      <h3 className="text-2xl font-bold tracking-tight text-brand-ink">{t('title')}</h3>
-      <p className="mt-3 text-base leading-relaxed text-brand-muted">{t('body')}</p>
-      <form onSubmit={handleSubmit} method="dialog" noValidate className="mt-6 space-y-4" aria-busy={status === 'loading'}>
-        {fields.map(field => (
-          <div key={field}>
-            <label htmlFor={'partner-' + field} className="mb-2 block text-sm font-semibold text-brand-ink">{t(field)}</label>
-            <input
-              id={'partner-' + field}
-              name={field}
-              type={field === 'email' ? 'email' : 'text'}
-              required
-              autoComplete={field === 'name' ? 'name' : field === 'email' ? 'email' : field === 'city' ? 'address-level2' : 'organization'}
-              maxLength={FIELD_MAX[field]}
-              value={values[field]}
-              disabled={status === 'loading'}
-              onChange={event => updateField(field, event.target.value)}
-              aria-invalid={invalidField === field}
-              aria-describedby={invalidField === field ? 'partner-field-error' : undefined}
-              className="min-h-12 w-full rounded-xl border border-brand-muted bg-brand-card px-4 py-3 text-base text-brand-ink caret-brand-ink transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-ink disabled:opacity-60"
-            />
-            {invalidField === field && <p id="partner-field-error" role="alert" className="mt-2 text-sm font-semibold leading-relaxed text-brand-ink">{errorMsg}</p>}
-          </div>
-        ))}
-        <div>
-          <label htmlFor="partner-message" className="mb-2 block text-sm font-semibold text-brand-ink">{t('anythingElse')} <span className="font-normal text-brand-muted">{t('optional')}</span></label>
-          <textarea id="partner-message" name="message" rows={3} maxLength={FIELD_MAX.message} value={values.message} disabled={status === 'loading'} onChange={event => updateField('message', event.target.value)} className="w-full resize-y rounded-xl border border-brand-muted bg-brand-card px-4 py-3 text-base text-brand-ink caret-brand-ink transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-ink disabled:opacity-60" />
+    <form onSubmit={handleSubmit} method="dialog" noValidate aria-busy={status === 'loading'}>
+      <p className="small" style={{ margin: '0 0 20px' }}>{redesign('required_note')}</p>
+      {fields.map(field => (
+        <div className="field" key={field}>
+          <label htmlFor={'partner-' + field}>{redesign('labels.' + field)}</label>
+          <input
+            id={'partner-' + field}
+            name={field}
+            type={field === 'email' ? 'email' : 'text'}
+            required
+            autoComplete={field === 'name' ? 'name' : field === 'email' ? 'email' : field === 'city' ? 'address-level2' : 'organization'}
+            maxLength={FIELD_MAX[field]}
+            value={values[field]}
+            disabled={status === 'loading'}
+            onChange={event => updateField(field, event.target.value)}
+            aria-invalid={invalidField === field}
+            aria-describedby={invalidField === field ? 'partner-field-error' : undefined}
+          />
+          {invalidField === field && <p id="partner-field-error" role="alert" className="form-error">{errorMsg}</p>}
         </div>
-        <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 0, height: 0, opacity: 0 }} />
-        <Turnstile onToken={setTurnstileToken} />
-        <button type="submit" disabled={status === 'loading'} className="min-h-14 w-full cursor-pointer rounded-xl bg-brand-orange px-4 py-3 text-base font-bold text-white transition-colors hover:bg-brand-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-ink disabled:cursor-wait disabled:opacity-60">{status === 'loading' ? t('sending') : t('send')}</button>
-        {errorMsg && !invalidField && <p role="alert" className="text-sm font-semibold leading-relaxed text-brand-ink">{errorMsg}</p>}
-      </form>
-      <p className="mt-5 text-sm leading-relaxed text-brand-muted">{t('agreement')}{' '}<Link href="/tos" className="inline-block py-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-ink font-semibold">{t('terms')}</Link>{' '}{t('and')}{' '}<Link href={localizePath(locale, '/privacy-policy')} className="inline-block py-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-ink font-semibold">{t('privacy')}</Link>.</p>
-    </div>
+      ))}
+      <div className="field">
+        <label htmlFor="partner-message">{redesign('labels.message')}</label>
+        <textarea id="partner-message" name="message" maxLength={FIELD_MAX.message} value={values.message} disabled={status === 'loading'} onChange={event => updateField('message', event.target.value)} />
+      </div>
+      <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="honeypot" />
+      <Turnstile onToken={setTurnstileToken} />
+      <button className="btn or" type="submit" disabled={status === 'loading'}>{status === 'loading' ? t('sending') : t('send')}</button>
+      {errorMsg && !invalidField && <p role="alert" className="form-error">{errorMsg}</p>}
+      <p className="small legal" style={{ marginTop: 16 }}>{t('agreement')} <Link href="/tos">{t('terms')}</Link> {t('and')} <Link href={localizePath(locale, '/privacy-policy')}>{t('privacy')}</Link>.</p>
+    </form>
   )
 }
