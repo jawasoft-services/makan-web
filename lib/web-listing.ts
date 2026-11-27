@@ -16,7 +16,8 @@ import { getDb } from '@/lib/firebase-admin'
  * computed (lib/aggregates/dishes.ts). Not behind DISH_PAGES: a takedown works whatever that switch says.
  *
  * An absent document, a malformed one, or an entry that is not a place id hides nothing (the other entries still
- * count). Readers see a change within the hour: one read per server instance per hour, shared by every page.
+ * count). Readers read it at most once per server instance per hour, shared by every page; see getHiddenPlaceIds for
+ * a read that fails.
  */
 export const WEB_LISTING_PATH = 'config/webListing'
 const PLACE_ID = /^[A-Za-z0-9_-]{1,256}$/
@@ -40,19 +41,31 @@ const getCachedHiddenPlaceIds = unstable_cache(async (): Promise<string[]> => {
 }, ['makan-web-listing', 'v1'], { revalidate: 3600 })
 
 let pending: Promise<string[]> | null = null
+/** The last list this server read, kept for a failed read (review L2). */
+let lastRead: string[] | null = null
+/** When a read last failed; for a minute after it the readers use `lastRead` without trying again. */
+let failedAt: number | null = null
+const FAILURE_RETRY_MS = 60_000
 
 /**
- * The venues with no page, for the readers. Never throws: if the list cannot be read it hides nothing and logs,
- * as the site's other optional readers do, and the next call reads again.
+ * The venues with no page, for the readers. Never throws, and never fails closed (a whole directory of not-found pages
+ * would be worse). If the list cannot be read, the last list this server read stands, so a takedown it knew is kept;
+ * a server that has never read it hides nothing. A failure is remembered for a minute, so requests neither wait on
+ * the read nor repeat it meanwhile. Logged without any place id.
  */
 export async function getHiddenPlaceIds(): Promise<ReadonlySet<string>> {
   if (WEBSITE_FIXTURES) return new Set(fixtureHiddenPlaceIds())
+  const now = Date.now()
+  if (failedAt !== null && now >= failedAt && now - failedAt < FAILURE_RETRY_MS) return new Set(lastRead ?? [])
   try {
     if (!pending) pending = getCachedHiddenPlaceIds().finally(() => { pending = null })
-    return new Set(await pending)
+    lastRead = await pending
+    failedAt = null
+    return new Set(lastRead)
   } catch {
-    console.error('web-listing: takedown list unavailable; hiding nothing.')
-    return new Set()
+    failedAt = Date.now()
+    console.error(lastRead ? 'web-listing: takedown list unavailable; using the last list read.' : 'web-listing: takedown list unavailable; hiding nothing.')
+    return new Set(lastRead ?? [])
   }
 }
 

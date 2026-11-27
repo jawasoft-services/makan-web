@@ -44,7 +44,7 @@ test('the takedown list: place ids only, an absent or malformed document hides n
   for (const bad of [undefined, null, 'ChIJabc', [], {}, { hidden: 'ChIJabc' }, { hidden: { ChIJabc: true } }, { hidden: null }]) assert.equal(parseWebListing(bad).size, 0, JSON.stringify(bad))
 })
 
-test('the readers read the list once an hour per server, hide nothing if it cannot be read, and read it again next time', async () => {
+test('the readers read the list once an hour per server; a failed read keeps the last list and is not retried for a minute', async () => {
   const run = lane(); run.useCache()
   const { getHiddenPlaceIds } = run.load('lib/web-listing.ts')
   assert.equal((await getHiddenPlaceIds()).size, 0, 'no document: nothing hidden')
@@ -54,12 +54,33 @@ test('the readers read the list once an hour per server, hide nothing if it cann
   assert.deepEqual(run.reads, ['config/webListing'], 'one read, shared by every page')
   run.state.clock += 3_600_000
   assert.deepEqual([...await getHiddenPlaceIds()], [PLACE])
+  // Review L2: a failed read keeps the takedown it already knew (stale on error, never fail closed or forget it)...
   run.state.clock += 3_600_000
   run.failures.add('config/webListing')
+  run.reads.length = 0
+  assert.deepEqual([...await getHiddenPlaceIds()], [PLACE])
+  assert.deepEqual(run.reads, ['config/webListing'])
+  assert.deepEqual(run.logs, ['web-listing: takedown list unavailable; using the last list read.'])
+  // ...and is not retried by every request for about a minute.
+  for (let i = 0; i < 5; i++) assert.deepEqual([...await getHiddenPlaceIds()], [PLACE])
+  run.state.clock += 59_000
+  assert.deepEqual([...await getHiddenPlaceIds()], [PLACE])
+  assert.deepEqual(run.reads, ['config/webListing'], 'no read while the failure is remembered')
+  run.state.clock += 2_000
+  run.failures.delete('config/webListing'); run.seed.set('config/webListing', { hidden: [] })
+  assert.equal((await getHiddenPlaceIds()).size, 0, 'after a minute it reads again, and a lifted takedown lifts')
+  assert.deepEqual(run.reads, ['config/webListing', 'config/webListing'])
+})
+
+test('a server that has never read the list hides nothing while it cannot read it, and retries after a minute', async () => {
+  const run = lane(); run.useCache(); run.failures.add('config/webListing'); run.seed.set('config/webListing', { hidden: [PLACE] })
+  const { getHiddenPlaceIds } = run.load('lib/web-listing.ts')
+  assert.equal((await getHiddenPlaceIds()).size, 0, 'fail open: a whole directory of 404s would be worse')
   assert.equal((await getHiddenPlaceIds()).size, 0)
+  assert.deepEqual(run.reads, ['config/webListing'])
   assert.deepEqual(run.logs, ['web-listing: takedown list unavailable; hiding nothing.'])
-  run.failures.delete('config/webListing')
-  assert.deepEqual([...await getHiddenPlaceIds()], [PLACE], 'a failure is not cached')
+  run.state.clock += 61_000; run.failures.delete('config/webListing')
+  assert.deepEqual([...await getHiddenPlaceIds()], [PLACE])
 })
 
 test('fixtures: MAKAN_WEBSITE_FIXTURE_TAKEDOWN=1 takes the fixture restaurant down, with no database', async () => {
