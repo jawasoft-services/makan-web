@@ -469,6 +469,7 @@ html.chop, html.chop * { cursor: none !important }
 /* ---------- Document pages: support, contact, blog, legal, deletion ---------- */
 .sx .ch.doc-hero { padding-top: max(20vh, 170px); padding-bottom: 6vh }
 .sx .doc-hero .lede { max-width: 48ch }
+.sx .doc-hero .story-by { display: block; margin-top: 2.4vh; font: 600 14px/1.4 var(--sans); letter-spacing: .02em; color: var(--mute) }   /* the founder story's byline (RM20773) */
 .sx .ch.doc-ch { padding-top: 5vh }
 .sx .doc-body > :first-child { margin-top: 0 }
 .sx .doc-body .btn { text-decoration: none; margin: 1vh 0 1.4em }
