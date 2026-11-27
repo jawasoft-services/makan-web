@@ -65,7 +65,8 @@ test('og:image is the stored card when there is one, and today\'s per-request ca
   const none = lane(); none.useCache()
   const today = await open(none)
   assert.equal(today.metadata.openGraph.images[0].url, `https://www.makanofficial.com/places/${SLUG}/opengraph-image`)
-  assert.equal(today.metadata.title, 'Warung Bu Sri')
+  // RM20616 dish pages review L1 (Devon, Q3 "Reuse live titles"): served without an answer, the live place page's title.
+  assert.equal(today.metadata.title, 'Warung Bu Sri, Pererenan: meals & what to order | Makan')
   assert.deepEqual(today.metadata.itunes, { appId: '6756131450', appArgument: `https://www.makanofficial.com/places/${SLUG}` })
   assert.equal(none.reads.filter(path => path === `shareCardMeta/place_${PLACE}`).length, 1)
   const run = lane(); run.useCache(); run.seed.set(`shareCardMeta/place_${PLACE}`, cardRecord('place', PLACE))

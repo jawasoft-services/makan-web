@@ -204,11 +204,13 @@ test('the fixture lane renders each dish state in English and Bahasa with no dat
   assert.throws(() => lane({ fixtures: true, env: { MAKAN_WEBSITE_FIXTURE_DISHES: 'nope' } }).load('lib/website-fixtures.ts'), /Unknown website fixture dish state/)
 })
 
-// The page with DISH_PAGES off is today's page, byte for byte: the same markup as main's own page module.
+// With DISH_PAGES off the Share v2 page is main's, byte for byte, but for one thing: its search title is the live place
+// page's title family, not the bare name (review L1, Devon's Q3 "Reuse live titles"), wherever the title appears.
+// With SHARE_V2_PAGES off this page is not served at all, so the live site does not change.
 const BASE = '2b6fbe2'
 const atBase = path => { try { return execFileSync('git', ['show', `${BASE}:${path}`], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }) } catch { return null } }
 const basePage = atBase(PLACE_ROUTE)
-test('switch off: the page and its metadata equal main\'s, whatever dishes the aggregate holds', { skip: !basePage && `commit ${BASE} is not in this clone` }, async () => {
+test('switch off: the page equals main\'s and its metadata does but for the live title, whatever dishes the aggregate holds', { skip: !basePage && `commit ${BASE} is not in this clone` }, async () => {
   const states = [undefined, { answer: ANSWER, rated: RATED }, { answer: { ...ANSWER, maitred: true }, rated: RATED }, { answer: null, rated: [] }]
   for (const env of [{ SHARE_V2_PAGES: '1' }, { SHARE_V2_PAGES: '1', DISH_PAGES: '0' }, { SHARE_V2_PAGES: '1', DISH_PAGES: 'true' }]) {
     for (const dishes of states) {
@@ -217,7 +219,10 @@ test('switch off: the page and its metadata equal main\'s, whatever dishes the a
         for (const run of [now, main]) { run.useCache(); run.state.place = dishPlace(dishes) }
         const [a, b] = [await open(now, locale), await open(main, locale)]
         assert.equal(a.html, b.html, `${JSON.stringify(env)} ${JSON.stringify(dishes)} ${locale}`)
-        assert.deepEqual(a.metadata, b.metadata)
+        const live = locale === 'id' ? 'Warung Bu Sri, Pererenan: makanan & pilihan pesanan | Makan' : 'Warung Bu Sri, Pererenan: meals & what to order | Makan'
+        assert.equal(b.metadata.title, 'Warung Bu Sri'); assert.equal(a.metadata.title, live)
+        const titled = metadata => JSON.parse(JSON.stringify(metadata).replaceAll(JSON.stringify(live).slice(1, -1), 'Warung Bu Sri'))
+        assert.deepEqual(titled(a.metadata), JSON.parse(JSON.stringify(b.metadata)), 'only the title (and the og, twitter and image-alt copies of it) differs')
         assert.deepEqual(now.reads, main.reads, 'the same reads')
         assert.doesNotMatch(a.html, /answerDish|dishes-rated-here|dishRow/)
       }

@@ -67,13 +67,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const newest = place.meals[0]
   const todaysCardShowsNobodyHidden = card !== null || !newest || (await getVisiblePlaceMealIds(place.placeId, place.meals.map((m) => m.id))).has(newest.id)
   // RM20616 dish pages U4 (DISH_PAGES): with the app's answer, the approved "What to order at …" title and description
-  // (board dp-serp); without one, the live place page's own title family (Devon, Q3). Names as written, never
-  // translated. A page with no visible meal and no answer is not indexed. The JSON-LD below is not changed.
+  // (board dp-serp). Without one, whenever this page is served (switch or not: review L1), the live place page's own title
+  // family (Devon, Q3 "Reuse live titles"), so Share v2 going on before dish pages loses no title. Names as written, never
+  // translated. With DISH_PAGES on, a page with no visible meal and no answer is not indexed. The JSON-LD is not changed.
   const dishesOn = dishPagesOn()
   const answer = dishesOn ? place.dishes?.answer ?? null : null
   const share = answer ? await getTranslations({ locale, namespace: 'SharePages' }) : null
-  const title = !dishesOn ? place.name
-    : answer && share ? (place.where ? share('metaTitleWhatToOrderLocated', { name: place.name, city: place.where.city }) : share('metaTitleWhatToOrder', { name: place.name }))
+  const title = answer && share ? (place.where ? share('metaTitleWhatToOrderLocated', { name: place.name, city: place.where.city }) : share('metaTitleWhatToOrder', { name: place.name }))
     : place.where ? t(publicMealCount ? 'metaTitleFoodLocated' : 'metaTitleLocated', { name: place.name, city: place.where.city })
     : t(publicMealCount ? 'metaTitleFood' : 'metaTitle', { name: place.name })
   const meta = createPageMetadata({

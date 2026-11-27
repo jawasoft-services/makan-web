@@ -32,7 +32,8 @@ test('with an answer: the approved title and description, in English and Bahasa,
   }
 })
 
-test('Q3, no answer: the live place page\'s titles, not the bare name; the description stays the page\'s own', async () => {
+// Review L1: whenever the Share v2 page is served, not only once DISH_PAGES is on, so Share v2 going on first loses no title.
+test('Q3, no answer: the live place page\'s titles, not the bare name, with or without DISH_PAGES; the description stays the page\'s own', async () => {
   const cases = [
     [{}, 'en', 'Warung Bu Sri, Pererenan: meals & what to order | Makan'],
     [{}, 'id', 'Warung Bu Sri, Pererenan: makanan & pilihan pesanan | Makan'],
@@ -45,7 +46,7 @@ test('Q3, no answer: the live place page\'s titles, not the bare name; the descr
       const on = await open(runWith(ON, { ...extra, dishes }), locale)
       const off = await open(runWith({ SHARE_V2_PAGES: '1' }, { ...extra, dishes }), locale)
       assert.equal(on.metadata.title, title, JSON.stringify(extra))
-      assert.equal(off.metadata.title, 'Warung Bu Sri', 'switch off: today\'s bare name')
+      assert.equal(off.metadata.title, title, 'DISH_PAGES off: the same live title')
       assert.equal(on.metadata.description, off.metadata.description)
     }
   }
