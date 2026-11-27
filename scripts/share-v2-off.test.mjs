@@ -103,6 +103,9 @@ const TAKEDOWN_EDITS = {
 // The pinned routes now return what lib/image-slots.ts returns, so it is pinned too: any edit to it,
 // renderImage's status or headers included, must come back through this guard with a new hash.
 const IMAGE_SLOTS_SHA256 = '0e14ad3eeb2fbaa622fd4a57572b815a278cc88b8c1321acc46c69c17e8339ee'
+// RM20616 dish pages review L5: lib/place-directory.ts and today's meal page (both pinned) now ask lib/web-listing.ts
+// which venues have no page, so it is pinned the same way: any edit to it must come back through this guard.
+const WEB_LISTING_SHA256 = '381fd03091f4fc5a6f2c478df36515fcbed2b6b4431fe060bf45cf967b7f4471'
 
 /** `base` with each edit applied exactly `times` times (default once); fails if an edit does not occur that often. */
 function withEdits(path, base, edits) {
@@ -122,6 +125,7 @@ test('switch off: every page, card and config a share link reaches today is byte
     assert.equal(readFileSync(path, 'utf8'), expected, `${path} differs from ${BASE.slice(0, 7)}${edits.length ? ' plus its image-slot, logo and takedown edits' : ''}`)
   }
   assert.equal(createHash('sha256').update(readFileSync('lib/image-slots.ts')).digest('hex'), IMAGE_SLOTS_SHA256, 'lib/image-slots.ts changed: the pinned share routes return what it returns')
+  assert.equal(createHash('sha256').update(readFileSync('lib/web-listing.ts')).digest('hex'), WEB_LISTING_SHA256, 'lib/web-listing.ts changed: the pinned directory and meal page hide what it hides')
 })
 
 test('switch off: the only edits to existing files are additive and inert', { skip: !baseAvailable && 'commit 365a96e is not in this clone' }, () => {
