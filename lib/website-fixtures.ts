@@ -40,6 +40,14 @@ const base: DirectoryPlace = {
 const places: DirectoryPlace[] = [base,
   { ...base, placeId: 'fixture_cafe_000002', slug: 'fixture-cafe-f10002', hash: 'f10002', name: 'Fixture Café', address: '', lat: 51.516, lng: -0.164, meals: [meals[1]], indexable: false, claimed: true },
 ]
+// RM20616 dish pages — the fixture restaurant's dish section, set by MAKAN_WEBSITE_FIXTURE_DISHES: unset is "not
+// computed" (no block); `answer` is an Eat or Yeet answer with four rated dishes (dishes from Devon's own review of the
+// place, no drinks); `maitred` is the same answer as the Maître d' pick; `thin` has no answer (the not-enough line).
+// The other fixture place never has dishes. "Tiramisu after dinner" names a rated dish, so that row has a photo.
+export const FIXTURE_DISHES = process.env.MAKAN_WEBSITE_FIXTURE_DISHES ?? ''
+if (WEBSITE_FIXTURES && !['', 'answer', 'maitred', 'thin'].includes(FIXTURE_DISHES)) throw new Error('Unknown website fixture dish state.')
+if (WEBSITE_FIXTURES && FIXTURE_DISHES) base.dishes = FIXTURE_DISHES === 'thin' ? { answer: null, rated: [] }
+  : { answer: { name: 'Harissa prawns', maitred: FIXTURE_DISHES === 'maitred' }, rated: ['Tiramisu', 'Carbonara', 'Mushroom risotto', 'Truffle fries'] }
 export const fixtureDirectory = (): DirectoryPlace[] => unavailable ? [] : places
 export const fixturePlaceIndex = () => fixtureDirectory().map(p => ({ placeId: p.placeId, slug: p.slug, hash: p.hash, name: p.name, city: p.where?.city ?? null, indexable: p.indexable, meals: p.meals.length }))
 

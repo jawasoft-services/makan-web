@@ -4,6 +4,7 @@ import { readPublicVenues, excludesPublicVenue } from '@/lib/public-venues'
 import { isPublicMeal, PUBLIC_MEAL_FIELDS } from '@/lib/public-meal'
 import { isCleanCaption } from '@/lib/captions'
 import { placeSlug, shortHash, slugify } from '@/lib/slug'
+import { DISH_VENUE_FIELDS, type DishVenue } from './dishes'
 import {
   CITY_FLOOR,
   EVIDENCE_FLOOR,
@@ -197,9 +198,13 @@ export function assembleEatStandings(candidates: StandingRow[], matchups: number
  */
 const DIRECTORY_MEAL_FIELDS = ['placeProviderId', 'locationName', 'createdAt', 'isPublic', 'moderationStatus', 'imageURL', 'thumbnailUrl', 'caption', 'mealType', 'userID', 'uid', 'userName', ...PUBLIC_MEAL_FIELDS]
 
-export async function computePlaceDirectory(db: Firestore, include: string[] = []): Promise<DirectoryPlace[]> {
+/**
+ * RM20616 dish pages U1: with `dishVenues` (the cron, DISH_PAGES on), the restaurant read also takes the two dish
+ * fields and fills the map for lib/aggregates/dishes.ts. Without it the read is exactly as before.
+ */
+export async function computePlaceDirectory(db: Firestore, include: string[] = [], dishVenues?: Map<string, DishVenue>): Promise<DirectoryPlace[]> {
   const [snap, venues] = await Promise.all([db.collection('meals').select(...DIRECTORY_MEAL_FIELDS).get(), readPublicVenues(db)])
-  return projectPlaceDirectory(db, snap.docs, [...new Set([...include, ...venues.filter(v => v.publicMealCount > 0).map(v => v.placeId)])])
+  return projectPlaceDirectory(db, snap.docs, [...new Set([...include, ...venues.filter(v => v.publicMealCount > 0).map(v => v.placeId)])], dishVenues)
 }
 
 /** Recover one verified holder's missing venue without scanning other venues or private meals. */
@@ -211,7 +216,7 @@ export async function computePlaceDirectoryForPlace(db: Firestore, placeId: stri
   return place
 }
 
-async function projectPlaceDirectory(db: Firestore, docs: QueryDocumentSnapshot[], include: string[]): Promise<DirectoryPlace[]> {
+async function projectPlaceDirectory(db: Firestore, docs: QueryDocumentSnapshot[], include: string[], dishVenues?: Map<string, DishVenue>): Promise<DirectoryPlace[]> {
   // Restaurants that must have a page whatever their meals (a current
   // Maître d'): they are real venues in the app, so the food-type check and
   // the one-public-meal floor do not apply to them.
@@ -253,11 +258,12 @@ async function projectPlaceDirectory(db: Firestore, docs: QueryDocumentSnapshot[
   const excludedIds = new Set<string>()
   const refs = candidates.map(([id]) => db.collection('restaurants').doc(id))
   for (let i = 0; i < refs.length; i += 100) {
-    const docs = await db.getAll(...refs.slice(i, i + 100), { fieldMask: ['displayName', 'locationName', 'cuisine', 'claimed', 'latitude', 'longitude', 'state', 'isTestVenue', 'canonicalPlaceId', 'replacedByCanonicalPlaceId'] })
+    const docs = await db.getAll(...refs.slice(i, i + 100), { fieldMask: ['displayName', 'locationName', 'cuisine', 'claimed', 'latitude', 'longitude', 'state', 'isTestVenue', 'canonicalPlaceId', 'replacedByCanonicalPlaceId', ...(dishVenues ? DISH_VENUE_FIELDS : [])] })
     for (const d of docs) {
       if (!d.exists) continue
       const data = d.data() ?? {}
       if (excludesPublicVenue(data, d.id)) { excludedIds.add(d.id); continue }
+      dishVenues?.set(d.id, { dishToOrder: data.dishToOrder, dishNamesPolicy: data.dishNamesPolicy })
       const cats = (data.cuisine?.categories ?? []) as { label?: string }[]
       canonical.set(d.id, {
         name: str(data.displayName) || str(data.locationName),

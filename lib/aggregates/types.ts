@@ -102,6 +102,22 @@ export interface DirectoryPlace {
   indexable: boolean
   /** RM20364 — an owner has claimed the venue (from the restaurant document, so the page needs no extra read). */
   claimed?: boolean
+  /**
+   * RM20616 dish pages — written by the hourly cron only while DISH_PAGES is on (lib/aggregates/dishes.ts).
+   * Absent means "not computed": the page then shows no dish block at all, never the not-enough line.
+   */
+  dishes?: PlaceDishes
+}
+
+/**
+ * RM20616 dish pages — what the Share v2 restaurant page says about dishes. Names only, as the app's server
+ * wrote them and never translated: no rank, count, price, person or photo is stored.
+ */
+export interface PlaceDishes {
+  /** `restaurants/{id}.dishToOrder`: the app's answer to "What to order here", or null. */
+  answer: { name: string; maitred: boolean } | null
+  /** `venueMenus/{id}.dishRatingOrder` names, best rated first, the answer left out; empty without an answer. */
+  rated: string[]
 }
 
 /** A single meal with no matchups is a real page but not worth a search result. */

@@ -4,7 +4,9 @@ import { NextResponse } from 'next/server'
 import { getDb } from '@/lib/firebase-admin'
 import { computeEatStandings, computePlaceDirectory, computePlaceStats, indexOf } from '@/lib/aggregates/compute'
 import { buildMaitredList, readMaitredPhotos, readMaitredSource } from '@/lib/aggregates/maitred'
-import { writeAggregates } from '@/lib/aggregates/store'
+import { readStoredPlaces, writeAggregates } from '@/lib/aggregates/store'
+import { withPlaceDishes, type DishVenue } from '@/lib/aggregates/dishes'
+import { dishPagesOn } from '@/lib/dish-pages'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -45,21 +47,31 @@ export async function GET(request: Request) {
       return out
     }
     const timings: Record<string, number> = {}
+    // RM20616 dish pages U1: off unless DISH_PAGES=1. With it on, the stored places are read once at the start
+    // (their hashes for the writer, their dishes for the dish step) and each place gets its `dishes`.
+    const dishes = dishPagesOn()
+    const storedWork = dishes ? readStoredPlaces(db) : null
+    // Awaited later; a failure still fails the run there, but is never an unhandled rejection meanwhile.
+    storedWork?.catch(() => {})
     // Maître d' venues get a page even without public meals, so the
     // directory is built after the holders are read.
     const standingsWork = timed('standings', computeEatStandings(db))
     const directoryWithMaitred = async () => {
       const [source, standings] = await Promise.all([readMaitredSource(db), standingsWork])
-      const directory = await computePlaceDirectory(db, [...new Set([...source.holders.map(holder => holder.placeId), ...standings.all.map(row => row.placeId)])])
+      const dishVenues = dishes ? new Map<string, DishVenue>() : undefined
+      const directory = await computePlaceDirectory(db, [...new Set([...source.holders.map(holder => holder.placeId), ...standings.all.map(row => row.placeId)])], dishVenues)
       const photos = await readMaitredPhotos(db, source, directory)
-      return { directory, maitred: buildMaitredList(source, directory, photos) }
+      const maitred = buildMaitredList(source, directory, photos)
+      if (!storedWork || !dishVenues) return { directory, maitred }
+      const stored = await storedWork
+      return { directory: await withPlaceDishes(db, directory, { venues: dishVenues, stored: stored.dishes, dailyPass: new Date().getUTCHours() === 3 }), maitred }
     }
     const [standings, { directory, maitred }, stats] = await Promise.all([
       standingsWork,
       timed('directory', directoryWithMaitred()),
       timed('stats', computePlaceStats(db)),
     ])
-    const summary = await timed('write', writeAggregates(db, { standings, directory, index: indexOf(directory), stats, maitred }))
+    const summary = await timed('write', writeAggregates(db, { standings, directory, index: indexOf(directory), stats, maitred }, storedWork ? (await storedWork).hashes : undefined))
     const body = { ok: true, ...summary, places: directory.length, ranked: standings.rows.length, maitred: maitred.venues.length, ms: Date.now() - started, timings }
     console.log('aggregates: run', JSON.stringify(body))
     return NextResponse.json(body)

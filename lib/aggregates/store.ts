@@ -1,7 +1,8 @@
 import { createHash } from 'node:crypto'
 import { Timestamp, type Firestore } from 'firebase-admin/firestore'
-import type { DirectoryPlace, EatStandings, MaitredList, PlaceIndexEntry, PlaceStats } from './types'
+import type { DirectoryPlace, EatStandings, MaitredList, PlaceDishes, PlaceIndexEntry, PlaceStats } from './types'
 import { parseMaitredList } from './maitred'
+import { parseStoredDishes } from './dishes'
 
 /**
  * Where the aggregates live in Firestore, and how they are written and read.
@@ -201,6 +202,25 @@ export async function readPlaces(db: Firestore, placeIds: string[]): Promise<Map
   return out
 }
 
+/**
+ * RM20616 dish pages U1 — the hash of every stored place document and the `dishes` each one stored: the
+ * select the writer makes anyway (one read per place document), made once at the start of the run so the
+ * dish step and the writer share it. Used only while DISH_PAGES is on; with it off the writer reads its
+ * hashes itself, as before.
+ */
+export async function readStoredPlaces(db: Firestore): Promise<{ hashes: Map<string, string>; dishes: Map<string, PlaceDishes> }> {
+  const snap = await db.collection(ROOT).doc('places').collection('items').select('contentHash', 'payload.dishes').get()
+  const hashes = new Map<string, string>()
+  const dishes = new Map<string, PlaceDishes>()
+  for (const d of snap.docs) {
+    const data = d.data() ?? {}
+    hashes.set(d.id, String(data.contentHash ?? ''))
+    const stored = parseStoredDishes(record(data.payload)?.dishes)
+    if (stored) dishes.set(d.id, stored)
+  }
+  return { hashes, dishes }
+}
+
 export interface WriteSummary {
   written: number
   skipped: number
@@ -216,6 +236,7 @@ export interface WriteSummary {
 export async function writeAggregates(
   db: Firestore,
   data: { standings: EatStandings; directory: DirectoryPlace[]; index: PlaceIndexEntry[]; stats: PlaceStats; maitred: MaitredList },
+  storedPlaceHashes?: ReadonlyMap<string, string>,
 ): Promise<WriteSummary> {
   // Do not let a legacy producer overwrite the explicit-state public contract.
   const maitred = parseMaitredList(data.maitred)
@@ -226,9 +247,12 @@ export async function writeAggregates(
 
   // Existing hashes, one read per content document.
   const [standingsSnap, statsSnap, indexMetaSnap, maitredSnap] = await Promise.all([root.doc('standings').get(), root.doc('stats').get(), root.doc('placeIndex').get(), root.doc('maitred').get()])
-  const existingPlaces = await root.doc('places').collection('items').select('contentHash').get()
-  const placeHash = new Map<string, string>()
-  for (const d of existingPlaces.docs) placeHash.set(d.id, String(d.data()?.contentHash ?? ''))
+  // RM20616 dish pages U1: the run passes the hashes it already read (readStoredPlaces); otherwise read here, as before.
+  const placeHash = new Map<string, string>(storedPlaceHashes ?? [])
+  if (!storedPlaceHashes) {
+    const existingPlaces = await root.doc('places').collection('items').select('contentHash').get()
+    for (const d of existingPlaces.docs) placeHash.set(d.id, String(d.data()?.contentHash ?? ''))
+  }
 
   // Each publication phase waits for every write promise: close() alone can
   // resolve after permanent per-document failures. Never publish proof for it.
