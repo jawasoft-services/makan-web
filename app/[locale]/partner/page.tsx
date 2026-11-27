@@ -11,6 +11,7 @@ import { getMaitredDirectory } from '@/lib/maitred'
 import { getPlaceDirectory } from '@/lib/place-directory'
 import { getAllReviews } from '@/lib/reviews'
 import { thumbUrl } from '@/lib/thumb'
+import { photoAllowed, wallDish } from '@/lib/dish-wall'
 import { localizePath } from '@/i18n/paths'
 import PartnerForm from './PartnerForm'
 import FindRestaurant from './FindRestaurant'
@@ -54,14 +55,14 @@ export default async function PartnerPage({ params }: {params: Promise<{locale: 
   const city = standings.cities.find(c => c.slug === home || c.city.toLowerCase() === home)
     ?? [...standings.cities].sort((a, b) => b.rows.length - a.rows.length)[0] ?? null
   const byId = new Map(directory.map(p => [p.placeId, p]))
-  const cardRank = city ? city.rows.findIndex(r => (byId.get(r.placeId)?.meals.length ?? 0) >= 3) : -1
+  const cardRank = city ? city.rows.findIndex(r => (byId.get(r.placeId)?.meals.filter(photoAllowed).length ?? 0) >= 3) : -1
   const card = city && cardRank >= 0 ? byId.get(city.rows[cardRank].placeId) ?? null : null
   // Public web rule (Devon, RM20711): a Maître d’ is "A regular", never a name.
   // Maître d’ usual orders nearest the featured city first: that city, then the same country (Jakarta's are in
   // Tangerang and Depok today), then the rest; three at most. Each card names its own city.
   const near = (v: { where: { city: string; country: string } | null }) => !city || !v.where ? 2
     : v.where.city.toLowerCase() === city.city.toLowerCase() ? 0 : v.where.country.toLowerCase() === city.country.toLowerCase() ? 1 : 2
-  const usuals = maitred.venues.filter(v => v.notes.always).map((v, i) => ({ v, i })).sort((a, b) => near(a.v) - near(b.v) || a.i - b.i).map(({ v }) => v).slice(0, 3)
+  const usuals = maitred.venues.filter(v => v.notes.always && wallDish({ dish: v.notes.always, caption: '' })).map((v, i) => ({ v, i })).sort((a, b) => near(a.v) - near(b.v) || a.i - b.i).map(({ v }) => v).slice(0, 3)
   const reviews = getAllReviews()
   const src = (m: { thumb: string; src: string }) => m.thumb || thumbUrl(m.src, 480)
   const whereOf = (w: { city: string; country: string } | null) => w ? [w.city, w.country].filter(Boolean).join(', ') : ''
@@ -88,7 +89,7 @@ export default async function PartnerPage({ params }: {params: Promise<{locale: 
       <div className="wrap pd-panel">
         <div><p className="band">{tools[1].eyebrow}</p><h2 className="big md">{tools[1].title}</h2><p>{tools[1].body}</p><ul>{tools[1].points.map(p => <li key={p}>{p}</li>)}</ul></div>
         <Link className="pd-shot" href={localizePath(locale, `/places/${card.slug}`)}>
-          <div className="pd-meals">{card.meals.slice(0, 3).map(m => <figure key={m.id}><img src={src(m)} alt={m.caption ? `${m.caption}, ${card.name}` : card.name} width={480} height={480} loading="lazy" decoding="async" /></figure>)}</div>
+          <div className="pd-meals">{card.meals.filter(photoAllowed).slice(0, 3).map(m => <figure key={m.id}><img src={src(m)} alt={m.caption ? `${m.caption}, ${card.name}` : card.name} width={480} height={480} loading="lazy" decoding="async" /></figure>)}</div>
           <div className="pd-venue"><div><b>{card.name}</b><span>{whereOf(card.where)}</span></div><div className="pd-rank">{places.rich('rankCityRich', { rank: cardRank + 1, city: city.city, em })}</div></div>
         </Link>
       </div>

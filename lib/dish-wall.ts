@@ -52,6 +52,16 @@ const DRINK = /\b(coffees?|kopi|lattes?|cappuccinos?|espressos?|americanos?|flat
 
 const MEAL_TYPES = new Set(['breakfast', 'lunch', 'dinner', 'snack'])
 
+/**
+ * Whether a meal's photo may stand on a public page without its words (board rows, globe pins, the
+ * owner page's restaurant card): not pork and not a drink, by its caption and meal type (RM20773,
+ * Devon, 27 Nov 2026). A generic caption ("Dinner") passes: there is nothing to judge.
+ */
+export function photoAllowed(meal: { caption?: string; mealType?: string }): boolean {
+  const caption = meal.caption ?? ''
+  return !PORK.test(caption) && !DRINK.test(caption) && !/drink/i.test(meal.mealType ?? '')
+}
+
 /** The words a card shows for this meal, or '' when it must not appear. */
 export function wallDish(candidate: Pick<WallCandidate, 'dish' | 'caption'>): string {
   const dish = candidate.dish.trim() || (isCleanCaption(candidate.caption) ? candidate.caption.trim() : '')
