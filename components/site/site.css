@@ -154,6 +154,15 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 /* ---------- header (after A24): small centred nav, a dot under the page you are on ---------- */
 .hx { display: flex; position: fixed; left: 0; right: 0; top: 0; z-index: 30; align-items: center; justify-content: space-between; padding: 26px 36px; font-family: var(--sans); color: var(--ink); pointer-events: none; transition: color .25s, transform .45s cubic-bezier(.2, .8, .2, 1), opacity .3s }
 .hx > * { pointer-events: auto }
+/* RM20773 (Devon, 27 Nov 2026: "(b) Fade"): once the page scrolls, the header's ground fades in behind it and runs
+   about 44px past its bottom edge into the page, so text scrolling up disappears before it reaches the nav. The ground
+   follows the header's tone: cream, or night on dark sections, or orange on orange ones. Flat: no shadow. */
+.hx::before { content: ""; position: absolute; inset: 0 0 -44px; z-index: -1; pointer-events: none; opacity: 0; transition: opacity .25s;
+  background: linear-gradient(180deg, var(--cream) 0, var(--cream) calc(100% - 44px), rgba(255, 247, 238, 0) 100%) }
+html.hx-scrolled .hx::before { opacity: 1 }
+html.hx-dark .hx::before { background: linear-gradient(180deg, var(--night) 0, var(--night) calc(100% - 44px), rgba(26, 20, 16, 0) 100%) }
+html.hx-orange .hx::before { background: linear-gradient(180deg, var(--orange) 0, var(--orange) calc(100% - 44px), rgba(255, 153, 50, 0) 100%) }
+@media (prefers-reduced-motion: reduce) { .hx::before { transition: none } }
 html.hx-dark .hx { color: var(--cream) }
 html.hx-foot .hx { transform: translateY(-110%); opacity: 0 }
 /* over an orange ground (pages outside the rebuilt set, e.g. /press): white words and the white logo (FD-001) */
@@ -460,6 +469,7 @@ html.chop, html.chop * { cursor: none !important }
 /* ---------- Document pages: support, contact, blog, legal, deletion ---------- */
 .sx .ch.doc-hero { padding-top: max(20vh, 170px); padding-bottom: 6vh }
 .sx .doc-hero .lede { max-width: 48ch }
+.sx .doc-hero .story-by { display: block; margin-top: 2.4vh; font: 600 14px/1.4 var(--sans); letter-spacing: .02em; color: var(--mute) }   /* the founder story's byline (RM20773) */
 .sx .ch.doc-ch { padding-top: 5vh }
 .sx .doc-body > :first-child { margin-top: 0 }
 .sx .doc-body .btn { text-decoration: none; margin: 1vh 0 1.4em }

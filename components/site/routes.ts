@@ -6,7 +6,8 @@ import { isIndonesianRoute, stripLocalePrefix } from '@/i18n/availability'
  * into the homepage (kit.js LOCAL map: '/maitre-d' → '/#c3b', '/app' → '/#get', '/story' → '/#story');
  * every other link is its own page. Press keeps its live page (Devon).
  */
-const HOME_SECTIONS: Record<string, string> = { '/maitre-d': '#c3b', '/app': '#get', '/story': '#story' }
+// RM20773 (Devon, 27 Nov 2026: "lets make a founder story"): Our story is its own page again, /story.
+const HOME_SECTIONS: Record<string, string> = { '/maitre-d': '#c3b', '/app': '#get' }
 
 export function siteHref(locale: string, path: string): string {
   const section = HOME_SECTIONS[path]
