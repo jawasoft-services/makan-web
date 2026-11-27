@@ -156,11 +156,10 @@ const nextConfig: NextConfig = {
       { source: "/about", destination: "/#story", permanent: true },
       // RM20773: these pages are now sections of the home page (Devon approved, 26 Nov 2026).
       { source: "/maitre-d", destination: "/#c3b", permanent: true },
-      { source: "/app", destination: "/#get", permanent: true },
       { source: "/story", destination: "/#story", permanent: true },
       { source: "/id/maitre-d", destination: "/id#c3b", permanent: true },
-      { source: "/id/app", destination: "/id#get", permanent: true },
       { source: "/id/story", destination: "/id#story", permanent: true },
+      // /app and /id/app are a route (app/[locale]/app/route.ts): a phone goes straight to its own store.
       // /press used to redirect to /story; it is now its own page (RM20514).
     ];
   },
