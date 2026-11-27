@@ -17,7 +17,7 @@ import { lane, PLACE, MEAL, KEY, MEAL_ROUTE, PROFILE_ROUTE, venue } from './shar
 // the standings' search markup. An absent or malformed document hides nothing. Not behind any switch.
 
 const require = createRequire(import.meta.url)
-const BASE = '2b6fbe2'
+const BASE = 'db5c55d'   // the main this branch last merged (27 Nov 2026)
 const atBase = path => { try { return execFileSync('git', ['show', `${BASE}:${path}`], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }) } catch { return null } }
 const baseAvailable = atBase('package.json') !== null
 const copy = value => JSON.parse(JSON.stringify(value))
@@ -332,6 +332,7 @@ test('the owner page: the featured card and usual orders pass over a venue taken
     '@/lib/reviews': { getAllReviews: () => [] }, '@/lib/thumb': load('lib/thumb.ts', {}), '@/lib/local-photo': load('lib/local-photo.ts', {}),
     './PartnerForm': { default: () => null }, './FindRestaurant': { default: () => null }, './owners.css': {},
     '@/lib/web-listing': { getHiddenPlaceIds: async () => new Set(hidden) },
+    '@/lib/dish-wall': load('lib/dish-wall.ts', { './captions': load('lib/captions.ts', {}) }),
     // Dish answers not shown (the switches off): scripts/maitred-cards.test.mjs covers them on this page.
     '@/lib/dish-pages': load('lib/dish-pages.ts', { '@/lib/share-v2': load('lib/share-v2.ts', {}, { globals: { process: { env: {} } } }) }, { globals: { process: { env: {} } } }),
   })

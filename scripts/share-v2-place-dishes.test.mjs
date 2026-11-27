@@ -207,7 +207,7 @@ test('the fixture lane renders each dish state in English and Bahasa with no dat
 // With DISH_PAGES off the Share v2 page is main's, byte for byte, but for one thing: its search title is the live place
 // page's title family, not the bare name (review L1, Devon's Q3 "Reuse live titles"), wherever the title appears.
 // With SHARE_V2_PAGES off this page is not served at all, so the live site does not change.
-const BASE = '2b6fbe2'
+const BASE = 'db5c55d'   // the main this branch last merged (27 Nov 2026)
 const atBase = path => { try { return execFileSync('git', ['show', `${BASE}:${path}`], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }) } catch { return null } }
 const basePage = atBase(PLACE_ROUTE)
 test('switch off: the page equals main\'s and its metadata does but for the live title, whatever dishes the aggregate holds', { skip: !basePage && `commit ${BASE} is not in this clone` }, async () => {
