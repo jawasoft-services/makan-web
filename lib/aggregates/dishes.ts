@@ -112,12 +112,14 @@ export interface DishRun {
 }
 
 /**
- * Every place with its `dishes`, except a venue taken down, which gets none. Reads `venueMenus` (dishRatingOrder only)
- * for the places that need it, 100 to a batch.
+ * Every place with its `dishes`, except a venue taken down and a venue that opted out of dish names, which get none: the
+ * page then draws no block for them, as the app shows no decision section for an opted-out venue (review M2). Reads
+ * `venueMenus` (dishRatingOrder only) for the places that need it, 100 to a batch.
  */
 export async function withPlaceDishes(db: Firestore, directory: DirectoryPlace[], run: DishRun): Promise<DirectoryPlace[]> {
-  const hidden = run.hidden ?? new Set<string>()
-  const answers = new Map(directory.map(place => [place.placeId, hidden.has(place.placeId) ? null : readAnswer(run.venues.get(place.placeId))]))
+  const optedOut = (id: string) => run.venues.get(id)?.dishNamesPolicy === 'venue_opt_out'
+  const none = new Set([...(run.hidden ?? [])].concat(directory.map(place => place.placeId).filter(optedOut)))
+  const answers = new Map(directory.map(place => [place.placeId, none.has(place.placeId) ? null : readAnswer(run.venues.get(place.placeId))]))
   const due = directory.map(place => place.placeId)
     .filter(id => needsRatingOrder(answers.get(id) ?? null, run.stored.get(id) ?? null, run.dailyPass))
   const orders = new Map<string, unknown>()
@@ -125,6 +127,6 @@ export async function withPlaceDishes(db: Firestore, directory: DirectoryPlace[]
     const docs = await db.getAll(...due.slice(i, i + 100).map(id => db.collection('venueMenus').doc(id)), { fieldMask: RATING_ORDER_FIELDS })
     for (const doc of docs) orders.set(doc.id, doc.exists ? doc.data()?.dishRatingOrder ?? null : null)
   }
-  return directory.map(place => hidden.has(place.placeId) ? place : ({ ...place,
+  return directory.map(place => none.has(place.placeId) ? place : ({ ...place,
     dishes: buildPlaceDishes(answers.get(place.placeId) ?? null, orders.has(place.placeId) ? orders.get(place.placeId) : undefined, run.stored.get(place.placeId) ?? null) }))
 }
