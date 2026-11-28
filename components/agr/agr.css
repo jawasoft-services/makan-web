@@ -88,6 +88,9 @@ html:has(.agr),html:has(.agr) body{overflow-x:clip}
 /* RM20773: the cue stays on one line; on phones it sits above the legal link so the two never touch. */
 @media (max-width:600px){.agr .hero .discover{bottom:44px}}
 .agr .hero .legal{position:absolute;left:var(--g);bottom:20px;z-index:3;color:var(--cream);font-size:10px;text-decoration:underline}
+/* the hero's Skip (Devon, 28 Nov 2026), opposite the legal line; a 44px tall tap area around small capitals */
+.agr .hero .hero-skip{position:absolute;right:var(--g);bottom:6px;z-index:3;display:flex;align-items:center;min-height:44px;padding-left:16px;color:var(--cream);text-decoration:none}
+.agr .hero{touch-action:pan-y}   /* sideways swipes on the hero are the plate row's (the runtime's heroStep) */
 .agr .c1{height:240vh;background:var(--cream)}
 .agr .c1 .in{position:sticky;top:0;height:100svh;overflow:hidden}
 .agr .c1 .head{position:absolute;left:0;right:0;top:max(152px,calc(96px + 3vh));z-index:2;padding:0 24px}
@@ -118,7 +121,7 @@ html:has(.agr),html:has(.agr) body{overflow-x:clip}
 .agr .c2 .side.l{left:var(--g);max-width:30ch;font-weight:700}
 .agr .c2 .side.r{left:52%;max-width:40ch;color:var(--mute)}
 .agr .c2.on .side{opacity:1;transform:none}
-.agr .c3{height:650vh;margin-top:-100vh}
+.agr .c3{height:425vh;margin-top:-100vh}   /* was 650vh: the scene scrolls half as far (Devon, 28 Nov 2026: "halve them on both iphone and computer"); agr-runtime.js C3K keeps its beats */
 .agr .c3 .in{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--cream);transform-origin:50% 0;will-change:transform}
 .agr .c3 .body{position:absolute;left:var(--g);top:152px;max-width:30ch;margin:0;font-size:14px;line-height:1.45;color:var(--mute)}
 .agr .c3 .body em,.agr .c4 .lede em,.agr .c6 .body em,.agr .c5 .body em{font-style:normal;color:var(--ink);font-weight:700}
@@ -142,6 +145,7 @@ html:has(.agr),html:has(.agr) body{overflow-x:clip}
 .agr .rows{list-style:none;margin:56px 0 0;padding:0;max-width:880px}
 .agr .c4 .feed .rows li{--rp:1}
 .agr .rows li{--rp:0;position:relative;display:grid;grid-template-columns:clamp(120px,11vw,152px) minmax(0,1fr);column-gap:clamp(20px,2.4vw,36px);align-items:start;padding:22px 0}
+.agr .rows picture{display:contents}   /* the feed's phone-size source (AgrHome): the photo stays the row's grid cell */
 .agr .rows .ph{display:block;width:100%;aspect-ratio:1;height:auto;object-fit:cover;clip-path:inset(calc((1 - var(--rp)) * 50%))}
 .agr .rows .d{align-self:center;opacity:var(--rp);transform:translateX(calc((1 - var(--rp)) * 6vw))}
 .agr .rows .d small{display:block;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(0,0,0,.5)}
@@ -216,10 +220,12 @@ html:has(.agr),html:has(.agr) body{overflow-x:clip}
 .agr .board .bsparks i:nth-child(even){width:6px;height:6px;border-radius:2px}
 .agr .board li.first.on .bsparks i{animation:agr-spark .8s .4s cubic-bezier(.2,.8,.3,1) both}
 @media (max-width:760px){
-  .agr .cs .stick{grid-template-columns:1fr;grid-template-rows:auto auto;align-content:start;row-gap:24px;padding:84px 16px 0}
+  /* the title starts below the header and its fade (72 + 44 + 12: it sat under the fade at the #1 stop, phone audit
+     28 Nov 2026); on a short phone the rows give back that room so all ten still fit */
+  .agr .cs .stick{grid-template-columns:1fr;grid-template-rows:auto auto;align-content:start;row-gap:24px;padding:128px 16px 0}
   .agr .cs .big{font-size:40px}
   .agr .cs .lede{font-size:17px;margin-top:10px}
-  .agr .board{--rh:56px}
+  .agr .board{--rh:clamp(44px,calc((100svh - 280px) / 10),56px)}
   .agr .board li{grid-template-columns:20px 40px minmax(0,1fr) 92px;column-gap:10px;padding:0 8px}
   .agr .board .th{width:40px;height:40px}
   .agr .board .nm b{font-size:15px;line-height:20px}
@@ -536,11 +542,14 @@ body:has(.agr) .sitefoot{z-index:2}
   .agr .cm .copy{top:140px;max-width:none;right:var(--g)}
   .agr .cm #globe{left:0;right:0;top:36vh;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 18%);mask-image:linear-gradient(180deg,transparent 0,#000 18%)}
   .agr .c3b .earn{grid-template-columns:1fr;gap:6vh}
-  .agr .c3b .earncard{position:sticky;top:56px;z-index:20;background:var(--cream);padding-bottom:12px}
-  .agr .c3b .earncard::before{content:'';position:absolute;left:-20px;right:-20px;top:-56px;height:56px;background:var(--cream)}
+  /* the card pins below the header and its fade (72 + 44 + 12), not under them: its REGULARS / WHAT TO ORDER HERE
+     labels sat under the fade (phone audit, 28 Nov 2026). The usual step pins below the card, 20px clear as before;
+     the runtime's crowned stop (agr-runtime.js STOPS) keeps the step it rests on below the card too. */
+  .agr .c3b .earncard{position:sticky;top:128px;z-index:20;background:var(--cream);padding-bottom:12px}
+  .agr .c3b .earncard::before{content:'';position:absolute;left:-20px;right:-20px;top:-128px;height:128px;background:var(--cream)}
   .agr .c3b .in{padding:150px 20px 30vh}
   .agr .c3b .dwell{height:205vh}
-  .agr .c3b .step.usualstep{top:376px;margin-top:7vh}
+  .agr .c3b .step.usualstep{top:448px;margin-top:7vh}
   .agr .c3b .earncard{min-height:300px;box-sizing:border-box}
   .agr .c3b .step{margin-top:7vh}
   .agr .ch .big{top:156px;padding:0 20px}
@@ -552,7 +561,11 @@ body:has(.agr) .sitefoot{z-index:2}
   .agr .c5 .lab.l{left:28vw}
   .agr .c5 .lab.r{left:72vw}
   .agr .c7 .sticker.mdc{transform-origin:0 0}
-  .agr .c7 .sticker.mdc:not(.ink):not(.peach):not(.cream){left:5vw!important;right:auto!important;top:auto!important;bottom:7vh!important;width:300px;zoom:.78}
+  /* the card no longer sits at a fixed spot at the bottom: Bahasa's longer words pushed the button under it, and at
+     360px English did too (phone audit, 28 Nov 2026). On phones it follows the words, below the button, and the two
+     are centred together below the header's fade. */
+  .agr .c7 .in7{flex-direction:column;justify-content:safe center;gap:32px;box-sizing:border-box;padding:116px 0 24px}
+  .agr .c7 .sticker.mdc:not(.ink):not(.peach):not(.cream){position:relative;flex:none;align-self:flex-start;margin-left:calc(5vw / .78);left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;width:300px;zoom:.78}
   .agr .c7 .sticker.mdc.ink,.agr .c7 .sticker.mdc.peach,.agr .c7 .sticker.mdc.cream{display:none}
 }
 

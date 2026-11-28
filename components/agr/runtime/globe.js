@@ -65,7 +65,8 @@ export function mountGlobe(cmEl, gEl, opts) {
   const narrow0 = opts.narrow()
   const earthUrl = narrow0 ? opts.assets.earth.replace(/-2048\.jpg$/, '-1024.jpg') : opts.assets.earth
   let ready = 0
-  const markReady = () => { if (++ready === 2) { gEl.classList.add('live'); dirty = true } }
+  // once both maps are in, draw again even if the page is not scrolling (after a jump nothing else asks for a frame)
+  const markReady = () => { if (++ready === 2) { gEl.classList.add('live'); dirty = true; kick() } }
   const earth = loader.load(earthUrl, markReady); earth.colorSpace = SRGBColorSpace; earth.anisotropy = 4
   const bump = loader.load(opts.assets.bump, markReady)
   const globeGeo = new SphereGeometry(R, 75, 75)
@@ -114,8 +115,11 @@ export function mountGlobe(cmEl, gEl, opts) {
   controls.addEventListener('start', () => { controls.autoRotate = false; gEl.style.cursor = 'grabbing' })
   controls.addEventListener('end', () => { if (glFree) gEl.style.cursor = 'grab' })
   controls.addEventListener('change', () => { dirty = true })
+  // OrbitControls sets an inline touch-action:none on the canvas, so a thumb swipe that started on the globe never
+  // scrolled the page (phone audit, 28 Nov 2026). The page keeps vertical swipes; a sideways drag still turns the globe.
+  renderer.domElement.style.touchAction = 'pan-y'
 
-  let w = 0, h = 0, dirty = true, glFree = false, glVisible = false, raf = 0, last = 0, tween = null, dead = false
+  let w = 0, h = 0, dirty = true, glFree = false, glVisible = false, raf = 0, last = 0, tween = null, dead = false, placed = false
   pump()   // start the pin photos now that `dead` exists
   function size() {
     const W = gEl.clientWidth, H = gEl.clientHeight
@@ -124,7 +128,7 @@ export function mountGlobe(cmEl, gEl, opts) {
   const povOf = (pov) => toXYZ(pov.lat, pov.lng, pov.altitude, new Vector3())
   function pointOfView(pov, ms) {
     const to = povOf(pov)
-    if (!ms) { tween = null; camera.position.copy(to); camera.lookAt(0, 0, 0); dirty = true; return }
+    if (!ms) { tween = null; camera.position.copy(to); camera.lookAt(0, 0, 0); dirty = true; placed = true; return }
     tween = { from: camera.position.clone(), to, t0: performance.now(), ms }
   }
   function glTarget(e) { const narrow = opts.narrow(), a0 = narrow ? 0.9 : 0.75; return { lat: LONDON.lat + (ENDV.lat - LONDON.lat) * e, lng: LONDON.lng + (ENDV.lng - LONDON.lng) * e, altitude: a0 + ((narrow ? 2.6 : 2.3) - a0) * e } }
@@ -136,10 +140,12 @@ export function mountGlobe(cmEl, gEl, opts) {
       glFree = free; controls.enabled = free
       controls.autoRotate = free && !reduce; controls.autoRotateSpeed = 0.35
       gEl.style.cursor = free ? 'grab' : ''
-      if (!free) pointOfView(glTarget(e), 600)   // glide back onto the scroll path
+      if (!free && placed) pointOfView(glTarget(e), 600)   // glide back onto the scroll path
     }
-    // close over London, then turn east and pull back
-    if (!glFree && !tween) pointOfView(glTarget(e), 0)
+    // close over London, then turn east and pull back. Arriving straight into the free spin (a jump, a fast fling, a
+    // restored scroll) used to skip this, leaving the camera at the globe's centre, inside the atmosphere: a solid blue
+    // block (phone audit, 28 Nov 2026). The camera is always placed from the scroll first.
+    if ((!glFree && !tween) || !placed) pointOfView(glTarget(e), 0)
     const n = Math.min(PINS.length, Math.ceil(PINS.length * clamp(e * 1.15, 0.02, 1) / 6) * 6)
     const far = n ? PINS[n - 1].dd : -1
     for (const q of PINS) q.on = q.dd <= far

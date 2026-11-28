@@ -22,7 +22,9 @@ export const JUMP_QUIET_MS = 1200
  */
 export function jumpToSection(el: Element) {
   window.dispatchEvent(new Event('makan:jump'))
-  jump(el.getBoundingClientRect().top + window.scrollY)
+  // land below the header and its fade (each page's scroll-margin-top); the home page's chapters have none
+  const margin = el === document.documentElement ? 0 : parseFloat(getComputedStyle(el).scrollMarginTop) || 0
+  jump(el.getBoundingClientRect().top + window.scrollY - margin)
 }
 
 /**
@@ -236,7 +238,9 @@ export default function SiteMotion() {
     }
     if (stops.length) {
       on('wheel', e => { if (held()) e.preventDefault(); else if (SN.active) SN.active = false }, { passive: false })
-      on('touchstart', () => { SN.touching = true; if (SN.active) SN.active = false }, { passive: true })
+      // a touch also ends the landing hold, so it never pulls the page back from under a thumb (Devon, 28 Nov 2026:
+      // "Also we haven't optimised on phone"); wheel and keys keep it
+      on('touchstart', () => { SN.touching = true; SN.hold = null; if (SN.active) SN.active = false }, { passive: true })
       on('touchend', () => { SN.touching = false; clearTimeout(SN.idle); SN.idle = window.setTimeout(snapCheck, 220) }, { passive: true })
       on('keydown', () => { if (SN.active) SN.active = false }, { passive: true })
       on('mousedown', () => { if (SN.active) SN.active = false }, { passive: true })

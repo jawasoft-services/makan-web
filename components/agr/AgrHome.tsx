@@ -80,6 +80,16 @@ const STICKER_SPOTS: { cls: string; style: Style }[] = [
 ]
 
 const RING_PATH = 'M500,500 m-420,0 a420,420 0 1,1 840,0 a420,420 0 1,1 -840,0'
+/**
+ * The ring's words are spaced to fill the circle (textLength). The English end line, 82 characters at 58px, is the
+ * approved fit; a longer line is set smaller so its letters keep the same room. Bahasa's 98-character end line was
+ * squeezed until its letters collided (Devon, 28 Nov 2026: "Space it to fit"), so it is set at 48.5px.
+ */
+const RING_FIT = 82, RING_PX = 58
+const ringStyle = (line: string): CSSProperties | undefined => {
+  const n = [...line].length
+  return n > RING_FIT ? { fontSize: `${Math.round(RING_PX * RING_FIT / n * 10) / 10}px` } : undefined
+}
 // The QR code (www.makanofficial.com/app), as drawn in the prototype.
 const QR_PATH =
   'M2 2.5h7m1 0h1m3 0h2m4 0h4m1 0h1m2 0h7M2 3.5h1m5 0h1m2 0h5m1 0h2m1 0h1m1 0h2m4 0h1m5 0h1M2 4.5h1m1 0h3m1 0h1m3 0h1m1 0h1m1 0h1m1 0h1m4 0h2m3 0h1m1 0h3m1 0h1M2 5.5h1m1 0h3m1 0h1m2 0h2m1 0h2m1 0h1m2 0h2m1 0h1m1 0h2m1 0h1m1 0h3m1 0h1M2 6.5h1m1 0h3m1 0h1m1 0h2m2 0h5m3 0h3m3 0h1m1 0h3m1 0h1M2 7.5h1m5 0h1m1 0h4m2 0h1m1 0h4m1 0h1m1 0h2m1 0h1m5 0h1M2 8.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M12 9.5h1m1 0h1m2 0h2m2 0h5M3 10.5h7m2 0h1m2 0h5m1 0h1m2 0h3m2 0h2m3 0h1M4 11.5h3m3 0h6m2 0h5m2 0h1m2 0h2m1 0h2m1 0h1M4 12.5h5m1 0h1m2 0h1m1 0h5m4 0h1m1 0h1m3 0h1m1 0h1M2 13.5h1m1 0h1m1 0h1m2 0h1m1 0h7m1 0h4m2 0h1m1 0h1m2 0h3M2 14.5h1m4 0h2m4 0h2m3 0h1m3 0h4m1 0h1m1 0h3m1 0h2M2 15.5h1m2 0h1m3 0h4m2 0h1m3 0h2m5 0h3m2 0h1m1 0h2M3 16.5h2m2 0h2m2 0h1m1 0h1m3 0h3m2 0h1m4 0h2m1 0h1m2 0h1M2 17.5h1m1 0h1m1 0h2m2 0h2m7 0h1m3 0h2m1 0h3m1 0h3M2 18.5h1m1 0h2m2 0h1m1 0h5m1 0h2m1 0h2m3 0h1m1 0h2m1 0h2m3 0h1M3 19.5h2m6 0h1m3 0h1m3 0h5m1 0h5m1 0h2m1 0h1M2 20.5h1m2 0h4m2 0h1m1 0h1m2 0h2m1 0h1m3 0h1m5 0h2m1 0h2M2 21.5h1m2 0h1m1 0h1m1 0h5m3 0h2m1 0h6m3 0h5M3 22.5h3m2 0h1m2 0h2m3 0h2m2 0h1m2 0h1m2 0h2m1 0h3M2 23.5h1m4 0h1m1 0h2m2 0h6m1 0h1m1 0h3m2 0h3m2 0h1m1 0h1M2 24.5h1m2 0h1m1 0h4m2 0h2m1 0h2m1 0h3m1 0h1m1 0h3m3 0h1m1 0h1M2 25.5h1m3 0h2m2 0h1m1 0h1m3 0h4m1 0h5m1 0h2m1 0h4M2 26.5h1m1 0h2m2 0h3m1 0h1m2 0h5m1 0h1m2 0h7M10 27.5h1m1 0h3m3 0h1m2 0h2m2 0h2m3 0h1m1 0h1m1 0h1M2 28.5h7m1 0h1m2 0h1m1 0h3m2 0h1m1 0h1m1 0h3m1 0h1m1 0h1m1 0h2M2 29.5h1m5 0h1m1 0h2m2 0h2m5 0h2m2 0h2m3 0h4M2 30.5h1m1 0h3m1 0h1m1 0h1m5 0h2m2 0h5m1 0h6m2 0h1M2 31.5h1m1 0h3m1 0h1m1 0h3m1 0h2m1 0h3m5 0h1m1 0h1m2 0h2m2 0h1M2 32.5h1m1 0h3m1 0h1m1 0h1m1 0h3m2 0h1m4 0h1m1 0h6m1 0h1M2 33.5h1m5 0h1m1 0h1m1 0h1m3 0h2m5 0h1m2 0h1m3 0h3M2 34.5h7m2 0h1m1 0h3m3 0h1m4 0h1m1 0h1m2 0h1m3 0h1'
@@ -119,24 +129,27 @@ export default async function AgrHome({ data }: { data: AgrData }) {
     <main id="main-content" className="agr agr-nojs">
       <canvas id="gl" aria-hidden="true" />
 
-      <section className="hero" style={{ height: `calc(100svh + ${Math.max(0, dishes.length - 1)} * 32vh)` }} aria-label={t('hero.label')}>
+      {/* 16vh of scroll per plate, half the prototype's 32vh (Devon, 28 Nov 2026: "halve them on both iphone and computer") */}
+      <section className="hero" style={{ height: `calc(100svh + ${Math.max(0, dishes.length - 1)} * 16vh)` }} aria-label={t('hero.label')}>
         <div className="in gut">
           <h1 className="layer">{t('hero.title')}</h1>
           <div className="arch" aria-hidden="true">
             <div className="disc" />
             <svg viewBox="0 0 1000 1000" id="ring">
               <defs><path id="circ" d={RING_PATH} /></defs>
-              <text><textPath href="#circ" textLength="2639" lengthAdjust="spacing">{t('hero.ring')}</textPath></text>
+              <text style={ringStyle(t('hero.ring'))}><textPath href="#circ" textLength="2639" lengthAdjust="spacing">{t('hero.ring')}</textPath></text>
             </svg>
           </div>
           <img className="still" src={usual.src} alt={alt(usual.name, usual.venue)} width={768} height={768} loading="lazy" decoding="async" />
           <p className="caption" id="pilltext">{caption(0)}</p>
           <span className="discover cap">{t('hero.discover')}</span>
           <span className="legal">{t('hero.legal')}</span>
+          <a className="hero-skip cap" href="#story">{t('hero.skip')}</a>
         </div>
       </section>
 
-      <section className="s3 hs dark" id="story" aria-label={t('story.label')} style={css({ '--s3-len': 1245 })}>
+      {/* the story's beats at half length, 1245vh before (agr-runtime.js STORY_SCALE; Devon, 28 Nov 2026) */}
+      <section className="s3 hs dark" id="story" aria-label={t('story.label')} style={css({ '--s3-len': 622.5 })}>
         <div className="s3-stage">
           <canvas className="s3-canvas" aria-hidden="true" />
           <div className="s3-scrim" aria-hidden="true" />
@@ -278,7 +291,11 @@ export default async function AgrHome({ data }: { data: AgrData }) {
                 </li>
                 {data.feed.map((m, i) => (
                   <li key={i}>
-                    <img className="ph" src={m.s} alt={alt(m.d, m.v)} width={152} height={152} loading="lazy" decoding="async" />
+                    {/* phones draw the row at 96 px, so they take the 192 px copy (Devon, 28 Nov 2026: "can we downsize?") */}
+                    <picture>
+                      {m.sm ? <source media="(max-width: 820px)" srcSet={m.sm} /> : null}
+                      <img className="ph" src={m.s} alt={alt(m.d, m.v)} width={152} height={152} loading="lazy" decoding="async" />
+                    </picture>
                     <div className="d">
                       <small>{m.w || t('c4.savedOn')}</small>
                       <b>{m.d}</b>
@@ -541,7 +558,7 @@ export default async function AgrHome({ data }: { data: AgrData }) {
           <div className="disc" />
           <svg viewBox="0 0 1000 1000" id="ring2">
             <defs><path id="circ2" d={RING_PATH} /></defs>
-            <text><textPath href="#circ2" textLength="2639" lengthAdjust="spacing">{t('end.ring')}</textPath></text>
+            <text style={ringStyle(t('end.ring'))}><textPath href="#circ2" textLength="2639" lengthAdjust="spacing">{t('end.ring')}</textPath></text>
           </svg>
         </div>
       </footer>
