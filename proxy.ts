@@ -1,8 +1,8 @@
 import createMiddleware from "next-intl/middleware"
 import { defineRouting } from "next-intl/routing"
-import { NextResponse, type NextRequest } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { isIndonesianRoute, stripLocalePrefix } from "@/i18n/availability"
-import { routing } from "@/i18n/routing"
+import { LANG_COOKIE, routing } from "@/i18n/routing"
 import { authActionResponse } from "@/lib/auth-action-proxy"
 import { rateLimited } from "@/lib/rate-limit"
 import { shareV2PagesOn } from "@/lib/share-v2"
@@ -102,17 +102,26 @@ export function proxy(request: NextRequest) {
   if (pathname.startsWith("/id/") && !isIndonesianRoute(pathname)) {
     const url = request.nextUrl.clone()
     url.pathname = stripLocalePrefix(pathname)
-    const response = NextResponse.redirect(url, 307)
-    response.cookies.set("NEXT_LOCALE", "en", {
-      maxAge: 60 * 60 * 24 * 365,
-      sameSite: "lax",
-    })
-    return response
+    // No cookie: landing on an untranslated /id address is not a language choice (Devon, 28 Nov 2026).
+    return NextResponse.redirect(url, 307)
   }
 
   return isIndonesianRoute(pathname)
-    ? localizedMiddleware(request)
+    ? localizedMiddleware(withLanguagePick(request))
     : englishOnlyMiddleware(request)
+}
+
+/**
+ * A language picked in a switcher (LANG_COOKIE) stands in for the browser's Accept-Language, so the visitor keeps
+ * the language they chose. Without a pick, the browser's own language decides. An address with a prefix (/id/...)
+ * always shows that language either way.
+ */
+export function withLanguagePick(request: NextRequest): NextRequest {
+  const pick = request.cookies.get(LANG_COOKIE)?.value
+  if (pick !== "en" && pick !== "id") return request
+  const headers = new Headers(request.headers)
+  headers.set("accept-language", pick)
+  return new NextRequest(request, { headers })
 }
 
 export const config = {

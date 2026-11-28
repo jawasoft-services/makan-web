@@ -187,7 +187,7 @@ export function lane({ env = { SHARE_V2_PAGES: '1', SHARE_STORAGE_BUCKETS: BUCKE
       }
       if (id === '@/lib/place-photo') return { getPlacePhoto: async () => state.googlePhoto }
       if (id === '@/lib/rate-limit') return load('lib/rate-limit.ts')
-      if (id === '@/i18n/routing') return { routing: { locales: ['en', 'id'], defaultLocale: 'en' } }
+      if (id === '@/i18n/routing') return { routing: { locales: ['en', 'id'], defaultLocale: 'en' }, LANG_COOKIE: 'MAKAN_LANG', LANG_COOKIE_MAX_AGE: 31536000 }
       if (id.startsWith('node:')) return { ...require(id), default: require(id) }
       if (id.endsWith('.css')) return { default: new Proxy({}, { get: (_, key) => key }) }
       if (id.startsWith('@/') || id.startsWith('.')) {
