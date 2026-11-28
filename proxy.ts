@@ -4,6 +4,7 @@ import { NextResponse, type NextRequest } from "next/server"
 import { isIndonesianRoute, stripLocalePrefix } from "@/i18n/availability"
 import { routing } from "@/i18n/routing"
 import { authActionResponse } from "@/lib/auth-action-proxy"
+import { ownerEmailLinksOn, ownerEmailLinkTarget } from "@/lib/owner-email-links"
 import { rateLimited } from "@/lib/rate-limit"
 import { shareV2PagesOn } from "@/lib/share-v2"
 import { SHARE_V2_PROXY_HEADER, shareV2ProxyMark } from "@/lib/share-v2-mark"
@@ -94,6 +95,20 @@ export function proxy(request: NextRequest) {
   if (shareV2PagesOn()) {
     const target = shareV2Target(pathname)
     if (target) return shareV2Response(request, target)
+  }
+
+  // RM20616 O2 Q8 — off unless OWNER_EMAIL_LINKS=1: the weekly owner email's two buttons hand on to the
+  // existing /app page. Answered before the locale rules, which would send /id/o/... to English.
+  if (ownerEmailLinksOn()) {
+    const target = ownerEmailLinkTarget(pathname, request.nextUrl.searchParams)
+    if (target) {
+      const url = request.nextUrl.clone()
+      url.pathname = target
+      url.search = ""
+      const response = NextResponse.redirect(url, 307)
+      response.headers.set("Cache-Control", "private, no-store")
+      return response
+    }
   }
 
   // Editorial, legal, restaurant and meal pages have not been translated yet.
