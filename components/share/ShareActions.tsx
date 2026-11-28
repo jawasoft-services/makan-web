@@ -1,6 +1,6 @@
 "use client"
 
-import { goToStoreWithLink, phoneKind } from "@/lib/carry-link"
+import { goToStoreWithLink, phoneKind, playUrlWithLink } from "@/lib/carry-link"
 import { APP_STORE_URL, GOOGLE_PLAY_URL } from "@/lib/links"
 
 /*
@@ -32,7 +32,7 @@ export function OpenInMakanButton({ link, appPage, label, className, appPath }: 
     event.preventDefault()
     if (phone === "android") {
       const { host, pathname } = new URL(link)
-      window.location.href = `intent://${host}${pathname}#Intent;scheme=https;package=${ANDROID_PACKAGE};S.browser_fallback_url=${encodeURIComponent(GOOGLE_PLAY_URL)};end`
+      window.location.href = `intent://${host}${pathname}#Intent;scheme=https;package=${ANDROID_PACKAGE};S.browser_fallback_url=${encodeURIComponent(playUrlWithLink(link))};end`
       return
     }
     window.location.href = `makanapp://${appPath}`
