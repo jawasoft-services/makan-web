@@ -21,7 +21,9 @@
 .sx #partner-maitred .rules { margin-top: 32px }
 .sx .pd-n { font: 400 28px/1 var(--serif); color: var(--orange); width: 2ch; font-variant-numeric: tabular-nums }
 .sx .pd-ranked { list-style: none; margin: 5vh 0 0; padding: 0 }
-.sx .pd-ranked li { display: flex; gap: 18px; align-items: baseline; padding: 14px 0; border-top: 1px solid rgba(17, 24, 28, .12); font: 600 20px/1.25 var(--sans) }
+.sx .pd-ranked li { display: flex; gap: 18px; align-items: baseline; padding: 0; border-top: 1px solid rgba(17, 24, 28, .12); font: 600 20px/1.25 var(--sans) }
+/* the link fills the row, a 53px tap target (it was the 25px name; phone audit, 28 Nov 2026) */
+.sx .pd-ranked a { flex: 1; min-width: 0; padding: 14px 0 }
 .sx .pd-h3 { font: 700 13px/1 var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--mute); margin: 1.2vh 0 0 }
 .sx .pd-reviews { list-style: none; margin: 3vh 0 0; padding: 0 }
 .sx .pd-reviews li { padding: 16px 0; border-top: 1px solid rgba(17, 24, 28, .12); font: 400 clamp(22px, 2vw, 30px)/1.15 var(--serif) }

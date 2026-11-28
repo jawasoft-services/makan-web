@@ -52,6 +52,13 @@ export function mountAgr(root, data) {
   const intervals = []
 
   function prog(el) { const r = el.getBoundingClientRect(), run = r.height - innerHeight; return run > 0 ? clamp(-r.top / run, 0, 1) : clamp(-r.top / Math.max(1, r.height), 0, 1) }
+  // Devon, 28 Nov 2026 ("halve them on both iphone and computer"): the hero row (AgrHome), the story (STORY_SCALE)
+  // and chapter 3 scroll half as far. Chapter 3 went from 650vh to 425vh (agr.css): its scene, 450vh before chapter 4
+  // arrives, is now 225vh, and the last screen, where chapter 4 slides over it, keeps its length. Its beats keep the
+  // fractions they had in the 550vh run: c3p() is chapter 3's progress on that old scale (C3K, set in measure()).
+  const STORY_SCALE = 0.5   // the menu story's beats (menu-story.js BEATS, 1245vh) at half length; AgrHome's --s3-len matches
+  let C3K = 2 * 325 / 550
+  const c3p = () => Math.min(1, prog(c3) * C3K)
 
   // elements the scenes read
   const hero = $('.hero'), pill = $('#pilltext'), ringEl = $('#ring'), ring2 = $('#ring2'), endEl = $('.end')
@@ -194,7 +201,7 @@ export function mountAgr(root, data) {
   const ppuNow = () => innerHeight / (2 * Math.tan(15 * PI / 180 * (narrow ? 44 / 30 : 1)) * 6.5)
   function twinTarget() {
     const r = c3.getBoundingClientRect(); if (r.top > innerHeight || r.bottom < 0) return null
-    const sp = prog(c3), a = reduce ? (sp > 0.5 ? 1 : 0) : sm((sp - 0.5) / 0.18); if (a <= 0) return null
+    const sp = c3p(), a = reduce ? (sp > 0.5 ? 1 : 0) : sm((sp - 0.5) / 0.18); if (a <= 0) return null
     const P = LAYOUT.c3pair, ppu = ppuNow(), lift = -Math.min(0, c3in.getBoundingClientRect().top) / ppu, off = innerWidth / 2 / ppu + P.s * 1.4
     const c4t = c4el.getBoundingClientRect().top, keep = clamp((c4t - innerHeight * 0.75) / (innerHeight * 0.25), 0, 1); if (keep <= 0.01) return null
     return { p: [P.s * PAIRX() + (1 - a) * off, P.cy + lift, 1.5], r: [1.5708, 0, -0.5 * (1 - a)], s: P.s * keep }
@@ -213,6 +220,8 @@ export function mountAgr(root, data) {
     const vh = innerHeight
     C1RUN = (c1el.offsetHeight - vh) / Math.max(1, c1el.offsetHeight - vh - (-parseFloat(getComputedStyle(c2).marginTop) - vh) - vh)
     C2BLOB = vh / Math.max(1, c2.offsetHeight - vh)
+    // chapter 3's progress on its old 650vh scale: twice the scroll into the new run, over the old run
+    const h3 = c3.offsetHeight; C3K = 2 * (h3 - vh) / Math.max(1, h3 * 650 / 425 - vh)
     const in3 = c3in.getBoundingClientRect().top, body3 = $('.c3 .body').getBoundingClientRect(), title3 = $('.c3 .title').getBoundingClientRect()
     // desktop: the plate starts at the top and shrinks only as far as it must to clear the paragraph; phone: it sits under the paragraph
     const bot3 = title3.top - in3 - 64, side3 = innerWidth / 2 - body3.right - 28, top3 = narrow ? body3.bottom - in3 + 20 : 152
@@ -248,8 +257,8 @@ export function mountAgr(root, data) {
       o.front = F; o.plinth = 0; return o
     },
     // chapter 3: the plate from chapters 1 and 2 stays, now circled
-    c3: (sp) => {
-      const L = LAYOUT.c3, P = LAYOUT.c3pair, flip = sm((sp - 0.32) / 0.14), pair = sm((sp - 0.5) / 0.18), o = hidAll()
+    c3: (raw) => {
+      const sp = Math.min(1, raw * C3K), L = LAYOUT.c3, P = LAYOUT.c3pair, flip = sm((sp - 0.32) / 0.14), pair = sm((sp - 0.5) / 0.18), o = hidAll()
       o[OPEN] = { p: [-P.s * PAIRX() * pair, L.cy + (P.cy - L.cy) * pair, 1.5], r: [1.5708, 0, 0], s: L.s + (P.s - L.s) * pair, yaw: PI * flip }
       o.front = OPEN; return o
     },
@@ -482,7 +491,7 @@ export function mountAgr(root, data) {
       h2.rotation.x = p.rx + p.sx - p.hov * CUR.faceTilt * p.ly
       h2.rotation.y = yawC[i2] + flipC[i2] + p.ry + p.sy + p.hov * CUR.faceTilt * p.lx + (i2 === 0 ? turn : 0)
     }
-    const p3 = prog(c3), al = tg.key === 'c3' && p3 > 0.03 && p3 < 0.31 ? OPEN : -1; if (al !== autoLoop) { autoLoop = al; if (!scrTimer) scribbleTick() }
+    const p3 = c3p(), al = tg.key === 'c3' && p3 > 0.03 && p3 < 0.31 ? OPEN : -1; if (al !== autoLoop) { autoLoop = al; if (!scrTimer) scribbleTick() }
     if (twin) {
       const tt = twinTarget()
       if (tt) {
@@ -505,11 +514,15 @@ export function mountAgr(root, data) {
   // chapter 6 reads like an eye moving down the page: each part comes up to full as it reaches the reading line,
   // waits faint and lowered below it, and settles back once read; numbers count up with the scroll as they rise
   const crParts = $$('.cr .big, .cr .step, .focus'), countEls = $$('.cr b[data-n]')
+  const earnCard = $('.c3b .earncard')
   function countTally() {
     const H = innerHeight, line = H * 0.46
+    // phones: the regulars card pins over the top half of chapter 3's steps (below the header's fade since 28 Nov 2026),
+    // so those steps are read just below it, not at the usual line behind it
+    const line3 = narrow && earnCard ? Math.max(line, earnCard.getBoundingClientRect().bottom + H * 0.1) : line
     crParts.forEach((el) => {
       const r = el.getBoundingClientRect(); if (r.bottom < -H || r.top > 2 * H) return
-      const d = (r.top + Math.min(r.height, H * 0.3) / 2 - line) / H
+      const d = (r.top + Math.min(r.height, H * 0.3) / 2 - (line3 !== line && c3bEl.contains(el) ? line3 : line)) / H
       let a, y
       if (reduce) { a = 1; y = 0 }
       else if (d > 0) { const k = clamp(d / 0.34, 0, 1); a = 1 - k * 0.92; y = 46 * k }
@@ -536,7 +549,7 @@ export function mountAgr(root, data) {
     // load the next rows' photos a little before they slide in (lazy images inside a clipped list load late)
     if (r.top < H * 2 && r.bottom > -H) {
       const reach = run + box * 2.5
-      for (let i = warmTo + 1; i < feedImgs.length; i++) { const li = feedImgs[i].parentNode; if (li.offsetTop > reach) break; feedImgs[i].loading = 'eager'; warmTo = i }
+      for (let i = warmTo + 1; i < feedImgs.length; i++) { const li = feedImgs[i].closest('li'); if (li.offsetTop > reach) break; feedImgs[i].loading = 'eager'; warmTo = i }
     }
     if (!reduce) { if (r.top > 0) { off = clamp(r.top / H, 0, 1); rot = 7 * off } else if (r.bottom < H) { off = clamp(1 - r.bottom / H, 0, 1); rot = -7 * off } }
     if (narrow) {
@@ -649,7 +662,8 @@ export function mountAgr(root, data) {
   // the hold: tap 260 ms, the dish pops in, the rest types at 55 ms a letter, a short beat, then the page scrolls again
   const HOLD = { tap: 260, type: 560, per: 55 }; HOLD.end = HOLD.type + CAPREST.length * HOLD.per + 420
   let PAGEHOLD = null   // {y, until}: the usual-shows swipe holds the page too
-  function heldY() { if (FLOW.hold) return FLOW.hold.y; if (PAGEHOLD && performance.now() < PAGEHOLD.until) return PAGEHOLD.y; PAGEHOLD = null; return null }
+  // a released hold (FLOW.hold.free) still plays the order in on its clock, but no longer pins the page
+  function heldY() { if (FLOW.hold && !FLOW.hold.free) return FLOW.hold.y; if (PAGEHOLD && performance.now() < PAGEHOLD.until) return PAGEHOLD.y; PAGEHOLD = null; return null }
   const stopEv = (e) => { if (heldY() !== null) e.preventDefault() }
   const stopKey = (e) => { if (heldY() !== null && /^(ArrowDown|ArrowUp|PageDown|PageUp|Space| |End|Home)$/.test(e.key)) e.preventDefault() }
   const pinScroll = () => { if (SNAP.active) return; const y = heldY(); if (y !== null && Math.abs(scrollY - y) > 1) scrollTo(0, y) }
@@ -662,15 +676,22 @@ export function mountAgr(root, data) {
   const docTop = (e) => { let y = 0; while (e) { y += e.offsetTop; e = e.offsetParent } return y }
   const elY = (e, at) => (e ? docTop(e) + e.offsetHeight / 2 - innerHeight * at : null)
   const storyStatic = () => reduce || hsEl.classList.contains('is-static')
+  // Phones (phone audit, 28 Nov 2026): the fixed header (72px) and its 44px fade cover the top of the screen, so a stop
+  // never rests a chapter's words under them. belowHx is where words start: the header, the fade and 12px (site.css
+  // --below-hx). The crowned stop keeps "Take a clear lead" below the regulars card, which pins at that line
+  // (agr.css), and the 80% stop keeps the example's label and tally below the fade.
+  const belowHx = () => { const h = document.querySelector('.hx'); return (h ? h.offsetHeight : 72) + 44 + 12 }
+  const belowCard = (e) => { const c = $('.c3b .earncard'); return c && e ? docTop(e) - (parseFloat(getComputedStyle(c).top) || 0) - c.offsetHeight - 24 : null }
+  const atMost = (y, cap) => (narrow && cap !== null && isFinite(cap) ? Math.min(y, cap) : y)
   const STOPS = [
     () => (storyStatic() ? null : secY(hsEl, 0.76)),                    // the story: "Chicken, please."
     () => (storyStatic() ? null : secY(hsEl, 0.95)),                    // the story: that's the gap
-    () => secY(c3, 0.74),                                               // the regular's card with their dish beside it
-    () => elY(c3bEl.querySelectorAll('.earnsteps .step')[2], 0.5),      // crowned on a clear lead
+    () => secY(c3, 0.74 / C3K),                                         // the regular's card with their dish beside it
+    () => { const s = c3bEl.querySelectorAll('.earnsteps .step')[2]; return atMost(elY(s, 0.5), belowCard(s)) },   // crowned on a clear lead
     () => { const d = $('.c3b .dwell'), s = $('.c3b .usualstep'); if (!d || !s) return null; return d.getBoundingClientRect().top + scrollY - s.offsetHeight - innerHeight * 0.45 },   // your usual shows
     () => secY(c5, 0.1),                                                // Eat or Yeet: both meals, your call
     () => secY(c5, 0.8),                                                // Eat picked
-    () => elY($('.cr .pct'), 0.5),                                      // 80%
+    () => { const ex = $('.cr .ex'); return atMost(elY($('.cr .pct'), 0.5), ex ? docTop(ex) - belowHx() : null) },   // 80%
     () => secY(csEl, 0.84),                                             // #1 lands
     () => secY(cmEl, 0.8),                                              // the globe, every pin out
     () => secY(chEl, 0.78),                                             // saved to your diary
@@ -737,15 +758,24 @@ export function mountAgr(root, data) {
     const now = performance.now(); if (now - SWIPE.wheelAt < 650) return
     SWIPE.wheelAt = now; heroStep(e.deltaX > 0 ? 1 : -1)
   }, { passive: true })
+  // Devon, 28 Nov 2026 ("Also we haven't optimised on phone"): on a touch screen a hold never fights a thumb. A touch
+  // ends any hold at once (the crown and the typed order still play out, the page is free to move), and a hold that
+  // would start while a finger is down does not pin the page. With no finger on the glass (a fling's glide) a hold
+  // still plays. Wheel, trackpad, mouse and keys keep the holds as they were.
+  on(window, 'touchstart', () => { PAGEHOLD = null; if (FLOW.hold) FLOW.hold.free = true }, { passive: true })
   ;['wheel', 'touchstart', 'keydown', 'mousedown'].forEach((ev) => on(window, ev, () => { if (ev === 'touchstart') SNAP.touching = true; if (SNAP.active && heldY() === null) snapCancel() }, { passive: true }))
-  on(window, 'touchend', () => { SNAP.touching = false; unlater(SNAP.idle); SNAP.idle = later(snapCheck, 220) }, { passive: true })
+  ;['touchend', 'touchcancel'].forEach((ev) => on(window, ev, () => { SNAP.touching = false; unlater(SNAP.idle); SNAP.idle = later(snapCheck, 220) }, { passive: true }))
   on(window, 'wheel', stopEv, { passive: false }); on(window, 'touchmove', stopEv, { passive: false })
   on(window, 'keydown', stopKey); on(window, 'scroll', pinScroll, { passive: true })
   function holdStart() {
-    snapCancel(); FLOW.hold = { t0: performance.now(), y: scrollY }
+    snapCancel(); FLOW.hold = { t0: performance.now(), y: scrollY, free: SNAP.touching }   // a finger already down: play, don't pin
     const tick = () => {
       if (!FLOW.hold) return
-      if (performance.now() - FLOW.hold.t0 >= HOLD.end) { FLOW.hold = null; FLOW.capDone = true; FLOW.lastQ = 0.47; flowPlay(0.47); later(snapCheck, 60); return }
+      if (performance.now() - FLOW.hold.t0 >= HOLD.end) {
+        const free = FLOW.hold.free; FLOW.hold = null; FLOW.capDone = true; FLOW.lastQ = 0.47
+        if (free) ch3Frame(); else flowPlay(0.47)   // a released hold: the page has moved on, so show where it is now
+        later(snapCheck, 60); return
+      }
       flowPlay(FLOW.lastQ); nextFrame(tick)
     }
     tick()
@@ -805,7 +835,11 @@ export function mountAgr(root, data) {
     // progress follows the reading: 0 when the first step enters at 85% of the screen, 1 when "Take a clear lead" reaches 60%
     const a0 = earnSteps[0].getBoundingClientRect().top, aL = earnSteps[2].getBoundingClientRect().top, aN = earnSteps[3].getBoundingClientRect().top
     const q = reduce ? 1 : clamp((H * 0.85 - a0) / Math.max(1, (aL - a0) + H * 0.25), 0, 1), you = Math.round(3 + 12 * sm(q))
-    setUsual(reduce || aN < H * 0.6)
+    // phones: the step pins below the regulars card (agr.css), lower than 60% on a short screen, and the reading line
+    // lowers it a little more; there it counts by its own spot, once it reaches its pin (phone audit, 28 Nov 2026)
+    let usualLine = H * 0.6, usualTop = aN
+    if (narrow) { const s = earnSteps[3]; usualTop -= parseFloat((/translateY\(([-\d.]+)px\)/.exec(s.style.transform) || [])[1]) || 0; usualLine = Math.max(usualLine, (parseFloat(getComputedStyle(s).top) || 0) + 1) }
+    setUsual(reduce || usualTop < usualLine)
     const all = RIVALS.concat([{ k: 'Y', d: you }]).sort((a, b) => b.d - a.d || (a.k === 'Y' ? 1 : b.k === 'Y' ? -1 : 0))
     const rank = {}; all.forEach((p, i) => { rank[p.k] = i + 1 })
     const shown = rank.Y <= 4 ? all.slice(0, 4) : all.slice(0, 3).concat([{ k: 'Y', d: you }])
@@ -838,7 +872,8 @@ export function mountAgr(root, data) {
     regcard.classList.toggle('usual', v); const dots = regcard.querySelectorAll('.rdots i'); dots[0].classList.toggle('on', v); dots[1].classList.toggle('on', !v)
     fitView(); if (!first) kick1(rview, 'jig')
     // on the way down, hold the page until the crown has slammed onto your usual (1.8 s of motion)
-    if (v && !first && !reduce) { PAGEHOLD = { y: SNAP.active ? SNAP.target : scrollY, until: performance.now() + 1900 }; later(snapCheck, 1950) }   // then finish onto the moment
+    // (not while a finger is on the screen: the crown still slams, the page keeps moving with the thumb)
+    if (v && !first && !reduce && !SNAP.touching) { PAGEHOLD = { y: SNAP.active ? SNAP.target : scrollY, until: performance.now() + 1900 }; later(snapCheck, 1950) }   // then finish onto the moment
   }
   on(window, 'resize', fitView)
 
@@ -871,7 +906,7 @@ export function mountAgr(root, data) {
     storyLoading = true; storyIO.disconnect()
     const stage = hsEl.querySelector('.s3-stage'), poster = data.assets.storyMenu + 'poster.jpg'
     if (!reduce) stage.style.backgroundImage = 'url(' + poster + ')'   // the still, until the scene has drawn
-    import('./menu-story.js').then((m) => m.mountMenuStory(hsEl, { assets: data.assets.storyMenu, version: data.assets.version }))
+    import('./menu-story.js').then((m) => m.mountMenuStory(hsEl, { assets: data.assets.storyMenu, version: data.assets.version, lengthScale: STORY_SCALE }))
       .then((api) => { if (dead) { if (api) api.destroy(); return } story = api; if (api) stage.style.backgroundImage = ''; kick() })
       .catch((err) => console.error('menu story failed to load', err))
   }, { rootMargin: '100% 0px' })
@@ -906,7 +941,7 @@ export function mountAgr(root, data) {
     const ph = travel.firstElementChild.offsetWidth, c1s = scrollY - (c1el.getBoundingClientRect().top + scrollY) + innerHeight, mv = c1s * 0.7
     if (ph) travel.style.transform = 'translateX(' + (-(((mv % ph) + ph) % ph)).toFixed(1) + 'px)'
     const f0 = clamp(Math.round(stepK(hp)), 0, N - 1), cap = fmt('caption', { name: DISHES[f0].name, venue: DISHES[f0].venue }); if (pill.textContent !== cap) pill.textContent = cap
-    const c3c = fmt('caption', { name: DISHES[prog(c3) > 0.5 ? USUAL : OPEN].name, venue: DISHES[prog(c3) > 0.5 ? USUAL : OPEN].venue }); if (c3cap.textContent !== c3c) c3cap.textContent = c3c
+    const c3c = fmt('caption', { name: DISHES[c3p() > 0.5 ? USUAL : OPEN].name, venue: DISHES[c3p() > 0.5 ? USUAL : OPEN].venue }); if (c3cap.textContent !== c3c) c3cap.textContent = c3c
     // chapter 2 opens as an ink blob over chapter 1, then chapter 3 is dealt over it on a tilt
     const r2 = c2.getBoundingClientRect(), bl = reduce ? (r2.top <= 0 ? 1 : 0) : clamp(-r2.top / (innerHeight * 0.85), 0, 1)
     c2in.style.setProperty('--b', (bl * bl * (3 - 2 * bl)).toFixed(4)); c2in.classList.toggle('full', bl >= 1)

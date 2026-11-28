@@ -27,8 +27,10 @@ export interface AgrFeedItem {
   v: string
   /** "@handle" of the person who saved it. */
   h: string
-  /** Thumbnail URL (`thumbUrl(src, 320)`). */
+  /** Thumbnail URL (`thumbUrl(src, 240)`). */
   s: string
+  /** The phone-size copy (`thumbUrl(src, 192)`: the row is 96 px there), when the photo goes through /api/thumb. */
+  sm?: string
   /** "City, Country" from Makan's own venue data, or "" (never a Places call). */
   w: string
 }

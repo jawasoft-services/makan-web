@@ -1,7 +1,7 @@
 import 'server-only'
 
 import type { AgrData } from '@/components/agr/types'
-import { buildAgrData, feedMealsFromWall } from '@/lib/agr-home-shape'
+import { buildAgrData, feedMealsFromWall, PIN_WIDTH } from '@/lib/agr-home-shape'
 import { getEatStandings } from '@/lib/eat-standings'
 import { getMaitredDirectory } from '@/lib/maitred'
 import { getPlaceDirectory } from '@/lib/place-directory'
@@ -46,7 +46,7 @@ export async function getAgrHomeData(locale: string): Promise<AgrData> {
   const thumbs: Record<string, string> = {}
   for (const place of places) {
     const meal = place.meals.find(photoAllowed)   // never a pork or drink photo (lib/dish-wall)
-    if (meal) thumbs[place.placeId] = meal.thumb || thumbUrl(meal.src, 240)
+    if (meal) thumbs[place.placeId] = meal.thumb || thumbUrl(meal.src, PIN_WIDTH)   // pins and standings faces: small
   }
   const messages = (locale === 'id' ? id : en) as unknown as Record<string, unknown>
   return buildAgrData({

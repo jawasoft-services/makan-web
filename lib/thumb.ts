@@ -1,5 +1,9 @@
-/** Sizes the resize route accepts; anything else falls back to the original. */
-export const THUMB_WIDTHS = [240, 480, 720, 960] as const
+/**
+ * Sizes the resize route accepts; anything else falls back to the original. 96 and 192 serve the home page's
+ * small photos at twice their size on screen: the globe pins and standings faces (46 px at most) and the phone
+ * feed rows (96 px). Devon, 28 Nov 2026: "can we downsize? they are small so dont need to all be highest quality".
+ */
+export const THUMB_WIDTHS = [96, 192, 240, 480, 720, 960] as const
 export type ThumbWidth = (typeof THUMB_WIDTHS)[number]
 
 const FIREBASE_ORIGIN = 'https://firebasestorage.googleapis.com/'

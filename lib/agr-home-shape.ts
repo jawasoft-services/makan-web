@@ -9,6 +9,12 @@ import { thumbUrl } from '@/lib/thumb'
 
 const BOARD_SIZE = 10
 const STICKERS = 3
+/**
+ * Globe pins (46 px, 34 px on phones) and standings faces (44 px) are drawn small: twice that is 96 px.
+ * Devon, 28 Nov 2026: "can we downsize? they are small so dont need to all be highest quality".
+ * The feed rows are 96 px on phones (192 px photo) and up to 152 px on computers (they keep the 240 px one).
+ */
+export const PIN_WIDTH = 96
 
 /** Public web rule (Devon, 24 Nov 2026): a Maître d' reads "A regular", never a name. */
 const HOLDER = 'A regular'
@@ -65,6 +71,7 @@ export function buildAgrData(input: {
       v: m.locationName,
       h: m.username ? `@${m.username}` : '',
       s: thumbUrl(m.src, 240),
+      sm: thumbUrl(m.src, 192),
       w: whereOf(rowByName.get(key(m.locationName))),
     }))
   // No live wall (fixtures, an outage, a thin week): the approved plates, through the same dish rules.
@@ -76,7 +83,7 @@ export function buildAgrData(input: {
     .filter((v) => typeof v.lat === 'number' && typeof v.lng === 'number')
     .map((v) => {
       const photo = photoByVenue.get(key(v.name))
-      return { lat: v.lat as number, lng: v.lng as number, s: thumbs[v.placeId] || (photo ? thumbUrl(photo, 240) : '') }
+      return { lat: v.lat as number, lng: v.lng as number, s: thumbs[v.placeId] || (photo ? thumbUrl(photo, PIN_WIDTH) : '') }
     })
 
   const board: AgrStanding[] = standings.rows.slice(0, BOARD_SIZE).map((r, i) => {
@@ -89,7 +96,7 @@ export function buildAgrData(input: {
       pct: Math.round(r.eatRate * 100),
       eats: r.eats,
       yeets: r.yeets,
-      img: thumbs[r.placeId] || (photo ? thumbUrl(photo, 240) : ''),
+      img: thumbs[r.placeId] || (photo ? thumbUrl(photo, PIN_WIDTH) : ''),
     }
   })
 
