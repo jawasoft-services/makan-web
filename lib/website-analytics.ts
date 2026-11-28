@@ -23,7 +23,7 @@ export function analyticsAllowed(): boolean {
   if (typeof window === 'undefined' || !/^G-[A-Z0-9]+$/.test(MEASUREMENT_ID)
     || process.env.NEXT_PUBLIC_MAKAN_WEBSITE_FIXTURES === '1') return false
   if (window.navigator.doNotTrack === '1' || (window.navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl) return false
-  return !/^\/(?:id\/)?(?:invite|taste|claim|u|m|p)(?:\/|$)/.test(window.location.pathname)
+  return !/^\/(?:id\/)?(?:invite|taste|claim|u|m|p|d)(?:\/|$)/.test(window.location.pathname)
 }
 
 export function startWebsiteAnalytics(): boolean {

@@ -492,7 +492,10 @@ const directive = (policy, name) => policy.split(';').map(part => part.trim()).f
 
 test('L2: the /d/ page\'s policy is sent only with the switch on, and names only the configured project\'s function host', async () => {
   const site = await sitePolicy()
-  for (const [env, host, other] of [[{ ...ON, NODE_ENV: 'production' }, PROD_HOST, DEV_HOST], [{ ...ON, NODE_ENV: 'production', NOTICE_LINK_PROJECT: 'makan-devel' }, DEV_HOST, PROD_HOST]]) {
+  // The site's policy reaches the proxy through next.config's env, as built.
+  assert.equal(moduleLane({ env: { NODE_ENV: 'production' } }).load('next.config.ts').default.env.SITE_CONTENT_SECURITY_POLICY, site)
+  const built = { NODE_ENV: 'production', SITE_CONTENT_SECURITY_POLICY: site }
+  for (const [env, host, other] of [[{ ...ON, ...built }, PROD_HOST, DEV_HOST], [{ ...ON, ...built, NOTICE_LINK_PROJECT: 'makan-devel' }, DEV_HOST, PROD_HOST]]) {
     for (const path of [`/d/${CODE}`, `/en/d/${CODE}`, `/id/d/${CODE}`, '/d/abc']) {
       const { csp } = ask(path, { env })
       assert.ok(csp, path)
@@ -505,8 +508,10 @@ test('L2: the /d/ page\'s policy is sent only with the switch on, and names only
     assert.equal(ask(`/notice-link/en/${CODE}`, { env }).csp, null)
   }
   // Switch off: the proxy sets no policy, so /d/ gets the site's, exactly as main.
-  for (const env of [{}, { NOTICE_LINK_PAGE: '0' }]) assert.equal(ask(`/d/${CODE}`, { env }).csp, null)
-  // next.config.ts sends what main's did, rule for rule.
+  for (const env of [built, { ...built, NOTICE_LINK_PAGE: '0' }]) assert.equal(ask(`/d/${CODE}`, { env }).csp, null)
+  // Without the site's policy the proxy adds none (the site's own header stays, and blocks the call: closed).
+  assert.equal(ask(`/d/${CODE}`, { env: ON }).csp, null)
+  // next.config.ts sends the headers main sent, rule for rule.
   const ours = await moduleLane({ env: { NODE_ENV: 'production' } }).load('next.config.ts').default.headers()
   const base = atBase('next.config.ts')
   if (base) {

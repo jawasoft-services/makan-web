@@ -138,13 +138,24 @@ export interface ReportInput {
   note: string
 }
 
+/**
+ * The note as the backend takes it (review L4): plain line breaks (a browser may give "\r\n"), trimmed, and at most
+ * NOTE_MAX UTF-16 units, cut before a character rather than through one. The backend counts the same units.
+ */
+function cleanNote(value: string): string {
+  const note = value.replace(/\r\n?/g, "\n").trim()
+  if (note.length <= NOTE_MAX) return note
+  const high = note.charCodeAt(NOTE_MAX - 1)
+  return note.slice(0, high >= 0xd800 && high <= 0xdbff ? NOTE_MAX - 1 : NOTE_MAX).trimEnd()
+}
+
 /** Files the report and returns the card for the answer; `placeName` is the name the form showed. */
 export async function sendReport(fetchImpl: typeof fetch, url: string, value: unknown, input: ReportInput, placeName: string): Promise<NoticeView> {
   const code = noticeCode(value)
   if (!code) return { view: "invalid" }
   const retry: NoticeView = { view: "form", placeName, error: "network" }
   if (!(NOTICE_REASONS as readonly string[]).includes(input.reason)) return retry
-  const note = input.note.trim()
+  const note = cleanNote(input.note)
   const answer = await call(fetchImpl, url, { code, reason: input.reason, ...(note ? { note } : {}) })
   const found = stateOf(answer)
   if (found) {
