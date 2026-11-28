@@ -22,7 +22,9 @@ export const JUMP_QUIET_MS = 1200
  */
 export function jumpToSection(el: Element) {
   window.dispatchEvent(new Event('makan:jump'))
-  jump(el.getBoundingClientRect().top + window.scrollY)
+  // land below the header and its fade (each page's scroll-margin-top); the home page's chapters have none
+  const margin = el === document.documentElement ? 0 : parseFloat(getComputedStyle(el).scrollMarginTop) || 0
+  jump(el.getBoundingClientRect().top + window.scrollY - margin)
 }
 
 /**

@@ -133,6 +133,7 @@ export default async function AgrHome({ data }: { data: AgrData }) {
           <p className="caption" id="pilltext">{caption(0)}</p>
           <span className="discover cap">{t('hero.discover')}</span>
           <span className="legal">{t('hero.legal')}</span>
+          <a className="skip cap" href="#story">{t('hero.skip')}</a>
         </div>
       </section>
 

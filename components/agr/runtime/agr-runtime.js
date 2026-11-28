@@ -714,6 +714,29 @@ export function mountAgr(root, data) {
   // a hand on the wheel, keys or screen always wins over a snap in progress
   // a header link jumped straight to a section (components/site/SiteMotion): drop any snap or hold, stay quiet
   on(window, 'makan:jump', () => { snapCancel(); PAGEHOLD = null; unlater(SNAP.idle); SNAP.quietUntil = performance.now() + 1200 })
+  // Devon, 28 Nov 2026 ("Add a skip and swipe horizontally to see the meals"): on the hero, a sideways swipe (or a
+  // trackpad's sideways scroll) moves one plate along the row. It steps the same scroll the row already follows, so
+  // the caption and the stops stay in step; the Skip link beside it is a plain same-page jump to #story.
+  function heroStep(dir) {
+    const r = hero.getBoundingClientRect(), run = r.height - innerHeight
+    if (run <= 0 || r.top > 1 || r.bottom < innerHeight - 1) return
+    const k = Math.round(stepK(prog(hero))), next = clamp(k + dir, 0, N - 1)
+    if (next === k) return
+    window.dispatchEvent(new Event('makan:jump'))
+    scrollTo({ top: scrollY + r.top + run * (next / (N - 1)), behavior: reduce ? 'instant' : 'smooth' })
+  }
+  const SWIPE = { x: 0, y: 0, on: false, wheelAt: 0 }
+  on(hero, 'touchstart', (e) => { const t = e.touches[0]; SWIPE.x = t.clientX; SWIPE.y = t.clientY; SWIPE.on = e.touches.length === 1 }, { passive: true })
+  on(hero, 'touchend', (e) => {
+    if (!SWIPE.on) return; SWIPE.on = false
+    const t = e.changedTouches[0], dx = t.clientX - SWIPE.x, dy = t.clientY - SWIPE.y
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) heroStep(dx < 0 ? 1 : -1)
+  }, { passive: true })
+  on(hero, 'wheel', (e) => {
+    if (Math.abs(e.deltaX) < 24 || Math.abs(e.deltaX) < Math.abs(e.deltaY) * 1.5) return
+    const now = performance.now(); if (now - SWIPE.wheelAt < 650) return
+    SWIPE.wheelAt = now; heroStep(e.deltaX > 0 ? 1 : -1)
+  }, { passive: true })
   ;['wheel', 'touchstart', 'keydown', 'mousedown'].forEach((ev) => on(window, ev, () => { if (ev === 'touchstart') SNAP.touching = true; if (SNAP.active && heldY() === null) snapCancel() }, { passive: true }))
   on(window, 'touchend', () => { SNAP.touching = false; unlater(SNAP.idle); SNAP.idle = later(snapCheck, 220) }, { passive: true })
   on(window, 'wheel', stopEv, { passive: false }); on(window, 'touchmove', stopEv, { passive: false })

@@ -88,6 +88,9 @@ html:has(.agr),html:has(.agr) body{overflow-x:clip}
 /* RM20773: the cue stays on one line; on phones it sits above the legal link so the two never touch. */
 @media (max-width:600px){.agr .hero .discover{bottom:44px}}
 .agr .hero .legal{position:absolute;left:var(--g);bottom:20px;z-index:3;color:var(--cream);font-size:10px;text-decoration:underline}
+/* the hero's Skip (Devon, 28 Nov 2026), opposite the legal line; a 44px tall tap area around small capitals */
+.agr .hero .skip{position:absolute;right:var(--g);bottom:6px;z-index:3;display:flex;align-items:center;min-height:44px;padding-left:16px;color:var(--cream);text-decoration:none}
+.agr .hero{touch-action:pan-y}   /* sideways swipes on the hero are the plate row's (the runtime's heroStep) */
 .agr .c1{height:240vh;background:var(--cream)}
 .agr .c1 .in{position:sticky;top:0;height:100svh;overflow:hidden}
 .agr .c1 .head{position:absolute;left:0;right:0;top:max(152px,calc(96px + 3vh));z-index:2;padding:0 24px}
