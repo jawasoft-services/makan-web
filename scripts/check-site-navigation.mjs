@@ -14,7 +14,7 @@ try {
     const prefix = locale === 'id' ? '/id' : ''
     for (const route of ['/partner', '/support', '/']) {
       const path = route === '/' ? prefix || '/' : prefix + route
-      const response = await fetch(new URL(path, base), { headers: { 'accept-language': locale, cookie: 'NEXT_LOCALE=' + locale }, redirect: 'manual' })
+      const response = await fetch(new URL(path, base), { headers: { 'accept-language': locale, cookie: 'MAKAN_LANG=' + locale }, redirect: 'manual' })
       assert.equal(response.status, 200, path + ' must render directly')
       const html = await response.text()
       assert.ok(html.includes('<html lang="' + locale + '"'), path + ' document language')
@@ -41,7 +41,7 @@ try {
       const path = route === '/' ? prefix || '/' : prefix + route
       for (const width of [1440, 1024, 390, 320]) {
         await page.setViewportSize({ width, height: 844 })
-        await context.addCookies([{ name: 'NEXT_LOCALE', value: locale, url: base.origin }])
+        await context.addCookies([{ name: 'MAKAN_LANG', value: locale, url: base.origin }])
         await page.goto(new URL(path, base).href)
         await page.evaluate(() => document.fonts.ready)
         for (const scale of [1, 2]) {
@@ -109,7 +109,7 @@ try {
     }
   }
   await page.setViewportSize({ width: 1440, height: 844 })
-  await context.addCookies([{ name: 'NEXT_LOCALE', value: 'en', url: base.origin }])
+  await context.addCookies([{ name: 'MAKAN_LANG', value: 'en', url: base.origin }])
   await page.goto(new URL('/partner?check=language', base).href)
   await page.locator('nav a[hreflang="id"]').click()
   await page.waitForURL(new URL('/id/partner?check=language', base).href)
@@ -120,7 +120,7 @@ try {
   report.languageSwitch = true
   for (const locale of ['en', 'id']) {
     const prefix = locale === 'id' ? '/id' : ''
-    await context.addCookies([{ name: 'NEXT_LOCALE', value: locale, url: base.origin }])
+    await context.addCookies([{ name: 'MAKAN_LANG', value: locale, url: base.origin }])
     for (const hash of ['#how-it-works', '#features', '#faq']) {
       await page.goto(new URL(prefix + '/partner', base).href)
       await page.locator('nav a[href="' + prefix + '/' + hash + '"]').click()

@@ -76,6 +76,12 @@ const SLOT_EDITS = {
   'apphosting.yaml': [
     ["  memoryMiB: 512\n", "  memoryMiB: 1024\n"],
   ],
+  // RM20773, 28 Nov 2026 (Devon: "the website should be in whatever language the persons system is on, british people
+  // in indonesia should be shown english not indonesian"): next-intl's locale cookie is off and only a language
+  // switcher pick (MAKAN_LANG) is remembered. Every other line of the routing stays as it was.
+  'i18n/routing.ts': [
+    ["  localeDetection: true,\n  localeCookie: {\n    name: \"NEXT_LOCALE\",\n    maxAge: 60 * 60 * 24 * 365,\n    sameSite: \"lax\",\n  },\n})\n", "  localeDetection: true,\n  // Devon, 28 Nov 2026: \"the website should be in whatever language the persons system is on, british people in\n  // indonesia should be shown english not indonesian\". next-intl's own cookie remembered whichever language a visit\n  // last landed on (an /id link was enough) and then outranked the system language for a year. It no longer reads or\n  // writes one: a visit follows Accept-Language, a prefixed address shows its own language, and only an explicit pick\n  // in a language switcher is remembered (LANG_COOKIE, applied in proxy.ts). Never a geo or IP choice.\n  localeCookie: false,\n})\n\n/** Set only by the language switchers (an explicit pick); read by proxy.ts. The old NEXT_LOCALE cookie is ignored. */\nexport const LANG_COOKIE = \"MAKAN_LANG\"\nexport const LANG_COOKIE_MAX_AGE = 60 * 60 * 24 * 365\n"],
+  ],
 }
 // Devon, 25 Nov 2026 ("always use our logo instead of the text makan if its an asset"; "Yes, on a website branch"):
 // the preview picture for an unknown place shows the logo file instead of the typed word. These two pinned files may
@@ -204,7 +210,10 @@ test('switch off: the proxy sends every address exactly where main\'s proxy sent
   for (const env of [{}, { SHARE_V2_PAGES: '' }, { SHARE_V2_PAGES: '0' }, { SHARE_V2_PAGES: 'true' }, { SHARE_V2_PAGES: 'on' }]) {
     const now = lane({ env }).load('proxy.ts').proxy
     for (const path of PATHS) {
-      assert.deepEqual(answer(now, path), answer(main, path), `${path} with ${JSON.stringify(env)}`)
+      // RM20773, 28 Nov 2026: a visit no longer sets the NEXT_LOCALE cookie (Devon: the site follows the visitor's
+      // system language); everything else about the answer is unchanged.
+      const noCookie = a => ({ ...a, cookie: a.cookie && /^NEXT_LOCALE=/.test(a.cookie) ? null : a.cookie })
+      assert.deepEqual(answer(now, path), noCookie(answer(main, path)), `${path} with ${JSON.stringify(env)}`)
       assert.deepEqual(answer(now, path, { host: 'makanofficial.com' }), answer(main, path, { host: 'makanofficial.com' }), `apex ${path}`)
     }
   }

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import { track } from "@/lib/website-analytics"
 import { isIndonesianRoute, stripLocalePrefix } from "@/i18n/availability"
 import { localizePath } from "@/i18n/paths"
+import { LANG_COOKIE, LANG_COOKIE_MAX_AGE } from "@/i18n/routing"
 
 export default function LanguageSwitcher({
   compact = false,
@@ -30,7 +31,7 @@ export default function LanguageSwitcher({
       lang={targetLocale}
       aria-label={`${locale === "id" ? "ID / EN" : "EN / ID"} — ${t("language")}: ${targetLabel}`}
       onClick={(event) => {
-        document.cookie = `NEXT_LOCALE=${targetLocale}; path=/; max-age=31536000; samesite=lax`
+        document.cookie = `${LANG_COOKIE}=${targetLocale}; path=/; max-age=${LANG_COOKIE_MAX_AGE}; samesite=lax`   // the only place a language is remembered: an explicit pick
         track("Language Changed", { from: locale, to: targetLocale })
         const suffix = `${window.location.search}${window.location.hash}`
         if (suffix) {
