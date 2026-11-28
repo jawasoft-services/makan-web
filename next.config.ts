@@ -50,7 +50,12 @@ const nextConfig: NextConfig = {
   // Keep private review builds independent of the production App Hosting backend.
   output: 'standalone',
   experimental: { globalNotFound: true },
-  env: { NEXT_PUBLIC_MAKAN_WEBSITE_FIXTURES: process.env.MAKAN_WEBSITE_FIXTURES === "1" ? "1" : "0" },
+  env: {
+    NEXT_PUBLIC_MAKAN_WEBSITE_FIXTURES: process.env.MAKAN_WEBSITE_FIXTURES === "1" ? "1" : "0",
+    // RM20616 O1 — the site's policy, for the one page that adds a host to it per request (lib/notice-link-proxy.ts).
+    // Only code that names it receives it; no page or component does.
+    SITE_CONTENT_SECURITY_POLICY: contentSecurityPolicy,
+  },
   // Fixture caches and HTML must never become production output.
   // MAKAN_FIXTURES_DIST_SUFFIX (letters/digits only) lets a second local fixtures server or build
   // run beside the first; it can only ever name a .next-fixtures* folder.

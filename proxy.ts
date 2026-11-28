@@ -4,6 +4,7 @@ import { NextResponse, type NextRequest } from "next/server"
 import { isIndonesianRoute, stripLocalePrefix } from "@/i18n/availability"
 import { routing } from "@/i18n/routing"
 import { authActionResponse } from "@/lib/auth-action-proxy"
+import { noticeLinkResponse } from "@/lib/notice-link-proxy"
 import { rateLimited } from "@/lib/rate-limit"
 import { shareV2PagesOn } from "@/lib/share-v2"
 import { SHARE_V2_PROXY_HEADER, shareV2ProxyMark } from "@/lib/share-v2-mark"
@@ -73,6 +74,11 @@ export function proxy(request: NextRequest) {
     response.headers.set("X-Robots-Tag", "noindex, nofollow")
     return response
   }
+
+  // RM20616 O1 — the approval text's link (/d/{code}, /id/d/{code}), off unless NOTICE_LINK_PAGE=1. Answered before
+  // the locale rules, which would otherwise send /id/d/... to English. Its internal address is never public.
+  const noticeLink = noticeLinkResponse(request)
+  if (noticeLink) return noticeLink
 
   // RM20616 A10 unit 10 — the account-email action page (/auth/action, /id/auth/action). Answered
   // before the locale rules, which would otherwise send /id/auth/action to English.
